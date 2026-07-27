@@ -7,8 +7,6 @@ import { ageAtSolve, type MathProblem, type SolveType, type VerificationStatus }
 const SOLVE_TYPE: Record<SolveType, { label: string; color: string }> = {
   proved: { label: "Proved", color: "var(--accent-blue)" },
   disproved: { label: "Disproved", color: "var(--accent-orange)" },
-  partial: { label: "Partial", color: "var(--status-warning)" },
-  resolved: { label: "Resolved", color: "var(--ink-muted)" },
 };
 
 const VERIFICATION: Record<

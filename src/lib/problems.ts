@@ -20,7 +20,7 @@
 
 import rawProblems from "@/data/problems.json";
 
-export type SolveType = "proved" | "disproved" | "partial" | "resolved";
+export type SolveType = "proved" | "disproved";
 
 export type VerificationStatus =
   | "lean-verified" // formal proof machine-checked in Lean (strongest)
@@ -81,7 +81,7 @@ export interface MathProblem {
   sourceName: string;
 }
 
-const SOLVE_TYPES: SolveType[] = ["proved", "disproved", "partial", "resolved"];
+const SOLVE_TYPES: SolveType[] = ["proved", "disproved"];
 const VERIFICATION_STATUSES: VerificationStatus[] = [
   "lean-verified",
   "expert-verified",

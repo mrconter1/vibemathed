@@ -3,6 +3,7 @@ import { SITE_URL } from "@/lib/site";
 import { ReferencesChart } from "@/components/ReferencesChart";
 import { ModelsChart } from "@/components/ModelsChart";
 import { CumulativeChart } from "@/components/CumulativeChart";
+import { SolveRatioChart } from "@/components/SolveRatioChart";
 import { ProblemsTable } from "@/components/ProblemsTable";
 import { SocialLinks } from "@/components/SocialLinks";
 
@@ -81,8 +82,13 @@ export default function Home() {
           </dl>
         </header>
 
-        <section className="mb-10">
-          <CumulativeChart problems={problems} />
+        <section className="mb-10 flex flex-col gap-8 lg:flex-row lg:items-start">
+          <div className="min-w-0 lg:flex-[2]">
+            <CumulativeChart problems={problems} />
+          </div>
+          <div className="min-w-0 lg:flex-1">
+            <SolveRatioChart problems={problems} />
+          </div>
         </section>
 
         <section className="mb-10">

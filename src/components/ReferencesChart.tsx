@@ -17,14 +17,11 @@ import { ageAtSolve, type MathProblem } from "@/lib/problems";
 const SOLVE_TYPE_COLOR: Record<string, string> = {
   proved: "var(--accent-blue)",
   disproved: "var(--accent-orange)",
-  resolved: "var(--ink-muted)",
 };
 
 const SOLVE_TYPE_LABEL: Record<string, string> = {
   proved: "Proved",
   disproved: "Disproved",
-  resolved: "Resolved",
-  partial: "Partial",
 };
 
 const VIEW_W = 640;
