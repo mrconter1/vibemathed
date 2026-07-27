@@ -10,7 +10,8 @@ const FAMILIES: { label: string; test: RegExp }[] = [
   { label: "Google DeepMind", test: /gemini|deepmind|alphaevolve|alphaproof/i },
   { label: "Anthropic (Claude)", test: /claude/i },
   { label: "Harmonic (Aristotle)", test: /aristotle|harmonic/i },
-  { label: "Other systems", test: /aletheia|archivara|multiscalar/i },
+  { label: "Open-weights (DeepSeek, GLM)", test: /deepseek|glm/i },
+  { label: "Other systems", test: /aletheia|archivara|multiscalar|seed prover|alphaproof/i },
 ];
 
 export function ModelsChart({ problems }: { problems: MathProblem[] }) {

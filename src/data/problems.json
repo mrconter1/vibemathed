@@ -84,6 +84,34 @@
     "sourceName": "Mathlib PR #41748"
   },
   {
+    "slug": "ziegler-cross-polytope-01",
+    "name": "Ziegler's Cross-Polytope Conjecture (simplicial 0/1-polytopes)",
+    "shortName": "Ziegler cross-polytope",
+    "problemNumber": null,
+    "field": "Combinatorics, Discrete Geometry",
+    "statement": "Ziegler proved every simplicial d-dimensional 0/1-polytope has at most 2d vertices, and asked whether attaining 2d vertices forces central symmetry (i.e. a 0/1 cross-polytope). Known true for d <= 6; open since ~2000.",
+    "posedBy": "Günter M. Ziegler",
+    "yearPosed": 2000,
+    "solveType": "disproved",
+    "solveDate": "2026-06-30",
+    "model": "DeepSeek V4 Flash, GLM 5.2",
+    "modelMaker": "DeepSeek / Zhipu AI",
+    "humanCollaborators": [
+      "Volker Kaibel",
+      "Sebastian Pokutta"
+    ],
+    "aiRole": "An agentic research framework (locally-deployed open-weights DeepSeek V4 Flash + GLM 5.2, augmented with reflection prompts) first produced a flawed proof that the conjecture holds, then attempted a Lean 4 formalization as verification. The formalization failed, and from that failure the agent extracted the combinatorial condition that yielded an explicit counterexample: 14 vertices in {0,1}^7 whose convex hull is simplicial but not centrally symmetric.",
+    "verification": "pending-peer-review",
+    "verificationNote": "arXiv preprint 2606.31640 (30 Jun 2026) by Volker Kaibel and Sebastian Pokutta. The counterexample is explicit and computer-checkable (exhaustive enumeration finds exactly five such non-centrally-symmetric polytopes in dimension 7, of two combinatorial types); a domain-expert preprint, not yet peer-reviewed. Notably found with locally-run open-weights models, not closed frontier LLMs.",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2606.31640",
+    "sourceName": "arXiv:2606.31640"
+  },
+  {
     "slug": "jacobian-conjecture",
     "name": "Jacobian Conjecture",
     "shortName": "Jacobian Conjecture",
