@@ -255,7 +255,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
 
       {pending > 0 && (
         <p className="mt-2 text-xs text-[var(--ink-muted)]">
-          {pending} of {problems.length} entries have no posed year, so aren&apos;t plotted.
+          {`${pending} of ${problems.length} entries have no posed year, so aren't plotted.`}
         </p>
       )}
     </div>

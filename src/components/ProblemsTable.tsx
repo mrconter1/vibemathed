@@ -147,7 +147,7 @@ function HeaderInfo({ content, label }: { content: ReactNode; label: string }) {
       {open && (
         <span
           role="tooltip"
-          className="pointer-events-none fixed z-50 w-64 -translate-x-1/2 rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] p-2.5 text-xs font-normal normal-case leading-snug tracking-normal text-[var(--ink-secondary)] shadow-md"
+          className="pointer-events-none fixed z-50 w-64 -translate-x-1/2 whitespace-normal break-words rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] p-2.5 text-xs font-normal normal-case leading-snug tracking-normal text-[var(--ink-secondary)] shadow-md"
           style={{ left: pos.x, top: pos.y }}
         >
           {content}
@@ -193,6 +193,19 @@ function Chevron({ dir }: { dir: "left" | "right" }) {
   );
 }
 
+// Render a string with **...** segments bolded.
+function renderBold(text: string): ReactNode[] {
+  return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+    part.startsWith("**") && part.endsWith("**") ? (
+      <strong key={i} className="font-semibold text-[var(--ink)]">
+        {part.slice(2, -2)}
+      </strong>
+    ) : (
+      <span key={i}>{part}</span>
+    ),
+  );
+}
+
 // A "*" next to a notability count that reveals a caveat on hover/focus.
 // Same fixed-position tooltip as HeaderInfo so it escapes the table scroll clip.
 function StarNote({ text }: { text: string }) {
@@ -227,10 +240,10 @@ function StarNote({ text }: { text: string }) {
       {open && (
         <span
           role="tooltip"
-          className="pointer-events-none fixed z-50 w-64 -translate-x-1/2 rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] p-2.5 text-left text-xs font-normal normal-case leading-snug tracking-normal text-[var(--ink-secondary)] shadow-md"
+          className="pointer-events-none fixed z-50 w-64 -translate-x-1/2 whitespace-normal break-words rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] p-2.5 text-left text-xs font-normal normal-case leading-snug tracking-normal text-[var(--ink-secondary)] shadow-md"
           style={{ left: pos.x, top: pos.y }}
         >
-          {text}
+          {renderBold(text)}
         </span>
       )}
     </span>
@@ -303,7 +316,7 @@ export function ProblemsTable({ problems }: { problems: MathProblem[] }) {
   const paged = sorted.slice(start, start + perPage);
 
   const selectClass =
-    "rounded border border-[var(--hairline)] bg-[var(--paper)] px-2 py-1.5 text-xs text-[var(--ink-secondary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]";
+    "min-w-0 max-w-[45vw] sm:max-w-[12rem] rounded border border-[var(--hairline)] bg-[var(--paper)] px-2 py-1.5 text-xs text-[var(--ink-secondary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]";
   const pageBtn =
     "inline-flex h-9 min-w-9 items-center justify-center rounded-md border border-[var(--hairline)] px-2.5 text-sm text-[var(--ink-secondary)] transition-colors hover:bg-[var(--paper-raised)] disabled:pointer-events-none disabled:opacity-40";
 
