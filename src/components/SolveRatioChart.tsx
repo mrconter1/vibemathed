@@ -31,11 +31,11 @@ export function SolveRatioChart({ problems }: { problems: MathProblem[] }) {
   ];
 
   return (
-    <div>
+    <div className="flex h-full flex-col">
       <h2 className="font-serif text-lg text-[var(--ink)]">Proved vs. disproved</h2>
       <p className="mt-1 text-xs text-[var(--ink-muted)]">Across all {total} tracked resolutions.</p>
 
-      <div className="mt-4 flex items-center justify-center gap-6">
+      <div className="mt-4 flex flex-1 items-center justify-center gap-6">
         <svg
           viewBox="0 0 180 180"
           className="h-36 w-36 shrink-0"

@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import type { MathProblem } from "@/lib/problems";
 
 const VIEW_W = 640;
-const VIEW_H = 300;
+// Matches the notability chart's aspect ratio so the two wide charts render at
+// the same height when paired in the dashboard grid.
+const VIEW_H = 360;
 const MARGIN = { top: 20, right: 20, bottom: 40, left: 44 };
 const PLOT_W = VIEW_W - MARGIN.left - MARGIN.right;
 const PLOT_H = VIEW_H - MARGIN.top - MARGIN.bottom;
@@ -87,13 +89,14 @@ export function CumulativeChart({ problems }: { problems: MathProblem[] }) {
   const active = isDesktop && hover !== null ? hover : null;
 
   return (
-    <div>
+    <div className="flex h-full flex-col">
       <h2 className="font-serif text-lg text-[var(--ink)]">Problems solved over time</h2>
       <p className="mt-1 text-xs text-[var(--ink-muted)]">
         Cumulative count of tracked resolutions, {total} to date.
       </p>
 
-      <div className="relative mt-3" style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}` }}>
+      <div className="mt-3 flex flex-1 flex-col justify-center">
+        <div className="relative" style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}` }}>
         <svg
           ref={svgRef}
           viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
@@ -199,6 +202,7 @@ export function CumulativeChart({ problems }: { problems: MathProblem[] }) {
             </span>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
