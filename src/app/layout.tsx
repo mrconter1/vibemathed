@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Source_Serif_4 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import "katex/dist/katex.min.css";
 import "./globals.css";
 import { SITE_URL } from "@/lib/site";
 

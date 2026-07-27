@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { problems, ageAtSolve, type MathProblem } from "@/lib/problems";
 import { SITE_URL } from "@/lib/site";
 import { SocialLinks } from "@/components/SocialLinks";
+import { TeX, deTeX } from "@/components/TeX";
 
 const SOLVE_LABEL: Record<string, string> = {
   proved: "Proved",
@@ -46,7 +47,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const p = bySlug(slug);
   if (!p) return { title: "Problem not found" };
-  const description = describe(p).slice(0, 200);
+  const description = deTeX(describe(p)).slice(0, 200);
   return {
     title: p.name,
     description,
@@ -75,7 +76,7 @@ export default async function ProblemPage({
       "@context": "https://schema.org",
       "@type": "Article",
       headline: p.name,
-      description: describe(p),
+      description: deTeX(describe(p)),
       datePublished: p.solveDate,
       url: `${SITE_URL}/problem/${p.slug}`,
       about: p.field ?? "Mathematics",
@@ -140,7 +141,9 @@ export default async function ProblemPage({
         )}
 
         {p.statement && (
-          <p className="mt-5 text-base leading-relaxed text-[var(--ink-secondary)]">{p.statement}</p>
+          <p className="mt-5 text-base leading-relaxed text-[var(--ink-secondary)]">
+            <TeX>{p.statement}</TeX>
+          </p>
         )}
 
         <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-3 border-y border-[var(--hairline)] py-5 text-sm sm:grid-cols-3">
@@ -155,7 +158,9 @@ export default async function ProblemPage({
         {p.aiRole && (
           <section className="mt-6">
             <h2 className="font-serif text-lg text-[var(--ink)]">What the AI did</h2>
-            <p className="mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">{p.aiRole}</p>
+            <p className="mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
+              <TeX>{p.aiRole}</TeX>
+            </p>
           </section>
         )}
 
@@ -163,7 +168,7 @@ export default async function ProblemPage({
           <section className="mt-6">
             <h2 className="font-serif text-lg text-[var(--ink)]">Verification</h2>
             <p className="mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
-              {p.verificationNote}
+              <TeX>{p.verificationNote}</TeX>
             </p>
           </section>
         )}
