@@ -154,7 +154,7 @@
     "humanCollaborators": [
       "Levent Alpöge"
     ],
-    "aiRole": "Alpöge used Fable 5 as a research collaborator to hunt down an explicit counterexample map in three variables, rather than running a generic formal-proof search.",
+    "aiRole": "Alpöge used Fable 5 as a research collaborator to hunt down an explicit counterexample map in three variables, rather than running a generic formal-proof search. The two-variable (plane) case of the conjecture remains open.",
     "verification": "expert-verified",
     "verificationNote": "The counterexample is hand-checkable by direct substitution and was independently confirmed by outside mathematicians within hours of posting. Briefly caught in a Wikipedia edit war over whether to record it. No formal peer-reviewed publication yet.",
     "citations": 759,
@@ -163,7 +163,9 @@
     "citationsUrl": "https://openalex.org/W2081461845",
     "renownLangs": 13,
     "sourceUrl": "https://officechai.com/ai/an-anthropic-researcher-says-fable-just-helped-him-disprove-the-85-year-old-jacobian-conjecture/",
-    "sourceName": "OfficeChai"
+    "sourceName": "OfficeChai",
+    "resultNote": "n ≥ 3; plane case open",
+    "ageNote": "Only n ≥ 3 is disproved; the two-variable (plane) case of Keller's 1939 conjecture remains open. Counterexample found by Levent Alpöge with Claude Fable 5."
   },
   {
     "slug": "erdos-1196-primitive-sets",

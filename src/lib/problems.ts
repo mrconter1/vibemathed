@@ -69,7 +69,9 @@ export interface MathProblem {
    * dedicated to THIS problem. Strict attribution - a generic concept article
    * (e.g. "Factorial" for a factorial-divisibility problem) does not count, so
    * 0 means "no dedicated article", not "unknown". Source: Wikipedia langlinks,
-   * snapshot 2026-07-22.
+   * snapshot 2026-07-22. Frozen at this snapshot on purpose - we do NOT track it
+   * live, so a burst of coverage triggered by the solution itself can never
+   * inflate the score after the fact (the same reasoning behind the strict rule).
    */
   renownLangs: number;
   /**
@@ -78,6 +80,18 @@ export interface MathProblem {
    * does not count. Present only on entries that need it.
    */
   renownNote?: string | null;
+  /**
+   * Optional short qualifier appended to the visible result, for results that
+   * aren't cleanly "proved"/"disproved" - e.g. disproved in some dimensions but
+   * still open in others. Present only on entries that need it.
+   */
+  resultNote?: string | null;
+  /**
+   * Optional footnote shown as a "*" next to the age, e.g. to flag that the
+   * "years open" span oversells how fully the problem is closed, and to record
+   * who found the result. Present only on entries that need it.
+   */
+  ageNote?: string | null;
   sourceUrl: string;
   sourceName: string;
 }
@@ -130,8 +144,10 @@ function assertProblem(value: unknown, index: number): MathProblem {
   );
   ["problemNumber", "yearPosed", "citations"].forEach(requireNullableNumber);
   requireNumber("renownLangs");
-  if (p.renownNote !== undefined && p.renownNote !== null && typeof p.renownNote !== "string") {
-    throw new Error(`${where}: "renownNote" must be a string or null when present`);
+  for (const key of ["renownNote", "resultNote", "ageNote"]) {
+    if (p[key] !== undefined && p[key] !== null && typeof p[key] !== "string") {
+      throw new Error(`${where}: "${key}" must be a string or null when present`);
+    }
   }
   requireStringArray("humanCollaborators");
 

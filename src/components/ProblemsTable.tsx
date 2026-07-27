@@ -435,6 +435,11 @@ export function ProblemsTable({ problems }: { problems: MathProblem[] }) {
                       <span aria-hidden className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: st.color }} />
                       <span className="font-sans text-[var(--ink-secondary)]">{st.label}</span>
                     </span>
+                    {problem.resultNote && (
+                      <span className="mt-0.5 block font-sans text-[11px] leading-tight text-[var(--ink-muted)]">
+                        {problem.resultNote}
+                      </span>
+                    )}
                   </td>
                   <td className="max-w-[220px] px-3 py-2.5 font-sans text-[var(--ink-secondary)]">
                     {problem.posedBy ?? <span className="text-[var(--ink-muted)]">{DASH}</span>}
@@ -447,6 +452,7 @@ export function ProblemsTable({ problems }: { problems: MathProblem[] }) {
                   </td>
                   <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums text-[var(--ink-secondary)]">
                     {age !== null ? `${age}y` : <span className="font-sans text-[var(--ink-muted)]">{DASH}</span>}
+                    {problem.ageNote && <StarNote text={problem.ageNote} />}
                   </td>
                   <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums text-[var(--ink-secondary)]">
                     {problem.renownLangs > 0 ? (

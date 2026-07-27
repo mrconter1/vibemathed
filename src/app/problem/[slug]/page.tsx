@@ -93,7 +93,10 @@ export default async function ProblemPage({
   ];
 
   const facts: [string, string][] = [
-    ["Result", SOLVE_LABEL[p.solveType] ?? p.solveType],
+    [
+      "Result",
+      (SOLVE_LABEL[p.solveType] ?? p.solveType) + (p.resultNote ? ` (${p.resultNote})` : ""),
+    ],
     ["Field", p.field ?? DASH],
     ["Posed by", p.posedBy ?? DASH],
     ["Year posed", p.yearPosed?.toString() ?? DASH],
