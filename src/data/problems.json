@@ -16,7 +16,7 @@
       "Dmitry Rybin"
     ],
     "aiRole": "Rybin used GPT-5.6 Pro to search for and construct an explicit counterexample: a graph whose fractional flow cost is 58, while every unsplittable flow with capacity violation at most 15 costs at least 60 - so no cost-preserving rounding exists.",
-    "verification": "pending-peer-review",
+    "verification": "announced-unreviewed",
     "verificationNote": "Announced on X by Dmitry Rybin (2026-07-22) with a shared GPT-5.6 Pro chat. The counterexample is a concrete finite graph checkable by direct computation (fractional cost 58 vs. minimum unsplittable cost 60 under capacity violation <= 15), but it is not yet peer-reviewed or formally verified. Not to be confused with the separate 'Dinitz conjecture' on Latin-square colourings.",
     "citations": null,
     "citationsPaper": null,
@@ -45,7 +45,7 @@
       "Jeremy Usatine"
     ],
     "aiRole": "Satriano and Usatine found the counterexample with the assistance of ChatGPT: X = M_0 x P^1, where M_0 is the coarse moduli space of rank-2 semistable bundles with trivial determinant over a genus-3 curve. X is a 7-dimensional projective variety with Gorenstein terminal singularities whose stringy E-function is a polynomial, yet its stringy Hodge number h^{2,5}_st(X) = -1 is negative.",
-    "verification": "pending-peer-review",
+    "verification": "preprint-unrefereed",
     "verificationNote": "arXiv preprint 2607.19184 (21 Jul 2026) by Matthew Satriano and Jeremy Usatine. The proof is short and fully explicit: the stringy E-function is written out and its u^2 v^5 coefficient gives h^{2,5}_st = -1, so it is hand-verifiable. A domain-expert preprint, not yet peer-reviewed. Distinct from the unrelated Batyrev-Manin conjecture on rational points.",
     "citations": null,
     "citationsPaper": null,
@@ -101,7 +101,7 @@
       "Sebastian Pokutta"
     ],
     "aiRole": "An agentic research framework (locally-deployed open-weights DeepSeek V4 Flash + GLM 5.2, augmented with reflection prompts) first produced a flawed proof that the conjecture holds, then attempted a Lean 4 formalization as verification. The formalization failed, and from that failure the agent extracted the combinatorial condition that yielded an explicit counterexample: 14 vertices in {0,1}^7 whose convex hull is simplicial but not centrally symmetric.",
-    "verification": "pending-peer-review",
+    "verification": "preprint-unrefereed",
     "verificationNote": "arXiv preprint 2606.31640 (30 Jun 2026) by Volker Kaibel and Sebastian Pokutta. The counterexample is explicit and computer-checkable (exhaustive enumeration finds exactly five such non-centrally-symmetric polytopes in dimension 7, of two combinatorial types); a domain-expert preprint, not yet peer-reviewed. Notably found with locally-run open-weights models, not closed frontier LLMs.",
     "citations": null,
     "citationsPaper": null,
@@ -128,7 +128,7 @@
       "Levent Alpöge"
     ],
     "aiRole": "Alpöge used Fable 5 as a research collaborator to hunt down an explicit counterexample map in three variables, rather than running a generic formal-proof search.",
-    "verification": "pending-peer-review",
+    "verification": "expert-verified",
     "verificationNote": "The counterexample is hand-checkable by direct substitution and was independently confirmed by outside mathematicians within hours of posting. Briefly caught in a Wikipedia edit war over whether to record it. No formal peer-reviewed publication yet.",
     "citations": 759,
     "citationsPaper": "Bass, Connell & Wright (1982), \"The Jacobian conjecture: Reduction of degree and formal expansion of the inverse\", Bull. AMS",
@@ -220,7 +220,7 @@
     "modelMaker": "OpenAI",
     "humanCollaborators": [],
     "aiRole": "Directed to persist on the problem for at least 8 hours before giving up. Produced a proof that any applicable graph can be doubly covered using at most eight loops, with known technical exceptions. Synthesized and extended existing human techniques rather than inventing new ones.",
-    "verification": "pending-peer-review",
+    "verification": "announced-unreviewed",
     "verificationNote": "Announcement was timed to GPT-5.6 Sol's public release. Coverage says it \"seems to have settled the question\" but does not confirm independent peer review.",
     "citations": null,
     "citationsPaper": null,

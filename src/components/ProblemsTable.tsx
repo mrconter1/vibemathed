@@ -16,9 +16,9 @@ const VERIFICATION: Record<
   "lean-verified": { label: "Lean-verified", color: "var(--status-good)", icon: "check" },
   "expert-verified": { label: "Expert-verified", color: "var(--status-good)", icon: "check" },
   "site-confirmed": { label: "Site-confirmed", color: "var(--accent-blue)", icon: "check" },
-  "pending-peer-review": { label: "Paper pending peer review", color: "var(--status-warning)", icon: "clock" },
+  "preprint-unrefereed": { label: "Preprint (unrefereed)", color: "var(--status-warning)", icon: "clock" },
+  "announced-unreviewed": { label: "Announced (unreviewed)", color: "var(--ink-muted)", icon: "info" },
   contested: { label: "Contested", color: "var(--status-critical)", icon: "alert" },
-  "wiki-listed": { label: "Listed (Tao wiki)", color: "var(--ink-muted)", icon: "info" },
 };
 
 const DASH = "—";
@@ -263,6 +263,13 @@ export function ProblemsTable({ problems }: { problems: MathProblem[] }) {
     [problems],
   );
 
+  // Only offer verification statuses that actually occur, in ladder order, so
+  // the dropdown never lists an empty category (e.g. "Contested" when unused).
+  const verifications = useMemo(() => {
+    const present = new Set(problems.map((p) => p.verification));
+    return (Object.keys(VERIFICATION) as VerificationStatus[]).filter((v) => present.has(v));
+  }, [problems]);
+
   // Numeric-ish columns default to descending on first click (highest/most
   // recent first, so unfilled "—" rows - stored as -1 - sink to the bottom
   // instead of leading); text columns default to A→Z.
@@ -350,7 +357,7 @@ export function ProblemsTable({ problems }: { problems: MathProblem[] }) {
           className={selectClass}
         >
           <option value="all">All verification</option>
-          {(Object.keys(VERIFICATION) as VerificationStatus[]).map((v) => (
+          {verifications.map((v) => (
             <option key={v} value={v}>
               {VERIFICATION[v].label}
             </option>

@@ -16,9 +16,9 @@ const VERIFICATION_LABEL: Record<string, string> = {
   "lean-verified": "Lean-verified",
   "expert-verified": "Expert-verified",
   "site-confirmed": "Site-confirmed",
-  "pending-peer-review": "Paper pending peer review",
+  "preprint-unrefereed": "Preprint (unrefereed)",
+  "announced-unreviewed": "Announced (unreviewed)",
   contested: "Contested",
-  "wiki-listed": "Listed (Tao wiki)",
 };
 
 const DASH = "—";

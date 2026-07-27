@@ -22,13 +22,14 @@ import rawProblems from "@/data/problems.json";
 
 export type SolveType = "proved" | "disproved";
 
+// An ordinal "trust ladder", strongest to weakest.
 export type VerificationStatus =
   | "lean-verified" // formal proof machine-checked in Lean (strongest)
-  | "expert-verified" // independently checked and endorsed by domain experts
-  | "pending-peer-review" // publicly checked/plausible, no formal review yet
-  | "contested" // actively disputed
-  | "site-confirmed" // erdosproblems.com's official status marks it solved (not noted as Lean)
-  | "wiki-listed"; // recorded as a full solution on Tao's AI wiki, not confirmed on the site
+  | "expert-verified" // independently checked and endorsed by named domain experts
+  | "site-confirmed" // erdosproblems.com's official status marks it solved (not Lean)
+  | "preprint-unrefereed" // written up in an arXiv preprint, not yet peer-reviewed
+  | "announced-unreviewed" // publicly claimed with a construction, no independent check yet
+  | "contested"; // actively disputed or partially walked back
 
 export interface MathProblem {
   /** URL-safe unique id */
@@ -85,10 +86,10 @@ const SOLVE_TYPES: SolveType[] = ["proved", "disproved"];
 const VERIFICATION_STATUSES: VerificationStatus[] = [
   "lean-verified",
   "expert-verified",
-  "pending-peer-review",
-  "contested",
   "site-confirmed",
-  "wiki-listed",
+  "preprint-unrefereed",
+  "announced-unreviewed",
+  "contested",
 ];
 
 function assertProblem(value: unknown, index: number): MathProblem {
