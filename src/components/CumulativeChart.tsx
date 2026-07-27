@@ -120,7 +120,7 @@ export function CumulativeChart({ problems }: { problems: MathProblem[] }) {
                 dominantBaseline="middle"
                 textAnchor="end"
                 className="font-mono"
-                style={{ fontSize: 11, fill: "var(--ink-muted)", fontVariantNumeric: "tabular-nums" }}
+                style={{ fontSize: 14, fill: "var(--ink-muted)", fontVariantNumeric: "tabular-nums" }}
               >
                 {t}
               </text>
@@ -145,7 +145,7 @@ export function CumulativeChart({ problems }: { problems: MathProblem[] }) {
                 y={VIEW_H - MARGIN.bottom + 18}
                 textAnchor="middle"
                 className="font-mono"
-                style={{ fontSize: 10, fill: "var(--ink-muted)" }}
+                style={{ fontSize: 13, fill: "var(--ink-muted)" }}
               >
                 {label(mk)}
               </text>

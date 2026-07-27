@@ -75,7 +75,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
     <div>
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h2 className="font-serif text-lg text-[var(--ink)]">Notability vs. age at resolution</h2>
-        <ul className="flex gap-4 text-xs text-[var(--ink-secondary)]">
+        <ul className="flex gap-4 text-sm text-[var(--ink-secondary)]">
           {seriesPresent.map((type) => (
             <li key={type} className="flex items-center gap-1.5">
               <span
@@ -140,7 +140,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
               y={VIEW_H - MARGIN.bottom + 20}
               textAnchor="middle"
               className="font-mono"
-              style={{ fontSize: 11, fill: "var(--ink-muted)", fontVariantNumeric: "tabular-nums" }}
+              style={{ fontSize: 14, fill: "var(--ink-muted)", fontVariantNumeric: "tabular-nums" }}
             >
               {t}
             </text>
@@ -149,7 +149,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
             x={MARGIN.left + PLOT_W / 2}
             y={VIEW_H - 6}
             textAnchor="middle"
-            style={{ fontSize: 11, fill: "var(--ink-secondary)" }}
+            style={{ fontSize: 14, fill: "var(--ink-secondary)" }}
           >
             Years open when resolved
           </text>
@@ -163,7 +163,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
               dominantBaseline="middle"
               textAnchor="end"
               className="font-mono"
-              style={{ fontSize: 11, fill: "var(--ink-muted)", fontVariantNumeric: "tabular-nums" }}
+              style={{ fontSize: 14, fill: "var(--ink-muted)", fontVariantNumeric: "tabular-nums" }}
             >
               {t}
             </text>
@@ -173,7 +173,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
             y={16}
             textAnchor="middle"
             transform="rotate(-90)"
-            style={{ fontSize: 11, fill: "var(--ink-secondary)" }}
+            style={{ fontSize: 14, fill: "var(--ink-secondary)" }}
           >
             Notability (Wikipedia languages)
           </text>
@@ -217,7 +217,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
                     x={cx}
                     y={cy - 12}
                     textAnchor="middle"
-                    style={{ fontSize: 11, fill: "var(--ink-secondary)" }}
+                    style={{ fontSize: 14, fill: "var(--ink-secondary)" }}
                   >
                     {problem.shortName}
                   </text>
