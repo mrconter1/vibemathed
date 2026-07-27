@@ -71,6 +71,12 @@ export interface MathProblem {
    * snapshot 2026-07-22.
    */
   renownLangs: number;
+  /**
+   * Optional caveat shown as a "*" next to the notability count, e.g. when a
+   * Wikipedia article exists but was created in response to the solution and so
+   * does not count. Present only on entries that need it.
+   */
+  renownNote?: string | null;
   sourceUrl: string;
   sourceName: string;
 }
@@ -123,6 +129,9 @@ function assertProblem(value: unknown, index: number): MathProblem {
   );
   ["problemNumber", "yearPosed", "citations"].forEach(requireNullableNumber);
   requireNumber("renownLangs");
+  if (p.renownNote !== undefined && p.renownNote !== null && typeof p.renownNote !== "string") {
+    throw new Error(`${where}: "renownNote" must be a string or null when present`);
+  }
   requireStringArray("humanCollaborators");
 
   if (!SOLVE_TYPES.includes(p.solveType as SolveType)) {

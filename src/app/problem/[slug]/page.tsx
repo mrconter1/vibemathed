@@ -104,7 +104,11 @@ export default async function ProblemPage({
     ["Verification", VERIFICATION_LABEL[p.verification] ?? p.verification],
     [
       "Notability",
-      p.renownLangs > 0 ? `${p.renownLangs} Wikipedia languages` : "No dedicated article",
+      p.renownLangs > 0
+        ? `${p.renownLangs} Wikipedia languages`
+        : p.renownNote
+          ? "Not counted (article postdates the solution)"
+          : "No dedicated article",
     ],
   ];
 

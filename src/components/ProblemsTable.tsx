@@ -193,6 +193,50 @@ function Chevron({ dir }: { dir: "left" | "right" }) {
   );
 }
 
+// A "*" next to a notability count that reveals a caveat on hover/focus.
+// Same fixed-position tooltip as HeaderInfo so it escapes the table scroll clip.
+function StarNote({ text }: { text: string }) {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const ref = useRef<HTMLButtonElement>(null);
+
+  const show = () => {
+    const r = ref.current?.getBoundingClientRect();
+    if (r) {
+      const half = 132;
+      const x = Math.min(Math.max(r.left + r.width / 2, half + 8), window.innerWidth - half - 8);
+      setPos({ x, y: r.bottom + 8 });
+    }
+    setOpen(true);
+  };
+
+  return (
+    <span className="inline">
+      <button
+        ref={ref}
+        type="button"
+        aria-label="Notability note"
+        onMouseEnter={show}
+        onMouseLeave={() => setOpen(false)}
+        onFocus={show}
+        onBlur={() => setOpen(false)}
+        className="cursor-help align-super text-[10px] font-bold text-[var(--accent-orange)]"
+      >
+        *
+      </button>
+      {open && (
+        <span
+          role="tooltip"
+          className="pointer-events-none fixed z-50 w-64 -translate-x-1/2 rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] p-2.5 text-left text-xs font-normal normal-case leading-snug tracking-normal text-[var(--ink-secondary)] shadow-md"
+          style={{ left: pos.x, top: pos.y }}
+        >
+          {text}
+        </span>
+      )}
+    </span>
+  );
+}
+
 export function ProblemsTable({ problems }: { problems: MathProblem[] }) {
   const [query, setQuery] = useState("");
   const [fieldFilter, setFieldFilter] = useState("all");
@@ -398,6 +442,7 @@ export function ProblemsTable({ problems }: { problems: MathProblem[] }) {
                         0
                       </span>
                     )}
+                    {problem.renownNote && <StarNote text={problem.renownNote} />}
                   </td>
                   <td className="whitespace-nowrap px-3 py-2.5">
                     <span
