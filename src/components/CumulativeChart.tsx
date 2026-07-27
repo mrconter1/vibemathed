@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import type { MathProblem } from "@/lib/problems";
 
 const VIEW_W = 640;
@@ -27,6 +30,19 @@ function niceMax(v: number, step: number) {
 }
 
 export function CumulativeChart({ problems }: { problems: MathProblem[] }) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [hover, setHover] = useState<number | null>(null);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  // Only wire up hover on devices with a real (mouse) pointer.
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
   const keys = problems.map((p) => monthKey(p.solveDate)).sort();
   if (keys.length === 0) return null;
 
@@ -48,15 +64,27 @@ export function CumulativeChart({ problems }: { problems: MathProblem[] }) {
   const yMax = niceMax(total, 20);
   const yStep = yMax / 4;
 
-  const x = (i: number) => MARGIN.left + (range.length === 1 ? PLOT_W / 2 : (i / (range.length - 1)) * PLOT_W);
+  const x = (i: number) =>
+    MARGIN.left + (range.length === 1 ? PLOT_W / 2 : (i / (range.length - 1)) * PLOT_W);
   const yScale = (v: number) => MARGIN.top + PLOT_H - (v / yMax) * PLOT_H;
 
   const linePts = cumulative.map((v, i) => `${x(i)},${yScale(v)}`).join(" ");
   const areaPts = `${x(0)},${yScale(0)} ${linePts} ${x(range.length - 1)},${yScale(0)}`;
 
-  // Show at most ~7 x labels to avoid crowding.
   const xEvery = Math.ceil(range.length / 7);
   const yTicks = Array.from({ length: 5 }, (_, i) => Math.round(i * yStep));
+
+  function handleMove(e: React.MouseEvent<SVGRectElement>) {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const rect = svg.getBoundingClientRect();
+    const svgX = ((e.clientX - rect.left) / rect.width) * VIEW_W;
+    const t = (svgX - MARGIN.left) / PLOT_W;
+    const i = Math.round(t * (range.length - 1));
+    setHover(Math.min(Math.max(i, 0), range.length - 1));
+  }
+
+  const active = isDesktop && hover !== null ? hover : null;
 
   return (
     <div>
@@ -67,6 +95,7 @@ export function CumulativeChart({ problems }: { problems: MathProblem[] }) {
 
       <div className="relative mt-3" style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}` }}>
         <svg
+          ref={svgRef}
           viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
           className="h-full w-full"
           role="img"
@@ -119,7 +148,57 @@ export function CumulativeChart({ problems }: { problems: MathProblem[] }) {
               </text>
             ) : null,
           )}
+
+          {active !== null && (
+            <g pointerEvents="none">
+              <line
+                x1={x(active)}
+                x2={x(active)}
+                y1={MARGIN.top}
+                y2={yScale(0)}
+                stroke="var(--ink-muted)"
+                strokeWidth={1}
+                strokeDasharray="3 3"
+              />
+              <circle
+                cx={x(active)}
+                cy={yScale(cumulative[active])}
+                r={4.5}
+                fill="var(--accent-blue)"
+                stroke="var(--paper)"
+                strokeWidth={2}
+              />
+            </g>
+          )}
+
+          {isDesktop && (
+            <rect
+              x={MARGIN.left}
+              y={MARGIN.top}
+              width={PLOT_W}
+              height={PLOT_H}
+              fill="transparent"
+              onMouseMove={handleMove}
+              onMouseLeave={() => setHover(null)}
+            />
+          )}
         </svg>
+
+        {active !== null && (
+          <div
+            className="pointer-events-none absolute z-10 whitespace-nowrap rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-2.5 py-1.5 text-xs shadow-sm"
+            style={{
+              left: `${(x(active) / VIEW_W) * 100}%`,
+              top: `${(yScale(cumulative[active]) / VIEW_H) * 100}%`,
+              transform: "translate(-50%, calc(-100% - 10px))",
+            }}
+          >
+            <span className="font-serif text-[var(--ink)]">{label(range[active])}</span>
+            <span className="ml-2 font-mono tabular-nums text-[var(--ink-secondary)]">
+              {cumulative[active]} solved
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
