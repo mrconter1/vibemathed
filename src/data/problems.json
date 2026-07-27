@@ -112,6 +112,33 @@
     "sourceName": "arXiv:2606.31640"
   },
   {
+    "slug": "derivative-free-convex-oracle-gap",
+    "name": "Oracle-Complexity Gap in Derivative-Free Convex Optimization",
+    "shortName": "Zeroth-order oracle gap",
+    "problemNumber": null,
+    "field": "Optimization (Oracle Complexity)",
+    "statement": "For deterministically minimizing a convex 1-Lipschitz function on the d-dimensional ball using only exact function values, the query complexity sat between Omega(d) and O(d^2 log^2 d) since 1996. The paper proves a near-quadratic lower bound Omega(d^2 / log(d+1)), closing the gap: Q(d, ~d^-1/2) = Theta(d^2), a polynomial separation from full first-order information.",
+    "posedBy": "Vladimir Protasov (gap since 1996)",
+    "yearPosed": 1996,
+    "solveType": "proved",
+    "solveDate": "2026-07-14",
+    "model": "GPT-5.6 Sol Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Phillip Kerger"
+    ],
+    "aiRole": "Kerger reports that GPT-5.6 Sol Pro solved the problem rather than the author, following a workflow like OpenAI's Cycle Double Cover effort. It first proved an ~Omega(d^2) lower bound at accuracy of order d^-3 (after ~148 minutes), which was then refined to the order-d^-1/2 result via a further ~230-minute run. The author verified the arguments by hand and takes full responsibility.",
+    "verification": "preprint-unrefereed",
+    "verificationNote": "arXiv preprint 2607.13335 (14 Jul 2026) by Phillip Kerger (UC Berkeley), not yet peer-reviewed. The weaker-accuracy Omega(d^2)-at-d^-3 lower bound was formally verified in Lean (github.com/PhillipKerger/zero-order-bounds-lean-verification); the headline improvement to accuracy d^-1/2 is not yet Lean-formalized (it needs convex-geometry results like Urysohn's inequality absent from current Lean libraries) and rests on the author's hand verification.",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.13335",
+    "sourceName": "arXiv:2607.13335"
+  },
+  {
     "slug": "jacobian-conjecture",
     "name": "Jacobian Conjecture",
     "shortName": "Jacobian Conjecture",
