@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VibeMathed
 
-## Getting Started
+A hand-curated record of math problems (conjectures, open problems) that have
+been proved, disproved, or partially resolved with an AI model in the loop.
 
-First, run the development server:
+Not a scrape, not a leaderboard. Every entry links a real, checkable source,
+and results that aren't yet formally peer-reviewed (or are actively disputed)
+are labeled as such rather than left out or overstated.
+
+## Adding an entry
+
+Entries live in [`src/lib/problems.ts`](src/lib/problems.ts) as a typed array
+- no database, no CMS. To add one:
+
+1. Find a real source (announcement, arXiv, article) - not a summary of a
+   summary.
+2. Fill in every field of the `MathProblem` type, including `verification` /
+   `verificationNote`. If the result is contested or unreviewed, say so there
+   instead of skipping the entry.
+3. Leave `citations` as `null` unless you've actually looked up the Google
+   Scholar count for the original problem/paper - it's not auto-fetched.
+4. Run `npm run dev` and eyeball the card before committing.
+
+## Stack
+
+Next.js (App Router) + TypeScript + Tailwind. No backend, no database - the
+data file *is* the database for now. See the root `AGENTS.md` before making
+framework-level changes; this Next.js version postdates a lot of training
+data.
+
+## Local development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Open [http://localhost:3000](http://localhost:3000).

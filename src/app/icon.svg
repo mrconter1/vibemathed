@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="VibeMathed">
+  <rect width="32" height="32" rx="7" fill="#2a78d6"/>
+  <path d="M4 16 C 7 9, 11 9, 16 16 C 21 23, 25 23, 28 16"
+        fill="none" stroke="#f3efe3" stroke-width="3.4"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
