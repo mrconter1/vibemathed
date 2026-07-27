@@ -45,7 +45,8 @@ export default function Home() {
       <main className="w-full max-w-6xl rounded-lg border border-[var(--mat-border)] bg-[var(--paper)] px-4 py-8 shadow-[0_1px_2px_rgba(0,0,0,0.12),0_12px_32px_rgba(0,0,0,0.18)] sm:px-10 sm:py-12">
         <header className="mb-10">
           <h1 className="font-serif text-3xl text-[var(--ink)] sm:text-4xl">VibeMathed</h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--ink-secondary)]">
+          <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
+          <p className="max-w-2xl text-sm leading-relaxed text-[var(--ink-secondary)]">
             A website tracking mathematical problems solved by AI models - proved
             or disproved with a model in the loop. It spans problems of every
             kind, from famous conjectures like the Jacobian conjecture to the
@@ -66,7 +67,7 @@ export default function Home() {
             article - so you can tell the household names from the niche ones.
           </p>
 
-          <dl className="mt-6 grid grid-cols-3 gap-4 border-y border-[var(--hairline)] py-4 font-mono text-sm">
+          <dl className="grid shrink-0 grid-cols-3 gap-4 border-y border-[var(--hairline)] py-4 font-mono text-sm lg:grid-cols-1 lg:gap-4 lg:border-y-0 lg:border-l lg:py-0 lg:pl-8">
             <div>
               <dt className="text-xs text-[var(--ink-muted)]">Tracked</dt>
               <dd className="text-lg text-[var(--ink)]">{problems.length}</dd>
@@ -80,6 +81,7 @@ export default function Home() {
               <dd className="text-lg text-[var(--ink)]">{leanVerified}</dd>
             </div>
           </dl>
+          </div>
         </header>
 
         {/* Charts dashboard: wide SVG charts paired in row 1, compact stat charts
