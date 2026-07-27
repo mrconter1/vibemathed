@@ -45,7 +45,7 @@ export default function Home() {
       <main className="w-full max-w-6xl rounded-lg border border-[var(--mat-border)] bg-[var(--paper)] px-4 py-8 shadow-[0_1px_2px_rgba(0,0,0,0.12),0_12px_32px_rgba(0,0,0,0.18)] sm:px-10 sm:py-12">
         <header className="mb-10">
           <h1 className="font-serif text-3xl text-[var(--ink)] sm:text-4xl">VibeMathed</h1>
-          <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
+          <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
           <p className="max-w-2xl text-sm leading-relaxed text-[var(--ink-secondary)]">
             A website tracking mathematical problems solved by AI models - proved
             or disproved with a model in the loop. It spans problems of every
