@@ -85,16 +85,16 @@ export default function Home() {
         {/* Charts dashboard: wide SVG charts paired in row 1, compact stat charts
             in row 2 on desktop; single column ordered by importance on mobile. */}
         <section className="mb-10 grid grid-cols-1 gap-5 lg:grid-cols-2">
-          <div className="order-1 min-w-0 rounded-lg border border-[var(--hairline)] p-4 sm:p-5">
+          <div className="order-1 flex flex-col justify-center min-w-0 rounded-lg border border-[var(--hairline)] p-4 sm:p-5">
             <CumulativeChart problems={problems} />
           </div>
-          <div className="order-2 min-w-0 rounded-lg border border-[var(--hairline)] p-4 sm:p-5 lg:order-3">
+          <div className="order-2 flex flex-col justify-center min-w-0 rounded-lg border border-[var(--hairline)] p-4 sm:p-5 lg:order-3">
             <SolveRatioChart problems={problems} />
           </div>
-          <div className="order-3 min-w-0 rounded-lg border border-[var(--hairline)] p-4 sm:p-5 lg:order-4">
+          <div className="order-3 flex flex-col justify-center min-w-0 rounded-lg border border-[var(--hairline)] p-4 sm:p-5 lg:order-4">
             <ModelsChart problems={problems} />
           </div>
-          <div className="order-4 min-w-0 rounded-lg border border-[var(--hairline)] p-4 sm:p-5 lg:order-2">
+          <div className="order-4 flex flex-col justify-center min-w-0 rounded-lg border border-[var(--hairline)] p-4 sm:p-5 lg:order-2">
             <ReferencesChart problems={problems} />
           </div>
         </section>
