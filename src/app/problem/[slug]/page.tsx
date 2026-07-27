@@ -16,7 +16,7 @@ const VERIFICATION_LABEL: Record<string, string> = {
   "lean-verified": "Lean-verified",
   "expert-verified": "Expert-verified",
   "site-confirmed": "Site-confirmed",
-  "pending-peer-review": "Pending peer review",
+  "pending-peer-review": "Paper pending peer review",
   contested: "Contested",
   "wiki-listed": "Listed (Tao wiki)",
 };

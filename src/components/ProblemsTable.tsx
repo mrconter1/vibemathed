@@ -16,7 +16,7 @@ const VERIFICATION: Record<
   "lean-verified": { label: "Lean-verified", color: "var(--status-good)", icon: "check" },
   "expert-verified": { label: "Expert-verified", color: "var(--status-good)", icon: "check" },
   "site-confirmed": { label: "Site-confirmed", color: "var(--accent-blue)", icon: "check" },
-  "pending-peer-review": { label: "Pending peer review", color: "var(--status-warning)", icon: "clock" },
+  "pending-peer-review": { label: "Paper pending peer review", color: "var(--status-warning)", icon: "clock" },
   contested: { label: "Contested", color: "var(--status-critical)", icon: "alert" },
   "wiki-listed": { label: "Listed (Tao wiki)", color: "var(--ink-muted)", icon: "info" },
 };
