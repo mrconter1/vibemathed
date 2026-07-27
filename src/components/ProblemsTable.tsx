@@ -147,7 +147,7 @@ function HeaderInfo({ content, label }: { content: ReactNode; label: string }) {
       {open && (
         <span
           role="tooltip"
-          className="pointer-events-none fixed z-50 w-64 -translate-x-1/2 whitespace-normal break-words rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] p-2.5 text-xs font-normal normal-case leading-snug tracking-normal text-[var(--ink-secondary)] shadow-md"
+          className="pointer-events-none fixed z-50 w-64 -translate-x-1/2 whitespace-normal break-words rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] p-2.5 text-left text-xs font-normal normal-case leading-snug tracking-normal text-[var(--ink-secondary)] shadow-md"
           style={{ left: pos.x, top: pos.y }}
         >
           {content}
