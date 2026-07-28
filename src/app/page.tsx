@@ -1,13 +1,22 @@
-import { problems } from "@/lib/problems";
+import Link from "next/link";
+import { getPublishedProblems } from "@/lib/data";
+import type { ProblemCardData } from "@/lib/problems";
 import { SITE_URL } from "@/lib/site";
-import { ReferencesChart } from "@/components/ReferencesChart";
-import { ModelsChart } from "@/components/ModelsChart";
 import { CumulativeChart } from "@/components/CumulativeChart";
-import { SolveRatioChart } from "@/components/SolveRatioChart";
-import { ProblemsTable } from "@/components/ProblemsTable";
+import { ProblemCards } from "@/components/ProblemCards";
 import { SocialLinks } from "@/components/SocialLinks";
+import { texToHtml } from "@/components/TeX";
 
-export default function Home() {
+export default async function Home() {
+  const problems = await getPublishedProblems();
+
+  // Statement math is rendered to HTML here, on the server, so the client cards
+  // can show real math without KaTeX ever reaching the browser bundle.
+  const cards: ProblemCardData[] = problems.map((p) => ({
+    ...p,
+    statementHtml: p.statement ? texToHtml(p.statement) : null,
+  }));
+
   const erdosCount = problems.filter((p) => p.problemNumber !== null).length;
   const leanVerified = problems.filter((p) => p.verification === "lean-verified").length;
 
@@ -46,64 +55,61 @@ export default function Home() {
         <header className="mb-10">
           <h1 className="font-serif text-3xl text-[var(--ink)] sm:text-4xl">VibeMathed</h1>
           <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
-          <p className="max-w-2xl text-sm leading-relaxed text-[var(--ink-secondary)]">
-            A website tracking mathematical problems solved by AI models - proved
-            or disproved with a model in the loop. It spans problems of every
-            kind, from famous conjectures like the Jacobian conjecture to the
-            numbered Erdős problems catalogued at{" "}
-            <a
-              href="https://www.erdosproblems.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[var(--accent-blue)] hover:underline"
-            >
-              erdosproblems.com
-            </a>
-            . Every entry links a checkable source, is labeled by how strongly
-            it&apos;s verified (Lean-checked, expert-reviewed, or site-confirmed),
-            and carries a{" "}
-            <strong className="font-medium text-[var(--ink)]">notability</strong>{" "}
-            score - the number of Wikipedia language editions with a dedicated
-            article - so you can tell the household names from the niche ones.
-          </p>
+            <p className="max-w-2xl text-sm leading-relaxed text-[var(--ink-secondary)]">
+              A website tracking mathematical problems solved by AI models - proved
+              or disproved with a model in the loop. It spans problems of every
+              kind, from famous conjectures like the Jacobian conjecture to the
+              numbered Erdős problems catalogued at{" "}
+              <a
+                href="https://www.erdosproblems.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--accent-blue)] hover:underline"
+              >
+                erdosproblems.com
+              </a>
+              . Every entry links a checkable source, is labeled by how strongly
+              it&apos;s verified (Lean-checked, expert-reviewed, or site-confirmed),
+              and carries a{" "}
+              <strong className="font-medium text-[var(--ink)]">notability</strong>{" "}
+              score - the number of Wikipedia language editions with a dedicated
+              article - so you can tell the household names from the niche ones.
+            </p>
 
-          <dl className="grid shrink-0 grid-cols-3 gap-4 border-y border-[var(--hairline)] py-4 font-mono text-sm lg:grid-cols-1 lg:gap-4 lg:border-y-0 lg:border-l lg:py-0 lg:pl-8">
-            <div>
-              <dt className="text-xs text-[var(--ink-muted)]">Tracked</dt>
-              <dd className="text-lg text-[var(--ink)]">{problems.length}</dd>
-            </div>
-            <div>
-              <dt className="text-xs text-[var(--ink-muted)]">Erdős problems</dt>
-              <dd className="text-lg text-[var(--ink)]">{erdosCount}</dd>
-            </div>
-            <div>
-              <dt className="text-xs text-[var(--ink-muted)]">Lean-verified</dt>
-              <dd className="text-lg text-[var(--ink)]">{leanVerified}</dd>
-            </div>
-          </dl>
+            <dl className="grid shrink-0 grid-cols-3 gap-4 border-y border-[var(--hairline)] py-4 font-mono text-sm lg:grid-cols-1 lg:gap-4 lg:border-y-0 lg:border-l lg:py-0 lg:pl-8">
+              <div>
+                <dt className="text-xs text-[var(--ink-muted)]">Tracked</dt>
+                <dd className="text-lg text-[var(--ink)]">{problems.length}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-[var(--ink-muted)]">Erdős problems</dt>
+                <dd className="text-lg text-[var(--ink)]">{erdosCount}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-[var(--ink-muted)]">Lean-verified</dt>
+                <dd className="text-lg text-[var(--ink)]">{leanVerified}</dd>
+              </div>
+            </dl>
           </div>
         </header>
 
-        {/* Charts dashboard: wide SVG charts paired in row 1, compact stat charts
-            in row 2 on desktop; single column ordered by importance on mobile. */}
-        <section className="mb-10 grid grid-cols-1 gap-5 lg:grid-cols-2">
-          <div className="order-1 min-w-0 rounded-lg border border-[var(--hairline)] p-4 sm:p-5">
+        {/* One chart here - the narrative one. The rest of the dashboard moved to
+            /stats so the entries people came to read and vote on are not sitting
+            below a wall of charts. */}
+        <section className="mb-10">
+          <div className="min-w-0 rounded-lg border border-[var(--hairline)] p-4 sm:p-5">
             <CumulativeChart problems={problems} />
           </div>
-          <div className="order-2 min-w-0 rounded-lg border border-[var(--hairline)] p-4 sm:p-5 lg:order-3">
-            <SolveRatioChart problems={problems} />
-          </div>
-          <div className="order-3 min-w-0 rounded-lg border border-[var(--hairline)] p-4 sm:p-5 lg:order-4">
-            <ModelsChart problems={problems} />
-          </div>
-          <div className="order-4 min-w-0 rounded-lg border border-[var(--hairline)] p-4 sm:p-5 lg:order-2">
-            <ReferencesChart problems={problems} />
-          </div>
+          <p className="mt-2 text-xs text-[var(--ink-muted)]">
+            <Link href="/stats" className="text-[var(--accent-blue)] hover:underline">
+              More charts on the stats page →
+            </Link>
+          </p>
         </section>
 
         <section>
           <h2 className="mb-3 font-serif text-lg text-[var(--ink)]">All entries</h2>
-          <ProblemsTable problems={problems} />
+          <ProblemCards problems={cards} />
         </section>
 
         <footer className="mt-10 border-t border-[var(--hairline)] pt-6 text-xs text-[var(--ink-muted)]">

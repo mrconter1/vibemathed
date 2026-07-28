@@ -9,21 +9,35 @@ function render(tex: string, display: boolean): string {
   return katex.renderToString(tex, { throwOnError: false, displayMode: display });
 }
 
-export function TeX({ children }: { children: string }) {
+// Non-math segments become raw HTML too, so they must be escaped here - React
+// is no longer doing it for us.
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+/// Renders `$inline$` / `$$display$$` math to an HTML string, escaping
+/// everything around it.
+///
+/// Exported so server components can hand pre-rendered math to *client*
+/// components (the entry cards) without pulling KaTeX into the browser bundle -
+/// which is the whole point of doing this at build time.
+export function texToHtml(children: string): string {
   const parts = children.split(/(\$\$[^$]+\$\$|\$[^$]+\$)/g);
-  return (
-    <>
-      {parts.map((part, i) => {
-        if (part.startsWith("$$") && part.endsWith("$$") && part.length > 4) {
-          return <span key={i} dangerouslySetInnerHTML={{ __html: render(part.slice(2, -2), true) }} />;
-        }
-        if (part.startsWith("$") && part.endsWith("$") && part.length > 2) {
-          return <span key={i} dangerouslySetInnerHTML={{ __html: render(part.slice(1, -1), false) }} />;
-        }
-        return part ? <span key={i}>{part}</span> : null;
-      })}
-    </>
-  );
+  return parts
+    .map((part) => {
+      if (part.startsWith("$$") && part.endsWith("$$") && part.length > 4) {
+        return render(part.slice(2, -2), true);
+      }
+      if (part.startsWith("$") && part.endsWith("$") && part.length > 2) {
+        return render(part.slice(1, -1), false);
+      }
+      return escapeHtml(part);
+    })
+    .join("");
+}
+
+export function TeX({ children }: { children: string }) {
+  return <span dangerouslySetInnerHTML={{ __html: texToHtml(children) }} />;
 }
 
 // Plain-text fallback for contexts that must not contain markup or "$" - meta

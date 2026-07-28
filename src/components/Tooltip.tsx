@@ -1,0 +1,94 @@
+"use client";
+
+// Instant, styled tooltips. These use `fixed` positioning so they escape any
+// ancestor with `overflow` clipping (the native `title` tooltip was both slow
+// and clipped). Extracted from the old problems table so the card layout and
+// anything else can share them.
+
+import { useRef, useState, type ReactNode } from "react";
+
+const BUBBLE =
+  "pointer-events-none fixed z-50 w-64 -translate-x-1/2 whitespace-normal break-words rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] p-2.5 text-left text-xs font-normal normal-case leading-snug tracking-normal text-[var(--ink-secondary)] shadow-md";
+
+/// Render a string with `**...**` segments bolded.
+export function renderBold(text: string): ReactNode[] {
+  return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+    part.startsWith("**") && part.endsWith("**") ? (
+      <strong key={i} className="font-semibold text-[var(--ink)]">
+        {part.slice(2, -2)}
+      </strong>
+    ) : (
+      <span key={i}>{part}</span>
+    ),
+  );
+}
+
+function useBubble() {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const ref = useRef<HTMLButtonElement>(null);
+
+  const show = () => {
+    const r = ref.current?.getBoundingClientRect();
+    if (r) {
+      const half = 132; // half of the w-64 bubble, clamped into the viewport
+      const x = Math.min(Math.max(r.left + r.width / 2, half + 8), window.innerWidth - half - 8);
+      setPos({ x, y: r.bottom + 8 });
+    }
+    setOpen(true);
+  };
+
+  return { open, pos, ref, show, hide: () => setOpen(false) };
+}
+
+/// An "ⓘ" affordance that reveals an explanation on hover or focus.
+export function InfoTip({ content, label }: { content: ReactNode; label: string }) {
+  const { open, pos, ref, show, hide } = useBubble();
+  return (
+    <span className="inline-flex">
+      <button
+        ref={ref}
+        type="button"
+        aria-label={`What is ${label}?`}
+        onMouseEnter={show}
+        onMouseLeave={hide}
+        onFocus={show}
+        onBlur={hide}
+        className="cursor-help text-[11px] leading-none text-[var(--ink-muted)] hover:text-[var(--ink-secondary)]"
+      >
+        ⓘ
+      </button>
+      {open && (
+        <span role="tooltip" className={BUBBLE} style={{ left: pos.x, top: pos.y }}>
+          {content}
+        </span>
+      )}
+    </span>
+  );
+}
+
+/// A "*" next to a value that reveals a caveat on hover or focus.
+export function StarNote({ text }: { text: string }) {
+  const { open, pos, ref, show, hide } = useBubble();
+  return (
+    <span className="inline">
+      <button
+        ref={ref}
+        type="button"
+        aria-label="Footnote"
+        onMouseEnter={show}
+        onMouseLeave={hide}
+        onFocus={show}
+        onBlur={hide}
+        className="cursor-help align-super text-[10px] font-bold text-[var(--accent-orange)]"
+      >
+        *
+      </button>
+      {open && (
+        <span role="tooltip" className={BUBBLE} style={{ left: pos.x, top: pos.y }}>
+          {renderBold(text)}
+        </span>
+      )}
+    </span>
+  );
+}

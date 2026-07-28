@@ -4,6 +4,8 @@ import { Analytics } from "@vercel/analytics/next";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 import { SITE_URL } from "@/lib/site";
+import { SiteHeader } from "@/components/SiteHeader";
+import { ViewerProvider } from "@/components/ViewerProvider";
 
 const TITLE = "VibeMathed - tracking math problems solved by AI models";
 const DESCRIPTION =
@@ -96,7 +98,13 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${sourceSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {children}
+        {/* One provider for the whole app: it fetches who the viewer is and how
+            they have voted once, and the header plus every vote control reads
+            from it. */}
+        <ViewerProvider>
+          <SiteHeader />
+          {children}
+        </ViewerProvider>
         <Analytics />
       </body>
     </html>
