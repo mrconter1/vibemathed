@@ -1,6 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
+import { isAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { SIGNED_OUT, type ViewerState } from "@/lib/viewer";
 
@@ -25,6 +26,7 @@ export async function getViewerState(): Promise<ViewerState> {
     signedIn: true,
     userId: session.user.id,
     pseudonym: session.user.pseudonym ?? null,
+    isAdmin: isAdmin(session.user.email),
     votes: Object.fromEntries(votes.map((v) => [v.problem.slug, v.vote])),
   };
 }

@@ -8,7 +8,7 @@ import { PSEUDONYM_MAX } from "@/lib/pseudonym";
 import { useViewer } from "@/components/ViewerProvider";
 
 export function AuthMenu() {
-  const { loaded, signedIn, pseudonym, setPseudonym } = useViewer();
+  const { loaded, signedIn, pseudonym, isAdmin, setPseudonym } = useViewer();
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -134,6 +134,18 @@ export function AuthMenu() {
           )}
           {saved && !error && (
             <p className="mt-1.5 text-[11px] text-[var(--status-good)]">Name updated.</p>
+          )}
+
+          {isAdmin && (
+            <div className="mt-3 border-t border-[var(--hairline)] pt-3">
+              <Link
+                href="/admin/submissions"
+                onClick={() => setOpen(false)}
+                className="text-xs text-[var(--accent-blue)] hover:underline"
+              >
+                Review submissions
+              </Link>
+            </div>
           )}
 
           <form action={signOutEverywhere} className="mt-3 border-t border-[var(--hairline)] pt-3">

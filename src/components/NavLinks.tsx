@@ -9,6 +9,7 @@ import { usePathname } from "next/navigation";
 const LINKS = [
   { href: "/", label: "Entries" },
   { href: "/stats", label: "Stats" },
+  { href: "/submit", label: "Submit" },
 ] as const;
 
 function isActive(href: string, path: string): boolean {
