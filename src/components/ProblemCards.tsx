@@ -13,7 +13,13 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ageAtSolve, type ProblemCardData, type SolveType, type VerificationStatus } from "@/lib/problems";
+import {
+  ageAtSolve,
+  type Period,
+  type ProblemCardData,
+  type SolveType,
+  type VerificationStatus,
+} from "@/lib/problems";
 import { DASH, NOTABILITY_HELP, SOLVE_TYPE, VERIFICATION } from "@/lib/display";
 import { StatusIcon } from "@/components/StatusIcon";
 import { InfoTip, StarNote } from "@/components/Tooltip";
@@ -22,6 +28,7 @@ import { VoteButtons } from "@/components/VoteButtons";
 type SortKey =
   | "solveDate"
   | "score"
+  | "discussion"
   | "name"
   | "field"
   | "solveType"
@@ -33,7 +40,8 @@ type SortDir = "asc" | "desc";
 
 const SORTS: { key: SortKey; label: string }[] = [
   { key: "solveDate", label: "Date solved" },
-  { key: "score", label: "Votes" },
+  { key: "score", label: "Top voted" },
+  { key: "discussion", label: "Most discussed" },
   { key: "name", label: "Name" },
   { key: "field", label: "Type" },
   { key: "solveType", label: "Result" },
@@ -43,18 +51,35 @@ const SORTS: { key: SortKey; label: string }[] = [
   { key: "renown", label: "Notability" },
 ];
 
+// Sorts that can be scoped to a time window. Everything else ignores the period.
+const TIME_SENSITIVE: SortKey[] = ["score", "discussion"];
+
+const PERIODS: { key: Period; label: string }[] = [
+  { key: "week", label: "Week" },
+  { key: "month", label: "Month" },
+  { key: "all", label: "All time" },
+];
+
 // These default to descending on first pick (highest / most recent first, so
 // entries with no value - stored as -1 - sink instead of leading).
-const NUMERIC_KEYS: SortKey[] = ["solveDate", "age", "renown", "score"];
+const NUMERIC_KEYS: SortKey[] = ["solveDate", "age", "renown", "score", "discussion"];
 
 const PAGE_SIZES = [10, 25, 50, 100];
 
-function sortValue(p: ProblemCardData, key: SortKey): string | number {
+function sortValue(p: ProblemCardData, key: SortKey, period: Period): string | number {
   switch (key) {
     case "solveDate":
       return p.solveDate;
     case "score":
-      return p.score;
+      // "Top voted" ranks on NET score, not raw upvotes - otherwise a
+      // 50-up/49-down brawl outranks a clean 20-up/0-down entry.
+      return period === "week" ? p.score7d : period === "month" ? p.score30d : p.score;
+    case "discussion":
+      return period === "week"
+        ? p.comments7d
+        : period === "month"
+          ? p.comments30d
+          : p.commentCount;
     case "name":
       return p.name.toLowerCase();
     case "field":
@@ -234,8 +259,11 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
   const [verificationFilter, setVerificationFilter] = useState("all");
   const [sortKey, setSortKey] = useState<SortKey>("solveDate");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
+  const [period, setPeriod] = useState<Period>("all");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(25);
+
+  const timeSensitive = TIME_SENSITIVE.includes(sortKey);
 
   const fields = useMemo(
     () =>
@@ -270,16 +298,21 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
   const sorted = useMemo(() => {
     const arr = [...filtered];
     arr.sort((a, b) => {
-      const va = sortValue(a, sortKey);
-      const vb = sortValue(b, sortKey);
+      const va = sortValue(a, sortKey, period);
+      const vb = sortValue(b, sortKey, period);
       const cmp =
         typeof va === "number" && typeof vb === "number"
           ? va - vb
           : String(va).localeCompare(String(vb));
+      // Ties on an engagement sort fall back to most recently solved, so an
+      // all-zero week does not render in arbitrary order.
+      if (cmp === 0 && TIME_SENSITIVE.includes(sortKey)) {
+        return b.solveDate.localeCompare(a.solveDate);
+      }
       return sortDir === "asc" ? cmp : -cmp;
     });
     return arr;
-  }, [filtered, sortKey, sortDir]);
+  }, [filtered, sortKey, sortDir, period]);
 
   // Reset to the first page whenever the result set, ordering or page size
   // changes. Adjusted during render rather than in an effect (which would cause
@@ -293,6 +326,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
     perPage,
     sortKey,
     sortDir,
+    period,
   ].join("|");
   const [lastSignature, setLastSignature] = useState(signature);
   if (signature !== lastSignature) {
@@ -306,9 +340,12 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
   const paged = sorted.slice(start, start + perPage);
 
   // Controls sit directly on the page surface, so they use the raised surface
-  // to read as controls rather than melting into the paper.
+  // to read as controls rather than melting into the paper. Every control in
+  // both rows is h-9 so the search box, the filters and the sort controls line
+  // up as one system - their differing font sizes used to give them differing
+  // heights.
   const selectClass =
-    "min-w-0 max-w-[45vw] sm:max-w-[12rem] rounded border border-[var(--hairline)] bg-[var(--paper-raised)] px-2 py-1.5 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]";
+    "h-9 min-w-0 max-w-[45vw] sm:max-w-[12rem] rounded border border-[var(--hairline)] bg-[var(--paper-raised)] px-2 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]";
   const pageBtn =
     "inline-flex h-9 min-w-9 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-2.5 text-sm text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] hover:text-[var(--ink)] disabled:pointer-events-none disabled:opacity-40";
 
@@ -324,7 +361,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search name, field, model, people…"
-          className="min-w-[220px] flex-1 rounded border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 py-1.5 text-sm text-[var(--ink)] transition-colors placeholder:text-[var(--ink-muted)] hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
+          className="h-9 min-w-[220px] flex-1 rounded border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 text-sm text-[var(--ink)] transition-colors placeholder:text-[var(--ink-muted)] hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
         />
         <select
           value={fieldFilter}
@@ -405,13 +442,41 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
           type="button"
           onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
           aria-label={sortDir === "asc" ? "Sort ascending" : "Sort descending"}
-          className="inline-flex items-center gap-1 rounded border border-[var(--hairline)] bg-[var(--paper-raised)] px-2 py-1.5 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] hover:text-[var(--ink)]"
+          className="inline-flex h-9 items-center gap-1 rounded border border-[var(--hairline)] bg-[var(--paper-raised)] px-2.5 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] hover:text-[var(--ink)]"
         >
           {sortDir === "asc" ? "▲" : "▼"}
           <span className="text-[var(--ink-muted)]">
             {sortDir === "asc" ? "Ascending" : "Descending"}
           </span>
         </button>
+
+        {/* Period only appears for sorts it can actually change - putting six
+            sort/period permutations in the dropdown would bloat it to 15. */}
+        {timeSensitive && (
+          <div
+            role="group"
+            aria-label="Time period"
+            className="inline-flex h-9 overflow-hidden rounded border border-[var(--hairline)] bg-[var(--paper-raised)]"
+          >
+            {PERIODS.map((p, i) => (
+              <button
+                key={p.key}
+                type="button"
+                onClick={() => setPeriod(p.key)}
+                aria-pressed={period === p.key}
+                className={`px-2.5 text-xs transition-colors ${
+                  i > 0 ? "border-l border-[var(--hairline)]" : ""
+                } ${
+                  period === p.key
+                    ? "bg-[color-mix(in_srgb,var(--accent-blue)_12%,transparent)] font-medium text-[var(--accent-blue)]"
+                    : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {sortKey === "renown" && <InfoTip content={NOTABILITY_HELP} label="Notability" />}
 

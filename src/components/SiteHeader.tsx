@@ -10,9 +10,9 @@ export function SiteHeader() {
       <div className="mx-auto flex w-full max-w-6xl items-center gap-5 px-4 py-2.5 sm:px-8">
         <Link
           href="/"
-          className="font-serif text-lg tracking-tight text-[var(--ink)] transition-opacity hover:opacity-75"
+          className="font-serif text-2xl tracking-tight text-[var(--ink)] transition-opacity hover:opacity-75"
         >
-          VibeMathed
+          Vibe<span className="text-[var(--accent-blue)]">Mathed</span>
         </Link>
 
         <NavLinks />
