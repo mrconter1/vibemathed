@@ -117,13 +117,13 @@ export function AuthMenu() {
                 setDraft(e.target.value);
                 setSaved(false);
               }}
-              className="min-w-0 flex-1 rounded border border-[var(--hairline)] bg-[var(--paper)] px-2 py-1.5 text-xs text-[var(--ink)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
+              className="min-w-0 flex-1 rounded border border-[var(--hairline)] bg-[var(--paper)] px-2 py-1.5 text-xs text-[var(--ink)] transition-colors hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
             />
             <button
               type="button"
               onClick={save}
               disabled={saving || draft.trim() === (pseudonym ?? "")}
-              className="rounded border border-[var(--hairline)] px-2.5 py-1.5 text-xs text-[var(--ink-secondary)] transition-colors hover:bg-[var(--paper)] disabled:opacity-40"
+              className="rounded border border-[var(--hairline)] px-2.5 py-1.5 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)] disabled:opacity-40"
             >
               {saving ? "…" : "Save"}
             </button>

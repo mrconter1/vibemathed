@@ -45,7 +45,9 @@ function useBubble() {
 export function InfoTip({ content, label }: { content: ReactNode; label: string }) {
   const { open, pos, ref, show, hide } = useBubble();
   return (
-    <span className="inline-flex">
+    // `relative z-10` keeps the trigger above a stretched-link overlay (entry
+    // cards), so it stays hoverable instead of being swallowed by the card link.
+    <span className="relative z-10 inline-flex">
       <button
         ref={ref}
         type="button"
@@ -71,7 +73,8 @@ export function InfoTip({ content, label }: { content: ReactNode; label: string 
 export function StarNote({ text }: { text: string }) {
   const { open, pos, ref, show, hide } = useBubble();
   return (
-    <span className="inline">
+    // See InfoTip: stays above the entry card's stretched-link overlay.
+    <span className="relative z-10 inline">
       <button
         ref={ref}
         type="button"

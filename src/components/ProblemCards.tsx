@@ -121,13 +121,19 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
   const age = ageAtSolve(p);
 
   return (
-    <article className="rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3.5 transition-colors hover:border-[var(--ink-muted)]">
+    // The whole card is clickable: the title link's ::after stretches over the
+    // card (so semantics and keyboard focus stay on a real link), and every
+    // interactive child sits above the overlay with `relative z-10`.
+    <article className="group relative rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3.5 transition-colors hover:border-[var(--ink-muted)] hover:bg-[color-mix(in_srgb,var(--ink)_3%,var(--paper-raised))] focus-within:border-[var(--accent-blue)]">
       <div className="flex items-start gap-4">
         <div className="min-w-0 flex-1">
           {/* Title + result */}
           <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
             <h3 className="font-serif text-base leading-snug text-[var(--ink)] sm:text-lg">
-              <Link href={`/problem/${p.slug}`} className="hover:underline">
+              <Link
+                href={`/problem/${p.slug}`}
+                className="after:absolute after:inset-0 after:content-['']"
+              >
                 {p.name}
               </Link>
             </h3>
@@ -182,7 +188,7 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
           {/* Verification + notability + discussion */}
           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px]">
             <span
-              className="inline-flex items-center gap-1.5"
+              className="relative z-10 inline-flex items-center gap-1.5"
               style={{ color: v.color }}
               title={p.verificationNote ?? undefined}
             >
@@ -191,7 +197,7 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
             </span>
 
             <span
-              className="font-mono text-[var(--ink-muted)]"
+              className="relative z-10 font-mono text-[var(--ink-muted)]"
               title={p.renownLangs > 0 ? NOTABILITY_HELP : "No dedicated Wikipedia article"}
             >
               Notability{" "}
@@ -204,7 +210,7 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
             {p.commentCount > 0 && (
               <Link
                 href={`/problem/${p.slug}#discussion`}
-                className="font-mono text-[var(--accent-blue)] hover:underline"
+                className="relative z-10 font-mono text-[var(--accent-blue)] hover:underline"
               >
                 {p.commentCount} {p.commentCount === 1 ? "comment" : "comments"}
               </Link>
@@ -213,7 +219,7 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
         </div>
 
         {/* Votes, kept out of the flowing text so they line up down the list */}
-        <div className="shrink-0 pt-0.5">
+        <div className="relative z-10 shrink-0 pt-0.5">
           <VoteButtons slug={p.slug} upvotes={p.upvotes} downvotes={p.downvotes} />
         </div>
       </div>
@@ -299,10 +305,12 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
   const start = (current - 1) * perPage;
   const paged = sorted.slice(start, start + perPage);
 
+  // Controls sit directly on the page surface, so they use the raised surface
+  // to read as controls rather than melting into the paper.
   const selectClass =
-    "min-w-0 max-w-[45vw] sm:max-w-[12rem] rounded border border-[var(--hairline)] bg-[var(--paper)] px-2 py-1.5 text-xs text-[var(--ink-secondary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]";
+    "min-w-0 max-w-[45vw] sm:max-w-[12rem] rounded border border-[var(--hairline)] bg-[var(--paper-raised)] px-2 py-1.5 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]";
   const pageBtn =
-    "inline-flex h-9 min-w-9 items-center justify-center rounded-md border border-[var(--hairline)] px-2.5 text-sm text-[var(--ink-secondary)] transition-colors hover:bg-[var(--paper-raised)] disabled:pointer-events-none disabled:opacity-40";
+    "inline-flex h-9 min-w-9 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-2.5 text-sm text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] hover:text-[var(--ink)] disabled:pointer-events-none disabled:opacity-40";
 
   const filtersActive =
     query || fieldFilter !== "all" || resultFilter !== "all" || verificationFilter !== "all";
@@ -316,7 +324,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search name, field, model, people…"
-          className="min-w-[220px] flex-1 rounded border border-[var(--hairline)] bg-[var(--paper)] px-3 py-1.5 text-sm text-[var(--ink)] placeholder:text-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
+          className="min-w-[220px] flex-1 rounded border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 py-1.5 text-sm text-[var(--ink)] transition-colors placeholder:text-[var(--ink-muted)] hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
         />
         <select
           value={fieldFilter}
@@ -397,7 +405,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
           type="button"
           onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
           aria-label={sortDir === "asc" ? "Sort ascending" : "Sort descending"}
-          className="inline-flex items-center gap-1 rounded border border-[var(--hairline)] px-2 py-1.5 text-xs text-[var(--ink-secondary)] transition-colors hover:bg-[var(--paper-raised)]"
+          className="inline-flex items-center gap-1 rounded border border-[var(--hairline)] bg-[var(--paper-raised)] px-2 py-1.5 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] hover:text-[var(--ink)]"
         >
           {sortDir === "asc" ? "▲" : "▼"}
           <span className="text-[var(--ink-muted)]">
@@ -445,16 +453,11 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
               key={p}
               onClick={() => setPage(p)}
               aria-current={p === current ? "page" : undefined}
-              className={pageBtn}
-              style={
+              className={`${pageBtn} ${
                 p === current
-                  ? {
-                      borderColor: "var(--accent-blue)",
-                      color: "var(--accent-blue)",
-                      backgroundColor: "var(--paper-raised)",
-                    }
-                  : undefined
-              }
+                  ? "border-[var(--accent-blue)] font-medium text-[var(--accent-blue)] hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)]"
+                  : ""
+              }`}
             >
               {p}
             </button>

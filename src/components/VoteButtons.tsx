@@ -81,7 +81,13 @@ export function VoteButtons({
   }
 
   const pad = size === "lg" ? "px-2.5 py-1.5 text-sm" : "px-2 py-1 text-xs";
+  // Styling lives in classes, not inline styles - inline styles always beat
+  // hover classes, which is why these buttons used to have no hover feedback.
+  // The hover wash is a translucent ink mix so it reads on both surfaces
+  // (paper on the entry page, raised paper on cards).
   const base = `inline-flex items-center gap-1 rounded border transition-colors tabular-nums ${pad} disabled:opacity-50`;
+  const inactive =
+    "border-[var(--hairline)] text-[var(--ink-secondary)] hover:border-[var(--ink-muted)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)]";
 
   const upActive = mine === "up";
   const downActive = mine === "down";
@@ -96,12 +102,11 @@ export function VoteButtons({
           aria-pressed={upActive}
           aria-label={`Upvote (${up})`}
           title={signedIn ? "Upvote" : "Sign in to vote"}
-          className={base}
-          style={{
-            borderColor: upActive ? "var(--status-good)" : "var(--hairline)",
-            color: upActive ? "var(--status-good)" : "var(--ink-secondary)",
-            backgroundColor: upActive ? "color-mix(in srgb, var(--status-good) 10%, transparent)" : "transparent",
-          }}
+          className={`${base} ${
+            upActive
+              ? "border-[var(--status-good)] bg-[color-mix(in_srgb,var(--status-good)_10%,transparent)] text-[var(--status-good)] hover:bg-[color-mix(in_srgb,var(--status-good)_18%,transparent)]"
+              : inactive
+          }`}
         >
           <Arrow dir="up" />
           {up}
@@ -113,14 +118,11 @@ export function VoteButtons({
           aria-pressed={downActive}
           aria-label={`Downvote (${down})`}
           title={signedIn ? "Downvote" : "Sign in to vote"}
-          className={base}
-          style={{
-            borderColor: downActive ? "var(--accent-orange)" : "var(--hairline)",
-            color: downActive ? "var(--accent-orange)" : "var(--ink-secondary)",
-            backgroundColor: downActive
-              ? "color-mix(in srgb, var(--accent-orange) 10%, transparent)"
-              : "transparent",
-          }}
+          className={`${base} ${
+            downActive
+              ? "border-[var(--accent-orange)] bg-[color-mix(in_srgb,var(--accent-orange)_10%,transparent)] text-[var(--accent-orange)] hover:bg-[color-mix(in_srgb,var(--accent-orange)_18%,transparent)]"
+              : inactive
+          }`}
         >
           <Arrow dir="down" />
           {down}
