@@ -65,3 +65,18 @@ button:not(:disabled),
 select:not(:disabled) {
   cursor: pointer;
 }
+
+/*
+ * Rendered comment bodies. The markup is generated server-side by
+ * `renderCommentHtml` - paragraphs, <br>, links and KaTeX spans only - so this
+ * is the whole surface that needs styling.
+ */
+.comment-body p + p {
+  margin-top: 0.75em;
+}
+
+.comment-body .katex-display {
+  margin: 0.6em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}

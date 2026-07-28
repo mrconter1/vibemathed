@@ -16,6 +16,9 @@
 import type { Prisma } from "@prisma/client";
 import { cacheLife, cacheTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { formatCommentDate, renderCommentHtml } from "@/lib/comment-render";
+import type { CommentView } from "@/lib/comments";
+import { resolveSnapshot } from "@/lib/identity";
 import type { ProblemWithVotes, SolveType, VerificationStatus } from "@/lib/problems";
 
 export type { ProblemWithVotes };
@@ -119,6 +122,41 @@ export async function getProblemBySlug(slug: string): Promise<ProblemWithVotes |
     select: PROBLEM_SELECT,
   });
   return row ? toProblem(row) : null;
+}
+
+/// The discussion on one entry, oldest first.
+///
+/// Public and identical for everyone, so it is cached and lands in the entry
+/// page's static shell (which also means comments get indexed). Whether the
+/// viewer may edit a given comment is decided on the client by comparing
+/// `authorId` against their own id.
+export async function getComments(slug: string): Promise<CommentView[]> {
+  "use cache";
+  cacheTag(`comments-${slug}`);
+  cacheLife("minutes");
+
+  const rows = await prisma.comment.findMany({
+    where: { problem: { slug } },
+    orderBy: { createdAt: "asc" },
+    select: {
+      id: true,
+      userId: true,
+      userName: true,
+      body: true,
+      createdAt: true,
+      editedAt: true,
+    },
+  });
+
+  return rows.map((c) => ({
+    id: c.id,
+    authorId: c.userId,
+    authorName: resolveSnapshot(c.userName, c.userId !== null),
+    html: renderCommentHtml(c.body),
+    source: c.body,
+    createdAt: formatCommentDate(c.createdAt),
+    edited: c.editedAt !== null,
+  }));
 }
 
 /// Slugs of every published problem, for `generateStaticParams` and the sitemap.

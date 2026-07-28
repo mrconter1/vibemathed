@@ -23,6 +23,7 @@ export async function getViewerState(): Promise<ViewerState> {
 
   return {
     signedIn: true,
+    userId: session.user.id,
     pseudonym: session.user.pseudonym ?? null,
     votes: Object.fromEntries(votes.map((v) => [v.problem.slug, v.vote])),
   };

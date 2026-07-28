@@ -9,6 +9,9 @@ import type { VoteKind } from "@prisma/client";
 
 export interface ViewerState {
   signedIn: boolean;
+  /// The viewer's own user id, used to decide which comments they may edit.
+  /// Null when signed out.
+  userId: string | null;
   /// The viewer's public identity. Null when signed out.
   pseudonym: string | null;
   /// The viewer's own votes, keyed by problem slug.
@@ -17,6 +20,7 @@ export interface ViewerState {
 
 export const SIGNED_OUT: ViewerState = {
   signedIn: false,
+  userId: null,
   pseudonym: null,
   votes: {},
 };

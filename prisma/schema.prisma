@@ -137,7 +137,8 @@ model Comment {
   user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
   /// Pseudonym snapshot, so a deleted account doesn't orphan the thread.
   userName  String?
-  /// Server-sanitized before storage.
+  /// PLAIN TEXT, never HTML. Rendered to safe HTML on read by
+  /// `src/lib/comment-render.ts`, which escapes everything that is not math.
   body      String
   createdAt DateTime  @default(now())
   editedAt  DateTime?

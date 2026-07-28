@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProblemBySlug, getPublishedSlugs } from "@/lib/data";
+import { getComments, getProblemBySlug, getPublishedSlugs } from "@/lib/data";
 import { ageAtSolve, type ProblemWithVotes } from "@/lib/problems";
 import { DASH, SOLVE_TYPE, VERIFICATION } from "@/lib/display";
 import { SITE_URL } from "@/lib/site";
+import { CommentsSection } from "@/components/CommentsSection";
 import { StatusIcon } from "@/components/StatusIcon";
 import { TeX, deTeX } from "@/components/TeX";
 import { VoteButtons } from "@/components/VoteButtons";
@@ -53,6 +54,7 @@ export default async function ProblemPage({
   if (!p) notFound();
   const age = ageAtSolve(p);
   const v = VERIFICATION[p.verification];
+  const comments = await getComments(slug);
 
   const jsonLd = [
     {
@@ -193,6 +195,8 @@ export default async function ProblemPage({
             </a>
           </p>
         </section>
+
+        <CommentsSection slug={p.slug} initial={comments} />
     </main>
   );
 }
