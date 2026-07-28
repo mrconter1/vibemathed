@@ -1,0 +1,226 @@
+// VibeMathed database.
+//
+// Entries used to live only in `src/data/problems.json`, which made git the
+// audit log for every curation change. Now that problems live here - and that
+// users will be able to submit their own - that history has to be recorded
+// explicitly, hence `ProblemActivity`. `problems.json` stays in the repo as the
+// seed source (see `prisma/seed.ts`), so a fresh database is always one
+// `npm run db:seed` away from the curated baseline.
+//
+// Naming note: `solveType` and `verification` are stored as plain strings
+// rather than Postgres enums on purpose. Their vocabularies are curated and
+// still moving (the verification "trust ladder" gains tiers), and the existing
+// validator in `src/lib/problems.ts` already rejects unknown values on the way
+// in - so a new tier costs a seed run, not a schema migration. The vocabularies
+// that are genuinely closed (`VoteKind`, `ProblemStatus`, `ActivityType`) are
+// real enums.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // CockroachDB serverless - the same stone-grivet cluster wilhelm-scream-db
+  // runs on, but a separate `vibemathed` database within it.
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+enum VoteKind {
+  up
+  down
+}
+
+enum ProblemStatus {
+  /// Curated and publicly listed.
+  published
+  /// User-submitted, awaiting review. Never listed publicly.
+  pending
+  /// Reviewed and turned down. Kept so the submitter can see the outcome.
+  rejected
+}
+
+enum ActivityType {
+  created
+  updated
+  submitted
+  approved
+  rejected
+  voted
+  unvoted
+  commented
+}
+
+model Problem {
+  id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug String @unique
+
+  name      String
+  /// Compact label for chart axes / narrow layouts.
+  shortName String
+  /// Erdős problem number, if this is one.
+  problemNumber Int?
+  field         String?
+  /// Plain-language statement. Only ~1 in 5 entries has one; the card layout
+  /// must not reserve space for it.
+  statement     String?
+  posedBy       String?
+  yearPosed     Int?
+  /// "proved" | "disproved" - see the naming note at the top of this file.
+  solveType     String
+  /// ISO date, or "YYYY-MM" / "YYYY". For date ranges, the completion date.
+  solveDate     String
+  model         String
+  modelMaker    String?
+  humanCollaborators String[]
+  /// What the model did. Sparse, like `statement`.
+  aiRole        String?
+  verification  String
+  verificationNote String?
+
+  citations       Int?
+  citationsPaper  String?
+  citationsSource String?
+  citationsUrl    String?
+
+  /// Renown proxy: Wikipedia language editions with an article dedicated to
+  /// THIS problem. 0 means "no dedicated article", not "unknown".
+  renownLangs Int     @default(0)
+  renownNote  String?
+  resultNote  String?
+  ageNote     String?
+
+  sourceUrl  String
+  sourceName String
+
+  status        ProblemStatus @default(published)
+  submittedById String?
+  submittedBy   User?         @relation("ProblemSubmitter", fields: [submittedById], references: [id], onDelete: SetNull)
+
+  /// Denormalized vote tallies, kept in step with `votes` inside a transaction
+  /// so listing 75 cards never fans out into 75 aggregate queries.
+  upvotes   Int @default(0)
+  downvotes Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  votes      ProblemVote[]
+  comments   Comment[]
+  activities ProblemActivity[]
+
+  @@index([status])
+  @@index([solveDate])
+  @@index([submittedById])
+}
+
+model ProblemVote {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  problemId String   @db.Uuid
+  problem   Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vote      VoteKind
+  createdAt DateTime @default(now())
+
+  /// One vote per person per problem; switching direction updates in place.
+  @@unique([problemId, userId])
+  @@index([problemId])
+  @@index([userId])
+}
+
+model Comment {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  problemId String  @db.Uuid
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  /// Pseudonym snapshot, so a deleted account doesn't orphan the thread.
+  userName  String?
+  /// Server-sanitized before storage.
+  body      String
+  createdAt DateTime  @default(now())
+  editedAt  DateTime?
+
+  @@index([problemId])
+  @@index([createdAt])
+}
+
+/// Replaces git history as the record of who changed what.
+model ProblemActivity {
+  id        String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  problemId String       @db.Uuid
+  problem   Problem      @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  /// Pseudonym snapshot at time of action; survives user deletion.
+  userName  String?
+  type      ActivityType
+  /// For `updated`: which field changed, and its before/after.
+  field     String?
+  oldValue  String?
+  newValue  String?
+  /// For `voted`.
+  vote      VoteKind?
+  createdAt DateTime     @default(now())
+
+  @@index([problemId])
+  @@index([createdAt])
+}
+
+// Auth.js models.
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+
+  /// The ONLY public identity. Auto-assigned at sign-up and changeable in
+  /// settings. The real OAuth name and avatar are never shown anywhere - see
+  /// `src/lib/identity.ts`. Nullable only to cover the window before
+  /// assignment runs.
+  pseudonym String? @unique
+
+  accounts          Account[]
+  sessions          Session[]
+  votes             ProblemVote[]
+  comments          Comment[]
+  activities        ProblemActivity[]
+  submittedProblems Problem[]         @relation("ProblemSubmitter")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

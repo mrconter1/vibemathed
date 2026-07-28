@@ -15,10 +15,11 @@
 //     date, human collaborators, whether it was Lean-verified - and leave the
 //     rest null rather than inventing a statement or a posed-year.
 //
-// The data file is untyped JSON, hand-edited AND machine-generated - so this
-// module validates its shape at load time instead of trusting a cast.
-
-import rawProblems from "@/data/problems.json";
+// The data file is untyped JSON, hand-edited AND machine-generated - so it is
+// validated rather than cast. `assertProblem` lives here; the actual loading of
+// `problems.json` lives in `src/lib/curated.ts`, deliberately kept apart so
+// that importing a type or `ageAtSolve` from this module cannot drag 79 KB of
+// JSON into the browser bundle.
 
 export type SolveType = "proved" | "disproved";
 
@@ -96,6 +97,24 @@ export interface MathProblem {
   sourceName: string;
 }
 
+/// A curated problem plus its public engagement counts.
+///
+/// Lives here rather than in `src/lib/data.ts` so client components can import
+/// the type without dragging the Prisma client into the browser bundle.
+export type ProblemWithVotes = MathProblem & {
+  upvotes: number;
+  downvotes: number;
+  /// Net score, precomputed so the client can sort on it directly.
+  score: number;
+  commentCount: number;
+};
+
+/// What the client-side entry cards receive: an entry, its counts, and its
+/// statement with math already rendered to HTML on the server.
+export type ProblemCardData = ProblemWithVotes & {
+  statementHtml: string | null;
+};
+
 const SOLVE_TYPES: SolveType[] = ["proved", "disproved"];
 const VERIFICATION_STATUSES: VerificationStatus[] = [
   "lean-verified",
@@ -106,7 +125,7 @@ const VERIFICATION_STATUSES: VerificationStatus[] = [
   "contested",
 ];
 
-function assertProblem(value: unknown, index: number): MathProblem {
+export function assertProblem(value: unknown, index: number): MathProblem {
   const p = value as Record<string, unknown>;
   const where = `src/data/problems.json[${index}]${p?.slug ? ` (${p.slug})` : ""}`;
 
@@ -162,8 +181,6 @@ function assertProblem(value: unknown, index: number): MathProblem {
 
   return p as unknown as MathProblem;
 }
-
-export const problems: MathProblem[] = (rawProblems as unknown[]).map(assertProblem);
 
 /** Years a problem was open before resolution, or null if the posed year is unknown. */
 export function ageAtSolve(problem: MathProblem): number | null {
