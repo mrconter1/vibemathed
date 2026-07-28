@@ -1,8 +1,8 @@
-// Three entry points into the dataset, above the full list.
+// Two entry points into the dataset, above the full list: what just happened
+// and what took the longest. Neither duplicates the list's default ordering.
 //
-// Each column answers a different question - what just happened, what took the
-// longest, and what is most famous - so none of them duplicates the list's
-// default ordering.
+// A third "best known" column (by notability) fits here naturally if the row
+// ever wants it back - notability is already a sort option in the list.
 //
 // Deliberately NOT "recently added": every entry was seeded within the same few
 // seconds, so `createdAt` ordering is seed insertion order, not information.
@@ -40,10 +40,10 @@ interface Column {
   rows: Row[];
 }
 
-function buildColumns(problems: ProblemWithVotes[]): Column[] {
+function buildColumns(problems: ProblemWithVotes[], rows: number): Column[] {
   const justSolved = [...problems]
     .sort((a, b) => b.solveDate.localeCompare(a.solveDate))
-    .slice(0, 3)
+    .slice(0, rows)
     .map((p) => ({
       slug: p.slug,
       name: p.shortName,
@@ -54,41 +54,41 @@ function buildColumns(problems: ProblemWithVotes[]): Column[] {
     .map((p) => ({ p, age: ageAtSolve(p) }))
     .filter((x): x is { p: ProblemWithVotes; age: number } => x.age !== null)
     .sort((a, b) => b.age - a.age)
-    .slice(0, 3)
+    .slice(0, rows)
     .map(({ p, age }) => ({
       slug: p.slug,
       name: p.shortName,
       detail: `open ${age}y`,
     }));
 
-  const bestKnown = problems
-    .filter((p) => p.renownLangs > 0)
-    .sort((a, b) => b.renownLangs - a.renownLangs)
-    .slice(0, 3)
-    .map((p) => ({
-      slug: p.slug,
-      name: p.shortName,
-      detail: `${p.renownLangs} language${p.renownLangs === 1 ? "" : "s"}`,
-    }));
-
   return [
     { title: "Just solved", hint: "Most recent results", rows: justSolved },
-    { title: "Longest standing", hint: "Open the longest before falling", rows: longestStanding },
-    { title: "Best known", hint: "Most Wikipedia languages", rows: bestKnown },
+    {
+      title: "Longest standing",
+      hint: "Open the longest before falling",
+      rows: longestStanding,
+    },
   ];
 }
 
-export function Highlights({ problems }: { problems: ProblemWithVotes[] }) {
+export function Highlights({
+  problems,
+  rows = 4,
+}: {
+  problems: ProblemWithVotes[];
+  rows?: number;
+}) {
   if (problems.length === 0) return null;
-  const columns = buildColumns(problems).filter((c) => c.rows.length > 0);
+  const columns = buildColumns(problems, rows).filter((c) => c.rows.length > 0);
   if (columns.length === 0) return null;
 
+  // `contents` so each card is a direct child of the home page's overview grid.
   return (
-    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+    <div className="contents">
       {columns.map((col) => (
         <section
           key={col.title}
-          className="rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3.5"
+          className="col-span-2 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3.5"
         >
           <h3 className="font-serif text-base text-[var(--ink)]">{col.title}</h3>
           <p className="mt-0.5 text-[11px] text-[var(--ink-muted)]">{col.hint}</p>

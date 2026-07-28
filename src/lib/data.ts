@@ -16,7 +16,11 @@
 import type { Prisma } from "@prisma/client";
 import { cacheLife, cacheTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { CHANGELOG_TYPES, type ActivityView } from "@/lib/activity";
+import {
+  CHANGELOG_TYPES,
+  type ActivityView,
+  type SiteActivityView,
+} from "@/lib/activity";
 import { formatCommentDate, renderCommentHtml } from "@/lib/comment-render";
 import type { CommentView } from "@/lib/comments";
 import { resolveSnapshot } from "@/lib/identity";
@@ -254,6 +258,49 @@ export async function getActivity(slug: string): Promise<ActivityView[]> {
     oldValue: a.oldValue,
     newValue: a.newValue,
     createdAt: formatCommentDate(a.createdAt),
+  }));
+}
+
+/// Site-wide recent activity, newest first, across published entries only.
+///
+/// Same type filter as the per-entry changelog: votes are recorded but not
+/// shown, because an unbounded "X voted" stream would bury the edits and
+/// discussion this is meant to surface.
+export async function getRecentActivity(limit = 8): Promise<SiteActivityView[]> {
+  "use cache";
+  cacheTag("activity");
+  cacheLife("minutes");
+
+  const rows = await prisma.problemActivity.findMany({
+    where: {
+      type: { in: [...CHANGELOG_TYPES] },
+      problem: { status: "published" },
+    },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    select: {
+      id: true,
+      userId: true,
+      userName: true,
+      type: true,
+      field: true,
+      oldValue: true,
+      newValue: true,
+      createdAt: true,
+      problem: { select: { name: true, slug: true } },
+    },
+  });
+
+  return rows.map((a) => ({
+    id: a.id,
+    userName: resolveSnapshot(a.userName, a.userId !== null),
+    type: a.type,
+    field: a.field,
+    oldValue: a.oldValue,
+    newValue: a.newValue,
+    createdAt: formatCommentDate(a.createdAt),
+    problemName: a.problem.name,
+    problemSlug: a.problem.slug,
   }));
 }
 

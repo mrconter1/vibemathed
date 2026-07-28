@@ -38,6 +38,9 @@ function invalidate(slug: string) {
   updateTag(`comments-${slug}`);
   updateTag("problems");
   updateTag(`problem-${slug}`);
+  // Both the entry's own changelog and the site-wide activity feed.
+  updateTag(`activity-${slug}`);
+  updateTag("activity");
 }
 
 export async function addComment(slug: string, raw: string): Promise<CommentResult> {

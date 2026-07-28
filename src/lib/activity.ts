@@ -25,3 +25,9 @@ export interface ActivityView {
   newValue: string | null;
   createdAt: string;
 }
+
+/// Site-wide activity also needs to say WHICH entry it happened on.
+export interface SiteActivityView extends ActivityView {
+  problemName: string;
+  problemSlug: string;
+}

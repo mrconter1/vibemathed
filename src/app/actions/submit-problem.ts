@@ -180,6 +180,9 @@ export async function approveSubmission(slug: string): Promise<ReviewResult> {
   updateTag("problems");
   updateTag(`problem-${slug}`);
   updateTag("submissions");
+  // An approved entry brings its whole history into the public feed.
+  updateTag(`activity-${slug}`);
+  updateTag("activity");
   return { ok: true };
 }
 

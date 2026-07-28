@@ -1,76 +1,47 @@
-// KPI row for the home page - the headline numbers of the dataset, as stat
-// tiles (per the dataviz spec: sentence-case label, semibold sans value with
-// proportional figures, optional muted context line). A handful of headline
-// numbers is a stat-tile row, not a chart.
+// Headline figures for the home page, as stat tiles (per the dataviz spec:
+// sentence-case label, semibold sans value, proportional figures). A handful of
+// headline numbers is a stat-tile row, not a chart.
+//
+// Renders with `display: contents` so the tiles are direct children of the home
+// page's overview grid - the <dl> keeps the semantics without becoming a grid
+// item itself.
+//
+// Deliberately four, not six: "latest solve" and "longest open" used to live
+// here, but the highlight cards directly below now say the same thing with the
+// entry names attached, so the tiles would just be repeating them.
 
-import { ageAtSolve, type ProblemWithVotes } from "@/lib/problems";
-
-const MONTHS = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-];
-
-/// "2026-06-12" / "2026-06" → "Jun 2026"; bare "2026" stays as is.
-function formatSolveDate(d: string): string {
-  const [year, month] = d.split("-");
-  if (!month) return year;
-  const m = MONTHS[Number(month) - 1];
-  return m ? `${m} ${year}` : year;
-}
+import type { ProblemWithVotes } from "@/lib/problems";
 
 interface Tile {
   label: string;
   value: string;
-  /// Optional context line under the value (an entry name, a qualifier).
   sub?: string;
 }
 
 function computeTiles(problems: ProblemWithVotes[]): Tile[] {
   const erdos = problems.filter((p) => p.problemNumber !== null).length;
   const lean = problems.filter((p) => p.verification === "lean-verified").length;
-
-  const latest = problems.reduce((a, b) => (a.solveDate >= b.solveDate ? a : b));
-
-  let oldest: ProblemWithVotes | null = null;
-  let oldestAge = -1;
-  for (const p of problems) {
-    const age = ageAtSolve(p);
-    if (age !== null && age > oldestAge) {
-      oldestAge = age;
-      oldest = p;
-    }
-  }
-
   const votes = problems.reduce((sum, p) => sum + p.upvotes + p.downvotes, 0);
+  const comments = problems.reduce((sum, p) => sum + p.commentCount, 0);
 
-  const tiles: Tile[] = [
+  return [
     { label: "Tracked problems", value: String(problems.length) },
     { label: "Erdős problems", value: String(erdos) },
-    { label: "Lean-verified", value: String(lean), sub: "machine-checked proofs" },
+    { label: "Lean-verified", value: String(lean), sub: "machine-checked" },
     {
-      label: "Latest solve",
-      value: formatSolveDate(latest.solveDate),
-      sub: latest.shortName,
+      label: "Community",
+      value: String(votes + comments),
+      sub: `${votes} votes · ${comments} comments`,
     },
   ];
-  if (oldest) {
-    tiles.push({
-      label: "Longest open",
-      value: `${oldestAge}y`,
-      sub: oldest.shortName,
-    });
-  }
-  tiles.push({ label: "Votes cast", value: String(votes), sub: "by the community" });
-  return tiles;
 }
 
 export function StatBand({ problems }: { problems: ProblemWithVotes[] }) {
   if (problems.length === 0) return null;
-  const tiles = computeTiles(problems);
 
   return (
-    <dl className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
-      {tiles.map((t) => (
+    <dl className="contents">
+      {computeTiles(problems).map((t) => (
         <div
           key={t.label}
           className="rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3"

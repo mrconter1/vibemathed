@@ -177,6 +177,7 @@ export async function updateProblem(
   updateTag("problems");
   updateTag(`problem-${slug}`);
   updateTag(`activity-${slug}`);
+  updateTag("activity");
 
   return { ok: true, changed: changes.length };
 }
