@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getPublishedProblems } from "@/lib/data";
 import type { ProblemCardData } from "@/lib/problems";
 import { SITE_URL } from "@/lib/site";
-import { CumulativeChart } from "@/components/CumulativeChart";
+import { Highlights } from "@/components/Highlights";
 import { ProblemCards } from "@/components/ProblemCards";
 import { StatBand } from "@/components/StatBand";
 import { texToHtml } from "@/components/TeX";
@@ -75,13 +75,11 @@ export default async function Home() {
         <StatBand problems={problems} />
       </section>
 
-      <section className="mt-6" aria-label="Solves over time">
-        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
-          <CumulativeChart problems={problems} />
-        </div>
+      <section className="mt-6" aria-label="Highlights">
+        <Highlights problems={problems} />
         <p className="mt-2 text-xs text-[var(--ink-muted)]">
           <Link href="/stats" className="text-[var(--accent-blue)] hover:underline">
-            More charts on the stats page →
+            See the charts on the stats page →
           </Link>
         </p>
       </section>

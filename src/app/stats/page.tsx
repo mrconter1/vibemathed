@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getPublishedProblems } from "@/lib/data";
 import { NOTABILITY_HELP } from "@/lib/display";
+import { CumulativeChart } from "@/components/CumulativeChart";
 import { ModelsChart } from "@/components/ModelsChart";
 import { ReferencesChart } from "@/components/ReferencesChart";
 import { SolveRatioChart } from "@/components/SolveRatioChart";
@@ -41,9 +42,9 @@ export default async function StatsPage() {
         <h1 className="font-serif text-3xl tracking-tight text-[var(--ink)]">Stats</h1>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--ink-secondary)]">
           Everything here is derived from the {problems.length} tracked entries.
-          The cumulative timeline lives on the{" "}
+          Browse them all on the{" "}
           <Link href="/" className="text-[var(--accent-blue)] hover:underline">
-            home page
+            entries page
           </Link>
           .
         </p>
@@ -64,14 +65,20 @@ export default async function StatsPage() {
         ))}
       </dl>
 
+      {/* 2x2 grid: every chart gets an equal cell, single column on mobile.
+          The two wide SVG charts share the top row, the two compact stat
+          charts the bottom. */}
       <section className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
+          <CumulativeChart problems={problems} />
+        </div>
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <ReferencesChart problems={problems} />
         </div>
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <SolveRatioChart problems={problems} />
         </div>
-        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5 lg:col-span-2">
+        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <ModelsChart problems={problems} />
         </div>
       </section>
