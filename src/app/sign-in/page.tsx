@@ -11,8 +11,8 @@ export const metadata: Metadata = {
 
 export default function SignInPage() {
   return (
-    <div className="flex flex-1 items-center justify-center px-3 py-10 sm:px-8">
-      <main className="w-full max-w-md rounded-lg border border-[var(--mat-border)] bg-[var(--paper)] px-6 py-8 shadow-[0_1px_2px_rgba(0,0,0,0.12),0_12px_32px_rgba(0,0,0,0.18)] sm:px-8">
+    <div className="flex min-h-[60vh] items-center justify-center px-4 py-10 sm:px-8">
+      <main className="w-full max-w-md rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-6 py-8 sm:px-8">
         <h1 className="font-serif text-2xl text-[var(--ink)]">Sign in</h1>
         <p className="mt-3 text-sm leading-relaxed text-[var(--ink-secondary)]">
           Signing in lets you vote on entries. It takes one click and needs nothing

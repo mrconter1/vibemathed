@@ -1,16 +1,14 @@
 @import "tailwindcss";
 
 /*
- * One fixed theme - deliberately not a light/dark pair. The page sits on a
- * medium-intensity "mat" (neither white-mode nor black-mode); content lives
- * on a warm paper surface with real contrast for text and chart marks.
+ * One fixed theme - deliberately not a light/dark pair. The whole site is a
+ * single continuous paper surface (the old design floated a paper card on a
+ * darker mat, which broke the page into header / gap / box). Panels and cards
+ * lift off the page with the raised surface + hairlines, never with shadows.
  * See dataviz skill palette.md for where --accent-* and --status-* come from.
  */
 :root {
   color-scheme: light;
-
-  --mat: #86806f;
-  --mat-border: rgba(20, 18, 12, 0.22);
 
   --paper: #f3efe3;
   --paper-raised: #faf8f0;
@@ -20,6 +18,10 @@
   --ink-muted: #8a8271;
 
   --hairline: #ddd6c4;
+
+  /* Kept for chart marks and small accents (was the page backdrop). */
+  --mat: #86806f;
+  --mat-border: rgba(20, 18, 12, 0.22);
 
   --accent-blue: #2a78d6;
   --accent-orange: #eb6834;
@@ -45,6 +47,21 @@
 }
 
 body {
-  background: var(--mat);
+  background: var(--paper);
   color: var(--ink);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent-blue) 22%, transparent);
+}
+
+/*
+ * Tailwind v4's preflight no longer gives buttons a pointer cursor (it follows
+ * the browser default). Interactive controls must read as interactive, so
+ * restore it site-wide - disabled controls keep the default arrow.
+ */
+button:not(:disabled),
+[role="button"]:not(:disabled),
+select:not(:disabled) {
+  cursor: pointer;
 }

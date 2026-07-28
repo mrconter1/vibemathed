@@ -5,7 +5,6 @@ import { getProblemBySlug, getPublishedSlugs } from "@/lib/data";
 import { ageAtSolve, type ProblemWithVotes } from "@/lib/problems";
 import { DASH, SOLVE_TYPE, VERIFICATION } from "@/lib/display";
 import { SITE_URL } from "@/lib/site";
-import { SocialLinks } from "@/components/SocialLinks";
 import { StatusIcon } from "@/components/StatusIcon";
 import { TeX, deTeX } from "@/components/TeX";
 import { VoteButtons } from "@/components/VoteButtons";
@@ -110,15 +109,14 @@ export default async function ProblemPage({
   ];
 
   return (
-    <div className="flex flex-1 justify-center px-3 py-6 sm:px-8 sm:py-12">
+    <main className="mx-auto w-full max-w-3xl px-4 pb-4 pt-8 sm:px-8 sm:pt-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <main className="w-full max-w-3xl rounded-lg border border-[var(--mat-border)] bg-[var(--paper)] px-4 py-8 shadow-[0_1px_2px_rgba(0,0,0,0.12),0_12px_32px_rgba(0,0,0,0.18)] sm:px-10 sm:py-12">
-        <Link href="/" className="text-xs text-[var(--accent-blue)] hover:underline">
-          ← All problems
-        </Link>
+      <Link href="/" className="text-xs text-[var(--accent-blue)] hover:underline">
+        ← All problems
+      </Link>
 
         <div className="mt-4 flex items-start justify-between gap-4">
           <h1 className="font-serif text-2xl text-[var(--ink)] sm:text-3xl">{p.name}</h1>
@@ -195,22 +193,6 @@ export default async function ProblemPage({
             </a>
           </p>
         </section>
-
-        <footer className="mt-10 border-t border-[var(--hairline)] pt-6 text-xs text-[var(--ink-muted)]">
-          <Link href="/" className="text-[var(--accent-blue)] hover:underline">
-            All problems
-          </Link>
-          {" · "}
-          <a
-            href="mailto:rasmus.lindahl1996@gmail.com?subject=VibeMathed"
-            className="text-[var(--accent-blue)] hover:underline"
-          >
-            Contact
-          </a>
-          {" · "}
-          <SocialLinks className="ml-1" />
-        </footer>
-      </main>
-    </div>
+    </main>
   );
 }

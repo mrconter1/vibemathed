@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 import { SITE_URL } from "@/lib/site";
+import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ViewerProvider } from "@/components/ViewerProvider";
 
@@ -103,7 +104,8 @@ export default function RootLayout({
             from it. */}
         <ViewerProvider>
           <SiteHeader />
-          {children}
+          <div className="flex-1">{children}</div>
+          <SiteFooter />
         </ViewerProvider>
         <Analytics />
       </body>
