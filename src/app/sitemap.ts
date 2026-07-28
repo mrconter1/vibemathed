@@ -1,13 +1,15 @@
 import type { MetadataRoute } from "next";
-import { problems } from "@/lib/problems";
+import { getPublishedSlugs } from "@/lib/data";
 import { SITE_URL } from "@/lib/site";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+  const slugs = await getPublishedSlugs();
   return [
     { url: SITE_URL, lastModified: now, changeFrequency: "weekly", priority: 1 },
-    ...problems.map((p) => ({
-      url: `${SITE_URL}/problem/${p.slug}`,
+    { url: `${SITE_URL}/stats`, lastModified: now, changeFrequency: "weekly", priority: 0.5 },
+    ...slugs.map((slug) => ({
+      url: `${SITE_URL}/problem/${slug}`,
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.7,
