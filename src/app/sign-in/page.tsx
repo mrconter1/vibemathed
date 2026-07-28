@@ -5,7 +5,7 @@ import { signInWithGoogle } from "@/app/actions/auth";
 export const metadata: Metadata = {
   title: "Sign in",
   description:
-    "Sign in to VibeMathed to vote on entries. You appear under a pseudonym; your Google name is never shown.",
+    "Sign in to VibeMathed to vote, join the discussion and correct entries. You appear under a pseudonym; your Google name is never shown.",
   robots: { index: false, follow: false },
 };
 
@@ -15,9 +15,33 @@ export default function SignInPage() {
       <main className="w-full max-w-md rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-6 py-8 sm:px-8">
         <h1 className="font-serif text-2xl text-[var(--ink)]">Sign in</h1>
         <p className="mt-3 text-sm leading-relaxed text-[var(--ink-secondary)]">
-          Signing in lets you vote on entries. It takes one click and needs nothing
-          but a Google account.
+          It takes one click and needs nothing but a Google account. Once signed
+          in you can:
         </p>
+
+        <ul className="mt-3 space-y-1.5 text-sm text-[var(--ink-secondary)]">
+          <li className="flex gap-2">
+            <span aria-hidden className="text-[var(--accent-blue)]">•</span>
+            <span>
+              <strong className="font-medium text-[var(--ink)]">Vote</strong> entries
+              up or down
+            </span>
+          </li>
+          <li className="flex gap-2">
+            <span aria-hidden className="text-[var(--accent-blue)]">•</span>
+            <span>
+              <strong className="font-medium text-[var(--ink)]">Comment</strong> on
+              any entry, with math support
+            </span>
+          </li>
+          <li className="flex gap-2">
+            <span aria-hidden className="text-[var(--accent-blue)]">•</span>
+            <span>
+              <strong className="font-medium text-[var(--ink)]">Correct</strong>{" "}
+              entries - every change is recorded in that entry&apos;s changelog
+            </span>
+          </li>
+        </ul>
 
         <div className="mt-5 rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] p-3">
           <h2 className="text-xs font-medium text-[var(--ink)]">
@@ -26,9 +50,10 @@ export default function SignInPage() {
           <p className="mt-1.5 text-xs leading-relaxed text-[var(--ink-secondary)]">
             You are given a random display name like{" "}
             <span className="font-mono text-[var(--ink)]">BraveMongoose492</span>, and
-            that is the only thing shown publicly. Your real name, email and profile
-            picture from Google are never displayed anywhere on the site. You can
-            change your display name at any time.
+            that is the only thing shown publicly - on your comments and beside any
+            edit you make. Your real name, email and profile picture from Google are
+            never displayed anywhere on the site. You can change your display name at
+            any time.
           </p>
         </div>
 

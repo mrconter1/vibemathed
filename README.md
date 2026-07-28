@@ -7,8 +7,9 @@ Not a scrape, not a leaderboard. Every entry links a real, checkable source,
 and results that aren't yet formally peer-reviewed (or are actively disputed)
 are labeled as such rather than left out or overstated.
 
-Signed-in visitors can upvote and downvote entries. People appear under a
-pseudonym only - see [Identity](#identity).
+Signed-in visitors can vote on entries, discuss them, and correct them - every
+edit is recorded in that entry's changelog. People appear under a pseudonym
+only - see [Identity](#identity).
 
 ## Stack
 
