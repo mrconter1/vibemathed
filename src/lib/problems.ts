@@ -97,21 +97,42 @@ export interface MathProblem {
   sourceName: string;
 }
 
-/// A curated problem plus its public engagement counts.
+/// The windows offered for time-sensitive sorting.
+export type Period = "week" | "month" | "all";
+
+/// A curated problem plus its lifetime engagement counts.
 ///
 /// Lives here rather than in `src/lib/data.ts` so client components can import
 /// the type without dragging the Prisma client into the browser bundle.
 export type ProblemWithVotes = MathProblem & {
   upvotes: number;
   downvotes: number;
-  /// Net score, precomputed so the client can sort on it directly.
+  /// Lifetime net score, precomputed so the client can sort on it directly.
   score: number;
   commentCount: number;
+  /// Pseudonym of whoever submitted this entry, or null for curated ones.
+  submittedBy: string | null;
+};
+
+/// A problem plus engagement inside recent time windows.
+///
+/// These are shipped with the list so that "top voted this week" stays a
+/// client-side sort. The denormalized totals on the row cannot answer a time
+/// question - that needs the underlying vote and comment rows - so aggregation
+/// happens once, server-side, inside the cached read rather than on every sort
+/// change. Only the list needs these; a single entry page does not.
+export type ProblemWithTrends = ProblemWithVotes & {
+  /// Net score from votes cast in the last 7 / 30 days.
+  score7d: number;
+  score30d: number;
+  /// Comments posted in the last 7 / 30 days.
+  comments7d: number;
+  comments30d: number;
 };
 
 /// What the client-side entry cards receive: an entry, its counts, and its
 /// statement with math already rendered to HTML on the server.
-export type ProblemCardData = ProblemWithVotes & {
+export type ProblemCardData = ProblemWithTrends & {
   statementHtml: string | null;
 };
 

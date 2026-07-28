@@ -16,12 +16,18 @@
 import type { Prisma } from "@prisma/client";
 import { cacheLife, cacheTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { CHANGELOG_TYPES, type ActivityView } from "@/lib/activity";
 import { formatCommentDate, renderCommentHtml } from "@/lib/comment-render";
 import type { CommentView } from "@/lib/comments";
 import { resolveSnapshot } from "@/lib/identity";
-import type { ProblemWithVotes, SolveType, VerificationStatus } from "@/lib/problems";
+import type {
+  ProblemWithTrends,
+  ProblemWithVotes,
+  SolveType,
+  VerificationStatus,
+} from "@/lib/problems";
 
-export type { ProblemWithVotes };
+export type { ProblemWithTrends, ProblemWithVotes };
 
 const PROBLEM_SELECT = {
   slug: true,
@@ -52,6 +58,7 @@ const PROBLEM_SELECT = {
   sourceName: true,
   upvotes: true,
   downvotes: true,
+  submittedBy: { select: { pseudonym: true } },
   _count: { select: { comments: true } },
 } as const;
 
@@ -93,21 +100,79 @@ function toProblem(r: ProblemRow): ProblemWithVotes {
     downvotes: r.downvotes,
     score: r.upvotes - r.downvotes,
     commentCount: r._count.comments,
+    // Null for the curated baseline; a pseudonym for community submissions.
+    submittedBy: r.submittedBy?.pseudonym ?? null,
   };
 }
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/// Per-problem engagement inside a time window, keyed by problem id.
+interface WindowCounts {
+  score: Map<string, number>;
+  comments: Map<string, number>;
+}
+
+/// Aggregates votes and comments newer than `since`.
+///
+/// Two grouped queries rather than one per problem - at 75 entries this is two
+/// round trips regardless of list size, and the whole thing sits inside the
+/// cached read so it runs at most once a minute.
+async function countsSince(since: Date): Promise<WindowCounts> {
+  const [votes, comments] = await Promise.all([
+    prisma.problemVote.groupBy({
+      by: ["problemId", "vote"],
+      where: { createdAt: { gte: since } },
+      _count: { _all: true },
+    }),
+    prisma.comment.groupBy({
+      by: ["problemId"],
+      where: { createdAt: { gte: since } },
+      _count: { _all: true },
+    }),
+  ]);
+
+  const score = new Map<string, number>();
+  for (const row of votes) {
+    // Net score: an up adds, a down subtracts.
+    const delta = row.vote === "up" ? row._count._all : -row._count._all;
+    score.set(row.problemId, (score.get(row.problemId) ?? 0) + delta);
+  }
+
+  const commentCounts = new Map<string, number>();
+  for (const row of comments) {
+    commentCounts.set(row.problemId, row._count._all);
+  }
+
+  return { score, comments: commentCounts };
+}
+
 /// Every publicly listed problem. Pending and rejected submissions are excluded.
-export async function getPublishedProblems(): Promise<ProblemWithVotes[]> {
+export async function getPublishedProblems(): Promise<ProblemWithTrends[]> {
   "use cache";
   cacheTag("problems");
   cacheLife("minutes");
 
-  const rows = await prisma.problem.findMany({
-    where: { status: "published" },
-    select: PROBLEM_SELECT,
-    orderBy: { solveDate: "desc" },
-  });
-  return rows.map(toProblem);
+  // `cacheLife("minutes")` means these window edges are up to a minute stale,
+  // which is immaterial for a 7- or 30-day window.
+  const now = Date.now();
+  const [rows, week, month] = await Promise.all([
+    prisma.problem.findMany({
+      where: { status: "published" },
+      select: { ...PROBLEM_SELECT, id: true },
+      orderBy: { solveDate: "desc" },
+    }),
+    countsSince(new Date(now - 7 * DAY_MS)),
+    countsSince(new Date(now - 30 * DAY_MS)),
+  ]);
+
+  return rows.map((row) => ({
+    ...toProblem(row),
+    score7d: week.score.get(row.id) ?? 0,
+    score30d: month.score.get(row.id) ?? 0,
+    comments7d: week.comments.get(row.id) ?? 0,
+    comments30d: month.comments.get(row.id) ?? 0,
+  }));
 }
 
 /// One problem by its public slug, or null when it does not exist or is not
@@ -156,6 +221,39 @@ export async function getComments(slug: string): Promise<CommentView[]> {
     source: c.body,
     createdAt: formatCommentDate(c.createdAt),
     edited: c.editedAt !== null,
+  }));
+}
+
+/// The changelog for one entry, newest first.
+export async function getActivity(slug: string): Promise<ActivityView[]> {
+  "use cache";
+  cacheTag(`activity-${slug}`);
+  cacheLife("minutes");
+
+  const rows = await prisma.problemActivity.findMany({
+    where: { problem: { slug }, type: { in: [...CHANGELOG_TYPES] } },
+    orderBy: { createdAt: "desc" },
+    take: 200,
+    select: {
+      id: true,
+      userId: true,
+      userName: true,
+      type: true,
+      field: true,
+      oldValue: true,
+      newValue: true,
+      createdAt: true,
+    },
+  });
+
+  return rows.map((a) => ({
+    id: a.id,
+    userName: resolveSnapshot(a.userName, a.userId !== null),
+    type: a.type,
+    field: a.field,
+    oldValue: a.oldValue,
+    newValue: a.newValue,
+    createdAt: formatCommentDate(a.createdAt),
   }));
 }
 
