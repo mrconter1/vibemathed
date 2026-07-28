@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getComments, getProblemBySlug, getPublishedSlugs } from "@/lib/data";
+import { getActivity, getComments, getProblemBySlug, getPublishedSlugs } from "@/lib/data";
 import { ageAtSolve, type ProblemWithVotes } from "@/lib/problems";
 import { DASH, SOLVE_TYPE, VERIFICATION } from "@/lib/display";
+import { toEditableValues } from "@/lib/editable";
 import { SITE_URL } from "@/lib/site";
+import { Changelog } from "@/components/Changelog";
 import { CommentsSection } from "@/components/CommentsSection";
+import { EditEntryDialog } from "@/components/EditEntryDialog";
 import { StatusIcon } from "@/components/StatusIcon";
 import { TeX, deTeX } from "@/components/TeX";
 import { VoteButtons } from "@/components/VoteButtons";
@@ -54,7 +57,9 @@ export default async function ProblemPage({
   if (!p) notFound();
   const age = ageAtSolve(p);
   const v = VERIFICATION[p.verification];
-  const comments = await getComments(slug);
+  const [comments, activity] = await Promise.all([getComments(slug), getActivity(slug)]);
+  // Built from data the page already has, so opening the editor costs no query.
+  const editable = toEditableValues(p);
 
   const jsonLd = [
     {
@@ -195,6 +200,24 @@ export default async function ProblemPage({
             </a>
           </p>
         </section>
+
+        {p.submittedBy && (
+          <p className="mt-6 text-xs text-[var(--ink-muted)]">
+            Submitted by{" "}
+            <span className="font-medium text-[var(--ink-secondary)]">
+              {p.submittedBy}
+            </span>
+          </p>
+        )}
+
+        <div className="mt-8 flex items-center gap-3 border-t border-[var(--hairline)] pt-4">
+          <EditEntryDialog slug={p.slug} initial={editable} />
+          <span className="text-[11px] text-[var(--ink-muted)]">
+            Spotted something wrong? Corrections are welcome and recorded.
+          </span>
+        </div>
+
+        <Changelog activity={activity} />
 
         <CommentsSection slug={p.slug} initial={comments} />
     </main>

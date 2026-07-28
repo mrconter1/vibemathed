@@ -1,0 +1,196 @@
+// Which entry fields signed-in users may edit, and how each is validated.
+//
+// Shared by the edit form and the server action, so the form cannot offer a
+// field the server would reject - and, more importantly, the server never
+// trusts the form: it whitelists against this same list.
+//
+// WHAT IS DELIBERATELY NOT EDITABLE, and why:
+//
+//   slug          URL identity. Changing it breaks every existing link, the
+//                 sitemap and any inbound citation. Renaming an entry changes
+//                 `name`, not the slug.
+//   problemNumber Identity link to erdosproblems.com/<n>.
+//   solveType     "Proved" vs "disproved" is the entry's headline claim.
+//   renownLangs   Documented as a frozen snapshot on purpose, so coverage
+//                 triggered BY a solution can never inflate the score after
+//                 the fact. It is a measurement with a methodology, not a fact
+//                 to be corrected - self-reporting would defeat the design.
+//   status        Publication state - a moderation concern, not a content one.
+//
+// `verification` IS editable, deliberately. It looks like the field most worth
+// protecting, but the trust ladder is factual and time-varying - a preprint
+// gets refereed, an announcement gets expert-checked, a result gets disputed -
+// and those transitions are exactly what a reader notices first. Freezing it
+// makes entries go stale, which costs more credibility than the vandalism it
+// would prevent. Locking the tier while leaving `verificationNote` open was
+// also incoherent: it let the prose say "now peer-reviewed" while the badge
+// still said "preprint". Changing the tier requires updating the note in the
+// same edit (see `update-problem.ts`), and every change is in the changelog.
+
+import type { MathProblem } from "@/lib/problems";
+
+export type EditableKey =
+  | "name"
+  | "shortName"
+  | "field"
+  | "statement"
+  | "posedBy"
+  | "yearPosed"
+  | "solveDate"
+  | "model"
+  | "modelMaker"
+  | "humanCollaborators"
+  | "aiRole"
+  | "verification"
+  | "verificationNote"
+  | "resultNote"
+  | "ageNote"
+  | "citations"
+  | "citationsPaper"
+  | "citationsSource"
+  | "citationsUrl"
+  | "sourceUrl"
+  | "sourceName";
+
+export type FieldKind = "text" | "textarea" | "number" | "list" | "url" | "choice";
+
+export interface FieldSpec {
+  key: EditableKey;
+  label: string;
+  kind: FieldKind;
+  /// Empty is not allowed for these.
+  required?: boolean;
+  help?: string;
+  maxLength?: number;
+  /// For `choice` fields. The server validates against exactly these values.
+  options?: { value: string; label: string }[];
+}
+
+/// The verification trust ladder, strongest first.
+export const VERIFICATION_OPTIONS = [
+  { value: "lean-verified", label: "Lean-verified" },
+  { value: "expert-verified", label: "Expert-verified" },
+  { value: "site-confirmed", label: "Site-confirmed" },
+  { value: "preprint-unrefereed", label: "Preprint (unrefereed)" },
+  { value: "announced-unreviewed", label: "Announced (unreviewed)" },
+  { value: "contested", label: "Contested" },
+];
+
+export const EDITABLE_FIELDS: FieldSpec[] = [
+  { key: "name", label: "Name", kind: "text", required: true, maxLength: 200 },
+  {
+    key: "shortName",
+    label: "Short name",
+    kind: "text",
+    required: true,
+    maxLength: 60,
+    help: "Compact label used on chart axes and narrow layouts.",
+  },
+  { key: "field", label: "Type", kind: "text", maxLength: 80, help: "Math field, e.g. Combinatorics." },
+  {
+    key: "statement",
+    label: "Statement",
+    kind: "textarea",
+    maxLength: 1200,
+    help: "Plain-language statement. Math works: $inline$ or $$display$$.",
+  },
+  { key: "posedBy", label: "Posed by", kind: "text", maxLength: 200 },
+  { key: "yearPosed", label: "Year posed", kind: "number", help: "Four-digit year, or blank if unknown." },
+  {
+    key: "solveDate",
+    label: "Solve date",
+    kind: "text",
+    required: true,
+    help: "YYYY, YYYY-MM or YYYY-MM-DD. For a range, the completion date.",
+  },
+  { key: "model", label: "Model", kind: "text", required: true, maxLength: 120 },
+  { key: "modelMaker", label: "Vendor", kind: "text", maxLength: 120 },
+  {
+    key: "humanCollaborators",
+    label: "Collaborators",
+    kind: "list",
+    help: "Comma-separated names.",
+  },
+  {
+    key: "aiRole",
+    label: "What the AI did",
+    kind: "textarea",
+    maxLength: 1500,
+    help: "Math works here too.",
+  },
+  {
+    key: "verification",
+    label: "Verification",
+    kind: "choice",
+    required: true,
+    options: VERIFICATION_OPTIONS,
+    help: "Changing this requires updating the note below in the same edit, so the reason is on record.",
+  },
+  {
+    key: "verificationNote",
+    label: "Verification note",
+    kind: "textarea",
+    maxLength: 1500,
+    help: "The prose explaining how strongly this result is checked.",
+  },
+  {
+    key: "resultNote",
+    label: "Result qualifier",
+    kind: "text",
+    maxLength: 200,
+    help: "Short caveat for results that aren't cleanly proved/disproved.",
+  },
+  { key: "ageNote", label: "Age footnote", kind: "text", maxLength: 400 },
+  { key: "citations", label: "Citations", kind: "number", help: "Looked-up count, or blank." },
+  { key: "citationsPaper", label: "Cited paper", kind: "text", maxLength: 300 },
+  { key: "citationsSource", label: "Citation source", kind: "text", maxLength: 120 },
+  { key: "citationsUrl", label: "Citation URL", kind: "url" },
+  { key: "sourceUrl", label: "Source URL", kind: "url", required: true },
+  { key: "sourceName", label: "Source name", kind: "text", required: true, maxLength: 200 },
+];
+
+export const EDITABLE_KEYS = EDITABLE_FIELDS.map((f) => f.key);
+
+/// Form values are all strings; the server parses per `kind`.
+export type EditableValues = Record<EditableKey, string>;
+
+export const PROTECTED_FIELDS_NOTE =
+  "Result, notability, the Erdős number and the URL slug are curator-only. Everything else, including the verification tier, is yours to correct.";
+
+/// Seeds the edit form from an entry. Pure, so the entry page can build this
+/// from data it already has instead of querying again.
+///
+/// The `Pick` also makes TypeScript prove every EditableKey really exists on
+/// MathProblem - a typo in the field list fails to compile rather than silently
+/// producing a blank input.
+export function toEditableValues(source: Pick<MathProblem, EditableKey>): EditableValues {
+  const out = {} as EditableValues;
+  for (const spec of EDITABLE_FIELDS) {
+    const value = source[spec.key];
+    out[spec.key] = Array.isArray(value)
+      ? value.join(", ")
+      : value === null || value === undefined
+        ? ""
+        : String(value);
+  }
+  return out;
+}
+
+/// Accepts "2026", "2026-07" or "2026-07-12".
+export function isValidSolveDate(v: string): boolean {
+  if (!/^\d{4}(-\d{2}(-\d{2})?)?$/.test(v)) return false;
+  const [y, m, d] = v.split("-").map(Number);
+  if (y < 1000 || y > 3000) return false;
+  if (m !== undefined && (m < 1 || m > 12)) return false;
+  if (d !== undefined && (d < 1 || d > 31)) return false;
+  return true;
+}
+
+export function isHttpUrl(v: string): boolean {
+  try {
+    const u = new URL(v);
+    return u.protocol === "http:" || u.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
