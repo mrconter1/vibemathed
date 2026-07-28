@@ -17,16 +17,24 @@ export async function getViewerState(): Promise<ViewerState> {
   const session = await auth();
   if (!session?.user?.id) return SIGNED_OUT;
 
-  const votes = await prisma.problemVote.findMany({
-    where: { userId: session.user.id },
-    select: { vote: true, problem: { select: { slug: true } } },
-  });
+  const admin = isAdmin(session.user.email);
+
+  const [votes, pendingReviews] = await Promise.all([
+    prisma.problemVote.findMany({
+      where: { userId: session.user.id },
+      select: { vote: true, problem: { select: { slug: true } } },
+    }),
+    // Only counted for admins - nobody else can act on it, and the size of the
+    // unpublished queue is not public information.
+    admin ? prisma.problem.count({ where: { status: "pending" } }) : Promise.resolve(0),
+  ]);
 
   return {
     signedIn: true,
     userId: session.user.id,
     pseudonym: session.user.pseudonym ?? null,
-    isAdmin: isAdmin(session.user.email),
+    isAdmin: admin,
+    pendingReviews,
     votes: Object.fromEntries(votes.map((v) => [v.problem.slug, v.vote])),
   };
 }

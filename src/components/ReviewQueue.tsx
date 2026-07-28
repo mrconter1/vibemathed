@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { approveSubmission, rejectSubmission } from "@/app/actions/submit-problem";
+import { useViewer } from "@/components/ViewerProvider";
 
 export interface PendingEntry {
   slug: string;
@@ -21,6 +22,7 @@ export interface PendingEntry {
 
 export function ReviewQueue({ pending }: { pending: PendingEntry[] }) {
   const router = useRouter();
+  const { refresh: refreshViewer } = useViewer();
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,7 +37,10 @@ export function ReviewQueue({ pending }: { pending: PendingEntry[] }) {
       setError(result.error);
       return;
     }
+    // `router.refresh()` re-renders the queue, but the header badge lives in
+    // client state, so it needs telling separately.
     router.refresh();
+    refreshViewer();
   }
 
   if (pending.length === 0) {

@@ -24,6 +24,11 @@ interface ViewerContextValue extends ViewerState {
   loaded: boolean;
   setVote: (slug: string, vote: VoteKind | null) => void;
   setPseudonym: (pseudonym: string) => void;
+  /// Re-reads viewer state from the server. Needed after an action changes
+  /// something this state counts - approving a submission, for instance, must
+  /// decrement the pending-review badge, and `router.refresh()` cannot do that
+  /// because this state lives on the client.
+  refresh: () => void;
 }
 
 const ViewerContext = createContext<ViewerContextValue | null>(null);
@@ -31,6 +36,8 @@ const ViewerContext = createContext<ViewerContextValue | null>(null);
 export function ViewerProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<ViewerState>(SIGNED_OUT);
   const [loaded, setLoaded] = useState(false);
+  // Bumping this re-runs the fetch below.
+  const [nonce, setNonce] = useState(0);
 
   useEffect(() => {
     let alive = true;
@@ -47,7 +54,9 @@ export function ViewerProvider({ children }: { children: ReactNode }) {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [nonce]);
+
+  const refresh = useCallback(() => setNonce((n) => n + 1), []);
 
   const setVote = useCallback((slug: string, vote: VoteKind | null) => {
     setState((prev) => {
@@ -66,8 +75,8 @@ export function ViewerProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ ...state, loaded, setVote, setPseudonym }),
-    [state, loaded, setVote, setPseudonym],
+    () => ({ ...state, loaded, setVote, setPseudonym, refresh }),
+    [state, loaded, setVote, setPseudonym, refresh],
   );
 
   return <ViewerContext.Provider value={value}>{children}</ViewerContext.Provider>;

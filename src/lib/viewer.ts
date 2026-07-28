@@ -17,6 +17,9 @@ export interface ViewerState {
   /// Whether this viewer may review submissions. The UI uses it to decide what
   /// to show; every privileged action re-checks server-side regardless.
   isAdmin: boolean;
+  /// Submissions awaiting review. Always 0 for non-admins, so the count is
+  /// never disclosed to anyone who could not act on it.
+  pendingReviews: number;
   /// The viewer's own votes, keyed by problem slug.
   votes: Record<string, VoteKind>;
 }
@@ -26,5 +29,6 @@ export const SIGNED_OUT: ViewerState = {
   userId: null,
   pseudonym: null,
   isAdmin: false,
+  pendingReviews: 0,
   votes: {},
 };
