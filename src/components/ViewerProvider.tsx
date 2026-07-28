@@ -1,0 +1,82 @@
+"use client";
+
+// Holds who the viewer is and how they have voted, fetched once after hydration
+// and shared by the header and every vote control on the page. See
+// `src/app/actions/viewer.ts` for why this is client-side rather than read
+// during render.
+
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+import type { VoteKind } from "@prisma/client";
+import { getViewerState } from "@/app/actions/viewer";
+import { SIGNED_OUT, type ViewerState } from "@/lib/viewer";
+
+interface ViewerContextValue extends ViewerState {
+  /// False until the first fetch resolves, so controls can avoid flashing a
+  /// "signed out" state at someone who is signed in.
+  loaded: boolean;
+  setVote: (slug: string, vote: VoteKind | null) => void;
+  setPseudonym: (pseudonym: string) => void;
+}
+
+const ViewerContext = createContext<ViewerContextValue | null>(null);
+
+export function ViewerProvider({ children }: { children: ReactNode }) {
+  const [state, setState] = useState<ViewerState>(SIGNED_OUT);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    getViewerState()
+      .then((next) => {
+        if (alive) setState(next);
+      })
+      .catch((error) => {
+        console.error("Could not load viewer state", error);
+      })
+      .finally(() => {
+        if (alive) setLoaded(true);
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const setVote = useCallback((slug: string, vote: VoteKind | null) => {
+    setState((prev) => {
+      const votes = { ...prev.votes };
+      if (vote === null) {
+        delete votes[slug];
+      } else {
+        votes[slug] = vote;
+      }
+      return { ...prev, votes };
+    });
+  }, []);
+
+  const setPseudonym = useCallback((pseudonym: string) => {
+    setState((prev) => ({ ...prev, pseudonym }));
+  }, []);
+
+  const value = useMemo(
+    () => ({ ...state, loaded, setVote, setPseudonym }),
+    [state, loaded, setVote, setPseudonym],
+  );
+
+  return <ViewerContext.Provider value={value}>{children}</ViewerContext.Provider>;
+}
+
+export function useViewer(): ViewerContextValue {
+  const ctx = useContext(ViewerContext);
+  if (!ctx) {
+    throw new Error("useViewer must be used inside a ViewerProvider");
+  }
+  return ctx;
+}

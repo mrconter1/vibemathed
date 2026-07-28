@@ -1,0 +1,29 @@
+"use server";
+
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
+import { SIGNED_OUT, type ViewerState } from "@/lib/viewer";
+
+/// Everything about the current viewer that the UI needs, in one round trip.
+///
+/// This is fetched from the client after hydration rather than read in the page,
+/// on purpose: `auth()` reads cookies, and reading cookies during render would
+/// make every page dynamic and throw away the prerendered static shell the
+/// site's SEO relies on. The cost is a brief moment where the header does not
+/// yet know who you are, which is a good trade for keeping 75 entry pages
+/// prerendered.
+export async function getViewerState(): Promise<ViewerState> {
+  const session = await auth();
+  if (!session?.user?.id) return SIGNED_OUT;
+
+  const votes = await prisma.problemVote.findMany({
+    where: { userId: session.user.id },
+    select: { vote: true, problem: { select: { slug: true } } },
+  });
+
+  return {
+    signedIn: true,
+    pseudonym: session.user.pseudonym ?? null,
+    votes: Object.fromEntries(votes.map((v) => [v.problem.slug, v.vote])),
+  };
+}
