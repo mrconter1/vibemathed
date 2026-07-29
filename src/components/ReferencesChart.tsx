@@ -185,6 +185,12 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
             const color = SOLVE_TYPE_COLOR[problem.solveType] ?? "var(--ink)";
             const isActive = activeSlug === problem.slug;
             const isOutlier = problem.renownLangs > 0;
+            // Labels near either edge anchor inward so they stay inside the
+            // viewBox - the svg has overflow visible, and a centred label on
+            // an edge point would poke out of the card (and on phones, widen
+            // the page).
+            const labelAnchor =
+              cx > VIEW_W - 100 ? "end" : cx < MARGIN.left + 100 ? "start" : "middle";
             return (
               <g
                 key={problem.slug}
@@ -216,7 +222,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
                   <text
                     x={cx}
                     y={cy - 12}
-                    textAnchor="middle"
+                    textAnchor={labelAnchor}
                     style={{ fontSize: 14, fill: "var(--ink-secondary)" }}
                   >
                     {problem.shortName}

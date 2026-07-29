@@ -130,10 +130,13 @@ function Chevron({ dir }: { dir: "left" | "right" }) {
   );
 }
 
-/// One dot-separated fact in the card's fact line.
+/// One dot-separated fact in the card's fact line. Deliberately NOT
+/// whitespace-nowrap: values like a six-model credit line are wider than a
+/// phone-sized card, so a fact must be able to wrap internally rather than
+/// overflow the card.
 function Fact({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <span className="whitespace-nowrap">
+    <span>
       <span className="text-[var(--ink-muted)]">{label} </span>
       <span className="text-[var(--ink-secondary)]">{children}</span>
     </span>

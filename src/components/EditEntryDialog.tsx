@@ -106,7 +106,7 @@ export function EditEntryDialog({
             role="dialog"
             aria-modal="true"
             aria-label="Edit entry"
-            className="relative flex max-h-[88vh] w-full flex-col rounded-t-lg border border-[var(--hairline)] bg-[var(--paper)] sm:max-w-2xl sm:rounded-lg"
+            className="relative flex max-h-[88dvh] w-full flex-col rounded-t-lg border border-[var(--hairline)] bg-[var(--paper)] sm:max-w-2xl sm:rounded-lg"
           >
             <header className="border-b border-[var(--hairline)] px-5 py-3.5">
               <h2 className="font-serif text-lg text-[var(--ink)]">Edit entry</h2>

@@ -89,7 +89,8 @@ export function RecentActivity({ activity }: { activity: SiteActivityView[] }) {
           >
             {/* Description wraps inside flex-1; the date stays pinned right on
                 the first line, so the dates read as a scannable column. */}
-            <span className="min-w-0 flex-1">
+            {/* break-words: a quoted new value can be an unbreakable URL */}
+            <span className="min-w-0 flex-1 break-words">
               <span className="font-medium text-[var(--ink-secondary)]">
                 {a.userName}
               </span>{" "}

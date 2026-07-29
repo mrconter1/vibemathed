@@ -24,7 +24,14 @@ export function NavLinks() {
   const path = usePathname();
 
   return (
-    <nav className="flex items-center gap-1" aria-label="Site">
+    // Layout classes cooperate with SiteHeader's wrapping bar: on mobile the
+    // nav takes a full-width second row (the negative margin re-aligns the
+    // first link's text with the logo despite the links' own padding); from
+    // `sm` it sits inline between the logo and the account button.
+    <nav
+      className="order-3 -ml-2.5 flex w-full items-center gap-1 sm:order-2 sm:ml-0 sm:w-auto"
+      aria-label="Site"
+    >
       {LINKS.map(({ href, label }) => {
         const active = isActive(href, path);
         return (

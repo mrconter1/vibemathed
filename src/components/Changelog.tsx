@@ -72,7 +72,8 @@ export function Changelog({ activity }: { activity: ActivityView[] }) {
             className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 border-t border-[var(--hairline)] py-2 text-xs leading-relaxed first:border-t-0 first:pt-0"
           >
             <span className="font-medium text-[var(--ink)]">{a.userName}</span>
-            <span className="min-w-0 flex-1 text-[var(--ink-secondary)]">{describe(a)}</span>
+            {/* break-words: quoted old/new values can be unbreakable URLs */}
+            <span className="min-w-0 flex-1 break-words text-[var(--ink-secondary)]">{describe(a)}</span>
             <span className="shrink-0 font-mono text-[11px] text-[var(--ink-muted)]">
               {a.createdAt}
             </span>

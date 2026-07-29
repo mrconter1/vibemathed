@@ -35,7 +35,9 @@ export function SolveRatioChart({ problems }: { problems: MathProblem[] }) {
       <h2 className="font-serif text-lg text-[var(--ink)]">Proved vs. disproved</h2>
       <p className="mt-1 text-xs text-[var(--ink-muted)]">Across all {total} tracked resolutions.</p>
 
-      <div className="mt-4 flex flex-1 items-center justify-center gap-6">
+      {/* flex-wrap: on very narrow screens the legend drops below the pie
+          instead of squeezing out of the card. */}
+      <div className="mt-4 flex flex-1 flex-wrap items-center justify-center gap-x-6 gap-y-3">
         <svg
           viewBox="0 0 180 180"
           className="h-36 w-36 shrink-0"

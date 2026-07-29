@@ -194,7 +194,7 @@ export default async function ProblemPage({
               href={p.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[var(--accent-blue)] hover:underline"
+              className="break-words text-[var(--accent-blue)] hover:underline"
             >
               {p.sourceName}
             </a>

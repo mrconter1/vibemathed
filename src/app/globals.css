@@ -67,16 +67,30 @@ select:not(:disabled) {
 }
 
 /*
+ * Display math ($$...$$) is a rigid block that cannot reflow. On narrow
+ * screens a long formula must scroll inside its own box instead of widening
+ * the page. Site-wide: statements, notes and comments all render KaTeX.
+ */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/*
  * Rendered comment bodies. The markup is generated server-side by
  * `renderCommentHtml` - paragraphs, <br>, links and KaTeX spans only - so this
- * is the whole surface that needs styling.
+ * is the whole surface that needs styling. Comments can contain long bare URLs
+ * (linkified server-side), so allow breaking anywhere rather than overflowing
+ * on phones.
  */
+.comment-body {
+  overflow-wrap: anywhere;
+}
+
 .comment-body p + p {
   margin-top: 0.75em;
 }
 
 .comment-body .katex-display {
   margin: 0.6em 0;
-  overflow-x: auto;
-  overflow-y: hidden;
 }
