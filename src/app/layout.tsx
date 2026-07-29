@@ -8,9 +8,12 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ViewerProvider } from "@/components/ViewerProvider";
 
-const TITLE = "VibeMathed - tracking math problems solved by AI models";
+// What Google shows. Title: brand + the plain-language topic, under 60 chars
+// so it never gets truncated or rewritten. Description: under 160 chars so
+// the whole sentence survives in the snippet.
+const TITLE = "VibeMathed - Math Problems Solved by AI";
 const DESCRIPTION =
-  "A website tracking mathematical problems solved by AI models - from famous conjectures to the Erdős problems at erdosproblems.com - each with a checkable source, a verification label, and a notability score.";
+  "A hand-curated record of math problems proved or disproved by AI - famous conjectures and the Erdős problems - with checkable sources and verification labels.";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -54,7 +57,9 @@ export const metadata: Metadata = {
   creator: "VibeMathed",
   publisher: "VibeMathed",
   category: "science",
-  alternates: { canonical: "/" },
+  // No layout-level canonical: metadata here is inherited by EVERY page, so a
+  // canonical of "/" would claim all pages without their own are copies of the
+  // home page. Each indexable page sets its own (home in app/page.tsx).
   openGraph: {
     type: "website",
     siteName: "VibeMathed",

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getPublishedProblems, getRecentActivity } from "@/lib/data";
 import type { ProblemCardData } from "@/lib/problems";
@@ -7,6 +8,10 @@ import { ProblemCards } from "@/components/ProblemCards";
 import { RecentActivity } from "@/components/RecentActivity";
 import { StatBand } from "@/components/StatBand";
 import { texToHtml } from "@/components/TeX";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default async function Home() {
   const [problems, activity] = await Promise.all([
@@ -21,30 +26,42 @@ export default async function Home() {
     statementHtml: p.statement ? texToHtml(p.statement) : null,
   }));
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Dataset",
-    name: "VibeMathed",
-    description:
-      "A website tracking math problems solved by AI models - famous conjectures and the Erdős problems from erdosproblems.com - each with a checkable source, a verification label, and a notability score.",
-    url: SITE_URL,
-    keywords: [
-      "Erdős problems",
-      "AI mathematics",
-      "automated theorem proving",
-      "open problems in mathematics",
-    ],
-    creator: {
-      "@type": "Person",
-      name: "Rasmus Lindahl",
-      sameAs: [
-        "https://github.com/mrconter1",
-        "https://www.linkedin.com/in/rasmus-lindahl-6501371ba/",
-      ],
+  // Two schema.org objects on the home page. WebSite is what Google reads the
+  // site NAME from (the bold name above the URL in a result); Dataset
+  // describes what the site is.
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "VibeMathed",
+      alternateName: "vibemathed.com",
+      url: SITE_URL,
     },
-    isAccessibleForFree: true,
-    variableMeasured: `${problems.length} resolved problems`,
-  };
+    {
+      "@context": "https://schema.org",
+      "@type": "Dataset",
+      name: "VibeMathed",
+      description:
+        "A hand-curated record of math problems proved or disproved by AI - famous conjectures and the Erdős problems - with checkable sources and verification labels.",
+      url: SITE_URL,
+      keywords: [
+        "Erdős problems",
+        "AI mathematics",
+        "automated theorem proving",
+        "open problems in mathematics",
+      ],
+      creator: {
+        "@type": "Person",
+        name: "Rasmus Lindahl",
+        sameAs: [
+          "https://github.com/mrconter1",
+          "https://www.linkedin.com/in/rasmus-lindahl-6501371ba/",
+        ],
+      },
+      isAccessibleForFree: true,
+      variableMeasured: `${problems.length} resolved problems`,
+    },
+  ];
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 pb-4 pt-8 sm:px-8 sm:pt-10">
