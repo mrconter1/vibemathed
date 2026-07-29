@@ -184,6 +184,10 @@ model User {
   /// assignment runs.
   pseudonym String? @unique
 
+  /// When the account was created. Added 2026-07-29; accounts that existed
+  /// before then carry that date, not their real sign-up date.
+  createdAt DateTime @default(now())
+
   accounts          Account[]
   sessions          Session[]
   votes             ProblemVote[]
