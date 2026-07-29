@@ -59,6 +59,7 @@ export default async function Home() {
         ],
       },
       isAccessibleForFree: true,
+      license: "https://creativecommons.org/licenses/by/4.0/",
       variableMeasured: `${problems.length} resolved problems`,
     },
   ];
