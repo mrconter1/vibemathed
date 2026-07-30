@@ -15,7 +15,11 @@ export function SiteFooter() {
           solutions only, each verified against its erdosproblems.com page), and
           reader submissions, reviewed before publishing and credited by name.
           Posed year is the earliest cited reference, so ages are close estimates.
-          The dataset is free to reuse under{" "}
+          The{" "}
+          <a href="/api/dataset" className="text-[var(--accent-blue)] hover:underline">
+            dataset
+          </a>{" "}
+          is free to reuse under{" "}
           <a
             href="https://creativecommons.org/licenses/by/4.0/"
             target="_blank"

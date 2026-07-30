@@ -119,7 +119,9 @@ export interface MathProblem {
    * dedicated to THIS problem. Strict attribution - a generic concept article
    * (e.g. "Factorial" for a factorial-divisibility problem) does not count, so
    * 0 means "no dedicated article", not "unknown". Source: Wikipedia langlinks,
-   * snapshot 2026-07-22. Frozen at this snapshot on purpose - we do NOT track it
+   * snapshot 2026-07-22 for the original set and 2026-07-30 for the imported
+   * catalog (every import verified 0 under the strict rule - the near-misses
+   * were all concept articles). Frozen at this snapshot on purpose - we do NOT track it
    * live, so a burst of coverage triggered by the solution itself can never
    * inflate the score after the fact (the same reasoning behind the strict rule).
    */

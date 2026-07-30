@@ -99,6 +99,20 @@ export default function MethodologyPage() {
           submitter by pseudonym. Every entry must cite a real, checkable
           primary source.
         </p>
+        <p>
+          Coverage is cross-checked against public trackers - notably an{" "}
+          <a
+            href="https://example.com/redacted"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--accent-blue)] hover:underline"
+          >
+            external tracker (reference redacted)
+          </a>{" "}
+          catalog, whose editorial audits informed several of our status
+          labels. Entries here are independently written and sourced to
+          primary documents.
+        </p>
       </Section>
 
       <Section title="Result and status">
@@ -183,8 +197,15 @@ export default function MethodologyPage() {
           >
             CC BY 4.0
           </a>
-          . Spotted an error? Every entry has an edit button and a discussion
-          thread, or you can{" "}
+          , and the complete, always-current dataset is one request away:{" "}
+          <a
+            href="/api/dataset"
+            className="text-[var(--accent-blue)] hover:underline"
+          >
+            vibemathed.com/api/dataset
+          </a>{" "}
+          (JSON, every published entry with all fields). Spotted an error?
+          Every entry has an edit button and a discussion thread, or you can{" "}
           <Link href="/submit" className="text-[var(--accent-blue)] hover:underline">
             submit
           </Link>{" "}
