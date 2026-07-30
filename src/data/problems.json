@@ -459,7 +459,13 @@
     "renownLangs": 0,
     "sourceUrl": "https://x.com/DmitryRybin1/status/2079904005652893709",
     "sourceName": "Dmitry Rybin (X)",
-    "renownNote": "A Wikipedia article now exists, but it was created **in response** to the problem being solved, so it does not count as a valid dedicated article."
+    "renownNote": "A Wikipedia article now exists, but it was created **in response** to the problem being solved, so it does not count as a valid dedicated article.",
+    "links": [
+      {
+        "label": "Independent restricted counterexample: planar, four terminals (Protti)",
+        "url": "https://vibemathed.com/problem/planar-four-terminal-dgg"
+      }
+    ]
   },
   {
     "slug": "directed-3-torus-hamilton",
@@ -4916,6 +4922,55 @@
     "renownLangs": 0,
     "sourceUrl": "https://github.com/demonstrandum-research/artifacts",
     "sourceName": "Demonstrandum artifacts repository (RESULTS.md)"
+  },
+  {
+    "slug": "planar-four-terminal-dgg",
+    "name": "Four-Terminal Planar Case of the Dinitz-Garg-Goemans Cost Conjecture",
+    "shortName": "Four-terminal planar DGG",
+    "problemNumber": null,
+    "field": "Combinatorial optimization",
+    "fieldGroup": "Algorithms & optimization",
+    "resolution": "variant",
+    "statement": "Does the Dinitz-Garg-Goemans cost-preserving unsplittable-flow rounding conjecture survive on acyclic planar instances with only four terminals? An explicit instance answers no: every cost-nonincreasing unsplittable routing has upper overload at least $335$ while the maximum demand is $294$.",
+    "posedBy": "Yefim Dinitz, Naveen Garg & Michel Goemans",
+    "yearPosed": 1999,
+    "solveType": "disproved",
+    "solveDate": "2026-07-23",
+    "model": "GPT-5.6 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Matthew Protti"
+    ],
+    "aiRole": "GPT-5.6 Pro carried out much of the construction search, symbolic derivation, proof development, exact-verifier development, adversarial critique and manuscript preparation. The human author selected and framed the problem, directed the investigation, caught a cost-normalization error, required exact and adversarial checks, set the claim scope and approved the release. A later Codex session independently re-encoded the key graph, finite and symbolic checks and ran deterministic stress and release checks.",
+    "verification": "preprint-unrefereed",
+    "verificationNote": "The immutable v0.1.0 public disclosure ships a manuscript, exact data, an exhaustive verifier over all 16 routings and all 13 arcs, mutation tests, deterministic hashes and a separate AI-assisted computational cross-check. The attained certificate is $335/294$; the package also proves the limiting lower bound $(299 - 41sqrt{41})/32$, with sharpness only in the stated fixed-topology, equal-full-cost, two-cheap-choice model. Released 2026-07-23, one day after the first public disproof of the general conjecture, and developed independently of it.",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://github.com/matthewprotti/planar-ssuf-four-terminal-bound/releases/tag/v0.1.0",
+    "sourceName": "Public research disclosure v0.1.0 (GitHub release)",
+    "resultNote": "restricted planar four-terminal case",
+    "ageNote": "The posed year is that of the parent DGG conjecture; the restricted planar four-terminal case was not separately dated.",
+    "links": [
+      {
+        "label": "Manuscript (PDF)",
+        "url": "https://github.com/matthewprotti/planar-ssuf-four-terminal-bound/releases/download/v0.1.0/ssuf_four_terminal_note_v5.pdf"
+      },
+      {
+        "label": "Exact verification suite (verify_all.py)",
+        "url": "https://github.com/matthewprotti/planar-ssuf-four-terminal-bound/blob/v0.1.0/scripts/verify_all.py"
+      },
+      {
+        "label": "AI-use and provenance note",
+        "url": "https://github.com/matthewprotti/planar-ssuf-four-terminal-bound/blob/v0.1.0/AI_USE_AND_PROVENANCE.md"
+      },
+      {
+        "label": "The general conjecture, disproved a day earlier",
+        "url": "https://vibemathed.com/problem/dinitz-garg-goemans-unsplittable-flow"
+      }
+    ]
   },
   {
     "slug": "pure-o-sequences-log-concavity",
