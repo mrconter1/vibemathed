@@ -3814,7 +3814,13 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2606.29687",
-    "sourceName": "arXiv:2606.29687 - A machine-verified proof of a quantum-optimization conjecture"
+    "sourceName": "arXiv:2606.29687 - A machine-verified proof of a quantum-optimization conjecture",
+    "links": [
+      {
+        "label": "Independent simultaneous proof via quantum signal processing (arXiv:2606.29562)",
+        "url": "https://arxiv.org/abs/2606.29562"
+      }
+    ]
   },
   {
     "slug": "fisher-information-log-convexity",
@@ -5364,7 +5370,13 @@
     "renownLangs": 0,
     "sourceUrl": "https://roed314.github.io/gq2/",
     "sourceName": "A presentation of the absolute Galois group of Q2 (project site)",
-    "ageNote": "Posed year approximate: the explicit local theory away from p = 2 was complete by the early 1980s, leaving the dyadic case."
+    "ageNote": "Posed year approximate: the explicit local theory away from p = 2 was complete by the early 1980s, leaving the dyadic case.",
+    "links": [
+      {
+        "label": "Finite-quotient verifier (5,402 test groups)",
+        "url": "https://roed314.github.io/gq2/verifier/"
+      }
+    ]
   },
   {
     "slug": "txgraffiti-davila-conjecture-9",
@@ -5450,7 +5462,13 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.21551",
-    "sourceName": "arXiv:2607.21551 - Unconditional unclonable encryption"
+    "sourceName": "arXiv:2607.21551 - Unconditional unclonable encryption",
+    "links": [
+      {
+        "label": "Simultaneous construction with the optimal exponent: Ragavan (ePrint 2026/1509)",
+        "url": "https://eprint.iacr.org/2026/1509"
+      }
+    ]
   },
   {
     "slug": "vlasov-maxwell-landau-equilibria",
@@ -5505,7 +5523,17 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.21367",
     "sourceName": "arXiv:2607.21367 - A solution to 2-copy distillability of Werner states",
-    "resultNote": "two-copy distillable iff already one-copy distillable"
+    "resultNote": "two-copy distillable iff already one-copy distillable",
+    "links": [
+      {
+        "label": "Independent proof: Bharti, Gajjala & Haug (arXiv:2607.24479)",
+        "url": "https://arxiv.org/abs/2607.24479"
+      },
+      {
+        "label": "Independent proof via a partial-trace inequality (arXiv:2607.24309)",
+        "url": "https://arxiv.org/abs/2607.24309"
+      }
+    ]
   },
   {
     "slug": "wow-conjecture-103",

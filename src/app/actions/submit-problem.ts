@@ -5,7 +5,8 @@ import { updateTag } from "next/cache";
 import { auth } from "@/auth";
 import { isAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
-import { isHttpUrl, isValidSolveDate } from "@/lib/editable";
+import { isHttpUrl, isValidSolveDate, parseLinks } from "@/lib/editable";
+import type { LinkRef } from "@/lib/problems";
 import {
   SUBMISSION_FIELDS,
   SUBMISSION_WINDOW_MS,
@@ -47,13 +48,14 @@ export async function submitProblem(values: SubmissionValues): Promise<SubmitRes
   }
 
   // Validate and coerce every field against its spec.
-  const data: Record<string, string | number | string[] | null> = {};
+  const data: Record<string, string | number | string[] | LinkRef[] | null> = {};
   for (const spec of SUBMISSION_FIELDS) {
     const raw = (values[spec.key] ?? "").trim();
 
     if (raw === "") {
       if (spec.required) return { ok: false, error: `${spec.label} is required.` };
-      data[spec.key] = spec.kind === "list" ? [] : null;
+      // The links column is JSON and always holds an array, never JSON null.
+      data[spec.key] = spec.kind === "list" || spec.kind === "links" ? [] : null;
       continue;
     }
     if (spec.maxLength && raw.length > spec.maxLength) {
@@ -89,6 +91,12 @@ export async function submitProblem(values: SubmissionValues): Promise<SubmitRes
       case "list":
         data[spec.key] = raw.split(",").map((s) => s.trim()).filter(Boolean);
         break;
+      case "links": {
+        const parsed = parseLinks(raw);
+        if (!parsed.ok) return { ok: false, error: parsed.error };
+        data[spec.key] = parsed.value;
+        break;
+      }
       default:
         if (spec.key === "solveDate" && !isValidSolveDate(raw)) {
           return { ok: false, error: "Solve date must be YYYY, YYYY-MM or YYYY-MM-DD." };

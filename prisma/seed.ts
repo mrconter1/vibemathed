@@ -45,6 +45,8 @@ function contentOf(p: MathProblem) {
     ageNote: p.ageNote ?? null,
     sourceUrl: p.sourceUrl,
     sourceName: p.sourceName,
+    // Prisma's InputJsonValue wants a structural cast for typed arrays.
+    links: (p.links ?? []) as unknown as Prisma.InputJsonValue,
   } satisfies Prisma.ProblemUpdateInput;
 }
 

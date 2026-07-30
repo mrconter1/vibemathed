@@ -203,7 +203,9 @@ export default async function ProblemPage({
         )}
 
         <section className="mt-6">
-          <h2 className="font-serif text-lg text-[var(--ink)]">Source</h2>
+          <h2 className="font-serif text-lg text-[var(--ink)]">
+            {(p.links ?? []).length > 0 ? "Sources" : "Source"}
+          </h2>
           <p className="mt-2 text-sm">
             <a
               href={p.sourceUrl}
@@ -214,6 +216,22 @@ export default async function ProblemPage({
               {p.sourceName}
             </a>
           </p>
+          {(p.links ?? []).length > 0 && (
+            <ul className="mt-1.5 space-y-1 text-sm">
+              {(p.links ?? []).map((l) => (
+                <li key={l.url}>
+                  <a
+                    href={l.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="break-words text-[var(--accent-blue)] hover:underline"
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
 
         {/* Contributor credit. Deliberately readable rather than a muted

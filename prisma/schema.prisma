@@ -104,6 +104,10 @@ model Problem {
 
   sourceUrl  String
   sourceName String
+  /// Additional links beyond the primary source - Lean repositories,
+  /// independent proofs of the same theorem, community records. Shape:
+  /// [{ label: string, url: string }]. Always an array, never JSON null.
+  links      Json   @default("[]")
 
   status        ProblemStatus @default(published)
   submittedById String?

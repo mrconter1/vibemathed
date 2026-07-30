@@ -7,7 +7,7 @@
 export interface RenderableField {
   key: string;
   label: string;
-  kind: "text" | "textarea" | "number" | "list" | "url" | "choice";
+  kind: "text" | "textarea" | "number" | "list" | "url" | "choice" | "links";
   required?: boolean;
   help?: string;
   options?: { value: string; label: string }[];
@@ -33,7 +33,8 @@ export function EntryFields({
     <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
       {fields.map((spec) => {
         const id = `${idPrefix}-${spec.key}`;
-        const wide = spec.kind === "textarea";
+        // Links use the textarea control too: one "Label | URL" per line.
+        const wide = spec.kind === "textarea" || spec.kind === "links";
         const value = values[spec.key] ?? "";
 
         return (
@@ -46,7 +47,7 @@ export function EntryFields({
               {spec.required && <span className="ml-1 text-[var(--accent-orange)]">*</span>}
             </label>
 
-            {spec.kind === "textarea" ? (
+            {spec.kind === "textarea" || spec.kind === "links" ? (
               <textarea
                 id={id}
                 value={value}

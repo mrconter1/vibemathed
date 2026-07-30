@@ -59,6 +59,7 @@ async function main() {
     if (p.resultNote !== null) entry.resultNote = p.resultNote;
     if (p.ageNote !== null) entry.ageNote = p.ageNote;
     if (p.claimIssueNote !== null) entry.claimIssueNote = p.claimIssueNote;
+    if (Array.isArray(p.links) && p.links.length > 0) entry.links = p.links;
     return entry;
   });
 

@@ -27,7 +27,7 @@
 // still said "preprint". Changing the tier requires updating the note in the
 // same edit (see `update-problem.ts`), and every change is in the changelog.
 
-import { FIELD_GROUPS, type MathProblem } from "@/lib/problems";
+import { FIELD_GROUPS, type LinkRef, type MathProblem } from "@/lib/problems";
 
 export type EditableKey =
   | "name"
@@ -53,9 +53,18 @@ export type EditableKey =
   | "citationsSource"
   | "citationsUrl"
   | "sourceUrl"
-  | "sourceName";
+  | "sourceName"
+  | "links";
 
-export type FieldKind = "text" | "textarea" | "number" | "list" | "url" | "choice";
+export type FieldKind =
+  | "text"
+  | "textarea"
+  | "number"
+  | "list"
+  | "url"
+  | "choice"
+  /// One link per line, "Label | https://url". Parsed by `parseLinks`.
+  | "links";
 
 export interface FieldSpec {
   key: EditableKey;
@@ -194,6 +203,13 @@ export const EDITABLE_FIELDS: FieldSpec[] = [
   { key: "citationsUrl", label: "Citation URL", kind: "url" },
   { key: "sourceUrl", label: "Source URL", kind: "url", required: true },
   { key: "sourceName", label: "Source name", kind: "text", required: true, maxLength: 200 },
+  {
+    key: "links",
+    label: "More links",
+    kind: "links",
+    maxLength: 2000,
+    help: "One per line: Label | https://url. For Lean repositories, independent proofs, community records.",
+  },
 ];
 
 export const EDITABLE_KEYS = EDITABLE_FIELDS.map((f) => f.key);
@@ -213,6 +229,11 @@ export const PROTECTED_FIELDS_NOTE =
 export function toEditableValues(source: Pick<MathProblem, EditableKey>): EditableValues {
   const out = {} as EditableValues;
   for (const spec of EDITABLE_FIELDS) {
+    if (spec.kind === "links") {
+      // Encode as the same one-per-line form `parseLinks` reads back.
+      out[spec.key] = (source.links ?? []).map((l) => `${l.label} | ${l.url}`).join("\n");
+      continue;
+    }
     const value = source[spec.key];
     out[spec.key] = Array.isArray(value)
       ? value.join(", ")
@@ -221,6 +242,34 @@ export function toEditableValues(source: Pick<MathProblem, EditableKey>): Editab
         : String(value);
   }
   return out;
+}
+
+/// Parses the "Label | https://url" one-per-line form into LinkRef[].
+export function parseLinks(
+  raw: string,
+): { ok: true; value: LinkRef[] } | { ok: false; error: string } {
+  const lines = raw
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+  if (lines.length > 8) return { ok: false, error: "At most 8 extra links." };
+  const value: LinkRef[] = [];
+  for (const line of lines) {
+    const sep = line.indexOf("|");
+    if (sep === -1) {
+      return { ok: false, error: `Each link line needs "Label | URL" (missing | in "${line.slice(0, 40)}").` };
+    }
+    const label = line.slice(0, sep).trim();
+    const url = line.slice(sep + 1).trim();
+    if (!label || label.length > 120) {
+      return { ok: false, error: "Every link needs a label of at most 120 characters." };
+    }
+    if (!isHttpUrl(url)) {
+      return { ok: false, error: `Link URL must start with http:// or https:// ("${url.slice(0, 40)}").` };
+    }
+    value.push({ label, url });
+  }
+  return { ok: true, value };
 }
 
 /// Accepts "2026", "2026-07" or "2026-07-12".

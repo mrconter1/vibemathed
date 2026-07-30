@@ -38,6 +38,7 @@ export async function GET() {
     renownNote: p.renownNote ?? null,
     sourceUrl: p.sourceUrl,
     sourceName: p.sourceName,
+    links: p.links ?? [],
     submittedBy: p.submittedBy,
     upvotes: p.upvotes,
     downvotes: p.downvotes,

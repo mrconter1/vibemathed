@@ -7,23 +7,26 @@ import {
   EDITABLE_FIELDS,
   isHttpUrl,
   isValidSolveDate,
+  parseLinks,
   type EditableValues,
   type FieldSpec,
 } from "@/lib/editable";
+import type { LinkRef } from "@/lib/problems";
 
 export type UpdateResult =
   | { ok: true; changed: number }
   | { ok: false; error: string };
 
 /// The database value a form string maps to.
-type Parsed = string | number | string[] | null;
+type Parsed = string | number | string[] | LinkRef[] | null;
 
 function parseField(spec: FieldSpec, raw: string): { ok: true; value: Parsed } | { ok: false; error: string } {
   const v = raw.trim();
 
   if (v === "") {
     if (spec.required) return { ok: false, error: `${spec.label} cannot be empty.` };
-    return { ok: true, value: spec.kind === "list" ? [] : null };
+    // The links column is JSON and always holds an array, never JSON null.
+    return { ok: true, value: spec.kind === "list" || spec.kind === "links" ? [] : null };
   }
 
   if (spec.maxLength && v.length > spec.maxLength) {
@@ -54,6 +57,8 @@ function parseField(spec: FieldSpec, raw: string): { ok: true; value: Parsed } |
         ok: true,
         value: v.split(",").map((s) => s.trim()).filter(Boolean),
       };
+    case "links":
+      return parseLinks(v);
     case "text":
     case "textarea":
       if (spec.key === "solveDate" && !isValidSolveDate(v)) {
@@ -66,7 +71,16 @@ function parseField(spec: FieldSpec, raw: string): { ok: true; value: Parsed } |
 /// Renders a stored value as the string shown in the changelog diff.
 function display(value: unknown): string | null {
   if (value === null || value === undefined) return null;
-  if (Array.isArray(value)) return value.length ? value.join(", ") : null;
+  if (Array.isArray(value)) {
+    if (value.length === 0) return null;
+    return value
+      .map((v) =>
+        typeof v === "object" && v !== null && "url" in v
+          ? `${(v as LinkRef).label} | ${(v as LinkRef).url}`
+          : String(v),
+      )
+      .join(", ");
+  }
   const s = String(value);
   return s === "" ? null : s;
 }
@@ -115,6 +129,7 @@ export async function updateProblem(
       citationsUrl: true,
       sourceUrl: true,
       sourceName: true,
+      links: true,
     },
   });
   if (!current) {

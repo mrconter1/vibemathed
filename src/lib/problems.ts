@@ -62,6 +62,13 @@ export const FIELD_GROUPS = [
 
 export type FieldGroup = (typeof FIELD_GROUPS)[number];
 
+/// An additional link beyond the primary source: a Lean repository, an
+/// independent proof of the same theorem, a community record.
+export interface LinkRef {
+  label: string;
+  url: string;
+}
+
 // An ordinal "trust ladder", strongest to weakest.
 export type VerificationStatus =
   | "lean-verified" // formal proof machine-checked in Lean (strongest)
@@ -146,6 +153,11 @@ export interface MathProblem {
   ageNote?: string | null;
   sourceUrl: string;
   sourceName: string;
+  /**
+   * Additional links beyond the primary source. Optional in the JSON
+   * baseline; the database always stores an array (empty by default).
+   */
+  links?: LinkRef[];
 }
 
 /// The windows offered for time-sensitive sorting.
@@ -253,6 +265,20 @@ export function assertProblem(value: unknown, index: number): MathProblem {
   // The curated baseline always classifies; only community rows may lack it.
   if (!FIELD_GROUPS.includes(p.fieldGroup as FieldGroup)) {
     throw new Error(`${where}: "fieldGroup" must be one of ${FIELD_GROUPS.join(", ")}`);
+  }
+  if (p.links !== undefined) {
+    const ok =
+      Array.isArray(p.links) &&
+      p.links.every(
+        (l) =>
+          typeof l === "object" &&
+          l !== null &&
+          typeof (l as LinkRef).label === "string" &&
+          typeof (l as LinkRef).url === "string",
+      );
+    if (!ok) {
+      throw new Error(`${where}: "links" must be an array of { label, url } when present`);
+    }
   }
   if (!VERIFICATION_STATUSES.includes(p.verification as VerificationStatus)) {
     throw new Error(
