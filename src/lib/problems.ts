@@ -23,6 +23,45 @@
 
 export type SolveType = "proved" | "disproved";
 
+/// What happened to the PROBLEM - orthogonal to `verification`, which says how
+/// trustworthy the claim is. "resolved" is the default and the only status the
+/// original dataset used; the others exist so partial results, candidate
+/// solutions awaiting community review, variant-only readings and retracted
+/// claims can be recorded honestly instead of being forced into "resolved".
+export type ResolutionStatus =
+  | "resolved" // the stated problem is fully proved or disproved
+  | "partial" // a real advance (new bound, special case), problem still open
+  | "variant" // only a variant or literal-wording reading was resolved
+  | "candidate" // full solution claimed, authoritative review still pending
+  | "retracted"; // claim withdrawn or refuted after publication
+
+export const RESOLUTION_STATUSES: ResolutionStatus[] = [
+  "resolved",
+  "partial",
+  "variant",
+  "candidate",
+  "retracted",
+];
+
+/// Normalized field taxonomy for filtering. Deliberately identical to the
+/// buckets used by AIM's "solved with AI" tracker, so entries imported from
+/// there map one-to-one. The free-text `field` stays on entries as detail.
+export const FIELD_GROUPS = [
+  "Number theory",
+  "Combinatorics",
+  "Geometry & topology",
+  "Algebra",
+  "Analysis",
+  "Probability & statistics",
+  "Algorithms & optimization",
+  "Theoretical computer science",
+  "Differential equations",
+  "Mathematical physics",
+  "Quantum information & computing",
+] as const;
+
+export type FieldGroup = (typeof FIELD_GROUPS)[number];
+
 // An ordinal "trust ladder", strongest to weakest.
 export type VerificationStatus =
   | "lean-verified" // formal proof machine-checked in Lean (strongest)
@@ -42,6 +81,8 @@ export interface MathProblem {
   problemNumber: number | null;
   /** Math field. Null for lean entries where we didn't fetch the problem page. */
   field: string | null;
+  /** Normalized field bucket (see FIELD_GROUPS); what the filter chips group by. */
+  fieldGroup: FieldGroup | null;
   /** Plain-language statement. Null for lean entries. */
   statement: string | null;
   /** Who posed it. Null for lean entries. */
@@ -49,6 +90,14 @@ export interface MathProblem {
   /** Year posed. Null when not reliably known (most lean entries). */
   yearPosed: number | null;
   solveType: SolveType;
+  /** What happened to the problem; see ResolutionStatus. */
+  resolution: ResolutionStatus;
+  /**
+   * Optional note documenting a known issue with the claim (a refuted lemma,
+   * a misformalized statement). Rendered as a visible flag. Present only on
+   * entries that need it.
+   */
+  claimIssueNote?: string | null;
   /** ISO date, or "YYYY-MM" / "YYYY". For date ranges, the completion date. */
   solveDate: string;
   model: string;
@@ -184,7 +233,7 @@ export function assertProblem(value: unknown, index: number): MathProblem {
   );
   ["problemNumber", "yearPosed", "citations"].forEach(requireNullableNumber);
   requireNumber("renownLangs");
-  for (const key of ["renownNote", "resultNote", "ageNote"]) {
+  for (const key of ["renownNote", "resultNote", "ageNote", "claimIssueNote"]) {
     if (p[key] !== undefined && p[key] !== null && typeof p[key] !== "string") {
       throw new Error(`${where}: "${key}" must be a string or null when present`);
     }
@@ -193,6 +242,15 @@ export function assertProblem(value: unknown, index: number): MathProblem {
 
   if (!SOLVE_TYPES.includes(p.solveType as SolveType)) {
     throw new Error(`${where}: "solveType" must be one of ${SOLVE_TYPES.join(", ")}`);
+  }
+  if (!RESOLUTION_STATUSES.includes(p.resolution as ResolutionStatus)) {
+    throw new Error(
+      `${where}: "resolution" must be one of ${RESOLUTION_STATUSES.join(", ")}`,
+    );
+  }
+  // The curated baseline always classifies; only community rows may lack it.
+  if (!FIELD_GROUPS.includes(p.fieldGroup as FieldGroup)) {
+    throw new Error(`${where}: "fieldGroup" must be one of ${FIELD_GROUPS.join(", ")}`);
   }
   if (!VERIFICATION_STATUSES.includes(p.verification as VerificationStatus)) {
     throw new Error(

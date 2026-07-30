@@ -27,12 +27,15 @@
 // still said "preprint". Changing the tier requires updating the note in the
 // same edit (see `update-problem.ts`), and every change is in the changelog.
 
-import type { MathProblem } from "@/lib/problems";
+import { FIELD_GROUPS, type MathProblem } from "@/lib/problems";
 
 export type EditableKey =
   | "name"
   | "shortName"
   | "field"
+  | "fieldGroup"
+  | "resolution"
+  | "claimIssueNote"
   | "statement"
   | "posedBy"
   | "yearPosed"
@@ -66,6 +69,21 @@ export interface FieldSpec {
   options?: { value: string; label: string }[];
 }
 
+/// Resolution statuses - what happened to the problem itself. Editable for the
+/// same reason `verification` is: an entry moves through these over its life
+/// (candidate gets accepted, a resolved claim gets retracted), and freezing the
+/// status is exactly how a record goes stale. Like the verification tier, a
+/// change must be explained in the verification note in the same edit.
+export const RESOLUTION_OPTIONS = [
+  { value: "resolved", label: "Resolved" },
+  { value: "partial", label: "Partial result" },
+  { value: "variant", label: "Variant only" },
+  { value: "candidate", label: "Candidate (review pending)" },
+  { value: "retracted", label: "Retracted" },
+];
+
+export const FIELD_GROUP_OPTIONS = FIELD_GROUPS.map((g) => ({ value: g, label: g }));
+
 /// The verification trust ladder, strongest first.
 export const VERIFICATION_OPTIONS = [
   { value: "lean-verified", label: "Lean-verified" },
@@ -86,7 +104,36 @@ export const EDITABLE_FIELDS: FieldSpec[] = [
     maxLength: 60,
     help: "Compact label used on chart axes and narrow layouts.",
   },
-  { key: "field", label: "Type", kind: "text", maxLength: 80, help: "Math field, e.g. Combinatorics." },
+  {
+    key: "fieldGroup",
+    label: "Field",
+    kind: "choice",
+    required: true,
+    options: FIELD_GROUP_OPTIONS,
+    help: "The bucket the field filter groups by.",
+  },
+  {
+    key: "field",
+    label: "Field detail",
+    kind: "text",
+    maxLength: 80,
+    help: "Free-text subfield shown on the card, e.g. Additive combinatorics.",
+  },
+  {
+    key: "resolution",
+    label: "Status",
+    kind: "choice",
+    required: true,
+    options: RESOLUTION_OPTIONS,
+    help: "What happened to the problem. Changing this requires updating the verification note in the same edit.",
+  },
+  {
+    key: "claimIssueNote",
+    label: "Claim issue",
+    kind: "textarea",
+    maxLength: 1000,
+    help: "Only when a documented issue exists with the claim (refuted lemma, misformalized statement). Renders as a visible flag.",
+  },
   {
     key: "statement",
     label: "Statement",

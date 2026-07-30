@@ -25,8 +25,10 @@ import { formatCommentDate, renderCommentHtml } from "@/lib/comment-render";
 import type { CommentView } from "@/lib/comments";
 import { resolveSnapshot } from "@/lib/identity";
 import type {
+  FieldGroup,
   ProblemWithTrends,
   ProblemWithVotes,
+  ResolutionStatus,
   SolveType,
   VerificationStatus,
 } from "@/lib/problems";
@@ -39,10 +41,13 @@ const PROBLEM_SELECT = {
   shortName: true,
   problemNumber: true,
   field: true,
+  fieldGroup: true,
   statement: true,
   posedBy: true,
   yearPosed: true,
   solveType: true,
+  resolution: true,
+  claimIssueNote: true,
   solveDate: true,
   model: true,
   modelMaker: true,
@@ -79,10 +84,13 @@ function toProblem(r: ProblemRow): ProblemWithVotes {
     shortName: r.shortName,
     problemNumber: r.problemNumber,
     field: r.field,
+    fieldGroup: r.fieldGroup as FieldGroup | null,
     statement: r.statement,
     posedBy: r.posedBy,
     yearPosed: r.yearPosed,
     solveType: r.solveType as SolveType,
+    resolution: r.resolution as ResolutionStatus,
+    claimIssueNote: r.claimIssueNote,
     solveDate: r.solveDate,
     model: r.model,
     modelMaker: r.modelMaker,

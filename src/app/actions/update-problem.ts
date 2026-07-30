@@ -94,6 +94,9 @@ export async function updateProblem(
       name: true,
       shortName: true,
       field: true,
+      fieldGroup: true,
+      resolution: true,
+      claimIssueNote: true,
       statement: true,
       posedBy: true,
       yearPosed: true,
@@ -140,17 +143,18 @@ export async function updateProblem(
     return { ok: true, changed: 0 };
   }
 
-  // Moving an entry up or down the trust ladder is the highest-consequence edit
-  // on the site, so it has to come with its justification. Requiring the note to
-  // change in the same edit means the changelog always records WHY the tier
-  // moved, not just that it did.
-  const movedTier = changes.some((c) => c.field === "Verification");
+  // Moving an entry up or down the trust ladder - or changing what the entry
+  // claims happened to the problem - is the highest-consequence edit on the
+  // site, so it has to come with its justification. Requiring the note to
+  // change in the same edit means the changelog always records WHY it moved,
+  // not just that it did.
+  const movedTier = changes.some((c) => c.field === "Verification" || c.field === "Status");
   const explained = changes.some((c) => c.field === "Verification note");
   if (movedTier && !explained) {
     return {
       ok: false,
       error:
-        "Changing the verification tier also requires updating the verification note, so the reason is on record.",
+        "Changing the verification tier or status also requires updating the verification note, so the reason is on record.",
     };
   }
 

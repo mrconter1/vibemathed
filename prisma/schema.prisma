@@ -61,6 +61,10 @@ model Problem {
   /// Erdős problem number, if this is one.
   problemNumber Int?
   field         String?
+  /// Normalized field bucket for filtering (one of FIELD_GROUPS in
+  /// src/lib/problems.ts - AIM-compatible taxonomy). `field` stays free text
+  /// for the card detail line; this is what the filter chips group by.
+  fieldGroup    String?
   /// Plain-language statement. Only ~1 in 5 entries has one; the card layout
   /// must not reserve space for it.
   statement     String?
@@ -77,6 +81,14 @@ model Problem {
   aiRole        String?
   verification  String
   verificationNote String?
+  /// What happened to the PROBLEM, as opposed to how trustworthy the claim is
+  /// (`verification`): "resolved" | "partial" | "variant" | "candidate" |
+  /// "retracted". Same string-not-enum convention as `solveType`.
+  resolution    String  @default("resolved")
+  /// When a documented issue exists with the claim (a refuted lemma, a
+  /// misformalized Lean statement), the note explaining it. Renders as a
+  /// visible flag on the entry.
+  claimIssueNote String?
 
   citations       Int?
   citationsPaper  String?
