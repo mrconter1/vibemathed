@@ -104,10 +104,6 @@ model Problem {
 
   sourceUrl  String
   sourceName String
-  /// Additional links beyond the primary source - Lean repositories,
-  /// independent proofs of the same theorem, community records. Shape:
-  /// [{ label: string, url: string }]. Always an array, never JSON null.
-  links      Json   @default("[]")
 
   status        ProblemStatus @default(published)
   submittedById String?
@@ -124,10 +120,30 @@ model Problem {
   votes      ProblemVote[]
   comments   Comment[]
   activities ProblemActivity[]
+  links      ProblemLink[]
 
   @@index([status])
   @@index([solveDate])
   @@index([submittedById])
+}
+
+/// Additional sources beyond an entry's primary one - Lean repositories,
+/// independent proofs of the same theorem, verifiers, community records.
+///
+/// A real table rather than a JSON column: links are edited individually in
+/// the UI, need a stable display order, and should die with their entry
+/// (hence the cascade). Rewritten wholesale on edit, so no natural key is
+/// needed beyond the position.
+model ProblemLink {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  problemId String  @db.Uuid
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  label     String
+  url       String
+  /// Display order within the entry, 0-based.
+  position  Int     @default(0)
+
+  @@index([problemId])
 }
 
 model ProblemVote {

@@ -23,6 +23,7 @@ async function main() {
   const rows = await prisma.problem.findMany({
     where: { status: "published" },
     orderBy: { slug: "asc" },
+    include: { links: { select: { label: true, url: true }, orderBy: { position: "asc" } } },
   });
 
   const out = rows.map((p) => {

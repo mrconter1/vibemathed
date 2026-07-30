@@ -45,8 +45,12 @@ function contentOf(p: MathProblem) {
     ageNote: p.ageNote ?? null,
     sourceUrl: p.sourceUrl,
     sourceName: p.sourceName,
-    // Prisma's InputJsonValue wants a structural cast for typed arrays.
-    links: (p.links ?? []) as unknown as Prisma.InputJsonValue,
+    // Links are their own table: replace the set wholesale so re-seeding is
+    // idempotent rather than accumulating duplicates.
+    links: {
+      deleteMany: {},
+      create: (p.links ?? []).map((l, position) => ({ ...l, position })),
+    },
   } satisfies Prisma.ProblemUpdateInput;
 }
 

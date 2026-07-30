@@ -4,6 +4,8 @@
 // the submission form so the two stay visually and behaviourally identical -
 // they differ only in which fields they are handed.
 
+import { LinkRows } from "@/components/LinkRows";
+
 export interface RenderableField {
   key: string;
   label: string;
@@ -33,7 +35,7 @@ export function EntryFields({
     <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
       {fields.map((spec) => {
         const id = `${idPrefix}-${spec.key}`;
-        // Links use the textarea control too: one "Label | URL" per line.
+        // Link rows need the full row for their label + URL + remove button.
         const wide = spec.kind === "textarea" || spec.kind === "links";
         const value = values[spec.key] ?? "";
 
@@ -47,7 +49,13 @@ export function EntryFields({
               {spec.required && <span className="ml-1 text-[var(--accent-orange)]">*</span>}
             </label>
 
-            {spec.kind === "textarea" || spec.kind === "links" ? (
+            {spec.kind === "links" ? (
+              <LinkRows
+                id={id}
+                value={value}
+                onChange={(next) => onChange(spec.key, next)}
+              />
+            ) : spec.kind === "textarea" ? (
               <textarea
                 id={id}
                 value={value}

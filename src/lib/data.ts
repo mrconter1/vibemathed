@@ -26,7 +26,6 @@ import type { CommentView } from "@/lib/comments";
 import { resolveSnapshot } from "@/lib/identity";
 import type {
   FieldGroup,
-  LinkRef,
   ProblemWithTrends,
   ProblemWithVotes,
   ResolutionStatus,
@@ -66,7 +65,7 @@ const PROBLEM_SELECT = {
   ageNote: true,
   sourceUrl: true,
   sourceName: true,
-  links: true,
+  links: { select: { label: true, url: true }, orderBy: { position: "asc" } },
   upvotes: true,
   downvotes: true,
   submittedBy: { select: { pseudonym: true } },
@@ -110,7 +109,7 @@ function toProblem(r: ProblemRow): ProblemWithVotes {
     ageNote: r.ageNote,
     sourceUrl: r.sourceUrl,
     sourceName: r.sourceName,
-    links: (r.links as unknown as LinkRef[]) ?? [],
+    links: r.links.map((l) => ({ label: l.label, url: l.url })),
     upvotes: r.upvotes,
     downvotes: r.downvotes,
     score: r.upvotes - r.downvotes,

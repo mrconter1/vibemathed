@@ -126,7 +126,12 @@ export default async function ProblemPage({
         ← All problems
       </Link>
 
-        <div className="mt-4 flex items-start justify-between gap-4">
+      {/* The entry itself sits on a raised sheet, like the cards it came
+          from - on the cream page the content used to float with nothing
+          holding it. Discussion and changelog stay outside, as separate
+          surfaces below. */}
+      <article className="mt-4 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-5 sm:px-6 sm:py-6">
+        <div className="flex items-start justify-between gap-4">
           <h1 className="font-serif text-2xl text-[var(--ink)] sm:text-3xl">{p.name}</h1>
           <div className="shrink-0 pt-1">
             <VoteButtons
@@ -244,16 +249,17 @@ export default async function ProblemPage({
           </p>
         )}
 
-        <div className="mt-8 flex items-center gap-3 border-t border-[var(--hairline)] pt-4">
+        <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-[var(--hairline)] pt-4">
           <EditEntryDialog slug={p.slug} initial={editable} />
           <span className="text-[11px] text-[var(--ink-muted)]">
             Spotted something wrong? Corrections are welcome and recorded.
           </span>
         </div>
+      </article>
 
-        <Changelog activity={activity} />
+      <Changelog activity={activity} />
 
-        <CommentsSection slug={p.slug} initial={comments} />
+      <CommentsSection slug={p.slug} initial={comments} />
     </main>
   );
 }

@@ -6,7 +6,6 @@ import { auth } from "@/auth";
 import { isAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { isHttpUrl, isValidSolveDate, parseLinks } from "@/lib/editable";
-import type { LinkRef } from "@/lib/problems";
 import {
   SUBMISSION_FIELDS,
   SUBMISSION_WINDOW_MS,
@@ -48,14 +47,15 @@ export async function submitProblem(values: SubmissionValues): Promise<SubmitRes
   }
 
   // Validate and coerce every field against its spec.
-  const data: Record<string, string | number | string[] | LinkRef[] | null> = {};
+  const data: Record<string, unknown> = {};
   for (const spec of SUBMISSION_FIELDS) {
     const raw = (values[spec.key] ?? "").trim();
 
     if (raw === "") {
       if (spec.required) return { ok: false, error: `${spec.label} is required.` };
-      // The links column is JSON and always holds an array, never JSON null.
-      data[spec.key] = spec.kind === "list" || spec.kind === "links" ? [] : null;
+      // No rows submitted: omit the nested relation entirely.
+      if (spec.kind === "links") continue;
+      data[spec.key] = spec.kind === "list" ? [] : null;
       continue;
     }
     if (spec.maxLength && raw.length > spec.maxLength) {
@@ -94,7 +94,10 @@ export async function submitProblem(values: SubmissionValues): Promise<SubmitRes
       case "links": {
         const parsed = parseLinks(raw);
         if (!parsed.ok) return { ok: false, error: parsed.error };
-        data[spec.key] = parsed.value;
+        // Nested create - links are their own table, not a column.
+        data[spec.key] = {
+          create: parsed.value.map((l, position) => ({ ...l, position })),
+        };
         break;
       }
       default:

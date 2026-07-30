@@ -129,7 +129,7 @@ export async function updateProblem(
       citationsUrl: true,
       sourceUrl: true,
       sourceName: true,
-      links: true,
+      links: { select: { label: true, url: true }, orderBy: { position: "asc" } },
     },
   });
   if (!current) {
@@ -138,6 +138,9 @@ export async function updateProblem(
 
   const data: Record<string, Parsed> = {};
   const changes: { field: string; oldValue: string | null; newValue: string | null }[] = [];
+  // Links live in their own table, so they are collected separately and
+  // rewritten wholesale rather than assigned onto the problem row.
+  let nextLinks: LinkRef[] | null = null;
 
   for (const spec of EDITABLE_FIELDS) {
     const raw = values[spec.key];
@@ -150,7 +153,11 @@ export async function updateProblem(
     const after = display(parsed.value);
     if (before === after) continue;
 
-    data[spec.key] = parsed.value;
+    if (spec.kind === "links") {
+      nextLinks = parsed.value as LinkRef[];
+    } else {
+      data[spec.key] = parsed.value;
+    }
     changes.push({ field: spec.label, oldValue: before, newValue: after });
   }
 
@@ -175,7 +182,22 @@ export async function updateProblem(
 
   try {
     await prisma.$transaction([
-      prisma.problem.update({ where: { id: current.id }, data }),
+      prisma.problem.update({
+        where: { id: current.id },
+        data: {
+          ...data,
+          // Replace the whole set: simpler than diffing rows, and the
+          // changelog already records what changed.
+          ...(nextLinks
+            ? {
+                links: {
+                  deleteMany: {},
+                  create: nextLinks.map((l, position) => ({ ...l, position })),
+                },
+              }
+            : {}),
+        },
+      }),
       prisma.problemActivity.createMany({
         data: changes.map((c) => ({
           problemId: current.id,

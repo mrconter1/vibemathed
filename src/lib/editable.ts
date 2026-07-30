@@ -207,8 +207,7 @@ export const EDITABLE_FIELDS: FieldSpec[] = [
     key: "links",
     label: "More links",
     kind: "links",
-    maxLength: 2000,
-    help: "One per line: Label | https://url. For Lean repositories, independent proofs, community records.",
+    help: "Beyond the primary source: Lean repositories, independent proofs of the same theorem, verifiers, community records.",
   },
 ];
 
@@ -230,8 +229,9 @@ export function toEditableValues(source: Pick<MathProblem, EditableKey>): Editab
   const out = {} as EditableValues;
   for (const spec of EDITABLE_FIELDS) {
     if (spec.kind === "links") {
-      // Encode as the same one-per-line form `parseLinks` reads back.
-      out[spec.key] = (source.links ?? []).map((l) => `${l.label} | ${l.url}`).join("\n");
+      // Carried through the string-keyed form values as JSON; the row editor
+      // parses and re-serializes it, and `parseLinks` validates on the server.
+      out[spec.key] = encodeLinks(source.links ?? []);
       continue;
     }
     const value = source[spec.key];
@@ -244,28 +244,50 @@ export function toEditableValues(source: Pick<MathProblem, EditableKey>): Editab
   return out;
 }
 
-/// Parses the "Label | https://url" one-per-line form into LinkRef[].
+export const MAX_LINKS = 8;
+
+/// Serializes link rows for transport through the string-keyed form values.
+export function encodeLinks(links: LinkRef[]): string {
+  return links.length ? JSON.stringify(links) : "";
+}
+
+/// Reads the form value back into rows for the editor. Never throws - a
+/// malformed value renders as no rows rather than breaking the form.
+export function decodeLinks(raw: string): LinkRef[] {
+  if (!raw.trim()) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((l) => l && typeof l === "object")
+      .map((l) => ({ label: String(l.label ?? ""), url: String(l.url ?? "") }));
+  } catch {
+    return [];
+  }
+}
+
+/// Validates the submitted link rows. Rows left completely blank are dropped
+/// (the editor always keeps one empty row available), but a half-filled row
+/// is an error rather than silent data loss.
 export function parseLinks(
   raw: string,
 ): { ok: true; value: LinkRef[] } | { ok: false; error: string } {
-  const lines = raw
-    .split("\n")
-    .map((l) => l.trim())
-    .filter(Boolean);
-  if (lines.length > 8) return { ok: false, error: "At most 8 extra links." };
+  const rows = decodeLinks(raw).filter((l) => l.label.trim() || l.url.trim());
+  if (rows.length > MAX_LINKS) {
+    return { ok: false, error: `At most ${MAX_LINKS} extra links.` };
+  }
   const value: LinkRef[] = [];
-  for (const line of lines) {
-    const sep = line.indexOf("|");
-    if (sep === -1) {
-      return { ok: false, error: `Each link line needs "Label | URL" (missing | in "${line.slice(0, 40)}").` };
-    }
-    const label = line.slice(0, sep).trim();
-    const url = line.slice(sep + 1).trim();
+  for (const row of rows) {
+    const label = row.label.trim();
+    const url = row.url.trim();
     if (!label || label.length > 120) {
       return { ok: false, error: "Every link needs a label of at most 120 characters." };
     }
     if (!isHttpUrl(url)) {
-      return { ok: false, error: `Link URL must start with http:// or https:// ("${url.slice(0, 40)}").` };
+      return {
+        ok: false,
+        error: `Link URL must start with http:// or https:// ("${url.slice(0, 40)}").`,
+      };
     }
     value.push({ label, url });
   }

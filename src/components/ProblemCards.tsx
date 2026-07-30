@@ -175,6 +175,10 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
     // card (so semantics and keyboard focus stay on a real link), and every
     // interactive child sits above the overlay with `relative z-10`.
     <article className="group relative rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3.5 transition-colors hover:border-[var(--ink-muted)] hover:bg-[color-mix(in_srgb,var(--ink)_3%,var(--paper-raised))] focus-within:border-[var(--accent-blue)]">
+      {/* Only the HEADER shares a row with the votes. Everything below runs
+          the full width of the card - when the votes sat in a full-height
+          flex column they reserved their width all the way down, wrapping
+          statements at ~60% width on a phone for no reason. */}
       <div className="flex items-start gap-4">
         <div className="min-w-0 flex-1">
           {/* Title + result */}
@@ -216,24 +220,33 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
               <span className="text-xs text-[var(--ink-muted)]">({p.resultNote})</span>
             )}
           </div>
+        </div>
 
-          {/* Identity line */}
-          <p className="mt-1 font-mono text-[11px] text-[var(--ink-muted)]">
-            {p.problemNumber !== null && <>Erdős #{p.problemNumber} · </>}
-            {p.field ?? DASH}
-          </p>
+        {/* Votes, kept out of the flowing text so they line up down the list */}
+        <div className="relative z-10 shrink-0 pt-0.5">
+          <VoteButtons slug={p.slug} upvotes={p.upvotes} downvotes={p.downvotes} />
+        </div>
+      </div>
 
-          {/* Statement - present on roughly one entry in five. Math was
-              rendered to HTML on the server, so no KaTeX runs here. */}
-          {p.statementHtml && (
-            <p
-              className="math-prose mt-2.5 text-sm leading-relaxed text-[var(--ink-secondary)]"
-              dangerouslySetInnerHTML={{ __html: p.statementHtml }}
-            />
-          )}
+      {/* Everything below the header spans the whole card. */}
+      <div className="min-w-0">
+        {/* Identity line */}
+        <p className="mt-1 font-mono text-[11px] text-[var(--ink-muted)]">
+          {p.problemNumber !== null && <>Erdős #{p.problemNumber} · </>}
+          {p.field ?? DASH}
+        </p>
 
-          {/* Facts that every entry has */}
-          <div className="mt-2.5 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px]">
+        {/* Statement - present on roughly one entry in five. Math was
+            rendered to HTML on the server, so no KaTeX runs here. */}
+        {p.statementHtml && (
+          <p
+            className="math-prose mt-2.5 text-sm leading-relaxed text-[var(--ink-secondary)]"
+            dangerouslySetInnerHTML={{ __html: p.statementHtml }}
+          />
+        )}
+
+        {/* Facts that every entry has */}
+        <div className="mt-2.5 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px]">
             <Fact label="Posed by">
               {p.posedBy ?? DASH}
               {p.yearPosed !== null && `, ${p.yearPosed}`}
@@ -294,24 +307,18 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
               </span>
             )}
 
-            {p.commentCount > 0 && (
-              <Link
-                href={`/problem/${p.slug}#discussion`}
-                className="relative z-10 inline-flex items-center gap-1 font-mono text-[var(--accent-blue)] hover:underline"
-              >
-                <Icon name="bubble" size={12} />
-                {p.commentCount}
-                <span className="sr-only">
-                  {p.commentCount === 1 ? "comment" : "comments"}
-                </span>
-              </Link>
-            )}
-          </div>
-        </div>
-
-        {/* Votes, kept out of the flowing text so they line up down the list */}
-        <div className="relative z-10 shrink-0 pt-0.5">
-          <VoteButtons slug={p.slug} upvotes={p.upvotes} downvotes={p.downvotes} />
+          {p.commentCount > 0 && (
+            <Link
+              href={`/problem/${p.slug}#discussion`}
+              className="relative z-10 inline-flex items-center gap-1 font-mono text-[var(--accent-blue)] hover:underline"
+            >
+              <Icon name="bubble" size={12} />
+              {p.commentCount}
+              <span className="sr-only">
+                {p.commentCount === 1 ? "comment" : "comments"}
+              </span>
+            </Link>
+          )}
         </div>
       </div>
     </article>
