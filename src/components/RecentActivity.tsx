@@ -5,6 +5,7 @@
 
 import Link from "next/link";
 import type { SiteActivityView } from "@/lib/activity";
+import { Icon } from "@/components/Icons";
 
 function truncate(value: string | null, max = 60): string {
   if (!value) return "";
@@ -75,7 +76,10 @@ export function RecentActivity({ activity }: { activity: SiteActivityView[] }) {
       aria-label="Latest activity"
     >
       <div className="shrink-0">
-        <h2 className="font-serif text-base text-[var(--ink)]">Latest activity</h2>
+        <h2 className="flex items-center gap-2 font-serif text-base text-[var(--ink)]">
+          <Icon name="pulse" size={14} className="text-[var(--ink-muted)]" />
+          Latest activity
+        </h2>
         <p className="mt-0.5 text-[11px] text-[var(--ink-muted)]">
           Edits, submissions and discussion
         </p>

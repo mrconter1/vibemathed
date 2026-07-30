@@ -13,6 +13,7 @@
 
 import Link from "next/link";
 import { ageAtSolve, type ProblemWithVotes } from "@/lib/problems";
+import { Icon, type IconName } from "@/components/Icons";
 
 const MONTHS = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -35,6 +36,7 @@ interface Row {
 }
 
 interface Column {
+  icon: IconName;
   title: string;
   hint: string;
   rows: Row[];
@@ -62,8 +64,9 @@ function buildColumns(problems: ProblemWithVotes[], rows: number): Column[] {
     }));
 
   return [
-    { title: "Just solved", hint: "Most recent results", rows: justSolved },
+    { icon: "spark", title: "Just solved", hint: "Most recent results", rows: justSolved },
     {
+      icon: "hourglass",
       title: "Longest standing",
       hint: "Open the longest before falling",
       rows: longestStanding,
@@ -90,7 +93,10 @@ export function Highlights({
           key={col.title}
           className="col-span-2 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3.5"
         >
-          <h3 className="font-serif text-base text-[var(--ink)]">{col.title}</h3>
+          <h3 className="flex items-center gap-2 font-serif text-base text-[var(--ink)]">
+            <Icon name={col.icon} size={14} className="text-[var(--ink-muted)]" />
+            {col.title}
+          </h3>
           <p className="mt-0.5 text-[11px] text-[var(--ink-muted)]">{col.hint}</p>
 
           <ul className="mt-2.5">
