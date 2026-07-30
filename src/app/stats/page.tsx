@@ -27,13 +27,17 @@ export const metadata: Metadata = {
 export default async function StatsPage() {
   const problems = await getPublishedProblems();
 
+  // The charts describe SOLVES, so they only see fully resolved entries - a
+  // candidate under review, a partial advance or a retracted claim is tracked
+  // but has not resolved anything. The tiles describe the whole record.
+  const resolved = problems.filter((p) => p.resolution === "resolved");
+
   const totalVotes = problems.reduce((sum, p) => sum + p.upvotes + p.downvotes, 0);
-  const contested = problems.filter((p) => p.verification === "contested").length;
   const notable = problems.filter((p) => p.renownLangs > 0).length;
 
   const tiles: { icon: IconName; label: string; value: string; help?: string }[] = [
     { icon: "layers", label: "Tracked problems", value: String(problems.length) },
-    { icon: "alert", label: "Contested results", value: String(contested) },
+    { icon: "shield", label: "Fully resolved", value: String(resolved.length) },
     {
       icon: "globe",
       label: "With Wikipedia article",
@@ -79,19 +83,19 @@ export default async function StatsPage() {
           the extra width. */}
       <section className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
-          <CumulativeChart problems={problems} />
+          <CumulativeChart problems={resolved} />
         </div>
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
-          <ReferencesChart problems={problems} />
+          <ReferencesChart problems={resolved} />
         </div>
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
-          <SolveRatioChart problems={problems} />
+          <SolveRatioChart problems={resolved} />
         </div>
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
-          <OpenSourceChart problems={problems} />
+          <OpenSourceChart problems={resolved} />
         </div>
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5 lg:col-span-2">
-          <ModelsChart problems={problems} />
+          <ModelsChart problems={resolved} />
         </div>
       </section>
     </main>
