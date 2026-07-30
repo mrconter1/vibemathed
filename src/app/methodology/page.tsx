@@ -99,20 +99,6 @@ export default function MethodologyPage() {
           submitter by pseudonym. Every entry must cite a real, checkable
           primary source.
         </p>
-        <p>
-          Coverage is cross-checked against public trackers - notably an{" "}
-          <a
-            href="https://example.com/redacted"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[var(--accent-blue)] hover:underline"
-          >
-            external tracker (reference redacted)
-          </a>{" "}
-          catalog, whose editorial audits informed several of our status
-          labels. Entries here are independently written and sourced to
-          primary documents.
-        </p>
       </Section>
 
       <Section title="Result and status">

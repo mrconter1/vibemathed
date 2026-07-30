@@ -43,9 +43,8 @@ export const RESOLUTION_STATUSES: ResolutionStatus[] = [
   "retracted",
 ];
 
-/// Normalized field taxonomy for filtering. Deliberately identical to the
-/// buckets used by AIM's "solved with AI" tracker, so entries imported from
-/// there map one-to-one. The free-text `field` stays on entries as detail.
+/// Normalized field taxonomy for filtering. The free-text `field` stays on
+/// entries as the detail line; this is what the filter chips group by.
 export const FIELD_GROUPS = [
   "Number theory",
   "Combinatorics",
