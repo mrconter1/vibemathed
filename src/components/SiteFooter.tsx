@@ -24,6 +24,10 @@ export function SiteFooter() {
           >
             CC BY 4.0
           </a>
+          . Full inclusion criteria and label definitions are in the{" "}
+          <Link href="/methodology" className="text-[var(--accent-blue)] hover:underline">
+            methodology
+          </Link>
           .
         </p>
         <p className="mt-3">

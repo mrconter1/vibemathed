@@ -10,7 +10,7 @@
 // here, but the highlight cards directly below now say the same thing with the
 // entry names attached, so the tiles would just be repeating them.
 
-import type { ProblemWithVotes } from "@/lib/problems";
+import { ageAtSolve, type ProblemWithVotes } from "@/lib/problems";
 import { Icon, type IconName } from "@/components/Icons";
 
 interface Tile {
@@ -21,14 +21,22 @@ interface Tile {
 }
 
 function computeTiles(problems: ProblemWithVotes[], users: number): Tile[] {
-  const erdos = problems.filter((p) => p.problemNumber !== null).length;
   const lean = problems.filter((p) => p.verification === "lean-verified").length;
   const votes = problems.reduce((sum, p) => sum + p.upvotes + p.downvotes, 0);
   const comments = problems.reduce((sum, p) => sum + p.commentCount, 0);
+  // The single most impressive true number the dataset has: how long these
+  // problems had collectively stood open before falling. Replaces the old
+  // Erdős count, which was insider trivia (and lives on as a field filter).
+  const yearsOpen = problems.reduce((sum, p) => sum + (ageAtSolve(p) ?? 0), 0);
 
   return [
     { icon: "layers", label: "Tracked problems", value: String(problems.length) },
-    { icon: "hash", label: "Erdős problems", value: String(erdos) },
+    {
+      icon: "hourglass",
+      label: "Combined years open",
+      value: yearsOpen.toLocaleString("en-US"),
+      sub: "before AI closed them",
+    },
     { icon: "shield", label: "Lean-verified", value: String(lean), sub: "machine-checked" },
     {
       // The headline figure is PEOPLE: the tile exists to show the site has a
