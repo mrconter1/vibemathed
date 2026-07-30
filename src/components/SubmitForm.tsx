@@ -71,10 +71,15 @@ export function SubmitForm() {
     <div>
       <div className="rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3">
         <p className="text-xs leading-relaxed text-[var(--ink-secondary)]">
-          Every entry needs a real, checkable source - an announcement, an arXiv
-          preprint or an article, not a summary of a summary. If a result is
-          contested or unreviewed, say so in the verification note rather than
-          leaving it out. Submissions are reviewed before they appear.
+          What belongs here: a precisely stated open question whose answer is
+          now a proved or disproved theorem, with AI in the loop - any field of
+          mathematics, theoretical computer science included. Not in scope:
+          formalizations of known human results, empirical attacks, or improved
+          heuristics. Every entry needs a real, checkable source - an
+          announcement, an arXiv preprint or an article, not a summary of a
+          summary. If a result is contested, unreviewed or partial, say so in
+          the status and verification fields rather than leaving it out.
+          Submissions are reviewed before they appear.
           {!isAdmin && " You can submit one entry per day."}
         </p>
       </div>

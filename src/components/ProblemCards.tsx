@@ -15,12 +15,16 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ageAtSolve,
+  FIELD_GROUPS,
+  RESOLUTION_STATUSES,
+  type FieldGroup,
   type Period,
   type ProblemCardData,
+  type ResolutionStatus,
   type SolveType,
   type VerificationStatus,
 } from "@/lib/problems";
-import { DASH, NOTABILITY_HELP, SOLVE_TYPE, VERIFICATION } from "@/lib/display";
+import { DASH, NOTABILITY_HELP, RESOLUTION, SOLVE_TYPE, VERIFICATION } from "@/lib/display";
 import { Icon } from "@/components/Icons";
 import { StatusIcon } from "@/components/StatusIcon";
 import { InfoTip, StarNote } from "@/components/Tooltip";
@@ -75,6 +79,7 @@ const SETTINGS_KEY = "vibemathed:list-settings";
 interface StoredSettings {
   fieldFilter: string;
   resultFilter: string;
+  statusFilter: string;
   verificationFilter: string;
   sortKey: SortKey;
   sortDir: SortDir;
@@ -162,6 +167,7 @@ function Fact({ label, children }: { label: string; children: React.ReactNode })
 function ProblemCard({ p }: { p: ProblemCardData }) {
   const st = SOLVE_TYPE[p.solveType];
   const v = VERIFICATION[p.verification];
+  const res = RESOLUTION[p.resolution];
   const age = ageAtSolve(p);
 
   return (
@@ -189,6 +195,20 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
               />
               <span className="text-[var(--ink-secondary)]">{st.label}</span>
             </span>
+            {/* A non-default resolution qualifies the headline claim, so it
+                sits right beside it as a small pill. "Resolved" renders
+                nothing - the default state should add no noise. */}
+            {res.pill && (
+              <span
+                className="inline-flex items-center whitespace-nowrap rounded-full border px-2 py-px text-[11px] font-medium"
+                style={{
+                  color: res.color,
+                  borderColor: `color-mix(in srgb, ${res.color} 40%, transparent)`,
+                }}
+              >
+                {res.pill}
+              </span>
+            )}
             {/* The note sits OUTSIDE the nowrap badge: it can be a whole
                 sentence, which on a phone must wrap rather than drag the page
                 wider than the viewport. */}
@@ -243,6 +263,17 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
               {v.label}
             </span>
 
+            {/* A documented problem with the claim itself - rare, loud. */}
+            {p.claimIssueNote && (
+              <span
+                className="relative z-10 inline-flex items-center gap-1.5 text-[var(--status-critical)]"
+                title={p.claimIssueNote}
+              >
+                <StatusIcon kind="alert" color="var(--status-critical)" />
+                Claim issue
+              </span>
+            )}
+
             <span
               className="relative z-10 font-mono text-[var(--ink-muted)]"
               title={p.renownLangs > 0 ? NOTABILITY_HELP : "No dedicated Wikipedia article"}
@@ -291,6 +322,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
   const [query, setQuery] = useState("");
   const [fieldFilter, setFieldFilter] = useState("all");
   const [resultFilter, setResultFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [verificationFilter, setVerificationFilter] = useState("all");
   const [sortKey, setSortKey] = useState<SortKey>("solveDate");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
@@ -300,13 +332,27 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
 
   const timeSensitive = TIME_SENSITIVE.includes(sortKey);
 
-  const fields = useMemo(
-    () =>
-      Array.from(
-        new Set(problems.map((p) => p.field).filter((f): f is string => f !== null)),
-      ).sort(),
-    [problems],
-  );
+  // Field chips: every group that actually occurs, with its count, in fixed
+  // taxonomy order. Entries without a group (possible on community rows) are
+  // only reachable via "All fields".
+  const groups = useMemo(() => {
+    const counts = new Map<FieldGroup, number>();
+    for (const p of problems) {
+      if (p.fieldGroup) counts.set(p.fieldGroup, (counts.get(p.fieldGroup) ?? 0) + 1);
+    }
+    return FIELD_GROUPS.filter((g) => counts.has(g)).map((g) => ({
+      group: g,
+      count: counts.get(g)!,
+    }));
+  }, [problems]);
+
+  // Same present-values trick for resolution statuses. While every entry is
+  // "resolved" (the state of the dataset today) the whole control stays
+  // hidden; it appears by itself the day a candidate or retraction lands.
+  const resolutions = useMemo(() => {
+    const present = new Set(problems.map((p) => p.resolution));
+    return RESOLUTION_STATUSES.filter((r) => present.has(r));
+  }, [problems]);
 
   // Restore the persisted settings once, after hydration - localStorage is
   // client-only, so reading it during the first render would make server and
@@ -323,11 +369,20 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
         localStorage.getItem(SETTINGS_KEY) ?? "null",
       ) as Partial<StoredSettings> | null;
       if (s) {
-        if (s.fieldFilter === "all" || fields.includes(s.fieldFilter ?? "")) {
+        if (
+          s.fieldFilter === "all" ||
+          FIELD_GROUPS.includes(s.fieldFilter as FieldGroup)
+        ) {
           setFieldFilter(s.fieldFilter as string);
         }
         if (s.resultFilter === "all" || (s.resultFilter ?? "") in SOLVE_TYPE) {
           setResultFilter(s.resultFilter as string);
+        }
+        if (
+          s.statusFilter === "all" ||
+          RESOLUTION_STATUSES.includes(s.statusFilter as ResolutionStatus)
+        ) {
+          setStatusFilter(s.statusFilter as string);
         }
         if (
           s.verificationFilter === "all" ||
@@ -346,9 +401,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
       // Malformed storage reads as "nothing stored".
     }
     setRestored(true);
-    // Once per mount on purpose: re-running when `fields` changes would undo
-    // choices made since.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Once per mount on purpose so it cannot undo choices made since.
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 
@@ -360,6 +413,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
       const s: StoredSettings = {
         fieldFilter,
         resultFilter,
+        statusFilter,
         verificationFilter,
         sortKey,
         sortDir,
@@ -370,7 +424,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
     } catch {
       // Storage full or blocked - the list still works, it just won't persist.
     }
-  }, [restored, fieldFilter, resultFilter, verificationFilter, sortKey, sortDir, period, perPage]);
+  }, [restored, fieldFilter, resultFilter, statusFilter, verificationFilter, sortKey, sortDir, period, perPage]);
 
   // Only offer verification statuses that actually occur, in ladder order, so
   // the dropdown never lists an empty category.
@@ -382,17 +436,26 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return problems.filter((p) => {
-      if (fieldFilter !== "all" && p.field !== fieldFilter) return false;
+      if (fieldFilter !== "all" && p.fieldGroup !== fieldFilter) return false;
       if (resultFilter !== "all" && p.solveType !== resultFilter) return false;
+      if (statusFilter !== "all" && p.resolution !== statusFilter) return false;
       if (verificationFilter !== "all" && p.verification !== verificationFilter) return false;
       if (!q) return true;
-      const haystack = [p.name, p.field, p.posedBy, p.model, p.submittedBy, ...p.humanCollaborators]
+      const haystack = [
+        p.name,
+        p.field,
+        p.fieldGroup,
+        p.posedBy,
+        p.model,
+        p.submittedBy,
+        ...p.humanCollaborators,
+      ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [problems, query, fieldFilter, resultFilter, verificationFilter]);
+  }, [problems, query, fieldFilter, resultFilter, statusFilter, verificationFilter]);
 
   const sorted = useMemo(() => {
     const arr = [...filtered];
@@ -449,10 +512,41 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
     "inline-flex h-9 min-w-9 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-2.5 text-sm text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] hover:text-[var(--ink)] disabled:pointer-events-none disabled:opacity-40";
 
   const filtersActive =
-    query || fieldFilter !== "all" || resultFilter !== "all" || verificationFilter !== "all";
+    query ||
+    fieldFilter !== "all" ||
+    resultFilter !== "all" ||
+    statusFilter !== "all" ||
+    verificationFilter !== "all";
+
+  const chip = (active: boolean) =>
+    `inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1 text-xs transition-colors ${
+      active
+        ? "border-[var(--accent-blue)] bg-[color-mix(in_srgb,var(--accent-blue)_10%,transparent)] font-medium text-[var(--accent-blue)]"
+        : "border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-secondary)] hover:border-[var(--ink-muted)] hover:text-[var(--ink)]"
+    }`;
 
   return (
     <div>
+      {/* Field taxonomy chips, with counts. One row that wraps; groups with no
+          entries never render. */}
+      <div className="mb-2.5 flex flex-wrap items-center gap-1.5">
+        <button type="button" onClick={() => setFieldFilter("all")} className={chip(fieldFilter === "all")}>
+          All fields
+          <span className="font-mono text-[11px] text-[var(--ink-muted)]">{problems.length}</span>
+        </button>
+        {groups.map(({ group, count }) => (
+          <button
+            key={group}
+            type="button"
+            onClick={() => setFieldFilter(group)}
+            className={chip(fieldFilter === group)}
+          >
+            {group}
+            <span className="font-mono text-[11px] text-[var(--ink-muted)]">{count}</span>
+          </button>
+        ))}
+      </div>
+
       {/* Search + filters */}
       <div className="mb-2.5 flex flex-wrap items-center gap-2">
         <span className="relative min-w-[220px] flex-1">
@@ -469,19 +563,6 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
           />
         </span>
         <select
-          value={fieldFilter}
-          onChange={(e) => setFieldFilter(e.target.value)}
-          aria-label="Filter by type"
-          className={selectClass}
-        >
-          <option value="all">All types</option>
-          {fields.map((f) => (
-            <option key={f} value={f}>
-              {f}
-            </option>
-          ))}
-        </select>
-        <select
           value={resultFilter}
           onChange={(e) => setResultFilter(e.target.value)}
           aria-label="Filter by result"
@@ -494,6 +575,23 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
             </option>
           ))}
         </select>
+        {/* Hidden while the whole dataset shares one status - appears by
+            itself once a candidate, partial or retracted entry exists. */}
+        {resolutions.length > 1 && (
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            aria-label="Filter by status"
+            className={selectClass}
+          >
+            <option value="all">All statuses</option>
+            {resolutions.map((r) => (
+              <option key={r} value={r}>
+                {RESOLUTION[r].label}
+              </option>
+            ))}
+          </select>
+        )}
         <select
           value={verificationFilter}
           onChange={(e) => setVerificationFilter(e.target.value)}
@@ -513,6 +611,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
               setQuery("");
               setFieldFilter("all");
               setResultFilter("all");
+              setStatusFilter("all");
               setVerificationFilter("all");
             }}
             className="text-xs text-[var(--accent-blue)] hover:underline"

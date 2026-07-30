@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getActivity, getComments, getProblemBySlug, getPublishedSlugs } from "@/lib/data";
 import { ageAtSolve, type ProblemWithVotes } from "@/lib/problems";
-import { DASH, SOLVE_TYPE, VERIFICATION } from "@/lib/display";
+import { DASH, RESOLUTION, SOLVE_TYPE, VERIFICATION } from "@/lib/display";
 import { toEditableValues } from "@/lib/editable";
 import { SITE_URL } from "@/lib/site";
 import { Changelog } from "@/components/Changelog";
@@ -93,7 +93,8 @@ export default async function ProblemPage({
       (SOLVE_TYPE[p.solveType]?.label ?? p.solveType) +
         (p.resultNote ? ` (${p.resultNote})` : ""),
     ],
-    ["Field", p.field ?? DASH],
+    ["Status", RESOLUTION[p.resolution]?.label ?? p.resolution],
+    ["Field", p.field ?? p.fieldGroup ?? DASH],
     ["Posed by", p.posedBy ?? DASH],
     ["Year posed", p.yearPosed?.toString() ?? DASH],
     ["Years open", age !== null ? `${age}y` : DASH],
@@ -183,6 +184,20 @@ export default async function ProblemPage({
             <h2 className="font-serif text-lg text-[var(--ink)]">Verification</h2>
             <p className="math-prose mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
               <TeX>{p.verificationNote}</TeX>
+            </p>
+          </section>
+        )}
+
+        {/* A documented issue with the claim itself. Deliberately loud: this
+            is the one note a reader must not miss. */}
+        {p.claimIssueNote && (
+          <section className="mt-6 rounded-md border border-[color-mix(in_srgb,var(--status-critical)_45%,transparent)] bg-[color-mix(in_srgb,var(--status-critical)_6%,transparent)] px-4 py-3">
+            <h2 className="flex items-center gap-2 font-serif text-lg text-[var(--status-critical)]">
+              <StatusIcon kind="alert" color="var(--status-critical)" />
+              Claim issue
+            </h2>
+            <p className="math-prose mt-1.5 text-sm leading-relaxed text-[var(--ink-secondary)]">
+              <TeX>{p.claimIssueNote}</TeX>
             </p>
           </section>
         )}
