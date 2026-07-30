@@ -42,7 +42,12 @@ interface Column {
   rows: Row[];
 }
 
-function buildColumns(problems: ProblemWithVotes[], rows: number): Column[] {
+function buildColumns(all: ProblemWithVotes[], rows: number): Column[] {
+  // Highlights celebrate outcomes, so only fully resolved entries qualify - a
+  // candidate under review or a retracted claim must not headline "Just
+  // solved" or count as having fallen.
+  const problems = all.filter((p) => p.resolution === "resolved");
+
   const justSolved = [...problems]
     .sort((a, b) => b.solveDate.localeCompare(a.solveDate))
     .slice(0, rows)

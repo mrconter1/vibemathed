@@ -27,7 +27,12 @@ function computeTiles(problems: ProblemWithVotes[], users: number): Tile[] {
   // The single most impressive true number the dataset has: how long these
   // problems had collectively stood open before falling. Replaces the old
   // Erdős count, which was insider trivia (and lives on as a field filter).
-  const yearsOpen = problems.reduce((sum, p) => sum + (ageAtSolve(p) ?? 0), 0);
+  // Only RESOLVED entries count - a candidate under review or a partial
+  // advance has not closed anything yet.
+  const yearsOpen = problems.reduce(
+    (sum, p) => sum + (p.resolution === "resolved" ? (ageAtSolve(p) ?? 0) : 0),
+    0,
+  );
 
   return [
     { icon: "layers", label: "Tracked problems", value: String(problems.length) },
