@@ -4,11 +4,20 @@
 // ancestor with `overflow` clipping (the native `title` tooltip was both slow
 // and clipped). Extracted from the old problems table so the card layout and
 // anything else can share them.
+//
+// The bubble is PORTALED to <body>: its trigger sits inside a `relative z-10`
+// wrapper (needed to stay above the entry cards' stretched-link overlay), and
+// a z-index inside that stacking context cannot beat the card's LATER z-10
+// siblings - they painted over the bubble, making it look transparent.
 
 import { useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 
+// White, not paper-raised: the bubble usually floats over a card of exactly
+// that color, where it looked transparent. White plus a stronger shadow makes
+// it read as a solid layer above the page.
 const BUBBLE =
-  "pointer-events-none fixed z-50 w-64 -translate-x-1/2 whitespace-normal break-words rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] p-2.5 text-left text-xs font-normal normal-case leading-snug tracking-normal text-[var(--ink-secondary)] shadow-md";
+  "pointer-events-none fixed z-50 w-64 -translate-x-1/2 whitespace-normal break-words rounded-md border border-[var(--hairline)] bg-white p-2.5 text-left text-xs font-normal normal-case leading-snug tracking-normal text-[var(--ink-secondary)] shadow-lg";
 
 /// Render a string with `**...**` segments bolded.
 export function renderBold(text: string): ReactNode[] {
@@ -60,11 +69,13 @@ export function InfoTip({ content, label }: { content: ReactNode; label: string 
       >
         ⓘ
       </button>
-      {open && (
-        <span role="tooltip" className={BUBBLE} style={{ left: pos.x, top: pos.y }}>
-          {content}
-        </span>
-      )}
+      {open &&
+        createPortal(
+          <span role="tooltip" className={BUBBLE} style={{ left: pos.x, top: pos.y }}>
+            {content}
+          </span>,
+          document.body,
+        )}
     </span>
   );
 }
@@ -87,11 +98,13 @@ export function StarNote({ text }: { text: string }) {
       >
         *
       </button>
-      {open && (
-        <span role="tooltip" className={BUBBLE} style={{ left: pos.x, top: pos.y }}>
-          {renderBold(text)}
-        </span>
-      )}
+      {open &&
+        createPortal(
+          <span role="tooltip" className={BUBBLE} style={{ left: pos.x, top: pos.y }}>
+            {renderBold(text)}
+          </span>,
+          document.body,
+        )}
     </span>
   );
 }

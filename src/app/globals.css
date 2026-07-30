@@ -46,6 +46,30 @@
   --font-serif: var(--font-source-serif);
 }
 
+/*
+ * The page must never pan horizontally on a phone: any accidentally-too-wide
+ * element (an unbreakable formula, a long token) is clipped at the viewport
+ * instead of widening the page. `clip` rather than `hidden` so no scroll
+ * container is created (a root scroll container would break position:sticky
+ * and still allow programmatic horizontal scrolling). Wide content that must
+ * stay reachable scrolls inside its own container (.katex-display,
+ * .math-prose below).
+ */
+html,
+body {
+  overflow-x: clip;
+}
+
+/*
+ * Reserve the page scrollbar's lane permanently. Without this, any action
+ * that grows the page past one screen (picking a bigger page size, posting a
+ * comment) makes the scrollbar pop in, reflowing the page and flashing a thin
+ * strip down the right edge.
+ */
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   background: var(--paper);
   color: var(--ink);
@@ -67,11 +91,91 @@ select:not(:disabled) {
 }
 
 /*
+ * Dropdown ITEM LISTS. The closed <select> field is styled per-component, but
+ * the open popup is OS-rendered and clashes with the paper theme. In browsers
+ * with customizable-select support (Chromium 134+, and others as they ship it)
+ * `appearance: base-select` moves the popup into the page where CSS applies;
+ * browsers without it ignore this block entirely and keep the native list.
+ */
+select,
+::picker(select) {
+  appearance: base-select;
+}
+
+/*
+ * Base appearance renders the field as a flex row with `align-items: normal`,
+ * which sticks the label to the top of our fixed-height fields - center it
+ * like the native control did. `overflow: clip` so nothing can poke past the
+ * field's border (the picker is top-layer, so it is unaffected).
+ */
+select {
+  align-items: center;
+  overflow: clip;
+}
+
+::picker(select) {
+  background: var(--paper-raised);
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(20, 18, 12, 0.16);
+  padding: 4px;
+  margin-block-start: 4px;
+  /*
+   * Open BELOW the field. The UA default is `position-try-order:
+   * most-block-size`, which flips the list above whenever the space above is
+   * larger - which it nearly always is for controls in the lower half of a
+   * page. `normal` restores the natural order: below first, and the UA's flip
+   * fallbacks only kick in when below genuinely cannot fit.
+   */
+  position-try-order: normal;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+select option {
+  padding: 5px 9px;
+  border-radius: 4px;
+  color: var(--ink-secondary);
+}
+
+select option:hover,
+select option:focus {
+  background: color-mix(in srgb, var(--accent-blue) 10%, transparent);
+  color: var(--ink);
+}
+
+select option:checked {
+  color: var(--accent-blue);
+  font-weight: 500;
+}
+
+/* The keyboard-focused option: the site's blue ring, not the UA's black one. */
+select option:focus-visible {
+  outline: 1px solid var(--accent-blue);
+  outline-offset: -1px;
+}
+
+select option::checkmark {
+  color: var(--accent-blue);
+}
+
+/*
  * Display math ($$...$$) is a rigid block that cannot reflow. On narrow
  * screens a long formula must scroll inside its own box instead of widening
  * the page. Site-wide: statements, notes and comments all render KaTeX.
  */
 .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/*
+ * Prose paragraphs that render INLINE KaTeX (statements, AI-role and
+ * verification notes). Inline math cannot line-break inside delimiters, so a
+ * formula wider than a phone must scroll inside its paragraph - without this
+ * it would be clipped dead by the root overflow-x guard above.
+ */
+.math-prose {
   overflow-x: auto;
   overflow-y: hidden;
 }
@@ -85,6 +189,9 @@ select:not(:disabled) {
  */
 .comment-body {
   overflow-wrap: anywhere;
+  /* Comments render inline KaTeX too - same reasoning as .math-prose. */
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .comment-body p + p {
