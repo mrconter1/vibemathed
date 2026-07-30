@@ -11,7 +11,7 @@
 //
 // Cards have no column headers, so sorting moved into an explicit control.
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ageAtSolve,
@@ -21,6 +21,7 @@ import {
   type VerificationStatus,
 } from "@/lib/problems";
 import { DASH, NOTABILITY_HELP, SOLVE_TYPE, VERIFICATION } from "@/lib/display";
+import { Icon } from "@/components/Icons";
 import { StatusIcon } from "@/components/StatusIcon";
 import { InfoTip, StarNote } from "@/components/Tooltip";
 import { VoteButtons } from "@/components/VoteButtons";
@@ -65,6 +66,21 @@ const PERIODS: { key: Period; label: string }[] = [
 const NUMERIC_KEYS: SortKey[] = ["solveDate", "age", "renown", "score", "discussion"];
 
 const PAGE_SIZES = [10, 25, 50, 100];
+
+/// The list settings that survive a reload (kept in localStorage). The search
+/// text and page number deliberately do not: a leftover query silently hides
+/// entries, and a stored page can be out of range once filters differ.
+const SETTINGS_KEY = "vibemathed:list-settings";
+
+interface StoredSettings {
+  fieldFilter: string;
+  resultFilter: string;
+  verificationFilter: string;
+  sortKey: SortKey;
+  sortDir: SortDir;
+  period: Period;
+  perPage: number;
+}
 
 function sortValue(p: ProblemCardData, key: SortKey, period: Period): string | number {
   switch (key) {
@@ -172,10 +188,13 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
                 style={{ backgroundColor: st.color }}
               />
               <span className="text-[var(--ink-secondary)]">{st.label}</span>
-              {p.resultNote && (
-                <span className="text-[var(--ink-muted)]">({p.resultNote})</span>
-              )}
             </span>
+            {/* The note sits OUTSIDE the nowrap badge: it can be a whole
+                sentence, which on a phone must wrap rather than drag the page
+                wider than the viewport. */}
+            {p.resultNote && (
+              <span className="text-xs text-[var(--ink-muted)]">({p.resultNote})</span>
+            )}
           </div>
 
           {/* Identity line */}
@@ -188,7 +207,7 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
               rendered to HTML on the server, so no KaTeX runs here. */}
           {p.statementHtml && (
             <p
-              className="mt-2.5 text-sm leading-relaxed text-[var(--ink-secondary)]"
+              className="math-prose mt-2.5 text-sm leading-relaxed text-[var(--ink-secondary)]"
               dangerouslySetInnerHTML={{ __html: p.statementHtml }}
             />
           )}
@@ -235,12 +254,25 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
               {p.renownNote && <StarNote text={p.renownNote} />}
             </span>
 
+            {/* Credit where an entry came from a reader - contributors should
+                see their name on the front page, not only on the entry page. */}
+            {p.submittedBy && (
+              <span className="font-mono text-[var(--ink-muted)]">
+                Submitted by{" "}
+                <span className="text-[var(--ink-secondary)]">{p.submittedBy}</span>
+              </span>
+            )}
+
             {p.commentCount > 0 && (
               <Link
                 href={`/problem/${p.slug}#discussion`}
-                className="relative z-10 font-mono text-[var(--accent-blue)] hover:underline"
+                className="relative z-10 inline-flex items-center gap-1 font-mono text-[var(--accent-blue)] hover:underline"
               >
-                {p.commentCount} {p.commentCount === 1 ? "comment" : "comments"}
+                <Icon name="bubble" size={12} />
+                {p.commentCount}
+                <span className="sr-only">
+                  {p.commentCount === 1 ? "comment" : "comments"}
+                </span>
               </Link>
             )}
           </div>
@@ -276,6 +308,70 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
     [problems],
   );
 
+  // Restore the persisted settings once, after hydration - localStorage is
+  // client-only, so reading it during the first render would make server and
+  // client HTML disagree (the setState-in-effect lint rule is disabled for
+  // exactly that reason: this IS the sanctioned use, syncing state in from an
+  // external system that only exists on the client). Every value is validated
+  // against what the UI can actually offer today, so a stale or tampered
+  // entry falls back silently.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  const [restored, setRestored] = useState(false);
+  useEffect(() => {
+    try {
+      const s = JSON.parse(
+        localStorage.getItem(SETTINGS_KEY) ?? "null",
+      ) as Partial<StoredSettings> | null;
+      if (s) {
+        if (s.fieldFilter === "all" || fields.includes(s.fieldFilter ?? "")) {
+          setFieldFilter(s.fieldFilter as string);
+        }
+        if (s.resultFilter === "all" || (s.resultFilter ?? "") in SOLVE_TYPE) {
+          setResultFilter(s.resultFilter as string);
+        }
+        if (
+          s.verificationFilter === "all" ||
+          (s.verificationFilter ?? "") in VERIFICATION
+        ) {
+          setVerificationFilter(s.verificationFilter as string);
+        }
+        if (SORTS.some((x) => x.key === s.sortKey)) setSortKey(s.sortKey as SortKey);
+        if (s.sortDir === "asc" || s.sortDir === "desc") setSortDir(s.sortDir);
+        if (PERIODS.some((x) => x.key === s.period)) setPeriod(s.period as Period);
+        if (typeof s.perPage === "number" && PAGE_SIZES.includes(s.perPage)) {
+          setPerPage(s.perPage);
+        }
+      }
+    } catch {
+      // Malformed storage reads as "nothing stored".
+    }
+    setRestored(true);
+    // Once per mount on purpose: re-running when `fields` changes would undo
+    // choices made since.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  // Persist on every change - but only after restore has run, otherwise the
+  // first render would overwrite the stored settings with the defaults.
+  useEffect(() => {
+    if (!restored) return;
+    try {
+      const s: StoredSettings = {
+        fieldFilter,
+        resultFilter,
+        verificationFilter,
+        sortKey,
+        sortDir,
+        period,
+        perPage,
+      };
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+    } catch {
+      // Storage full or blocked - the list still works, it just won't persist.
+    }
+  }, [restored, fieldFilter, resultFilter, verificationFilter, sortKey, sortDir, period, perPage]);
+
   // Only offer verification statuses that actually occur, in ladder order, so
   // the dropdown never lists an empty category.
   const verifications = useMemo(() => {
@@ -290,7 +386,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
       if (resultFilter !== "all" && p.solveType !== resultFilter) return false;
       if (verificationFilter !== "all" && p.verification !== verificationFilter) return false;
       if (!q) return true;
-      const haystack = [p.name, p.field, p.posedBy, p.model, ...p.humanCollaborators]
+      const haystack = [p.name, p.field, p.posedBy, p.model, p.submittedBy, ...p.humanCollaborators]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
@@ -359,13 +455,19 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
     <div>
       {/* Search + filters */}
       <div className="mb-2.5 flex flex-wrap items-center gap-2">
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search name, field, model, people…"
-          className="h-9 min-w-[220px] flex-1 rounded border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 text-sm text-[var(--ink)] transition-colors placeholder:text-[var(--ink-muted)] hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
-        />
+        <span className="relative min-w-[220px] flex-1">
+          <Icon
+            name="search"
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--ink-muted)]"
+          />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search name, field, model, people…"
+            className="h-9 w-full rounded border border-[var(--hairline)] bg-[var(--paper-raised)] pl-8 pr-3 text-sm text-[var(--ink)] transition-colors placeholder:text-[var(--ink-muted)] hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
+          />
+        </span>
         <select
           value={fieldFilter}
           onChange={(e) => setFieldFilter(e.target.value)}
