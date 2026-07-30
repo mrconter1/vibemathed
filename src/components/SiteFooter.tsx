@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SocialLinks } from "@/components/SocialLinks";
 
 /// One footer for the whole site (each page used to carry its own).
@@ -6,9 +7,13 @@ export function SiteFooter() {
     <footer className="mt-16 border-t border-[var(--hairline)]">
       <div className="mx-auto w-full max-w-6xl px-4 py-8 text-xs leading-relaxed text-[var(--ink-muted)] sm:px-8">
         <p className="max-w-3xl">
-          Marquee entries are hand-curated; Erdős entries come from Tao&apos;s
-          AI-contributions wiki (full solutions only, not partial or candidate
-          progress) and were each verified against their erdosproblems.com page.
+          The record covers any previously unsolved math problem whose first
+          proof or disproof came with AI in the loop - the Erdős problems are
+          simply the largest block.
+          Entries reach the record three ways: marquee results curated by hand,
+          Erdős solves imported from Tao&apos;s AI-contributions wiki (full
+          solutions only, each verified against its erdosproblems.com page), and
+          reader submissions, reviewed before publishing and credited by name.
           Posed year is the earliest cited reference, so ages are close estimates.
           The dataset is free to reuse under{" "}
           <a
@@ -22,14 +27,18 @@ export function SiteFooter() {
           .
         </p>
         <p className="mt-3">
-          Spotted an error or a solved problem we&apos;re missing?{" "}
+          Know of a solved problem we&apos;re missing?{" "}
+          <Link href="/submit" className="text-[var(--accent-blue)] hover:underline">
+            Submit it
+          </Link>
+          . Spotted an error?{" "}
           <a
             href="mailto:rasmus.lindahl1996@gmail.com?subject=VibeMathed"
             className="text-[var(--accent-blue)] hover:underline"
           >
             Contact me
-          </a>
-          .
+          </a>{" "}
+          or suggest an edit right on the entry page.
         </p>
         <div className="mt-4">
           <SocialLinks />

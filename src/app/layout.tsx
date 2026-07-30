@@ -13,7 +13,7 @@ import { ViewerProvider } from "@/components/ViewerProvider";
 // the whole sentence survives in the snippet.
 const TITLE = "VibeMathed - Math Problems Solved by AI";
 const DESCRIPTION =
-  "A hand-curated record of math problems proved or disproved by AI - famous conjectures and the Erdős problems - with checkable sources and verification labels.";
+  "A community-curated record of math problems no human had solved before, proved or disproved by AI - with checkable sources and verification labels.";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
