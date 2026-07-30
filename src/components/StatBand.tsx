@@ -11,42 +11,56 @@
 // entry names attached, so the tiles would just be repeating them.
 
 import type { ProblemWithVotes } from "@/lib/problems";
+import { Icon, type IconName } from "@/components/Icons";
 
 interface Tile {
+  icon: IconName;
   label: string;
   value: string;
   sub?: string;
 }
 
-function computeTiles(problems: ProblemWithVotes[]): Tile[] {
+function computeTiles(problems: ProblemWithVotes[], users: number): Tile[] {
   const erdos = problems.filter((p) => p.problemNumber !== null).length;
   const lean = problems.filter((p) => p.verification === "lean-verified").length;
   const votes = problems.reduce((sum, p) => sum + p.upvotes + p.downvotes, 0);
   const comments = problems.reduce((sum, p) => sum + p.commentCount, 0);
 
   return [
-    { label: "Tracked problems", value: String(problems.length) },
-    { label: "Erdős problems", value: String(erdos) },
-    { label: "Lean-verified", value: String(lean), sub: "machine-checked" },
+    { icon: "layers", label: "Tracked problems", value: String(problems.length) },
+    { icon: "hash", label: "Erdős problems", value: String(erdos) },
+    { icon: "shield", label: "Lean-verified", value: String(lean), sub: "machine-checked" },
     {
-      label: "Community",
-      value: String(votes + comments),
+      // The headline figure is PEOPLE: the tile exists to show the site has a
+      // community, and a member count says that; the engagement sits below it.
+      icon: "users",
+      label: "Community members",
+      value: String(users),
       sub: `${votes} votes · ${comments} comments`,
     },
   ];
 }
 
-export function StatBand({ problems }: { problems: ProblemWithVotes[] }) {
+export function StatBand({
+  problems,
+  users,
+}: {
+  problems: ProblemWithVotes[];
+  users: number;
+}) {
   if (problems.length === 0) return null;
 
   return (
     <dl className="contents">
-      {computeTiles(problems).map((t) => (
+      {computeTiles(problems, users).map((t) => (
         <div
           key={t.label}
           className="rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3"
         >
-          <dt className="text-xs text-[var(--ink-muted)]">{t.label}</dt>
+          <dt className="flex items-center gap-1.5 text-xs text-[var(--ink-muted)]">
+            <Icon name={t.icon} />
+            {t.label}
+          </dt>
           {/* Proportional figures on purpose - tabular-nums looks loose at
               display sizes; reserve it for columns that must align. */}
           <dd className="mt-1 text-2xl font-semibold text-[var(--ink)]">{t.value}</dd>

@@ -152,7 +152,7 @@ export default async function ProblemPage({
         )}
 
         {p.statement && (
-          <p className="mt-5 text-base leading-relaxed text-[var(--ink-secondary)]">
+          <p className="math-prose mt-5 text-base leading-relaxed text-[var(--ink-secondary)]">
             <TeX>{p.statement}</TeX>
           </p>
         )}
@@ -172,7 +172,7 @@ export default async function ProblemPage({
         {p.aiRole && (
           <section className="mt-6">
             <h2 className="font-serif text-lg text-[var(--ink)]">What the AI did</h2>
-            <p className="mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
+            <p className="math-prose mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
               <TeX>{p.aiRole}</TeX>
             </p>
           </section>
@@ -181,7 +181,7 @@ export default async function ProblemPage({
         {p.verificationNote && (
           <section className="mt-6">
             <h2 className="font-serif text-lg text-[var(--ink)]">Verification</h2>
-            <p className="mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
+            <p className="math-prose mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
               <TeX>{p.verificationNote}</TeX>
             </p>
           </section>
@@ -201,12 +201,13 @@ export default async function ProblemPage({
           </p>
         </section>
 
+        {/* Contributor credit. Deliberately readable rather than a muted
+            footnote: the person who brought this entry in gets named, here and
+            on their card on the front page. */}
         {p.submittedBy && (
-          <p className="mt-6 text-xs text-[var(--ink-muted)]">
+          <p className="mt-6 text-sm text-[var(--ink-secondary)]">
             Submitted by{" "}
-            <span className="font-medium text-[var(--ink-secondary)]">
-              {p.submittedBy}
-            </span>
+            <span className="font-medium text-[var(--ink)]">{p.submittedBy}</span>
           </p>
         )}
 

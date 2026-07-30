@@ -304,6 +304,19 @@ export async function getRecentActivity(limit = 8): Promise<SiteActivityView[]> 
   }));
 }
 
+/// Total registered accounts, for the community tile on the home page.
+///
+/// Nothing revalidates a tag on sign-up (accounts are created inside the
+/// Auth.js adapter), so freshness rests on the one-minute cache life alone -
+/// which is plenty for a headline count.
+export async function getUserCount(): Promise<number> {
+  "use cache";
+  cacheTag("users");
+  cacheLife("minutes");
+
+  return prisma.user.count();
+}
+
 /// Slugs of every published problem, for `generateStaticParams` and the sitemap.
 export async function getPublishedSlugs(): Promise<string[]> {
   "use cache";

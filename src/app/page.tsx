@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getPublishedProblems, getRecentActivity } from "@/lib/data";
+import { getPublishedProblems, getRecentActivity, getUserCount } from "@/lib/data";
 import type { ProblemCardData } from "@/lib/problems";
 import { SITE_URL } from "@/lib/site";
 import { Highlights } from "@/components/Highlights";
@@ -14,9 +14,12 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [problems, activity] = await Promise.all([
+  // 5 activity rows, not more: on mobile the feed renders at full height in
+  // its own grid row, so its length directly sets how tall that card gets.
+  const [problems, activity, users] = await Promise.all([
     getPublishedProblems(),
-    getRecentActivity(8),
+    getRecentActivity(5),
+    getUserCount(),
   ]);
 
   // Statement math is rendered to HTML here, on the server, so the client cards
@@ -42,7 +45,7 @@ export default async function Home() {
       "@type": "Dataset",
       name: "VibeMathed",
       description:
-        "A hand-curated record of math problems proved or disproved by AI - famous conjectures and the Erdős problems - with checkable sources and verification labels.",
+        "A community-curated record of math problems no human had solved before - from famous conjectures to the Erdős problems - proved or disproved by AI, with checkable sources and verification labels.",
       url: SITE_URL,
       keywords: [
         "Erdős problems",
@@ -78,8 +81,8 @@ export default async function Home() {
           Math problems solved by AI
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--ink-secondary)]">
-          A hand-curated record of mathematical problems - famous conjectures and
-          the numbered Erdős problems from{" "}
+          A community-curated record of math problems that no human had solved
+          before - from famous conjectures to the numbered Erdős problems from{" "}
           <a
             href="https://www.erdosproblems.com"
             target="_blank"
@@ -88,8 +91,9 @@ export default async function Home() {
           >
             erdosproblems.com
           </a>{" "}
-          - proved or disproved with a model in the loop. Every entry links a
-          checkable source and is labeled by how strongly it&apos;s verified.
+          - proved or disproved with AI in the loop. Every entry cites a
+          checkable source, carries a verification label, and is open for
+          votes, comments and new submissions.
         </p>
       </header>
 
@@ -102,7 +106,7 @@ export default async function Home() {
         className="mt-6 grid grid-cols-2 gap-2.5 lg:grid-cols-6"
         aria-label="Overview"
       >
-        <StatBand problems={problems} />
+        <StatBand problems={problems} users={users} />
         <RecentActivity activity={activity} />
         <Highlights problems={problems} />
       </section>
