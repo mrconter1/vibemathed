@@ -13,7 +13,9 @@ export interface PendingEntry {
   solveDate: string;
   model: string;
   verification: string;
-  statement: string | null;
+  /// Pre-rendered on the server with texToHtml, so KaTeX never ships to the
+  /// browser. Null when the submission has no statement.
+  statementHtml: string | null;
   sourceUrl: string;
   sourceName: string;
   submittedBy: string;
@@ -67,10 +69,11 @@ export function ReviewQueue({ pending }: { pending: PendingEntry[] }) {
             </span>
           </div>
 
-          {p.statement && (
-            <p className="mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
-              {p.statement}
-            </p>
+          {p.statementHtml && (
+            <p
+              className="math-prose mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]"
+              dangerouslySetInnerHTML={{ __html: p.statementHtml }}
+            />
           )}
 
           <dl className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-[var(--ink-secondary)]">

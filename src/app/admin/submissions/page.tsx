@@ -6,6 +6,7 @@ import { isAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { formatCommentDate } from "@/lib/comment-render";
 import { resolveSnapshot } from "@/lib/identity";
+import { texToHtml } from "@/components/TeX";
 import { ReviewQueue, type PendingEntry } from "@/components/ReviewQueue";
 
 export const metadata: Metadata = {
@@ -66,7 +67,9 @@ async function Queue() {
     solveDate: r.solveDate,
     model: r.model,
     verification: r.verification,
-    statement: r.statement,
+    // Rendered here so the review card shows the math exactly as it would
+    // publish; ReviewQueue is a client component and must not pull in KaTeX.
+    statementHtml: r.statement ? texToHtml(r.statement) : null,
     sourceUrl: r.sourceUrl,
     sourceName: r.sourceName,
     submittedBy: resolveSnapshot(r.submittedBy?.pseudonym ?? null, r.submittedBy !== null),
