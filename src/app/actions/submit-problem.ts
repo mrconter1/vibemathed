@@ -9,6 +9,7 @@ import { isHttpUrl, isValidSolveDate, parseLinks } from "@/lib/editable";
 import {
   SUBMISSION_FIELDS,
   SUBMISSION_WINDOW_MS,
+  SUBMISSIONS_PER_WINDOW,
   slugify,
   type SubmissionValues,
 } from "@/lib/submission";
@@ -31,17 +32,17 @@ export async function submitProblem(values: SubmissionValues): Promise<SubmitRes
   const userName = session.user.pseudonym ?? null;
   const admin = isAdmin(session.user.email);
 
-  // One submission per person per day, so a burst cannot flood the queue.
+  // A few submissions per person per day, so a burst cannot flood the queue.
   // Admins bypass it.
   if (!admin) {
     const since = new Date(Date.now() - SUBMISSION_WINDOW_MS);
     const recent = await prisma.problem.count({
       where: { submittedById: userId, createdAt: { gte: since } },
     });
-    if (recent >= 1) {
+    if (recent >= SUBMISSIONS_PER_WINDOW) {
       return {
         ok: false,
-        error: "You can submit one entry per day. Try again tomorrow.",
+        error: `You can submit up to ${SUBMISSIONS_PER_WINDOW} entries per rolling 24 hours. Try again later.`,
       };
     }
   }

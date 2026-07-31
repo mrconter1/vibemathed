@@ -52,8 +52,13 @@ export function emptySubmission(): SubmissionValues {
   return out;
 }
 
-/// One submission per person per rolling 24 hours. Admins are exempt.
+/// Submission throttle: up to SUBMISSIONS_PER_WINDOW entries per person per
+/// rolling 24 hours. Admins are exempt. Generous enough for a productive
+/// contributor with several results (it happens), still a cap on spam - and
+/// note that curator-entered rows credited to an account count against its
+/// quota too, since the check is by submitter id.
 export const SUBMISSION_WINDOW_MS = 24 * 60 * 60 * 1000;
+export const SUBMISSIONS_PER_WINDOW = 3;
 
 /// URL-safe id derived from the entry name. Uniqueness is enforced by the
 /// caller against the database.

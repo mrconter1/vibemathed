@@ -80,8 +80,8 @@ export function SubmitForm() {
           summary. If a result is contested, unreviewed or partial, say so in
           the status and verification fields rather than leaving it out.
           Submissions are reviewed before they appear.
-          {!isAdmin && " You can submit one entry per day."} Full criteria in
-          the{" "}
+          {!isAdmin && " You can submit up to three entries per day."} Full
+          criteria in the{" "}
           <Link
             href="/methodology"
             className="text-[var(--accent-blue)] hover:underline"
