@@ -70,6 +70,17 @@ html {
   scrollbar-gutter: stable;
 }
 
+/*
+ * Kill the mobile tap highlight. The entry cards are made fully clickable by
+ * a link overlay stretched across the card, so the UA's translucent tap
+ * highlight paints the WHOLE card on every touch - under Chrome's auto-dark
+ * inversion that reads as a bright flash. The site's own hover and
+ * focus-visible styles carry the feedback instead.
+ */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   background: var(--paper);
   color: var(--ink);
