@@ -138,6 +138,44 @@
     "sourceName": "arXiv:2607.19184"
   },
   {
+    "slug": "bellman-lost-in-forest-golden-gnomon",
+    "name": "Bellman's Lost-in-a-Forest Problem for the Golden Gnomon",
+    "shortName": "Lost in a forest (gnomon)",
+    "problemNumber": null,
+    "field": "Convex geometry",
+    "fieldGroup": "Geometry & topology",
+    "resolution": "resolved",
+    "statement": "What is the shortest curve guaranteed to reach the boundary of the golden gnomon - the isosceles triangle with equal sides $1$ and apex angle $108^\\circ$ - from an unknown starting position and heading? The optimum is a symmetric seven-piece path of segments, circular shoulders and tangents, of exactly determined transcendental length $C = 1.282676\\ldots$ - the first proved exact optimum for an isosceles triangle with base angle below $45^\\circ$.",
+    "posedBy": "Richard E. Bellman",
+    "yearPosed": 1956,
+    "solveType": "proved",
+    "solveDate": "2026-07-27",
+    "model": "Claude Fable 5, GPT-5.6 Sol, Claude Opus 5",
+    "modelMaker": "Anthropic / OpenAI",
+    "humanCollaborators": [
+      "Alexander Temerev",
+      "Alessio Doria"
+    ],
+    "aiRole": "The models were used throughout: to search out the extremal curve, to draft the arguments, and to write the accompanying Lean 4 development. The paper states precisely which steps are machine-checked, and notes those checks hold regardless of how the statements were found.",
+    "verification": "preprint-unrefereed",
+    "verificationNote": "Lean 4 verifies the two finite algebraic certificate families and the discrete ledger identities, but not the full argument end to end; the paper's appendix states exactly which steps are machine-checked. arXiv preprint, not yet peer-reviewed.",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 1,
+    "sourceUrl": "https://arxiv.org/abs/2607.24483",
+    "sourceName": "arXiv:2607.24483 - The exact solution of Bellman's lost-in-a-forest problem for the golden gnomon",
+    "resultNote": "Bellman's problem for general regions remains open",
+    "aiContribution": "ai-discovered",
+    "links": [
+      {
+        "label": "Lean verification development",
+        "url": "https://github.com/atemerev/gnomon"
+      }
+    ]
+  },
+  {
     "slug": "benjamini-hochberg-correlated-gaussian",
     "name": "Benjamini-Hochberg FDR Under Correlated Gaussian Tests",
     "shortName": "BH under correlation",
@@ -288,6 +326,36 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.23732",
     "sourceName": "arXiv:2607.23732 - An exact counterexample to Carlson's associated-prime depth conjecture"
+  },
+  {
+    "slug": "carrasco-conjecture-ozf",
+    "name": "Carrasco's Conjecture on the O'Shea-Zames-Falb Test",
+    "shortName": "Carrasco/OZF conjecture",
+    "problemNumber": null,
+    "field": "Control theory",
+    "fieldGroup": "Differential equations",
+    "resolution": "resolved",
+    "statement": "Is the O'Shea-Zames-Falb multiplier test necessary for robust stability of Lur'e systems with slope-restricted nonlinearities, as conjectured by Carrasco? No: there is a stable Lur'e interconnection, certified by a full-block multiplier, that admits no OZF multiplier.",
+    "posedBy": "Joaquin Carrasco",
+    "yearPosed": null,
+    "solveType": "disproved",
+    "solveDate": "2026-07-26",
+    "model": "ChatGPT 5.5",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Andrey Kharitenko"
+    ],
+    "aiRole": "A finite-horizon counterexample provided by ChatGPT 5.5 motivated the construction; the author built and certified the full interconnection.",
+    "verification": "preprint-unrefereed",
+    "verificationNote": "Single-author arXiv note; not yet peer-reviewed.",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.23599",
+    "sourceName": "arXiv:2607.23599 - Existence of stable Lur'e systems for which the O'Shea-Zames-Falb stability test fails",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "cerny-one-cluster",
@@ -727,8 +795,8 @@
     "fieldGroup": "Geometry & topology",
     "resolution": "candidate",
     "statement": "If $f(n)$ is the maximum total side length of $n$ interior-disjoint squares packed in the unit square, is $f(k^2 + 1) = k$? An exact rational configuration packs $17$ squares with total side length greater than $4$, refuting the identity at $k = 4$.",
-    "posedBy": null,
-    "yearPosed": null,
+    "posedBy": "Paul Erdős",
+    "yearPosed": 1932,
     "solveType": "disproved",
     "solveDate": "2026-07-29",
     "model": "OpenAI Codex",
@@ -743,7 +811,14 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/106",
-    "sourceName": "erdosproblems.com/106"
+    "sourceName": "erdosproblems.com/106",
+    "ageNote": "Dated to 1932 by Soifer, who heard it from Erdős directly (\"In 1932, the 19-year old Paul Erdős poses the following problem\"). Erdős independently dated it to \"more than 60 years ago\" writing in 1994.",
+    "links": [
+      {
+        "label": "Construction and verification code (GitHub)",
+        "url": "https://github.com/Sprite143/erdos-106-counterexample"
+      }
+    ]
   },
   {
     "slug": "erdos-1061",
@@ -3742,6 +3817,54 @@
     "sourceName": "A Silicon Valley Insider"
   },
   {
+    "slug": "exact-two-scenario-ssuf-bound-on-the-four-terminal-planar-gadget",
+    "name": "Exact two-scenario SSUF bound on the four-terminal planar gadget",
+    "shortName": "Four-terminal two-scenario SSUF",
+    "problemNumber": null,
+    "field": "Combinatorial optimization; unsplittable flow",
+    "fieldGroup": "Algorithms & optimization",
+    "resolution": "variant",
+    "statement": "For the released four-terminal planar acyclic single-source unsplittable-flow gadget, require one unsplittable routing to be no more expensive than a prescribed fractional routing under each of two positive cost scenarios. What is the worst-case normalized additive upper arc deviation? Theorem RB-003 proves $$\\beta_G^{(2\\mathrm{sc})}=\\frac{17}{8}=2.125,$$ as a non-attained supremum.",
+    "posedBy": "Matthew Protti",
+    "yearPosed": 2026,
+    "solveType": "proved",
+    "solveDate": "2026-07-28",
+    "model": "GPT-5.6 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Matthew Protti"
+    ],
+    "aiRole": "GPT-5.6 Pro developed substantial portions of the construction and parameter search, symbolic derivations, analytic proof, exact verifiers, adversarial analyses, and manuscript drafts. Matthew Protti selected and framed the target, required exact enumeration, mutation tests and hostile review, forced correction of material errors and overclaims, chose the final theorem scope, and authorized the release. Codex and other model sessions reconstructed checks and release controls. Role separation reduced some shared-context risk but was not independent human review.",
+    "verification": "preprint-unrefereed",
+    "verificationNote": "The immutable v0.2.1 release contains a self-contained human-readable proof, exact rational construction, and deterministic verification artifacts. For the finite epsilon=1/1000 certificate, the graph-native checker enumerates all 16 routings and 13 arcs and obtains 1061/500; scaling demands by 4000 gives unavoidable upper deviation 8488. Exact algebraic checks, mutation tests, and two role-separated AI-assisted hostile-review rounds are included. The human-readable proof is authoritative. No external human mathematical or journal peer review is documented; v0.2.1 changes provenance and release hygiene only and leaves the v0.2.0 mathematics unchanged.",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://github.com/matthewprotti/planar-ssuf-four-terminal-bound/releases/download/v0.2.1/rb003_two_scenario_note_v2.pdf",
+    "sourceName": "RB-003 paper, revision 2 (v0.2.1)",
+    "resultNote": "Fixed graph; exactly two positive E-minus-C scenarios; cost non-increase; normalized additive upper arc deviation. Not an unrestricted planar, one-scenario, or many-scenario constant.",
+    "links": [
+      {
+        "label": "Immutable v0.2.1 release",
+        "url": "https://github.com/matthewprotti/planar-ssuf-four-terminal-bound/releases/tag/v0.2.1"
+      },
+      {
+        "label": "Exact verification suite",
+        "url": "https://github.com/matthewprotti/planar-ssuf-four-terminal-bound/blob/v0.2.1/scripts/verify_all.py"
+      },
+      {
+        "label": "AI use and provenance",
+        "url": "https://github.com/matthewprotti/planar-ssuf-four-terminal-bound/blob/v0.2.1/AI_USE_AND_PROVENANCE.md"
+      },
+      {
+        "label": "Related VibeMathed entry: four-terminal planar DGG counterexample",
+        "url": "https://vibemathed.com/problem/planar-four-terminal-dgg"
+      }
+    ]
+  },
+  {
     "slug": "feige-hypergraph-moore-bound",
     "name": "Feige's Hypergraph Moore-Bound Conjecture",
     "shortName": "Hypergraph Moore bound",
@@ -3767,6 +3890,53 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.14068",
     "sourceName": "arXiv:2607.14068 - The hypergraph Moore bound"
+  },
+  {
+    "slug": "feiges-conjecture",
+    "name": "Feige's Conjecture",
+    "shortName": "Feige's conjecture",
+    "problemNumber": null,
+    "field": "Probability",
+    "fieldGroup": "Probability & statistics",
+    "resolution": "resolved",
+    "statement": "Let $X_1,\\ldots,X_n$ be independent nonnegative random variables with $\\mathbb{E}X_i \\le 1$, and let $S$ be their sum. Is $\\mathbb{P}(S < \\mathbb{E}S + 1) \\ge 1/e$? Feige proved the constant $1/13$ and conjectured the sharp $1/e$. Two independent July 2026 proofs settle it, both building on the Vlassis-Thomas calibration theorem; the sharper one determines the optimal small-deviation bound for every deviation $\\delta \\ge 1$.",
+    "posedBy": "Uriel Feige",
+    "yearPosed": 2004,
+    "solveType": "proved",
+    "solveDate": "2026-07-27",
+    "model": "ChatGPT 5.6 Pro, GPT-5.6 Sol, Codex",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Weibo Fu",
+      "Yanjun Han",
+      "Guanyang Wang",
+      "Jun Yan",
+      "Peng Zhang",
+      "Zhengqing Zhou",
+      "Zipei Nie",
+      "Jiaye Wei"
+    ],
+    "aiRole": "The primary paper states plainly that the proof was found by ChatGPT 5.6 Pro, combining the Vlassis-Thomas Dirichlet calibration theorem with Grünbaum-type convex geometry; the authors checked, revised and rewrote the argument, and the accompanying Lean formalization was developed with Codex. The independent second proof by Nie and Wei was obtained with the assistance of GPT-5.6 Sol.",
+    "verification": "lean-verified",
+    "verificationNote": "An end-to-end Lean formalization of the $e^{-1}$ conjecture accompanies the primary paper, formalizing the Vlassis-Thomas theorem, Grünbaum's centroid theorem and the combining argument. Two independent AI-assisted proofs appeared within days; neither preprint is peer-reviewed yet.",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.23980",
+    "sourceName": "arXiv:2607.23980 - Sharp small-deviation inequalities for sums of independent nonnegative random variables",
+    "aiContribution": "ai-discovered",
+    "links": [
+      {
+        "label": "Independent second proof (Nie and Wei), arXiv:2607.24528",
+        "url": "https://arxiv.org/abs/2607.24528"
+      },
+      {
+        "label": "Lean formalization of the e^-1 conjecture",
+        "url": "https://github.com/pengzhang91/Feige"
+      }
+    ]
   },
   {
     "slug": "fel-syzygy-conjecture",
@@ -3881,8 +4051,8 @@
     "citationsSource": null,
     "citationsUrl": null,
     "renownLangs": 0,
-    "sourceUrl": "https://arxiv.org/abs/2607.27533",
-    "sourceName": "arXiv:2607.27533 - An asymptotic bound for non-covering congruence systems over Fq[x]",
+    "sourceUrl": "https://arxiv.org/abs/2607.27538",
+    "sourceName": "arXiv:2607.27538 - An asymptotic bound for non-covering congruence systems over Fq[x]",
     "resultNote": "leading asymptotic determined up to a bounded q-dependent term"
   },
   {
@@ -3945,6 +4115,68 @@
     "sourceUrl": "https://arxiv.org/abs/2605.11656",
     "sourceName": "arXiv:2605.11656 - A counterexample to the Gaussian completely monotone conjecture",
     "resultNote": "also refutes the McKean and Toscani conjectures"
+  },
+  {
+    "slug": "gaussian-kinetic-trace-question",
+    "name": "Kinetic Trace Estimates in the Gaussian Model",
+    "shortName": "Kinetic trace estimates",
+    "problemNumber": null,
+    "field": "Kinetic theory",
+    "fieldGroup": "Differential equations",
+    "resolution": "resolved",
+    "statement": "Does the natural trace estimate hold for kinetic energy spaces in the unrestricted Gaussian velocity model on bounded domains (Question 1.8 of Albritton, Armstrong, Mourrat and Novack)? No: for each $1 \\le p < 2$ there are counterexamples on every bounded $\\mathrm{C}^{1,1}$ domain in dimension $d \\ge 2$. The paper also identifies the sharp boundary-regularity threshold $\\mathrm{C}^{1,1/2}$ for the natural trace weight.",
+    "posedBy": "Dallas Albritton, Scott Armstrong, Jean-Christophe Mourrat, Matthew Novack",
+    "yearPosed": 2024,
+    "solveType": "disproved",
+    "solveDate": "2026-07-27",
+    "model": "GPT-5.5 Pro, GPT-5.6 Sol",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Lukas Niebel",
+      "Lisa Valentini"
+    ],
+    "aiRole": "GPT-5.5 Pro provided preliminary counterexamples and GPT-5.6 Sol an initial proof of the natural half-space trace estimate; generative AI was also used in developing some of the subsequent arguments. The authors developed and verified the final theory.",
+    "verification": "preprint-unrefereed",
+    "verificationNote": "arXiv preprint; not yet peer-reviewed.",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.24708",
+    "sourceName": "arXiv:2607.24708 - Sharp kinetic trace theory",
+    "resultNote": "the named open question is answered negatively; the paper's positive theory goes further",
+    "aiContribution": "ai-co-developed"
+  },
+  {
+    "slug": "gaussian-product-inequality-conjecture",
+    "name": "Gaussian product inequality conjecture",
+    "shortName": "GPI",
+    "problemNumber": null,
+    "field": null,
+    "fieldGroup": "Probability & statistics",
+    "resolution": "resolved",
+    "statement": "Let $\\boldsymbol{X} = (X_1,\\ldots,X_n)$ be a centered Gaussian vector, not necessarily nondegenerate. Then, for every $\\alpha_1,\\ldots,\\alpha_n > 0$,\n$$\\mathsf{E}\\left[\\prod_{i=1}^n |X_i|^{\\alpha_i}\\right] \\geq \\prod_{i=1}^n \\mathsf{E}\\left[|X_i|^{\\alpha_i}\\right].$$\nMoreover, if $\\mathsf{Var}(X_i) > 0$ for every $i$, then equality holds if and only if $X_1,\\ldots,X_n$ are independent.",
+    "posedBy": "Péter E. Frenkel",
+    "yearPosed": 2007,
+    "solveType": "proved",
+    "solveDate": "2026-07-20",
+    "model": "ChatGPT 5.6 Sol",
+    "modelMaker": null,
+    "humanCollaborators": [
+      "Frédéric Ouimet",
+      "Dylan Greaves"
+    ],
+    "aiRole": "The AI provided a complete and correct solution without the characterization of equality in terms of independence (but only because the equality case was not in the original prompt by Dylan Greaves).",
+    "verification": "lean-verified",
+    "verificationNote": "The prompt and output are available at https://chatgpt.com/share/6a5ea69b-1648-83e8-80b1-014ae0b1003c. This early version of the proof was formalized in Lean using Codex; see https://github.com/dylgre/gaussian-product-inequality. The proof has also been checked by ChatGPT 5.6 Sol (Pro), Gemini 3.1 Pro (Extended Thinking), Grok 4.5 (Expert), and Frédéric Ouimet.",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": "Research Gate",
+    "citationsUrl": "https://doi.org/10.13140/RG.2.2.17569.77923/1",
+    "renownLangs": 0,
+    "sourceUrl": "https://doi.org/10.13140/RG.2.2.17569.77923/1",
+    "sourceName": "A proof of the strong Gaussian product inequality conjecture"
   },
   {
     "slug": "generalized-totient-divisibility",
@@ -4286,6 +4518,37 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.25381",
     "sourceName": "arXiv:2607.25381 - Breaking the 4^k barrier for the k-distinct language"
+  },
+  {
+    "slug": "kazhdan-lusztig-matroids-unimodality",
+    "name": "Unimodality of Kazhdan-Lusztig Polynomials of Matroids",
+    "shortName": "KL matroid unimodality",
+    "problemNumber": null,
+    "field": "Algebraic combinatorics",
+    "fieldGroup": "Combinatorics",
+    "resolution": "resolved",
+    "statement": "Are the Kazhdan-Lusztig polynomials of matroids always unimodal - in particular log-concave, or even real-rooted, as conjectured? No: representable matroids obtained by deleting points from finite projective geometries have non-unimodal Kazhdan-Lusztig polynomials over every finite field, so the log-concavity and real-rootedness conjectures are both false.",
+    "posedBy": "Katie Gedeon, Nicholas Proudfoot, Benjamin Young",
+    "yearPosed": 2017,
+    "solveType": "disproved",
+    "solveDate": "2026-07-27",
+    "model": "Rethlas agent (GPT-5.6 Sol)",
+    "modelMaker": null,
+    "humanCollaborators": [
+      "Ronnie Cheng",
+      "Shurui Liu"
+    ],
+    "aiRole": "The result came from running the Rethlas research agent with base model GPT-5.6 Sol at maximum reasoning effort - the same agent behind the Analytic Bertini entry; the paper documents the run and the authors verified the constructions.",
+    "verification": "preprint-unrefereed",
+    "verificationNote": "arXiv preprint (v2) with explicit constructions from projective geometries; not yet peer-reviewed.",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.24186",
+    "sourceName": "arXiv:2607.24186 - Kazhdan-Lusztig polynomials of matroids need not be unimodal",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "kemeny-three-voters",
@@ -4675,6 +4938,40 @@
     "sourceName": "Demonstrandum artifacts repository (RESULTS.md)"
   },
   {
+    "slug": "lami-regula-entanglement-irreversibility",
+    "name": "Lami-Regula Conjecture on Entanglement Irreversibility",
+    "shortName": "Entanglement irreversibility",
+    "problemNumber": null,
+    "field": "Quantum information",
+    "fieldGroup": "Quantum information & computing",
+    "resolution": "resolved",
+    "statement": "Is the irreversibility of entanglement manipulation robust in the strong-converse sense - a strict separation between the exponential strong-converse distillable entanglement and the entanglement cost, as conjectured by Lami and Regula? Yes: there are states for which any attempt to restore reversibility incurs an error growing exponentially in the number of copies, and the irreversibility persists even at polynomially growing error.",
+    "posedBy": "Ludovico Lami, Bartosz Regula",
+    "yearPosed": 2023,
+    "solveType": "proved",
+    "solveDate": "2026-07-29",
+    "model": "ChatGPT (GPT-5.6 Sol)",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Tulja Varun Kondra",
+      "Raphael Brinster",
+      "Hermann Kampermann",
+      "Dagmar Bruß",
+      "Nikolai Wyderka"
+    ],
+    "aiRole": "Technical details of the proofs were developed with the help of ChatGPT (GPT-5.6 Sol, accessed July 2026); the authors thoroughly checked all output.",
+    "verification": "preprint-unrefereed",
+    "verificationNote": "arXiv preprint; not yet peer-reviewed.",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.27195",
+    "sourceName": "arXiv:2607.27195 - Very Strong Irreversibility of Quantum Entanglement",
+    "aiContribution": "ai-co-developed"
+  },
+  {
     "slug": "lamplighter-return-probability",
     "name": "Return Probability for the Lamplighter Walk on a Tree",
     "shortName": "Lamplighter return",
@@ -4787,6 +5084,102 @@
     "sourceUrl": "https://arxiv.org/abs/2607.22874",
     "sourceName": "arXiv:2607.22874 - The signature of connected line graphs is unbounded",
     "resultNote": "no constant-bound repair of the conjecture is possible"
+  },
+  {
+    "slug": "lukic-conjecture",
+    "name": "The Lukic Conjecture",
+    "shortName": "Lukic conjecture",
+    "problemNumber": null,
+    "field": "Spectral theory",
+    "fieldGroup": "Analysis",
+    "resolution": "resolved",
+    "statement": "Let $\\mu$ be a probability measure on the unit circle with Verblunsky coefficients $\\alpha$. Lukic conjectured that a weighted entropy condition with finitely many critical points is equivalent to a decomposition of $\\alpha$ into components localized at those points. A counterexample with two critical points of multiplicity three refutes it: the sequence satisfies the decomposition conditions while the corresponding weighted entropy is $-\\infty$.",
+    "posedBy": "Milivoje Lukić",
+    "yearPosed": null,
+    "solveType": "disproved",
+    "solveDate": "2026-07-29",
+    "model": "GPT-5.6",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Jun Yan"
+    ],
+    "aiRole": "The counterexample - two phase modes with common power-decay exponent $3/20$ - was found by GPT-5.6, as the abstract states directly; the author developed and verified the construction.",
+    "verification": "preprint-unrefereed",
+    "verificationNote": "Single-author arXiv preprint with the counterexample stated explicitly; not yet peer-reviewed.",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.26419",
+    "sourceName": "arXiv:2607.26419 - A Mixed-Resonance Counterexample to the Lukic Conjecture",
+    "aiContribution": "ai-discovered"
+  },
+  {
+    "slug": "martinsson-steiner-fractional-chromatic",
+    "name": "Martinsson-Steiner Conjecture on Fractional Chromatic Number",
+    "shortName": "Fractional chromatic bound",
+    "problemNumber": null,
+    "field": "Graph coloring",
+    "fieldGroup": "Combinatorics",
+    "resolution": "partial",
+    "statement": "Is the fractional chromatic number of every $d$-degenerate triangle-free graph at most $(1+o(1))\\frac{d}{\\log d}$, with a matching lower bound, as conjectured by Martinsson and Steiner? The upper bound is confirmed constructively for graphs of girth at least $5$, and the conjectured lower bound is established in a stronger form for every fixed girth; the original triangle-free case remains open.",
+    "posedBy": "Anders Martinsson, Raphael Steiner",
+    "yearPosed": null,
+    "solveType": "proved",
+    "solveDate": "2026-07-28",
+    "model": "ChatGPT 5.5 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Peter Allen",
+      "Abhishek Dhawan",
+      "Jonathan A. Noel"
+    ],
+    "aiRole": "The model solved an optimization problem the authors formulated to determine the correct shape of the fractional clique function, checked and simplified probabilistic and algebraic estimates, helped draft some calculations, and pointed the authors to a key reference. The construction and overall strategy are the authors', who take full responsibility.",
+    "verification": "preprint-unrefereed",
+    "verificationNote": "arXiv preprint; not yet peer-reviewed.",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.26271",
+    "sourceName": "arXiv:2607.26271 - Sharp bounds for the fractional chromatic number of high-girth d-degenerate graphs",
+    "resultNote": "girth >= 5 case; the triangle-free case remains open",
+    "aiContribution": "ai-co-developed"
+  },
+  {
+    "slug": "maxwell-conjecture",
+    "name": "Maxwell's Conjecture on Point-Charge Equilibria",
+    "shortName": "Maxwell conjecture",
+    "problemNumber": null,
+    "field": "Classical electrostatics",
+    "fieldGroup": "Mathematical physics",
+    "resolution": "resolved",
+    "statement": "Do $n$ point charges whose electrostatic potential has only non-degenerate critical points always have at most $(n-1)^2$ of them? A configuration of five charges - three at the vertices of an equilateral triangle plus two small central charges pulled apart into a shallow bipyramid - has at least $24 > 16$ non-degenerate critical points, so the conjecture is false.",
+    "posedBy": "James Clerk Maxwell",
+    "yearPosed": 1873,
+    "solveType": "disproved",
+    "solveDate": "2026-07-29",
+    "model": "GPT-5.6 Sol",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Philip Arathoon",
+      "Gavin Ball",
+      "Matthew D. Kvalheim"
+    ],
+    "aiRole": "The idea behind the counterexample construction was suggested by the model; the authors verified all mathematical details and wrote the note.",
+    "verification": "preprint-unrefereed",
+    "verificationNote": "Short arXiv note with an explicit five-charge configuration and non-degeneracy verification; not yet peer-reviewed.",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.27197",
+    "sourceName": "arXiv:2607.27197 - The Maxwell Conjecture is False",
+    "ageNote": "The bound traces to Maxwell's 1873 Treatise; the precise non-degenerate form was formulated by Gabrielov, Novikov and Shapiro in 2007.",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "minimum-edge-outerplanarity",
@@ -5379,6 +5772,34 @@
     "resultNote": "nonzero on half-collinear complex kinematics, with a closed formula"
   },
   {
+    "slug": "sombor-energy-conjecture",
+    "name": "Sombor-Energy Conjecture",
+    "shortName": "Sombor energy",
+    "problemNumber": null,
+    "field": "Spectral graph theory",
+    "fieldGroup": "Combinatorics",
+    "resolution": "candidate",
+    "statement": "Does every nontrivial finite simple graph have noninteger Sombor energy? If $\\rho_1,\\ldots,\\rho_n$ are the eigenvalues of the Sombor matrix of a graph $G$, its Sombor energy is\n\n$$E_{\\mathrm{SO}}(G)=\\sum_{i=1}^{n}|\\rho_i|.$$\n\nThe conjecture asserted that $E_{\\mathrm{SO}}(G)\\notin\\mathbb Z$ for every nontrivial graph. A connected graph on nine vertices is exhibited with $E_{\\mathrm{SO}}(G)=64$, disproving the conjecture.",
+    "posedBy": "Nima Ghanbari",
+    "yearPosed": 2021,
+    "solveType": "disproved",
+    "solveDate": "2026-07-30",
+    "model": "GPT-5.6 Thinking",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [],
+    "aiRole": "The AI constructed a connected bipartite graph on nine vertices and calculated its Sombor spectrum exactly. Writing its Sombor matrix in the block form\n\n$$S(G)=\\begin{pmatrix}0&B\\\\B^{T}&0\\end{pmatrix},$$\n\nthe singular values of $B$ were found to be\n\n$$5,\\quad 5,\\quad 11+\\sqrt{31},\\quad 11-\\sqrt{31}.$$\n\nTherefore,\n\n$$E_{\\mathrm{SO}}(G)\n=2\\left(5+5+(11+\\sqrt{31})+(11-\\sqrt{31})\\right)\n=64.$$\n\nThe AI also audited the edge list, degrees, connectivity, bipartition, matrix multiplication, characteristic polynomial, singular values and final energy calculation, and produced a self-contained proof.",
+    "verification": "announced-unreviewed",
+    "verificationNote": "The proof has been internally audited using exact calculations. The graph has nine vertices, fifteen distinct edges and degree sequence $(4,4,4,3,3,3,3,3,3)$. Its connectivity, bipartition, Sombor matrix, product $B^{T}B$, singular values, complete spectrum and energy $64$ were independently recomputed within the AI conversation.\n\nThe result has not yet been checked by an independent graph-theory expert, peer reviewer or formal proof assistant. A literature search located the original conjecture, the 2023 partial-results paper and its 2024 corrigendum, but did not locate an equivalent connected counterexample. This search does not establish absolute priority, and no claim is made that this is the first or a new counterexample.",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://github.com/Lamptypeshi/Sombor-Energy-Conjecture-Counterexample/blob/main/somborconnectedintegerenergyFALSE.pdf",
+    "sourceName": "Sombor Energy Conjecture Counterexample",
+    "ageNote": "First posted on arXiv in 2021 and published in 2022."
+  },
+  {
     "slug": "son-pham",
     "name": "Huneke-Wiegand Conjecture",
     "shortName": "Huneke-Wiegand Conjecture",
@@ -5646,6 +6067,43 @@
     ]
   },
   {
+    "slug": "vandermonde-powers-non-snp",
+    "name": "Powers of the Vandermonde Determinant Are Eventually Non-SNP",
+    "shortName": "Vandermonde non-SNP",
+    "problemNumber": null,
+    "field": "Algebraic combinatorics",
+    "fieldGroup": "Combinatorics",
+    "resolution": "resolved",
+    "statement": "Monical, Tokcan and Yong conjectured that every fixed positive power of the Vandermonde determinant fails to have saturated Newton polytope in sufficiently many variables. For every even power $k \\ge 4$ there is an explicit lattice point of the Newton polytope of $a_{\\delta_k}^k$ with vanishing coefficient, obtained from a Dyson constant-term identity; the odd case follows by alternation, proving the conjecture.",
+    "posedBy": "Cara Monical, Neriman Tokcan, Alexander Yong",
+    "yearPosed": 2017,
+    "solveType": "proved",
+    "solveDate": "2026-07-26",
+    "model": "Codex (GPT-5.6 Sol Extra High)",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Thien Le",
+      "Melanie Weber"
+    ],
+    "aiRole": "The key even-power construction and the proof strategy arose from prompting OpenAI Codex; the complete transcript appears in the paper's appendix. The authors subsequently checked and organized the argument.",
+    "verification": "preprint-unrefereed",
+    "verificationNote": "arXiv preprint with the prompting transcript in an appendix and an accompanying Lean formalization (coverage per its repository); not yet peer-reviewed.",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.23828",
+    "sourceName": "arXiv:2607.23828 - Powers of the Vandermonde determinant are eventually non-SNP",
+    "aiContribution": "ai-discovered",
+    "links": [
+      {
+        "label": "Lean formalization",
+        "url": "https://github.com/steven-le-thien/vandermonde-snp"
+      }
+    ]
+  },
+  {
     "slug": "vlasov-maxwell-landau-equilibria",
     "name": "Equilibria of the Vlasov-Maxwell-Landau System",
     "shortName": "VML equilibria",
@@ -5707,6 +6165,10 @@
       {
         "label": "Independent proof via a partial-trace inequality (arXiv:2607.24309)",
         "url": "https://arxiv.org/abs/2607.24309"
+      },
+      {
+        "label": "Third independent proof via a rank-two partial-trace inequality (Song and Chen), arXiv:2607.23416",
+        "url": "https://arxiv.org/abs/2607.23416"
       }
     ]
   },
@@ -5817,6 +6279,106 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2605.22763",
     "sourceName": "arXiv:2605.22763 - AlphaProof Nexus report"
+  },
+  {
+    "slug": "wowii-graph-conjecture-2",
+    "name": "Written on the Wall II, Graph Conjecture 2",
+    "shortName": "WOWII 2",
+    "problemNumber": null,
+    "field": "Graph theory (automated conjecture)",
+    "fieldGroup": "Combinatorics",
+    "resolution": "candidate",
+    "statement": null,
+    "posedBy": "Written on the Wall II (automated conjecturing)",
+    "yearPosed": null,
+    "solveType": "proved",
+    "solveDate": "2026-07-27",
+    "model": "ChatGPT 5.6 Sol, Codex (GPT-5.6 Sol)",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Kenta Kitamura"
+    ],
+    "aiRole": "The Lean 4 proof was developed with ChatGPT 5.6 Sol and Codex at high reasoning effort, per the submitter's disclosure. A parallel submission by another contributor may prove the same result by a different argument.",
+    "verification": "lean-verified",
+    "verificationNote": "Standalone Lean 4 proof with a clean axiom check (propext, Classical.choice, Quot.sound - no sorry, no native_decide). Acceptance into the formal-conjectures repository is still pending, hence candidate status.",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://github.com/google-deepmind/formal-conjectures/pull/4654",
+    "sourceName": "formal-conjectures PR #4654 - WOWII Graph Conjecture 2 marked solved",
+    "aiContribution": "ai-discovered",
+    "links": [
+      {
+        "label": "Lean proof repository (Kenta Kitamura)",
+        "url": "https://github.com/KitaKen1/wowii-graph-conjecture-2-lean"
+      }
+    ]
+  },
+  {
+    "slug": "wowii-graph-conjecture-217",
+    "name": "Written on the Wall II, Graph Conjecture 217",
+    "shortName": "WOWII 217",
+    "problemNumber": null,
+    "field": "Graph theory (automated conjecture)",
+    "fieldGroup": "Combinatorics",
+    "resolution": "candidate",
+    "statement": null,
+    "posedBy": "Written on the Wall II (automated conjecturing)",
+    "yearPosed": null,
+    "solveType": "proved",
+    "solveDate": "2026-07-30",
+    "model": "Claude Opus 5 (with Gemini 3.1 Pro, GPT-5.3 Codex Spark, Grok 4.5)",
+    "modelMaker": null,
+    "humanCollaborators": [],
+    "aiRole": "Per the submitter's disclosure, the proof and submission preparation used Claude Opus 5, with the other models on bounded mechanical subtasks. A second, independent Lean proof of the same conjecture (ChatGPT 5.6 Sol and Codex) was submitted days earlier.",
+    "verification": "lean-verified",
+    "verificationNote": "Kernel-checked Lean 4 proof; the axiom check includes native_decide (Lean.ofReduceBool / trustCompiler) for the exhaustive finite-graph certificates, which the submitter flags as the main trust assumption. Acceptance into the formal-conjectures repository is still pending, hence candidate status.",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://github.com/google-deepmind/formal-conjectures/pull/4668",
+    "sourceName": "formal-conjectures PR #4668 - Mark WOWII Graph Conjecture 217 solved",
+    "aiContribution": "ai-discovered",
+    "links": [
+      {
+        "label": "Independent second Lean proof (PR #4656)",
+        "url": "https://github.com/google-deepmind/formal-conjectures/pull/4656"
+      }
+    ]
+  },
+  {
+    "slug": "zero-forcing-versus-independence",
+    "name": "Zero Forcing versus Independence in Subcubic Graphs",
+    "shortName": "Zero forcing vs independence",
+    "problemNumber": null,
+    "field": "Graph theory",
+    "fieldGroup": "Combinatorics",
+    "resolution": "resolved",
+    "statement": "Is the zero forcing number of every connected graph with maximum degree $3$ at most its independence number plus one? A connected 24-vertex subcubic graph with independence number $9$ and zero forcing number $11$ refutes this 2017 TxGraffiti conjecture, and a 36-vertex cubic variant refutes the cubic form: $Z = \\alpha + 2$ is attained.",
+    "posedBy": "TxGraffiti (automated conjecturing program)",
+    "yearPosed": 2017,
+    "solveType": "disproved",
+    "solveDate": "2026-07-26",
+    "model": "Claude Opus 5",
+    "modelMaker": "Anthropic",
+    "humanCollaborators": [
+      "Mikko Fischer"
+    ],
+    "aiRole": "The counterexamples were found with the assistance of Claude Opus 5, directed by the author, who independently verified them - a conjecture generated by one automated system falling to a search assisted by another.",
+    "verification": "preprint-unrefereed",
+    "verificationNote": "Explicit finite counterexamples, independently checked by the author; arXiv preprint, not yet peer-reviewed.",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.23664",
+    "sourceName": "arXiv:2607.23664 - A counterexample to the zero forcing versus independence conjecture for cubic and subcubic graphs",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "ziegler-cross-polytope-01",
