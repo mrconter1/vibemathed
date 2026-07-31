@@ -38,15 +38,20 @@ export const RESOLUTION: Record<
   retracted: { label: "Retracted", pill: "Retracted", color: "var(--status-critical)" },
 };
 
-/// Degree of AI involvement. Follows the resolution-pill convention: the top
-/// tier is the site's headline case, so it renders no pill on cards - only the
-/// tiers that QUALIFY the headline get one. Unclassified entries (null) render
-/// nothing anywhere.
+/// Degree of AI involvement. Unlike the resolution pills, EVERY classified
+/// tier renders a pill on cards: "resolved" is a default state, but
+/// "AI-discovered" is the site's headline claim and the axis is what
+/// distinguishes entries - hiding the top tier read as the feature missing.
+/// Unclassified entries (null) still render nothing anywhere.
 export const AI_CONTRIBUTION: Record<
   AiContribution,
   { label: string; pill: string | null; color: string }
 > = {
-  "ai-discovered": { label: "AI-discovered", pill: null, color: "var(--accent-blue)" },
+  "ai-discovered": {
+    label: "AI-discovered",
+    pill: "AI-discovered",
+    color: "var(--accent-blue)",
+  },
   "ai-co-developed": {
     label: "AI co-developed",
     pill: "AI co-developed",

@@ -135,7 +135,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.19184",
-    "sourceName": "arXiv:2607.19184"
+    "sourceName": "arXiv:2607.19184",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "bellman-lost-in-forest-golden-gnomon",
@@ -202,7 +203,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.12208",
-    "sourceName": "arXiv:2607.12208 - The Benjamini-Hochberg procedure can fail to control the FDR"
+    "sourceName": "arXiv:2607.12208 - The Benjamini-Hochberg procedure can fail to control the FDR",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "bipartite-bound-information",
@@ -229,7 +231,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.25838",
-    "sourceName": "arXiv:2607.25838 - Bipartite bound information exists"
+    "sourceName": "arXiv:2607.25838 - Bipartite bound information exists",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "boucksom-local-analytic-bertini",
@@ -258,7 +261,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.25230",
-    "sourceName": "arXiv:2607.25230 - Analytic Bertini theorem II: the local case"
+    "sourceName": "arXiv:2607.25230 - Analytic Bertini theorem II: the local case",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "carbery-almost-orthogonality",
@@ -325,7 +329,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.23732",
-    "sourceName": "arXiv:2607.23732 - An exact counterexample to Carlson's associated-prime depth conjecture"
+    "sourceName": "arXiv:2607.23732 - An exact counterexample to Carlson's associated-prime depth conjecture",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "carrasco-conjecture-ozf",
@@ -384,7 +389,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.19675",
-    "sourceName": "arXiv:2607.19675 - The Černý conjecture for one-cluster automata via annular spectral descent"
+    "sourceName": "arXiv:2607.19675 - The Černý conjecture for one-cluster automata via annular spectral descent",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "chen-gendron-spin-parity",
@@ -441,7 +447,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.18619",
-    "sourceName": "arXiv:2607.18619 - Chernoff's density is strongly log-concave"
+    "sourceName": "arXiv:2607.18619 - Chernoff's density is strongly log-concave",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "cycle-double-cover-conjecture",
@@ -468,7 +475,8 @@
     "citationsUrl": null,
     "renownLangs": 2,
     "sourceUrl": "https://www.scientificamerican.com/article/chatgpt-just-proved-another-50-year-old-math-conjecture/",
-    "sourceName": "Scientific American"
+    "sourceName": "Scientific American",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "derivative-free-convex-oracle-gap",
@@ -497,7 +505,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.13335",
-    "sourceName": "arXiv:2607.13335"
+    "sourceName": "arXiv:2607.13335",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "dinitz-garg-goemans-unsplittable-flow",
@@ -528,6 +537,7 @@
     "sourceUrl": "https://x.com/DmitryRybin1/status/2079904005652893709",
     "sourceName": "Dmitry Rybin (X)",
     "renownNote": "A Wikipedia article now exists, but it was created **in response** to the problem being solved, so it does not count as a valid dedicated article.",
+    "aiContribution": "ai-discovered",
     "links": [
       {
         "label": "Independent restricted counterexample: planar, four terminals (Protti)",
@@ -587,7 +597,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://github.com/demonstrandum-research/artifacts",
-    "sourceName": "Demonstrandum artifacts repository (RESULTS.md)"
+    "sourceName": "Demonstrandum artifacts repository (RESULTS.md)",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1014",
@@ -701,7 +712,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1038",
-    "sourceName": "erdosproblems.com/1038"
+    "sourceName": "erdosproblems.com/1038",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "erdos-1039",
@@ -813,6 +825,7 @@
     "sourceUrl": "https://www.erdosproblems.com/106",
     "sourceName": "erdosproblems.com/106",
     "ageNote": "Dated to 1932 by Soifer, who heard it from Erdős directly (\"In 1932, the 19-year old Paul Erdős poses the following problem\"). Erdős independently dated it to \"more than 60 years ago\" writing in 1994.",
+    "aiContribution": "ai-assisted",
     "links": [
       {
         "label": "Construction and verification code (GitHub)",
@@ -1130,7 +1143,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1177",
-    "sourceName": "erdosproblems.com/1177"
+    "sourceName": "erdosproblems.com/1177",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1186",
@@ -1158,7 +1172,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1186",
     "sourceName": "erdosproblems.com/1186",
-    "resultNote": "exact k = 3 constant established, settling the Parrilo-Robertson-Saracino conjecture for 3-APs; general k remains open"
+    "resultNote": "exact k = 3 constant established, settling the Parrilo-Robertson-Saracino conjecture for 3-APs; general k remains open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1188",
@@ -1185,7 +1200,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1188",
-    "sourceName": "erdosproblems.com/1188"
+    "sourceName": "erdosproblems.com/1188",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1189",
@@ -1213,7 +1229,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1189",
     "sourceName": "erdosproblems.com/1189",
-    "resultNote": "exact largest modulus 3·2^{k-3} for k ≥ 5, near-linear least maximum, reciprocal mass Θ(log k), and an infinite divisor family; the counting asymptotic rests on the cited BBMST theorem"
+    "resultNote": "exact largest modulus 3·2^{k-3} for k ≥ 5, near-linear least maximum, reciprocal mass Θ(log k), and an infinite divisor family; the counting asymptotic rests on the cited BBMST theorem",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-119",
@@ -1242,7 +1259,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/119",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1190",
@@ -1474,7 +1492,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/123",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-125",
@@ -1529,7 +1548,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/130",
     "sourceName": "erdosproblems.com/130",
-    "resultNote": "the infinite-chromatic subquestion is proved; the rest of the problem remains open"
+    "resultNote": "the infinite-chromatic subquestion is proved; the rest of the problem remains open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-138",
@@ -1695,7 +1715,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/254",
-    "sourceName": "erdosproblems.com/254"
+    "sourceName": "erdosproblems.com/254",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-258",
@@ -1749,7 +1770,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/267",
-    "sourceName": "erdosproblems.com/267"
+    "sourceName": "erdosproblems.com/267",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-281",
@@ -1864,7 +1886,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/320",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-321",
@@ -1895,7 +1918,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/321",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-330",
@@ -1978,7 +2002,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/336",
-    "sourceName": "erdosproblems.com/336"
+    "sourceName": "erdosproblems.com/336",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-347",
@@ -2153,7 +2178,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/394",
-    "sourceName": "erdosproblems.com/394"
+    "sourceName": "erdosproblems.com/394",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-397",
@@ -2296,7 +2322,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/450",
-    "sourceName": "erdosproblems.com/450"
+    "sourceName": "erdosproblems.com/450",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-451",
@@ -2380,7 +2407,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/469",
-    "sourceName": "erdosproblems.com/469"
+    "sourceName": "erdosproblems.com/469",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "erdos-477",
@@ -2434,7 +2462,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/489",
-    "sourceName": "erdosproblems.com/489"
+    "sourceName": "erdosproblems.com/489",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-514",
@@ -2516,7 +2545,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/538",
-    "sourceName": "erdosproblems.com/538"
+    "sourceName": "erdosproblems.com/538",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-539",
@@ -2599,7 +2629,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/584",
     "sourceName": "erdosproblems.com/584",
-    "resultNote": "the literal wording is refuted; the intended variant remains open"
+    "resultNote": "the literal wording is refuted; the intended variant remains open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-593",
@@ -2626,7 +2657,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/593",
-    "sourceName": "erdosproblems.com/593"
+    "sourceName": "erdosproblems.com/593",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-603",
@@ -2823,7 +2855,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/662",
     "sourceName": "erdosproblems.com/662",
-    "resultNote": "natural readings of the ambiguous historical statement are disproved"
+    "resultNote": "natural readings of the ambiguous historical statement are disproved",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-684",
@@ -2994,7 +3027,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/709",
     "sourceName": "erdosproblems.com/709",
-    "resultNote": "upper bound improved to f(n) ≤ 14n^{3/7} with an explicit logarithmic lower bound; matching bounds remain open"
+    "resultNote": "upper bound improved to f(n) ≤ 14n^{3/7} with an explicit logarithmic lower bound; matching bounds remain open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-728-factorial-divisibility",
@@ -3138,7 +3172,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/768",
-    "sourceName": "erdosproblems.com/768"
+    "sourceName": "erdosproblems.com/768",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-769",
@@ -3166,7 +3201,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/769",
     "sourceName": "erdosproblems.com/769",
-    "resultNote": "the conjectured lower bound is disproved; good bounds for c(n) remain open"
+    "resultNote": "the conjectured lower bound is disproved; good bounds for c(n) remain open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-793",
@@ -3195,7 +3231,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/793",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-796",
@@ -3222,7 +3259,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/796",
-    "sourceName": "erdosproblems.com/796"
+    "sourceName": "erdosproblems.com/796",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-846",
@@ -3391,7 +3429,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/866",
     "sourceName": "erdosproblems.com/866",
-    "resultNote": "h₄(n) = 4 for every n ≥ 331,777, with improved global bounds; the broader problem remains open"
+    "resultNote": "h₄(n) = 4 for every n ≥ 331,777, with improved global bounds; the broader problem remains open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-871",
@@ -3613,7 +3652,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/959",
     "sourceName": "erdosproblems.com/959",
-    "resultNote": "superlinear lower bound M(n) ≥ n^{1 + 1/(50000 log log n)}, improving Ω(n log n); the exact order remains open"
+    "resultNote": "superlinear lower bound M(n) ≥ n^{1 + 1/(50000 log log n)}, improving Ω(n log n); the exact order remains open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-960",
@@ -3845,6 +3885,7 @@
     "sourceUrl": "https://github.com/matthewprotti/planar-ssuf-four-terminal-bound/releases/download/v0.2.1/rb003_two_scenario_note_v2.pdf",
     "sourceName": "RB-003 paper, revision 2 (v0.2.1)",
     "resultNote": "Fixed graph; exactly two positive E-minus-C scenarios; cost non-increase; normalized additive upper arc deviation. Not an unrestricted planar, one-scenario, or many-scenario constant.",
+    "aiContribution": "ai-co-developed",
     "links": [
       {
         "label": "Immutable v0.2.1 release",
@@ -3889,7 +3930,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.14068",
-    "sourceName": "arXiv:2607.14068 - The hypergraph Moore bound"
+    "sourceName": "arXiv:2607.14068 - The hypergraph Moore bound",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "feiges-conjecture",
@@ -4053,7 +4095,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.27538",
     "sourceName": "arXiv:2607.27538 - An asymptotic bound for non-covering congruence systems over Fq[x]",
-    "resultNote": "leading asymptotic determined up to a bounded q-dependent term"
+    "resultNote": "leading asymptotic determined up to a bounded q-dependent term",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "fullrsb-jamming-identity",
@@ -4176,7 +4219,8 @@
     "citationsUrl": "https://doi.org/10.13140/RG.2.2.17569.77923/1",
     "renownLangs": 0,
     "sourceUrl": "https://doi.org/10.13140/RG.2.2.17569.77923/1",
-    "sourceName": "A proof of the strong Gaussian product inequality conjecture"
+    "sourceName": "A proof of the strong Gaussian product inequality conjecture",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "generalized-totient-divisibility",
@@ -4287,7 +4331,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://x.com/justinsunyt/status/2080116559352316409",
-    "sourceName": "Public certificate thread (X)"
+    "sourceName": "Public certificate thread (X)",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "graffiti-conjecture-6",
@@ -4318,7 +4363,8 @@
     "sourceUrl": "https://github.com/Lamptypeshi/graffiti-conjecture-6-counterexample/blob/main/graffiticonjecture6FALSE.pdf",
     "sourceName": "Graffiti Conjecture 6 Counterexample",
     "resultNote": "Infinite family of counterexamples; mathematical argument internally checked, with external verification and novelty review pending.",
-    "ageNote": "First documented in March 2002 and revised in May 2003; disproved approximately 24 years later."
+    "ageNote": "First documented in March 2002 and revised in May 2003; disproved approximately 24 years later.",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "green-open-problem-57",
@@ -4376,7 +4422,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://github.com/leanprover-community/mathlib4/pull/41748",
-    "sourceName": "Mathlib PR #41748"
+    "sourceName": "Mathlib PR #41748",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "hodge-bundle-simplicity",
@@ -4490,7 +4537,8 @@
     "sourceUrl": "https://officechai.com/ai/an-anthropic-researcher-says-fable-just-helped-him-disprove-the-85-year-old-jacobian-conjecture/",
     "sourceName": "OfficeChai",
     "resultNote": "n ≥ 3; plane case open",
-    "ageNote": "Only n ≥ 3 is disproved; the two-variable (plane) case of Keller's 1939 conjecture remains open. Counterexample found by Levent Alpöge with Claude Fable 5."
+    "ageNote": "Only n ≥ 3 is disproved; the two-variable (plane) case of Keller's 1939 conjecture remains open. Counterexample found by Levent Alpöge with Claude Fable 5.",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "k-distinct-4k-barrier",
@@ -4517,7 +4565,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.25381",
-    "sourceName": "arXiv:2607.25381 - Breaking the 4^k barrier for the k-distinct language"
+    "sourceName": "arXiv:2607.25381 - Breaking the 4^k barrier for the k-distinct language",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "kazhdan-lusztig-matroids-unimodality",
@@ -4577,7 +4626,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.25540",
-    "sourceName": "arXiv:2607.25540 - Kemeny rank aggregation is NP-hard for three voters"
+    "sourceName": "arXiv:2607.25540 - Kemeny rank aggregation is NP-hard for three voters",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "kirby-5-16-dga-undecidability",
@@ -4635,7 +4685,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.24164",
     "sourceName": "arXiv:2607.24164 - The KLS constant is O(log^(1/4) n)",
-    "resultNote": "with constant 2; also improves the global KLS bound to $O(\\log^{1/4} n)$"
+    "resultNote": "with constant 2; also improves the global KLS bound to $O(\\log^{1/4} n)$",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "koch-narayan-conjecture-1",
@@ -4689,7 +4740,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.17477",
-    "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook"
+    "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "kourovka-19-25-totient-sums",
@@ -4716,7 +4768,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.17477",
-    "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook"
+    "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "kourovka-20-125-rota-baxter",
@@ -4743,7 +4796,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.17477",
-    "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook"
+    "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "kourovka-21-147-relatively-convex",
@@ -4770,7 +4824,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.17477",
-    "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook"
+    "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "kourovka-21-150-rank-inequality",
@@ -4797,7 +4852,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.17477",
-    "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook"
+    "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "kourovka-21-24-power-graph-cograph",
@@ -4824,7 +4880,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.17477",
-    "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook"
+    "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "kourovka-21-8-class-transpositions",
@@ -4851,7 +4908,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.17477",
-    "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook"
+    "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "kourovka-3-46-locally-soluble",
@@ -4878,7 +4936,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.17477",
-    "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook"
+    "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "kuperberg-six-cylinder",
@@ -4908,7 +4967,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.24691",
-    "sourceName": "arXiv:2607.24691 - A computer-assisted proof of Kuperberg's six-cylinder conjecture"
+    "sourceName": "arXiv:2607.24691 - A computer-assisted proof of Kuperberg's six-cylinder conjecture",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "kurkov-fubini-sum",
@@ -4935,7 +4995,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://github.com/demonstrandum-research/artifacts",
-    "sourceName": "Demonstrandum artifacts repository (RESULTS.md)"
+    "sourceName": "Demonstrandum artifacts repository (RESULTS.md)",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "lami-regula-entanglement-irreversibility",
@@ -5052,7 +5113,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.linkedin.com/posts/tesuji_levit-mandrescu-counterexample-activity-7487528446403768320-b1pc",
-    "sourceName": "Lucas B. (Jump Trading), LinkedIn announcement"
+    "sourceName": "Lucas B. (Jump Trading), LinkedIn announcement",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "line-graph-signature-unbounded",
@@ -5083,7 +5145,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.22874",
     "sourceName": "arXiv:2607.22874 - The signature of connected line graphs is unbounded",
-    "resultNote": "no constant-bound repair of the conjecture is possible"
+    "resultNote": "no constant-bound repair of the conjecture is possible",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "lukic-conjecture",
@@ -5208,7 +5271,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.08110",
-    "sourceName": "arXiv:2607.08110 - Minimum edge-outerplanar embeddings are polynomial-time computable"
+    "sourceName": "arXiv:2607.08110 - Minimum edge-outerplanar embeddings are polynomial-time computable",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "monical-snp-conjecture",
@@ -5235,7 +5299,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.21508",
-    "sourceName": "arXiv:2607.21508 - Chromatic symmetric functions of claw-free graphs are not Schur positive"
+    "sourceName": "arXiv:2607.21508 - Chromatic symmetric functions of claw-free graphs are not Schur positive",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "monochromatic-quantum-graphs-diagonal",
@@ -5320,7 +5385,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.04388",
-    "sourceName": "arXiv:2607.04388 - Optimal online discrepancy minimization in linear time"
+    "sourceName": "arXiv:2607.04388 - Optimal online discrepancy minimization in linear time",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "online-spencer-vector-balancing",
@@ -5347,7 +5413,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.14238",
-    "sourceName": "arXiv:2607.14238 - Online Beck-Fiala down to logarithmic sparsity"
+    "sourceName": "arXiv:2607.14238 - Online Beck-Fiala down to logarithmic sparsity",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "optimal-exponent-relating-sumsets-and-difference-sets",
@@ -5379,7 +5446,8 @@
     "sourceUrl": "https://arxiv.org/abs/2607.27199",
     "sourceName": "Lin and Li, “Settling the Optimal Exponent Relating Sumsets and Difference Sets,” arXiv:2607.27199",
     "resultNote": "New arXiv preprint with an author-provided Lean formalization; not yet peer-reviewed.",
-    "ageNote": "The result has been described publicly as solving a “50-year-old problem,” but the paper does not identify a precise original posing date. The optimality of the lower exponent was explicitly recorded as open by Merlijn Staps in 2014–2015. The 1969 reference concerns an early sum-dominant-set construction, not a clearly documented posing of this exact exponent question."
+    "ageNote": "The result has been described publicly as solving a “50-year-old problem,” but the paper does not identify a precise original posing date. The optimality of the lower exponent was explicitly recorded as open by Merlijn Staps in 2014–2015. The 1969 reference concerns an early sum-dominant-set construction, not a clearly documented posing of this exact exponent question.",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "pandey-parity-petersen",
@@ -5438,6 +5506,7 @@
     "sourceName": "Public research disclosure v0.1.0 (GitHub release)",
     "resultNote": "restricted planar four-terminal case",
     "ageNote": "The posed year is that of the parent DGG conjecture; the restricted planar four-terminal case was not separately dated.",
+    "aiContribution": "ai-co-developed",
     "links": [
       {
         "label": "Manuscript (PDF)",
@@ -5509,7 +5578,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.24687",
-    "sourceName": "arXiv:2607.24687 - Sharp continuity of quantum conditional entropy"
+    "sourceName": "arXiv:2607.24687 - Sharp continuity of quantum conditional entropy",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "quartic-syk-spectral-edge",
@@ -5538,7 +5608,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.18998",
-    "sourceName": "arXiv:2607.18998 - The spectral edge of the quartic SYK model"
+    "sourceName": "arXiv:2607.18998 - The spectral edge of the quartic SYK model",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "ramsey-hypergraph-hn-bound",
@@ -5623,7 +5694,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.22515",
-    "sourceName": "arXiv:2607.22515 - Matroid flat counts are not unimodal"
+    "sourceName": "arXiv:2607.22515 - Matroid flat counts are not unimodal",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "s-decoding-polynomial-sparsity",
@@ -5651,7 +5723,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://eprint.iacr.org/2026/1515",
     "sourceName": "ePrint 2026/1515 - Exponentially fewer-server PIR from sparser S-decoding polynomials",
-    "resultNote": "conditional on a plausible number-theoretic conjecture; unconditional through s = 15"
+    "resultNote": "conditional on a plausible number-theoretic conjecture; unconditional through s = 15",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "sabidussi-compatibility",
@@ -5680,7 +5753,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.13225",
-    "sourceName": "arXiv:2607.13225 - A proof of Sabidussi's compatibility conjecture"
+    "sourceName": "arXiv:2607.13225 - A proof of Sabidussi's compatibility conjecture",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "shannon-capacity-odd-cycles-records",
@@ -5708,7 +5782,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.21517",
     "sourceName": "arXiv:2607.21517 - Improved lower bounds for the Shannon capacity of odd cycles",
-    "resultNote": "four record lower bounds; the exact capacities remain open for every odd cycle beyond C5"
+    "resultNote": "four record lower bounds; the exact capacities remain open for every odd cycle beyond C5",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "signed-bar-conjecture",
@@ -5736,7 +5811,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.03639",
     "sourceName": "arXiv:2607.03639 - An AI-assisted solution to the signed BAR conjecture",
-    "resultNote": "uniqueness proved for stable Harrison-Reiman systems with a nonsingular M-matrix reflection; an infinite-dimensional obstruction is shown in the larger completely-S class"
+    "resultNote": "uniqueness proved for stable Harrison-Reiman systems with a nonsingular M-matrix reflection; an infinite-dimensional obstruction is shown in the larger completely-S class",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "single-minus-gluon-amplitudes",
@@ -5797,7 +5873,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://github.com/Lamptypeshi/Sombor-Energy-Conjecture-Counterexample/blob/main/somborconnectedintegerenergyFALSE.pdf",
     "sourceName": "Sombor Energy Conjecture Counterexample",
-    "ageNote": "First posted on arXiv in 2021 and published in 2022."
+    "ageNote": "First posted on arXiv in 2021 and published in 2022.",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "son-pham",
@@ -5827,7 +5904,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://github.com/sonpham-org/huneke-wiegand-candidate-verification",
     "sourceName": "GitHub",
-    "resultNote": "Verified by author of the conjecture"
+    "resultNote": "Verified by author of the conjecture",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "stanley-claw-free-schur-positivity",
@@ -5854,7 +5932,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.21508",
-    "sourceName": "arXiv:2607.21508 - Chromatic symmetric functions of claw-free graphs are not Schur positive"
+    "sourceName": "arXiv:2607.21508 - Chromatic symmetric functions of claw-free graphs are not Schur positive",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "stanley-differential-poset-rank-bound",
@@ -5881,7 +5960,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.22988",
-    "sourceName": "arXiv:2607.22988 - An explicit counterexample to Stanley's rankwise lower-bound conjecture"
+    "sourceName": "arXiv:2607.22988 - An explicit counterexample to Stanley's rankwise lower-bound conjecture",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "stanley-problem-4-differential-posets",
@@ -5908,7 +5988,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.24541",
-    "sourceName": "arXiv:2607.24541 - A negative answer to Stanley's Problem 4 on differential posets"
+    "sourceName": "arXiv:2607.24541 - A negative answer to Stanley's Problem 4 on differential posets",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "sun-trigonometric-permanents",
@@ -5967,6 +6048,7 @@
     "sourceUrl": "https://roed314.github.io/gq2/",
     "sourceName": "A presentation of the absolute Galois group of Q2 (project site)",
     "ageNote": "Posed year approximate: the explicit local theory away from p = 2 was complete by the early 1980s, leaving the dyadic case.",
+    "aiContribution": "ai-discovered",
     "links": [
       {
         "label": "Finite-quotient verifier (5,402 test groups)",
@@ -6028,7 +6110,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.11376",
-    "sourceName": "arXiv:2607.11376 - Long-time asymptotics of type D ASEP"
+    "sourceName": "arXiv:2607.11376 - Long-time asymptotics of type D ASEP",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "unconditional-unclonable-encryption",
@@ -6157,6 +6240,7 @@
     "sourceUrl": "https://arxiv.org/abs/2607.21367",
     "sourceName": "arXiv:2607.21367 - A solution to 2-copy distillability of Werner states",
     "resultNote": "two-copy distillable iff already one-copy distillable",
+    "aiContribution": "ai-assisted",
     "links": [
       {
         "label": "Independent proof: Bharti, Gajjala & Haug (arXiv:2607.24479)",
@@ -6197,7 +6281,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://github.com/google-deepmind/formal-conjectures/pull/4482",
-    "sourceName": "formal-conjectures PR #4482 - Disprove WOWII Conjecture 103"
+    "sourceName": "formal-conjectures PR #4482 - Disprove WOWII Conjecture 103",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "wow-conjecture-109",
@@ -6224,7 +6309,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://github.com/google-deepmind/formal-conjectures",
-    "sourceName": "google-deepmind/formal-conjectures (WrittenOnTheWallII)"
+    "sourceName": "google-deepmind/formal-conjectures (WrittenOnTheWallII)",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "wow-conjecture-143",
@@ -6251,7 +6337,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://github.com/google-deepmind/formal-conjectures",
-    "sourceName": "google-deepmind/formal-conjectures (WrittenOnTheWallII)"
+    "sourceName": "google-deepmind/formal-conjectures (WrittenOnTheWallII)",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "wow-graph-conjecture-2",
