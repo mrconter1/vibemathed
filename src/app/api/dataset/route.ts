@@ -21,6 +21,7 @@ export async function GET() {
     ageNote: p.ageNote ?? null,
     solveType: p.solveType,
     resolution: p.resolution,
+    aiContribution: p.aiContribution ?? null,
     resultNote: p.resultNote ?? null,
     claimIssueNote: p.claimIssueNote ?? null,
     solveDate: p.solveDate,

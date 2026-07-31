@@ -110,6 +110,7 @@ export async function updateProblem(
       field: true,
       fieldGroup: true,
       resolution: true,
+      aiContribution: true,
       claimIssueNote: true,
       statement: true,
       posedBy: true,

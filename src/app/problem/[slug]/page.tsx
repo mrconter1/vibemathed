@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getActivity, getComments, getProblemBySlug, getPublishedSlugs } from "@/lib/data";
 import { ageAtSolve, type ProblemWithVotes } from "@/lib/problems";
-import { DASH, RESOLUTION, SOLVE_TYPE, VERIFICATION } from "@/lib/display";
+import { AI_CONTRIBUTION, DASH, RESOLUTION, SOLVE_TYPE, VERIFICATION } from "@/lib/display";
 import { toEditableValues } from "@/lib/editable";
 import { SITE_URL } from "@/lib/site";
 import { Changelog } from "@/components/Changelog";
@@ -94,6 +94,12 @@ export default async function ProblemPage({
         (p.resultNote ? ` (${p.resultNote})` : ""),
     ],
     ["Status", RESOLUTION[p.resolution]?.label ?? p.resolution],
+    // DASH, not a default tier: most of the catalog predates this axis and an
+    // unclassified entry must not claim a degree of involvement.
+    [
+      "AI contribution",
+      p.aiContribution ? (AI_CONTRIBUTION[p.aiContribution]?.label ?? p.aiContribution) : DASH,
+    ],
     ["Field", p.field ?? p.fieldGroup ?? DASH],
     ["Posed by", p.posedBy ?? DASH],
     ["Year posed", p.yearPosed?.toString() ?? DASH],

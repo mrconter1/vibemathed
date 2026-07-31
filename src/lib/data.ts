@@ -25,6 +25,7 @@ import { formatCommentDate, renderCommentHtml } from "@/lib/comment-render";
 import type { CommentView } from "@/lib/comments";
 import { resolveSnapshot } from "@/lib/identity";
 import type {
+  AiContribution,
   FieldGroup,
   ProblemWithTrends,
   ProblemWithVotes,
@@ -48,6 +49,7 @@ const PROBLEM_SELECT = {
   solveType: true,
   resolution: true,
   claimIssueNote: true,
+  aiContribution: true,
   solveDate: true,
   model: true,
   modelMaker: true,
@@ -92,6 +94,7 @@ function toProblem(r: ProblemRow): ProblemWithVotes {
     solveType: r.solveType as SolveType,
     resolution: r.resolution as ResolutionStatus,
     claimIssueNote: r.claimIssueNote,
+    aiContribution: r.aiContribution as AiContribution | null,
     solveDate: r.solveDate,
     model: r.model,
     modelMaker: r.modelMaker,

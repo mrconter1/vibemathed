@@ -4,7 +4,12 @@
 // page, which meant a renamed verification tier had to be changed in two places.
 // Single source now.
 
-import type { ResolutionStatus, SolveType, VerificationStatus } from "@/lib/problems";
+import type {
+  AiContribution,
+  ResolutionStatus,
+  SolveType,
+  VerificationStatus,
+} from "@/lib/problems";
 
 /// Placeholder for a field an entry does not have. Most entries are missing at
 /// least one, so this shows up a lot.
@@ -31,6 +36,27 @@ export const RESOLUTION: Record<
     color: "var(--accent-blue)",
   },
   retracted: { label: "Retracted", pill: "Retracted", color: "var(--status-critical)" },
+};
+
+/// Degree of AI involvement. Follows the resolution-pill convention: the top
+/// tier is the site's headline case, so it renders no pill on cards - only the
+/// tiers that QUALIFY the headline get one. Unclassified entries (null) render
+/// nothing anywhere.
+export const AI_CONTRIBUTION: Record<
+  AiContribution,
+  { label: string; pill: string | null; color: string }
+> = {
+  "ai-discovered": { label: "AI-discovered", pill: null, color: "var(--accent-blue)" },
+  "ai-co-developed": {
+    label: "AI co-developed",
+    pill: "AI co-developed",
+    color: "var(--ink-secondary)",
+  },
+  "ai-assisted": {
+    label: "AI-assisted",
+    pill: "AI-assisted",
+    color: "var(--ink-secondary)",
+  },
 };
 
 export type StatusIconKind = "check" | "clock" | "alert" | "info";

@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
+  AI_CONTRIBUTIONS,
   RESOLUTION_STATUSES,
+  type AiContribution,
   type ResolutionStatus,
   type VerificationStatus,
 } from "@/lib/problems";
-import { NOTABILITY_HELP, RESOLUTION, VERIFICATION } from "@/lib/display";
+import { AI_CONTRIBUTION, NOTABILITY_HELP, RESOLUTION, VERIFICATION } from "@/lib/display";
 import { StatusIcon } from "@/components/StatusIcon";
 
 // The permanent home for the rules that otherwise live only in tooltips and
@@ -41,6 +43,15 @@ const VERIFICATION_DETAIL: Record<VerificationStatus, string> = {
     "Publicly claimed with enough detail to check, but nobody independent has checked it yet.",
   contested:
     "Actively disputed or partially walked back. The entry stays listed so the dispute is on record.",
+};
+
+const AI_CONTRIBUTION_DETAIL: Record<AiContribution, string> = {
+  "ai-discovered":
+    "The model produced the central proof or object - the counterexample, the construction, the argument - and humans verified and wrote it up.",
+  "ai-co-developed":
+    "Named, essential steps came from the model inside a human-led proof: a key lemma, a construction idea, a subproblem the authors formulated and the model solved.",
+  "ai-assisted":
+    "Instrumental but human-led: the model built the search or verification tooling, checked proofs, or otherwise contributed work the authors call material to the result.",
 };
 
 const RESOLUTION_DETAIL: Record<ResolutionStatus, string> = {
@@ -122,6 +133,34 @@ export default function MethodologyPage() {
           issue</strong>: a documented problem with the claim itself, such as a refuted
           lemma or a misformalized formal statement. Claim issues render as a
           visible flag, never as a silent deletion.
+        </p>
+      </Section>
+
+      <Section title="How much the AI did">
+        <p>
+          Disclosures range from &quot;the proof is found by the model&quot; to
+          &quot;the model helped with one lemma&quot;, and those must not carry
+          the same weight. Every new entry is classified by degree of AI
+          involvement, strongest first:
+        </p>
+        <dl className="space-y-2.5">
+          {AI_CONTRIBUTIONS.map((c) => (
+            <div key={c}>
+              <dt className="font-medium" style={{ color: AI_CONTRIBUTION[c].color }}>
+                {AI_CONTRIBUTION[c].label}
+              </dt>
+              <dd className="text-[var(--ink-secondary)]">{AI_CONTRIBUTION_DETAIL[c]}</dd>
+            </div>
+          ))}
+        </dl>
+        <p>
+          Below the bottom tier there is no tier: papers where AI only wrote,
+          proofread, drew figures or ran routine code checks are out of scope
+          entirely - as is any paper whose authors state the mathematics is
+          theirs alone. Classification takes the authors&apos; own disclosure at
+          face value, and a vague disclosure gets the lower tier. Entries added
+          before this axis existed are unclassified until reviewed; an
+          unclassified entry says nothing about the degree of involvement.
         </p>
       </Section>
 

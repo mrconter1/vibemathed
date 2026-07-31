@@ -28,6 +28,7 @@ function contentOf(p: MathProblem) {
     solveType: p.solveType,
     resolution: p.resolution,
     claimIssueNote: p.claimIssueNote ?? null,
+    aiContribution: p.aiContribution ?? null,
     solveDate: p.solveDate,
     model: p.model,
     modelMaker: p.modelMaker,

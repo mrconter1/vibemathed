@@ -35,6 +35,7 @@ export type EditableKey =
   | "field"
   | "fieldGroup"
   | "resolution"
+  | "aiContribution"
   | "claimIssueNote"
   | "statement"
   | "posedBy"
@@ -93,6 +94,16 @@ export const RESOLUTION_OPTIONS = [
 
 export const FIELD_GROUP_OPTIONS = FIELD_GROUPS.map((g) => ({ value: g, label: g }));
 
+/// Degree of AI involvement, strongest first. Deliberately NOT required:
+/// entries predating the axis are unclassified (null), and forcing a value on
+/// every unrelated edit would just farm inaccurate answers. Below the bottom
+/// tier an entry is out of scope, so "none of these" cannot be selected.
+export const AI_CONTRIBUTION_OPTIONS = [
+  { value: "ai-discovered", label: "AI-discovered" },
+  { value: "ai-co-developed", label: "AI co-developed" },
+  { value: "ai-assisted", label: "AI-assisted" },
+];
+
 /// The verification trust ladder, strongest first.
 export const VERIFICATION_OPTIONS = [
   { value: "lean-verified", label: "Lean-verified" },
@@ -135,6 +146,13 @@ export const EDITABLE_FIELDS: FieldSpec[] = [
     required: true,
     options: RESOLUTION_OPTIONS,
     help: "What happened to the problem. Changing this requires updating the verification note in the same edit.",
+  },
+  {
+    key: "aiContribution",
+    label: "AI contribution",
+    kind: "choice",
+    options: AI_CONTRIBUTION_OPTIONS,
+    help: "How much of the mathematics the model contributed, going by the authors' own disclosure - pick the lower tier when it is vague. Writing or proofreading alone is out of scope entirely.",
   },
   {
     key: "claimIssueNote",

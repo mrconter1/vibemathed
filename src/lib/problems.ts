@@ -1,10 +1,12 @@
 // VibeMathed data model.
 //
 // This is a hand-curated (not scraped) record of math problems resolved with
-// an AI model in the loop. The actual data lives in `src/data/problems.json`
-// - see the README for how to add an entry. Every entry must cite a real,
-// checkable source; if a result is disputed or not yet peer-reviewed, say so
-// in `verification` rather than omitting it.
+// an AI model in the loop. The DATABASE is the single source of truth - the
+// site renders from Prisma reads, and `src/data/problems.json` is only the
+// seed baseline and disaster-recovery snapshot (refreshed by `npm run
+// db:export`, consumed by `npm run db:seed`; nothing reads it at runtime).
+// Every entry must cite a real, checkable source; if a result is disputed or
+// not yet peer-reviewed, say so in `verification` rather than omitting it.
 //
 // Two flavours of entry live in the same list:
 //   - "marquee" entries: fully hand-written, with statement, aiRole prose,
@@ -41,6 +43,23 @@ export const RESOLUTION_STATUSES: ResolutionStatus[] = [
   "variant",
   "candidate",
   "retracted",
+];
+
+/// How much of the mathematics the model actually contributed - orthogonal to
+/// `resolution` (what happened to the problem) and `verification` (how
+/// trustworthy the claim is). Classification takes the authors' own disclosure
+/// at face value; when a disclosure is vague, the LOWER tier applies. Below
+/// the bottom tier - writing, proofreading, figures, routine code checks - an
+/// entry is out of scope entirely, so there is no tier for it.
+export type AiContribution =
+  | "ai-discovered" // the model produced the central proof or object
+  | "ai-co-developed" // named, essential steps came from the model
+  | "ai-assisted"; // instrumental but human-led (search/verification tooling)
+
+export const AI_CONTRIBUTIONS: AiContribution[] = [
+  "ai-discovered",
+  "ai-co-developed",
+  "ai-assisted",
 ];
 
 /// Normalized field taxonomy for filtering. The free-text `field` stays on
@@ -104,6 +123,12 @@ export interface MathProblem {
    * entries that need it.
    */
   claimIssueNote?: string | null;
+  /**
+   * Degree of AI involvement (see AiContribution). Null on entries not yet
+   * classified - the axis postdates most of the catalog, and an unclassified
+   * entry must render as "unknown", never as a default tier.
+   */
+  aiContribution?: AiContribution | null;
   /** ISO date, or "YYYY-MM" / "YYYY". For date ranges, the completion date. */
   solveDate: string;
   model: string;
@@ -259,6 +284,16 @@ export function assertProblem(value: unknown, index: number): MathProblem {
   if (!RESOLUTION_STATUSES.includes(p.resolution as ResolutionStatus)) {
     throw new Error(
       `${where}: "resolution" must be one of ${RESOLUTION_STATUSES.join(", ")}`,
+    );
+  }
+  // Optional: entries predating the axis carry no value at all.
+  if (
+    p.aiContribution !== undefined &&
+    p.aiContribution !== null &&
+    !AI_CONTRIBUTIONS.includes(p.aiContribution as AiContribution)
+  ) {
+    throw new Error(
+      `${where}: "aiContribution" must be one of ${AI_CONTRIBUTIONS.join(", ")} when present`,
     );
   }
   // The curated baseline always classifies; only community rows may lack it.

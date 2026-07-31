@@ -15,8 +15,10 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ageAtSolve,
+  AI_CONTRIBUTIONS,
   FIELD_GROUPS,
   RESOLUTION_STATUSES,
+  type AiContribution,
   type FieldGroup,
   type Period,
   type ProblemCardData,
@@ -24,7 +26,14 @@ import {
   type SolveType,
   type VerificationStatus,
 } from "@/lib/problems";
-import { DASH, NOTABILITY_HELP, RESOLUTION, SOLVE_TYPE, VERIFICATION } from "@/lib/display";
+import {
+  AI_CONTRIBUTION,
+  DASH,
+  NOTABILITY_HELP,
+  RESOLUTION,
+  SOLVE_TYPE,
+  VERIFICATION,
+} from "@/lib/display";
 import { Icon } from "@/components/Icons";
 import { StatusIcon } from "@/components/StatusIcon";
 import { InfoTip, StarNote } from "@/components/Tooltip";
@@ -80,6 +89,7 @@ interface StoredSettings {
   fieldFilter: string;
   resultFilter: string;
   statusFilter: string;
+  contributionFilter: string;
   verificationFilter: string;
   sortKey: SortKey;
   sortDir: SortDir;
@@ -216,6 +226,20 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
             {/* The note sits OUTSIDE the nowrap badge: it can be a whole
                 sentence, which on a phone must wrap rather than drag the page
                 wider than the viewport. */}
+            {/* Same convention for the AI-contribution axis: "AI-discovered"
+                is the headline case and renders nothing; the tiers that
+                qualify it get a quiet pill. Unclassified entries show nothing. */}
+            {p.aiContribution && AI_CONTRIBUTION[p.aiContribution]?.pill && (
+              <span
+                className="inline-flex items-center whitespace-nowrap rounded-full border px-2 py-px text-[11px] font-medium"
+                style={{
+                  color: AI_CONTRIBUTION[p.aiContribution].color,
+                  borderColor: `color-mix(in srgb, ${AI_CONTRIBUTION[p.aiContribution].color} 40%, transparent)`,
+                }}
+              >
+                {AI_CONTRIBUTION[p.aiContribution].pill}
+              </span>
+            )}
             {p.resultNote && (
               <span className="text-xs text-[var(--ink-muted)]">({p.resultNote})</span>
             )}
@@ -330,6 +354,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
   const [fieldFilter, setFieldFilter] = useState("all");
   const [resultFilter, setResultFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [contributionFilter, setContributionFilter] = useState("all");
   const [verificationFilter, setVerificationFilter] = useState("all");
   const [sortKey, setSortKey] = useState<SortKey>("solveDate");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
@@ -359,6 +384,14 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
   const resolutions = useMemo(() => {
     const present = new Set(problems.map((p) => p.resolution));
     return RESOLUTION_STATUSES.filter((r) => present.has(r));
+  }, [problems]);
+
+  // AI-contribution tiers that occur. Unlike the status control, this one
+  // appears as soon as a SINGLE classified entry exists: with most of the
+  // catalog unclassified (null), filtering on one tier is not a no-op.
+  const contributions = useMemo(() => {
+    const present = new Set(problems.map((p) => p.aiContribution).filter(Boolean));
+    return AI_CONTRIBUTIONS.filter((c) => present.has(c));
   }, [problems]);
 
   // Restore the persisted settings once, after hydration - localStorage is
@@ -392,6 +425,12 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
           setStatusFilter(s.statusFilter as string);
         }
         if (
+          s.contributionFilter === "all" ||
+          AI_CONTRIBUTIONS.includes(s.contributionFilter as AiContribution)
+        ) {
+          setContributionFilter(s.contributionFilter as string);
+        }
+        if (
           s.verificationFilter === "all" ||
           (s.verificationFilter ?? "") in VERIFICATION
         ) {
@@ -421,6 +460,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
         fieldFilter,
         resultFilter,
         statusFilter,
+        contributionFilter,
         verificationFilter,
         sortKey,
         sortDir,
@@ -431,7 +471,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
     } catch {
       // Storage full or blocked - the list still works, it just won't persist.
     }
-  }, [restored, fieldFilter, resultFilter, statusFilter, verificationFilter, sortKey, sortDir, period, perPage]);
+  }, [restored, fieldFilter, resultFilter, statusFilter, contributionFilter, verificationFilter, sortKey, sortDir, period, perPage]);
 
   // Only offer verification statuses that actually occur, in ladder order, so
   // the dropdown never lists an empty category.
@@ -446,6 +486,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
       if (fieldFilter !== "all" && p.fieldGroup !== fieldFilter) return false;
       if (resultFilter !== "all" && p.solveType !== resultFilter) return false;
       if (statusFilter !== "all" && p.resolution !== statusFilter) return false;
+      if (contributionFilter !== "all" && p.aiContribution !== contributionFilter) return false;
       if (verificationFilter !== "all" && p.verification !== verificationFilter) return false;
       if (!q) return true;
       const haystack = [
@@ -462,7 +503,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [problems, query, fieldFilter, resultFilter, statusFilter, verificationFilter]);
+  }, [problems, query, fieldFilter, resultFilter, statusFilter, contributionFilter, verificationFilter]);
 
   const sorted = useMemo(() => {
     const arr = [...filtered];
@@ -491,6 +532,8 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
     query,
     fieldFilter,
     resultFilter,
+    statusFilter,
+    contributionFilter,
     verificationFilter,
     perPage,
     sortKey,
@@ -523,6 +566,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
     fieldFilter !== "all" ||
     resultFilter !== "all" ||
     statusFilter !== "all" ||
+    contributionFilter !== "all" ||
     verificationFilter !== "all";
 
   const chip = (active: boolean) =>
@@ -599,6 +643,22 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
             ))}
           </select>
         )}
+        {/* Appears once a single classified entry exists - see `contributions`. */}
+        {contributions.length > 0 && (
+          <select
+            value={contributionFilter}
+            onChange={(e) => setContributionFilter(e.target.value)}
+            aria-label="Filter by AI contribution"
+            className={selectClass}
+          >
+            <option value="all">All AI contribution</option>
+            {contributions.map((c) => (
+              <option key={c} value={c}>
+                {AI_CONTRIBUTION[c].label}
+              </option>
+            ))}
+          </select>
+        )}
         <select
           value={verificationFilter}
           onChange={(e) => setVerificationFilter(e.target.value)}
@@ -619,6 +679,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
               setFieldFilter("all");
               setResultFilter("all");
               setStatusFilter("all");
+              setContributionFilter("all");
               setVerificationFilter("all");
             }}
             className="text-xs text-[var(--accent-blue)] hover:underline"

@@ -89,6 +89,12 @@ model Problem {
   /// misformalized Lean statement), the note explaining it. Renders as a
   /// visible flag on the entry.
   claimIssueNote String?
+  /// How much of the mathematics the model actually contributed:
+  /// "ai-discovered" | "ai-co-developed" | "ai-assisted". Same string-not-enum
+  /// convention as `solveType`. Null on entries not yet classified (the axis
+  /// postdates most of the catalog); below "ai-assisted" is out of scope
+  /// entirely - see the methodology page.
+  aiContribution String?
 
   citations       Int?
   citationsPaper  String?
