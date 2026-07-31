@@ -67,6 +67,10 @@ ARXIV_CATEGORIES = [
 
 UA = {"User-Agent": "vibemathed-finder/1.0 (rasmus.lindahl1996@gmail.com)"}
 
+DATASET_URL = "https://vibemathed.com/api/dataset"
+ARXIV_ID_RE = re.compile(r"arxiv\.org/(?:abs|html|pdf)/(\d{4}\.\d{4,5})", re.IGNORECASE)
+FC_PR_RE = re.compile(r"github\.com/google-deepmind/formal-conjectures/pull/(\d+)", re.IGNORECASE)
+
 
 def fetch(url: str, timeout: int = 30) -> str:
     req = urllib.request.Request(url, headers=UA)
@@ -98,6 +102,34 @@ def context_lines(text: str, pattern: re.Pattern, limit: int = 3) -> list[str]:
         if len(out) >= limit:
             break
     return out
+
+
+# -------------------------------------------------------------- catalog ----
+
+def catalog_index() -> tuple[set[str], set[int]]:
+    """arXiv ids and formal-conjectures PR numbers already in the live catalog.
+
+    Pulled from the site's own public dataset endpoint (sourceUrl plus every
+    extra link per entry), so finds that are already tracked get marked in the
+    report instead of wasting triage time. Fails soft: if the site is
+    unreachable, nothing gets marked and the report still prints.
+    """
+    try:
+        data = json.loads(fetch(DATASET_URL))
+    except Exception as e:
+        print(f"_(catalog check skipped: {e})_\n", file=sys.stderr)
+        return set(), set()
+    arxiv_ids: set[str] = set()
+    pr_numbers: set[int] = set()
+    for p in data.get("problems", []):
+        urls = [p.get("sourceUrl") or "", p.get("citationsUrl") or ""]
+        urls += [link.get("url") or "" for link in p.get("links", [])]
+        for u in urls:
+            for m in ARXIV_ID_RE.finditer(u):
+                arxiv_ids.add(m.group(1))
+            for m in FC_PR_RE.finditer(u):
+                pr_numbers.add(int(m.group(1)))
+    return arxiv_ids, pr_numbers
 
 
 # ---------------------------------------------------------------- arXiv ----
@@ -191,7 +223,11 @@ def main() -> int:
     state = {"seen_arxiv": [], "seen_prs": []} if args.reset else load_state()
     seen_arxiv, seen_prs = set(state["seen_arxiv"]), set(state["seen_prs"])
 
+    known_arxiv, known_prs = catalog_index()
+
     print(f"# AI-solve candidates - last {args.days} days\n")
+    print(f"_Catalog check: {len(known_arxiv)} arXiv ids and {len(known_prs)} "
+          f"formal-conjectures PRs already tracked on vibemathed.com._\n")
 
     print("## arXiv (resolution-flavoured papers mentioning a model)\n")
     papers = arxiv_recent(args.days)
@@ -204,7 +240,10 @@ def main() -> int:
         if not snippets:
             continue
         hits += 1
-        print(f"### [{p['title']}](https://arxiv.org/abs/{p['id']})")
+        # Marked rather than hidden: one paper can hold a second, untracked
+        # result, so "already in catalog" is a triage hint, not a filter.
+        tracked = " **[already in catalog]**" if p["id"].split("v")[0] in known_arxiv else ""
+        print(f"### [{p['title']}](https://arxiv.org/abs/{p['id']}){tracked}")
         print(f"- id: {p['id']}")
         for s in snippets:
             print(f"- {s}")
@@ -218,6 +257,8 @@ def main() -> int:
     for pr in new_prs:
         seen_prs.add(pr["number"])
         flag = " [AI mention]" if pr["ai_mention"] else ""
+        if pr["number"] in known_prs:
+            flag += " **[already in catalog]**"
         print(f"- [#{pr['number']} {pr['title']}]({pr['url']}) - {pr['state']}{flag}")
         for s in pr["snippets"]:
             print(f"  - {s}")
