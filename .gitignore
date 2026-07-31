@@ -47,3 +47,6 @@ next-env.d.ts
 # Python
 __pycache__/
 *.pyc
+
+# local seen-state for scripts/find_ai_solves.py
+scripts/.find_ai_solves_state.json
