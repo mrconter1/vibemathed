@@ -31,6 +31,7 @@ import time
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -140,7 +141,9 @@ def arxiv_recent(days: int) -> list[dict]:
     cat_query = "+OR+".join(f"cat:{c}" for c in ARXIV_CATEGORIES)
     papers, start, page = [], 0, 200
     ns = {"a": "http://www.w3.org/2005/Atom"}
-    while start < 2000:  # hard stop; a few days of math arXiv fits well within
+    # Hard stop scaled to the window: ~1500 submissions/day across these
+    # categories, capped so a giant window cannot page forever.
+    while start < min(12000, 1500 * days):
         url = (
             "http://export.arxiv.org/api/query?search_query=" + cat_query
             + f"&sortBy=submittedDate&sortOrder=descending&start={start}&max_results={page}"
@@ -231,11 +234,13 @@ def main() -> int:
 
     print("## arXiv (resolution-flavoured papers mentioning a model)\n")
     papers = arxiv_recent(args.days)
+    new_papers = [p for p in papers if p["id"] not in seen_arxiv]
+    # The full-text fetches dominate the runtime and are independent; a small
+    # pool keeps a week-sized sweep to minutes while staying polite to arXiv.
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        all_snippets = list(pool.map(arxiv_ai_mentions, new_papers))
     hits = 0
-    for p in papers:
-        if p["id"] in seen_arxiv:
-            continue
-        snippets = arxiv_ai_mentions(p)
+    for p, snippets in zip(new_papers, all_snippets):
         seen_arxiv.add(p["id"])
         if not snippets:
             continue
@@ -248,7 +253,6 @@ def main() -> int:
         for s in snippets:
             print(f"- {s}")
         print()
-        time.sleep(1)
     print(f"_({len(papers)} resolution-flavoured papers scanned, {hits} new with AI mentions)_\n")
 
     print("## google-deepmind/formal-conjectures PRs\n")
