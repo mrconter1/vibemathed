@@ -29,8 +29,8 @@ import {
 import {
   AI_CONTRIBUTION,
   DASH,
-  NOTABILITY_HELP,
   RESOLUTION,
+  SIGNIFICANCE_HELP,
   SOLVE_TYPE,
   VERIFICATION,
 } from "@/lib/display";
@@ -51,7 +51,7 @@ type SortKey =
   | "posedBy"
   | "model"
   | "age"
-  | "renown";
+  | "significance";
 type SortDir = "asc" | "desc";
 
 const SORTS: { key: SortKey; label: string }[] = [
@@ -65,7 +65,7 @@ const SORTS: { key: SortKey; label: string }[] = [
   { key: "posedBy", label: "Posed by" },
   { key: "model", label: "Model" },
   { key: "age", label: "Years open" },
-  { key: "renown", label: "Notability" },
+  { key: "significance", label: "Significance" },
 ];
 
 // Sorts that can be scoped to a time window. Everything else ignores the period.
@@ -80,7 +80,7 @@ const PERIODS: { key: Period; label: string }[] = [
 // These default to descending on first pick (highest / most recent first, so
 // entries with no value - stored as -1 - sink instead of leading). "added" is
 // an ISO string, but "most recent first" is equally the right default.
-const NUMERIC_KEYS: SortKey[] = ["solveDate", "added", "age", "renown", "score", "discussion"];
+const NUMERIC_KEYS: SortKey[] = ["solveDate", "added", "age", "significance", "score", "discussion"];
 
 const PAGE_SIZES = [10, 25, 50, 100];
 
@@ -130,8 +130,9 @@ function sortValue(p: ProblemCardData, key: SortKey, period: Period): string | n
       return p.model.toLowerCase();
     case "age":
       return ageAtSolve(p) ?? -1;
-    case "renown":
-      return p.renownLangs;
+    case "significance":
+      // Unassessed entries sink rather than lead.
+      return p.significance ?? -1;
   }
 }
 
@@ -341,16 +342,18 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
               </span>
             )}
 
-            <span
-              className="relative z-10 font-mono text-[var(--ink-muted)]"
-              title={p.renownLangs > 0 ? NOTABILITY_HELP : "No dedicated Wikipedia article"}
-            >
-              Notability{" "}
-              <span className={p.renownLangs > 0 ? "text-[var(--ink-secondary)]" : ""}>
-                {p.renownLangs}
+            {/* AI-estimated problem weight; the Wikipedia count moved to the
+                entry page as a supporting fact (it was almost always 0 here). */}
+            {p.significance !== null && p.significance !== undefined && (
+              <span
+                className="relative z-10 font-mono text-[var(--ink-muted)]"
+                title={SIGNIFICANCE_HELP}
+              >
+                Significance{" "}
+                <span className="text-[var(--ink-secondary)]">{p.significance}</span>
+                {p.significanceNote && <StarNote text={p.significanceNote} />}
               </span>
-              {p.renownNote && <StarNote text={p.renownNote} />}
-            </span>
+            )}
 
             {/* Credit where an entry came from a reader - contributors should
                 see their name on the front page, not only on the entry page.
@@ -808,7 +811,9 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
           </div>
         )}
 
-        {sortKey === "renown" && <InfoTip content={NOTABILITY_HELP} label="Notability" />}
+        {sortKey === "significance" && (
+          <InfoTip content={SIGNIFICANCE_HELP} label="Significance" />
+        )}
 
         {/* The live result count: reads "all N entries" untouched, and
             "showing X of N entries" the moment a filter or search bites. */}

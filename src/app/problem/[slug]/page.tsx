@@ -11,6 +11,7 @@ import { CommentsSection } from "@/components/CommentsSection";
 import { EditEntryDialog } from "@/components/EditEntryDialog";
 import { StatusIcon } from "@/components/StatusIcon";
 import { TeX, deTeX } from "@/components/TeX";
+import { StarNote } from "@/components/Tooltip";
 import { VoteButtons } from "@/components/VoteButtons";
 
 function describe(p: ProblemWithVotes): string {
@@ -112,10 +113,12 @@ export default async function ProblemPage({
       p.humanCollaborators.length ? p.humanCollaborators.join(", ") : DASH,
     ],
     ["Verification", v?.label ?? p.verification],
+    // The AI-estimated problem weight (see methodology); dash until assessed.
+    ["Significance", p.significance !== null && p.significance !== undefined ? `${p.significance} / 100` : DASH],
     [
-      "Notability",
+      "Wikipedia",
       p.renownLangs > 0
-        ? `${p.renownLangs} Wikipedia languages`
+        ? `${p.renownLangs} ${p.renownLangs === 1 ? "language" : "languages"}`
         : p.renownNote
           ? "Not counted (article postdates the solution)"
           : "No dedicated article",
@@ -176,6 +179,10 @@ export default async function ProblemPage({
               <dd className="mt-0.5 flex items-center gap-1.5 text-[var(--ink)]">
                 {k === "Verification" && v && <StatusIcon kind={v.icon} color={v.color} />}
                 {value}
+                {/* The stored one-line justification for the score. */}
+                {k === "Significance" && p.significanceNote && (
+                  <StarNote text={p.significanceNote} />
+                )}
               </dd>
             </div>
           ))}

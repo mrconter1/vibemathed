@@ -37,6 +37,8 @@ export async function GET() {
     citationsUrl: p.citationsUrl,
     renownLangs: p.renownLangs,
     renownNote: p.renownNote ?? null,
+    significance: p.significance ?? null,
+    significanceNote: p.significanceNote ?? null,
     sourceUrl: p.sourceUrl,
     sourceName: p.sourceName,
     links: p.links ?? [],

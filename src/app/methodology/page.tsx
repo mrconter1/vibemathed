@@ -193,12 +193,48 @@ export default function MethodologyPage() {
         </p>
       </Section>
 
+      <Section title="Significance">
+        <p>
+          Every entry carries an <strong className="text-[var(--ink)]">AI-estimated
+          significance score</strong>: how much mathematics cared about the problem{" "}
+          <em>before</em> it was solved, from 0 to 100 in steps of 5. It is
+          calibrated against an anchored ladder - the Riemann hypothesis is 100,
+          Collatz sits near 80, the Jacobian conjecture near 65, a conjecture
+          famous within one research community around 30, a typical numbered
+          Erdős problem around 10, and machine-generated conjectures around 5.
+        </p>
+        <p>
+          The score is a curator measurement, never self-reported: it is
+          assigned at review time by an AI model applying a fixed rubric, with
+          a one-line justification stored on the entry, and the whole catalog
+          gets a pairwise consistency sweep. The score describes the problem as
+          it stood before its resolution, so attention triggered by the
+          solution itself can never inflate it. Scores are editorial estimates,
+          stable to within a band - challenge one in the entry&apos;s
+          discussion thread. The verbatim scoring prompt is public:{" "}
+          <a
+            href="https://github.com/mrconter1/vibemathed/blob/main/scripts/significance-prompt.md"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--accent-blue)] hover:underline"
+          >
+            significance-prompt.md
+          </a>
+          , versioned in the repository; any wholesale rescore is documented
+          there.
+        </p>
+      </Section>
+
       <Section title="Notability">
         <p>{NOTABILITY_HELP}</p>
         <p>
           The count is a frozen snapshot on purpose: coverage triggered by the
           solution itself can never inflate a problem&apos;s fame after the
-          fact.
+          fact. It now lives as a supporting fact on entry pages - most genuine
+          AI solves score zero, which is itself a finding - while the headline
+          metric on cards is the significance score, which the Wikipedia count
+          keeps honest: a high score beside &quot;no dedicated article&quot; is
+          a visible tension anyone can challenge.
         </p>
       </Section>
 

@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getPublishedProblems } from "@/lib/data";
-import { NOTABILITY_HELP } from "@/lib/display";
+import { SIGNIFICANCE_HELP } from "@/lib/display";
 import { ContributionGrowthChart } from "@/components/ContributionGrowthChart";
 import { CumulativeChart } from "@/components/CumulativeChart";
 import { Icon, type IconName } from "@/components/Icons";
 import { ModelsChart } from "@/components/ModelsChart";
 import { OpenSourceChart } from "@/components/OpenSourceChart";
 import { ReferencesChart } from "@/components/ReferencesChart";
+import { SignificanceChart } from "@/components/SignificanceChart";
 import { SolveRatioChart } from "@/components/SolveRatioChart";
 import { InfoTip } from "@/components/Tooltip";
 
@@ -34,16 +35,18 @@ export default async function StatsPage() {
   const resolved = problems.filter((p) => p.resolution === "resolved");
 
   const totalVotes = problems.reduce((sum, p) => sum + p.upvotes + p.downvotes, 0);
-  const notable = problems.filter((p) => p.renownLangs > 0).length;
+  // The count of entries whose problem carried real weight beyond its own
+  // subfield - the tail-vs-peaks story in one number.
+  const major = problems.filter((p) => (p.significance ?? 0) >= 50).length;
 
   const tiles: { icon: IconName; label: string; value: string; help?: string }[] = [
     { icon: "layers", label: "Tracked problems", value: String(problems.length) },
     { icon: "shield", label: "Fully resolved", value: String(resolved.length) },
     {
-      icon: "globe",
-      label: "With Wikipedia article",
-      value: String(notable),
-      help: NOTABILITY_HELP,
+      icon: "spark",
+      label: "Significance 50+",
+      value: String(major),
+      help: SIGNIFICANCE_HELP,
     },
     { icon: "votes", label: "Votes cast", value: String(totalVotes) },
   ];
@@ -100,6 +103,10 @@ export default async function StatsPage() {
         </div>
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <ModelsChart problems={resolved} />
+        </div>
+        {/* Whole record, not just resolved: significance is problem-level. */}
+        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5 lg:col-span-2">
+          <SignificanceChart problems={problems} />
         </div>
       </section>
     </main>

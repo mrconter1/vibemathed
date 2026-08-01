@@ -61,6 +61,8 @@ async function main() {
     if (p.ageNote !== null) entry.ageNote = p.ageNote;
     if (p.claimIssueNote !== null) entry.claimIssueNote = p.claimIssueNote;
     if (p.aiContribution !== null) entry.aiContribution = p.aiContribution;
+    if (p.significance !== null) entry.significance = p.significance;
+    if (p.significanceNote !== null) entry.significanceNote = p.significanceNote;
     if (Array.isArray(p.links) && p.links.length > 0) entry.links = p.links;
     return entry;
   });

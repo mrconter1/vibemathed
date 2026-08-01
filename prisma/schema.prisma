@@ -105,6 +105,14 @@ model Problem {
   /// THIS problem. 0 means "no dedicated article", not "unknown".
   renownLangs Int     @default(0)
   renownNote  String?
+  /// AI-estimated significance of the PROBLEM as it stood before the solve,
+  /// 0-100 in steps of 5 against the anchored ladder in the methodology
+  /// (Riemann hypothesis = 100). Curator measurement like renownLangs, never
+  /// self-reported; null = not yet assessed. Scored with the published prompt
+  /// in scripts/significance-prompt.md.
+  significance     Int?
+  /// One-line justification for the score, shown on the entry page.
+  significanceNote String?
   resultNote  String?
   ageNote     String?
 

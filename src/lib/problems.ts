@@ -164,6 +164,16 @@ export interface MathProblem {
    */
   renownNote?: string | null;
   /**
+   * AI-estimated significance of the problem BEFORE the solve, 0-100 in steps
+   * of 5 against the anchored ladder documented in the methodology (Riemann
+   * hypothesis = 100). A curator measurement like renownLangs - assigned at
+   * review with the published prompt, never self-reported. Null = not yet
+   * assessed; renders as a dash, never as a default score.
+   */
+  significance?: number | null;
+  /** One-line justification for the significance score. */
+  significanceNote?: string | null;
+  /**
    * Optional short qualifier appended to the visible result, for results that
    * aren't cleanly "proved"/"disproved" - e.g. disproved in some dimensions but
    * still open in others. Present only on entries that need it.
@@ -274,9 +284,15 @@ export function assertProblem(value: unknown, index: number): MathProblem {
   );
   ["problemNumber", "yearPosed", "citations"].forEach(requireNullableNumber);
   requireNumber("renownLangs");
-  for (const key of ["renownNote", "resultNote", "ageNote", "claimIssueNote"]) {
+  for (const key of ["renownNote", "resultNote", "ageNote", "claimIssueNote", "significanceNote"]) {
     if (p[key] !== undefined && p[key] !== null && typeof p[key] !== "string") {
       throw new Error(`${where}: "${key}" must be a string or null when present`);
+    }
+  }
+  if (p.significance !== undefined && p.significance !== null) {
+    const s = p.significance;
+    if (typeof s !== "number" || !Number.isInteger(s) || s < 0 || s > 100) {
+      throw new Error(`${where}: "significance" must be an integer 0-100 when present`);
     }
   }
   requireStringArray("humanCollaborators");

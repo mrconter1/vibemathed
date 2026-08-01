@@ -90,3 +90,7 @@ export const VERIFICATION: Record<
 /// Explanation of the notability score, shown wherever the number appears.
 export const NOTABILITY_HELP =
   "Wikipedia language editions with an article about this specific problem. Generic concept articles don't count, and an article that exists only because the problem was solved does not count either. 0 means no such article.";
+
+/// Explanation of the significance score, shown wherever the number appears.
+export const SIGNIFICANCE_HELP =
+  "AI-estimated weight of the problem BEFORE it was solved, 0-100 in steps of 5 against an anchored ladder (Riemann hypothesis 100, Collatz ~80, a field-famous workhorse ~30, a typical numbered Erdős problem ~10). Assigned at review with a published prompt; full rubric in the methodology.";
