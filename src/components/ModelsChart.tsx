@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { MODEL_FAMILIES } from "@/lib/display";
 import type { MathProblem } from "@/lib/problems";
-import { bucketKey, bucketLabel, bucketRange, type Granularity } from "@/lib/time-buckets";
-import { GranularityToggle } from "@/components/GranularityToggle";
+import { bucketKey, bucketRange, bucketTooltipLabel } from "@/lib/time-buckets";
+import { GranularityToggle, TimeAxis } from "@/components/GranularityToggle";
+import { useChartSettings } from "@/lib/chart-settings";
 
 // Cumulative solves per AI-system family over time - the volume race, not
 // just its final score. Same frame and hover behaviour as the other line
@@ -12,14 +13,16 @@ import { GranularityToggle } from "@/components/GranularityToggle";
 // MODEL_FAMILIES), so the lines can sum to more than the number of problems.
 
 // One fixed color per family - color follows the entity, never its rank.
+// Seven series outgrow the theme's accent pair, so this chart carries its own
+// categorical palette: distinct hues, all dark enough for the cream surface.
 const FAMILY_COLOR: Record<string, string> = {
-  openai: "var(--accent-blue)",
-  anthropic: "var(--accent-orange)",
-  google: "var(--status-good)",
-  harmonic: "var(--status-warning)",
-  agents: "var(--ink-secondary)",
-  xai: "var(--status-critical)",
-  "open-weights": "var(--ink-muted)",
+  openai: "#2a78d6", // blue
+  anthropic: "#eb6834", // orange
+  google: "#2e9e4f", // green
+  harmonic: "#8b5cf6", // violet
+  xai: "#d23b6e", // magenta
+  agents: "#0f9b9b", // teal
+  "open-weights": "#b8860b", // mustard
 };
 
 const VIEW_W = 640;
@@ -36,18 +39,10 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hover, setHover] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
-  // Calendar-aligned time buckets, month by default (see time-buckets.ts).
-  const [gran, setGran] = useState<Granularity>("month");
-  // Legend chips toggle series on and off; the y-axis rescales to what is
-  // visible, so hiding the runaway leader zooms the rest into view.
-  const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
-  const toggleSeries = (key: string) =>
-    setHidden((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
+  // Granularity and hidden series survive reloads (see useChartSettings).
+  const { gran, setGran, hidden, toggleSeries } = useChartSettings("systems");
+  // Hovering a line (or its legend chip) highlights it and fades the rest.
+  const [focused, setFocused] = useState<string | null>(null);
 
   useEffect(() => {
     const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
@@ -84,10 +79,10 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
     MARGIN.left + (range.length === 1 ? PLOT_W / 2 : (i / (range.length - 1)) * PLOT_W);
   const yScale = (v: number) => MARGIN.top + PLOT_H - (v / yMax) * PLOT_H;
 
-  const xEvery = Math.ceil(range.length / 7);
   const yTicks = Array.from({ length: 5 }, (_, i) => Math.round((i * yMax) / 4));
 
-  function handleMove(e: React.MouseEvent<SVGRectElement>) {
+  // Element type is irrelevant: only clientX and the svg ref are used.
+  function handleMove(e: React.MouseEvent<SVGElement>) {
     const svg = svgRef.current;
     if (!svg) return;
     const rect = svg.getBoundingClientRect();
@@ -119,7 +114,8 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
               type="button"
               onClick={() => toggleSeries(s.key)}
               aria-pressed={!off}
-              title={off ? "Show series" : "Hide series"}
+              onMouseEnter={() => setFocused(s.key)}
+              onMouseLeave={() => setFocused(null)}
               className={`inline-flex items-center gap-1.5 rounded px-1 py-0.5 transition-opacity ${
                 off ? "opacity-40" : ""
               }`}
@@ -136,9 +132,6 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
             </button>
           );
         })}
-        <span className="ml-auto">
-          <GranularityToggle value={gran} onChange={setGran} />
-        </span>
       </div>
 
       <div className="mt-3 flex flex-1 flex-col justify-center">
@@ -182,23 +175,12 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
                 strokeWidth={2.5}
                 strokeLinejoin="round"
                 strokeLinecap="round"
+                pointerEvents="none"
+                opacity={focused !== null && focused !== s.key ? 0.25 : 1}
               />
             ))}
 
-            {range.map((mk, i) =>
-              i % xEvery === 0 || i === range.length - 1 ? (
-                <text
-                  key={mk}
-                  x={x(i)}
-                  y={VIEW_H - MARGIN.bottom + 18}
-                  textAnchor="middle"
-                  className="font-mono"
-                  style={{ fontSize: 13, fill: "var(--ink-muted)" }}
-                >
-                  {bucketLabel(mk, gran)}
-                </text>
-              ) : null,
-            )}
+            <TimeAxis range={range} gran={gran} x={x} y={VIEW_H - MARGIN.bottom + 18} />
 
             {active !== null && (
               <g pointerEvents="none">
@@ -220,6 +202,7 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
                     fill={s.color}
                     stroke="var(--paper)"
                     strokeWidth={2}
+                    opacity={focused !== null && focused !== s.key ? 0.25 : 1}
                   />
                 ))}
               </g>
@@ -236,6 +219,24 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
                 onMouseLeave={() => setHover(null)}
               />
             )}
+
+            {/* Invisible wide strokes on top: hovering a line focuses its
+                series. They forward mousemove so the crosshair keeps
+                tracking while tracing a line. */}
+            {isDesktop &&
+              visible.map((s) => (
+                <polyline
+                  key={`hover-${s.key}`}
+                  points={s.cumulative.map((v, i) => `${x(i)},${yScale(v)}`).join(" ")}
+                  fill="none"
+                  stroke="transparent"
+                  strokeWidth={12}
+                  pointerEvents="stroke"
+                  onMouseEnter={() => setFocused(s.key)}
+                  onMouseLeave={() => setFocused(null)}
+                  onMouseMove={handleMove}
+                />
+              ))}
           </svg>
 
           {active !== null && (
@@ -247,7 +248,7 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
                 transform: "translate(-50%, 0)",
               }}
             >
-              <span className="font-serif text-[var(--ink)]">{bucketLabel(range[active], gran)}</span>
+              <span className="font-serif text-[var(--ink)]">{bucketTooltipLabel(range[active], gran)}</span>
               {visible.map((s) => (
                 <span
                   key={s.key}
@@ -264,6 +265,12 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Bucket picker, centered below the plot on every time chart;
+          persisted per chart (see useChartSettings). */}
+      <div className="mt-2.5 flex justify-center">
+        <GranularityToggle value={gran} onChange={setGran} />
       </div>
     </div>
   );

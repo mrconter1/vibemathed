@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { AI_CONTRIBUTIONS, type AiContribution, type MathProblem } from "@/lib/problems";
 import { AI_CONTRIBUTION } from "@/lib/display";
-import { bucketKey, bucketLabel, bucketRange, type Granularity } from "@/lib/time-buckets";
-import { GranularityToggle } from "@/components/GranularityToggle";
+import { bucketKey, bucketRange, bucketTooltipLabel } from "@/lib/time-buckets";
+import { GranularityToggle, TimeAxis } from "@/components/GranularityToggle";
+import { useChartSettings } from "@/lib/chart-settings";
 
 // Cumulative solves over time, one line per AI-contribution tier. Same frame,
 // scales and hover behaviour as CumulativeChart, so the two read as siblings.
@@ -33,17 +34,10 @@ export function ContributionGrowthChart({ problems }: { problems: MathProblem[] 
   const svgRef = useRef<SVGSVGElement>(null);
   const [hover, setHover] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
-  // Calendar-aligned time buckets, month by default (see time-buckets.ts).
-  const [gran, setGran] = useState<Granularity>("month");
-  // Legend chips toggle series; the y-axis rescales to what is visible.
-  const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
-  const toggleSeries = (key: string) =>
-    setHidden((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
+  // Granularity and hidden series survive reloads (see useChartSettings).
+  const { gran, setGran, hidden, toggleSeries } = useChartSettings("contribution");
+  // Hovering a line (or its legend chip) highlights it and fades the rest.
+  const [focused, setFocused] = useState<string | null>(null);
 
   useEffect(() => {
     const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
@@ -80,10 +74,10 @@ export function ContributionGrowthChart({ problems }: { problems: MathProblem[] 
     MARGIN.left + (range.length === 1 ? PLOT_W / 2 : (i / (range.length - 1)) * PLOT_W);
   const yScale = (v: number) => MARGIN.top + PLOT_H - (v / yMax) * PLOT_H;
 
-  const xEvery = Math.ceil(range.length / 7);
   const yTicks = Array.from({ length: 5 }, (_, i) => Math.round((i * yMax) / 4));
 
-  function handleMove(e: React.MouseEvent<SVGRectElement>) {
+  // Element type is irrelevant: only clientX and the svg ref are used.
+  function handleMove(e: React.MouseEvent<SVGElement>) {
     const svg = svgRef.current;
     if (!svg) return;
     const rect = svg.getBoundingClientRect();
@@ -115,7 +109,8 @@ export function ContributionGrowthChart({ problems }: { problems: MathProblem[] 
               type="button"
               onClick={() => toggleSeries(s.tier)}
               aria-pressed={!off}
-              title={off ? "Show series" : "Hide series"}
+              onMouseEnter={() => setFocused(s.tier)}
+              onMouseLeave={() => setFocused(null)}
               className={`inline-flex items-center gap-1.5 rounded px-1 py-0.5 transition-opacity ${
                 off ? "opacity-40" : ""
               }`}
@@ -132,9 +127,6 @@ export function ContributionGrowthChart({ problems }: { problems: MathProblem[] 
             </button>
           );
         })}
-        <span className="ml-auto">
-          <GranularityToggle value={gran} onChange={setGran} />
-        </span>
       </div>
 
       <div className="mt-3 flex flex-1 flex-col justify-center">
@@ -178,23 +170,12 @@ export function ContributionGrowthChart({ problems }: { problems: MathProblem[] 
                 strokeWidth={2.5}
                 strokeLinejoin="round"
                 strokeLinecap="round"
+                pointerEvents="none"
+                opacity={focused !== null && focused !== s.tier ? 0.25 : 1}
               />
             ))}
 
-            {range.map((mk, i) =>
-              i % xEvery === 0 || i === range.length - 1 ? (
-                <text
-                  key={mk}
-                  x={x(i)}
-                  y={VIEW_H - MARGIN.bottom + 18}
-                  textAnchor="middle"
-                  className="font-mono"
-                  style={{ fontSize: 13, fill: "var(--ink-muted)" }}
-                >
-                  {bucketLabel(mk, gran)}
-                </text>
-              ) : null,
-            )}
+            <TimeAxis range={range} gran={gran} x={x} y={VIEW_H - MARGIN.bottom + 18} />
 
             {active !== null && (
               <g pointerEvents="none">
@@ -216,6 +197,7 @@ export function ContributionGrowthChart({ problems }: { problems: MathProblem[] 
                     fill={s.color}
                     stroke="var(--paper)"
                     strokeWidth={2}
+                    opacity={focused !== null && focused !== s.tier ? 0.25 : 1}
                   />
                 ))}
               </g>
@@ -232,6 +214,24 @@ export function ContributionGrowthChart({ problems }: { problems: MathProblem[] 
                 onMouseLeave={() => setHover(null)}
               />
             )}
+
+            {/* Invisible wide strokes on top: hovering a line focuses its
+                series. They forward mousemove so the crosshair keeps
+                tracking while tracing a line. */}
+            {isDesktop &&
+              visible.map((s) => (
+                <polyline
+                  key={`hover-${s.tier}`}
+                  points={s.cumulative.map((v, i) => `${x(i)},${yScale(v)}`).join(" ")}
+                  fill="none"
+                  stroke="transparent"
+                  strokeWidth={12}
+                  pointerEvents="stroke"
+                  onMouseEnter={() => setFocused(s.tier)}
+                  onMouseLeave={() => setFocused(null)}
+                  onMouseMove={handleMove}
+                />
+              ))}
           </svg>
 
           {active !== null && (
@@ -243,7 +243,7 @@ export function ContributionGrowthChart({ problems }: { problems: MathProblem[] 
                 transform: "translate(-50%, 0)",
               }}
             >
-              <span className="font-serif text-[var(--ink)]">{bucketLabel(range[active], gran)}</span>
+              <span className="font-serif text-[var(--ink)]">{bucketTooltipLabel(range[active], gran)}</span>
               {visible.map((s) => (
                 <span key={s.tier} className="ml-2 inline-flex items-center gap-1 font-mono tabular-nums text-[var(--ink-secondary)]">
                   <span
@@ -257,6 +257,12 @@ export function ContributionGrowthChart({ problems }: { problems: MathProblem[] 
             </div>
           )}
         </div>
+      </div>
+
+      {/* Bucket picker, centered below the plot on every time chart;
+          persisted per chart (see useChartSettings). */}
+      <div className="mt-2.5 flex justify-center">
+        <GranularityToggle value={gran} onChange={setGran} />
       </div>
     </div>
   );

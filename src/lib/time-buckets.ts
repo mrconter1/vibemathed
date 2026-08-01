@@ -64,10 +64,48 @@ export function bucketRange(first: string, last: string, g: Granularity): string
   return out;
 }
 
-export function bucketLabel(key: string, g: Granularity): string {
+/// ISO week number and week-year for a week's Monday key.
+export function isoWeek(mondayKey: string): { week: number; year: number } {
+  const monday = new Date(`${mondayKey}T00:00:00Z`);
+  const thursday = new Date(monday);
+  thursday.setUTCDate(monday.getUTCDate() + 3);
+  const year = thursday.getUTCFullYear();
+  const jan1 = new Date(Date.UTC(year, 0, 1));
+  const week = Math.ceil(((thursday.getTime() - jan1.getTime()) / 86400000 + 1) / 7);
+  return { week, year };
+}
+
+/// Axis tick label, context-aware: repeated context (the month on day ticks,
+/// the year on week and month ticks) only renders when it CHANGES relative to
+/// the previously rendered tick, keeping the short form the common case so
+/// dense tick rows never overlap.
+export function bucketLabel(key: string, g: Granularity, prev: string | null): string {
+  if (g === "month") {
+    const [y, m] = key.split("-").map(Number);
+    const py = prev ? Number(prev.split("-")[0]) : null;
+    return py === y ? MONTH[m - 1] : `${MONTH[m - 1]} '${String(y).slice(2)}`;
+  }
+  if (g === "week") {
+    const { week, year } = isoWeek(key);
+    const prevYear = prev ? isoWeek(prev).year : null;
+    return prevYear === year ? `W${week}` : `W${week} '${String(year).slice(2)}`;
+  }
+  const [y, m, d] = key.split("-").map(Number);
+  const [py, pm] = prev ? prev.split("-").map(Number) : [null, null];
+  if (py === y && pm === m) return String(d);
+  if (py === y) return `${d} ${MONTH[m - 1]}`;
+  return `${d} ${MONTH[m - 1]}${prev ? ` '${String(y).slice(2)}` : ""}`;
+}
+
+/// The full, self-contained form for tooltips.
+export function bucketTooltipLabel(key: string, g: Granularity): string {
   if (g === "month") {
     const [y, m] = key.split("-").map(Number);
     return `${MONTH[m - 1]} '${String(y).slice(2)}`;
+  }
+  if (g === "week") {
+    const { week, year } = isoWeek(key);
+    return `W${week} '${String(year).slice(2)}`;
   }
   const [y, m, d] = key.split("-").map(Number);
   return `${d} ${MONTH[m - 1]} '${String(y).slice(2)}`;

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ageAtSolve, type MathProblem } from "@/lib/problems";
+import { useChartSettings } from "@/lib/chart-settings";
 
 // This chart plots SIGNIFICANCE (the AI-estimated problem weight) against how
 // long the problem stood open. The dense band at 10 is the point: almost every
@@ -46,16 +47,10 @@ function ticks(max: number, step: number) {
 export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const router = useRouter();
-  // Legend chips toggle point groups (proved / disproved / under review).
-  // Axes stay fixed so toggling declutters without reflowing the plot.
-  const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
-  const toggleGroup = (key: string) =>
-    setHidden((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
+  // Legend chips toggle point groups (proved / disproved / under review),
+  // persisted across reloads. Axes stay fixed so toggling declutters without
+  // reflowing the plot.
+  const { hidden, toggleSeries: toggleGroup } = useChartSettings("scatter");
 
   // Resolved entries plot as filled dots; CANDIDATE entries (a full solution
   // claimed and vetted, community review pending) plot as hollow rings so a
@@ -147,7 +142,6 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
                   type="button"
                   onClick={() => toggleGroup(type)}
                   aria-pressed={!off}
-                  title={off ? "Show points" : "Hide points"}
                   className={`flex items-center gap-1.5 rounded px-1 py-0.5 transition-opacity ${
                     off ? "opacity-40 line-through" : ""
                   }`}
@@ -168,7 +162,6 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
                 type="button"
                 onClick={() => toggleGroup("claimed")}
                 aria-pressed={!hidden.has("claimed")}
-                title={hidden.has("claimed") ? "Show points" : "Hide points"}
                 className={`flex items-center gap-1.5 rounded px-1 py-0.5 transition-opacity ${
                   hidden.has("claimed") ? "opacity-40 line-through" : ""
                 }`}
