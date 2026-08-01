@@ -53,7 +53,7 @@ const VERIFICATION_DETAIL: Record<VerificationStatus, string> = {
   unreviewed:
     "Nobody independent has checked the mathematics yet, whatever venue the claim lives in.",
   contested:
-    "Actively disputed or partially walked back. The entry stays listed so the dispute is on record.",
+    "Actively disputed, walked back, or withdrawn outright. The entry stays listed so the dispute is on record.",
 };
 
 const PUBLICATION_DETAIL: Record<PublicationStatus, string> = {
