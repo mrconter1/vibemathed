@@ -4,6 +4,7 @@ import { getPublishedProblems, getRecentActivity, getUserCount } from "@/lib/dat
 import type { CardEntry } from "@/lib/problems";
 import { SITE_URL } from "@/lib/site";
 import { Highlights } from "@/components/Highlights";
+import { Icon } from "@/components/Icons";
 import { ProblemCards } from "@/components/ProblemCards";
 import { RecentActivity } from "@/components/RecentActivity";
 import { StatBand } from "@/components/StatBand";
@@ -103,7 +104,7 @@ export default async function Home() {
   ];
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 pb-4 pt-8 sm:px-8 sm:pt-10">
+    <main className="mx-auto w-full max-w-6xl px-4 pb-4 pt-5 sm:px-8 sm:pt-6">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -120,7 +121,7 @@ export default async function Home() {
           correctly, so the feed sits between them here and is pushed last only
           on mobile. */}
       <section
-        className="mt-6 grid grid-cols-2 gap-2.5 lg:grid-cols-6"
+        className="grid grid-cols-2 gap-2.5 lg:grid-cols-6"
         aria-label="Overview"
       >
         <StatBand problems={problems} users={users} />
@@ -128,11 +129,16 @@ export default async function Home() {
         <Highlights problems={problems} />
       </section>
 
-      <p className="mt-2 text-xs text-[var(--ink-muted)]">
-        <Link href="/stats" className="text-[var(--accent-blue)] hover:underline">
-          See the charts on the stats page →
+      {/* A quiet button, right-aligned under the numbers it extends. */}
+      <div className="mt-2.5 flex justify-end">
+        <Link
+          href="/stats"
+          className="inline-flex items-center gap-1.5 rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-2.5 py-1.5 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)]"
+        >
+          <Icon name="pulse" size={12} />
+          See the charts
         </Link>
-      </p>
+      </div>
 
       <section className="mt-10">
         <h2 className="mb-3 font-serif text-xl text-[var(--ink)]">All entries</h2>

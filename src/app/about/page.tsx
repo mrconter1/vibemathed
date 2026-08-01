@@ -5,7 +5,7 @@ import Link from "next/link";
 // is. Everything procedural lives on the methodology page.
 
 const DESCRIPTION =
-  "VibeMathed is a community-maintained record of mathematical problems solved, fully or partially, with AI models substantively involved.";
+  "VibeMathed is a community of mathematicians and enthusiasts tracking, curating and cataloguing mathematical problems solved, fully or partially, by AI models.";
 
 export const metadata: Metadata = {
   title: "About",
@@ -24,19 +24,22 @@ export default function AboutPage() {
     <main className="mx-auto w-full max-w-3xl px-4 pb-4 pt-8 sm:px-8 sm:pt-10">
       <h1 className="font-serif text-3xl tracking-tight text-[var(--ink)]">About</h1>
 
-      <div className="mt-4 max-w-2xl space-y-4 text-sm leading-relaxed text-[var(--ink-secondary)]">
+      {/* Same raised sheet as the entry pages, so the site's prose surfaces
+          all read as one family. */}
+      <article className="mt-4 max-w-2xl space-y-4 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-5 text-sm leading-relaxed text-[var(--ink-secondary)] sm:px-6 sm:py-6">
         <p>
-          VibeMathed is a community-maintained record of mathematical problems
-          that have been solved, fully or partially, with AI models
-          substantively involved. The record spans famous conjectures as well
-          as the long tail of specialist questions and the numbered Erdős
-          problems.
+          VibeMathed is a community of mathematicians and enthusiasts tracking,
+          curating and cataloguing the mathematical problems that have been
+          solved, fully or partially, by AI models. The record spans famous
+          conjectures as well as the long tail of specialist questions and the
+          numbered Erdős problems.
         </p>
         <p>
-          Entries are submitted, reviewed and curated by people who care about
-          getting the mathematics right. Every entry cites a checkable primary
-          source, carries honest status and verification labels, stays editable
-          with a public changelog, and has its own discussion thread. The{" "}
+          Entries are submitted, reviewed and curated in the open by people who
+          care about getting the mathematics right. Every entry cites a
+          checkable primary source, carries honest status and verification
+          labels, stays editable with a public changelog, and has its own
+          discussion thread. The{" "}
           <Link
             href="/methodology"
             className="text-[var(--accent-blue)] hover:underline"
@@ -71,7 +74,7 @@ export default function AboutPage() {
           </a>
           .
         </p>
-      </div>
+      </article>
     </main>
   );
 }
