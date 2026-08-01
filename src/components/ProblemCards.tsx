@@ -250,12 +250,6 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
                 </span>
               )}
             </span>
-            {/* The note sits OUTSIDE the badge group: it can be a whole
-                sentence, which on a phone must wrap rather than drag the page
-                wider than the viewport. */}
-            {p.resultNote && (
-              <span className="text-xs text-[var(--ink-muted)]">({p.resultNote})</span>
-            )}
           </div>
         </div>
 
@@ -267,6 +261,12 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
 
       {/* Everything below the header spans the whole card. */}
       <div className="min-w-0">
+        {/* The result qualifier can be a whole sentence, so it lives below
+            the header row where it wraps at the FULL card width instead of
+            squeezing beside the vote buttons. */}
+        {p.resultNote && (
+          <p className="mt-0.5 text-xs text-[var(--ink-muted)]">({p.resultNote})</p>
+        )}
         {/* Identity line */}
         <p className="mt-1 font-mono text-[11px] text-[var(--ink-muted)]">
           {p.problemNumber !== null && <>Erdős #{p.problemNumber} · </>}
