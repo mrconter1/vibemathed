@@ -23,7 +23,9 @@ const SOLVE_TYPE_LABEL: Record<string, string> = {
 };
 
 // Points at or above this get a name label; below it the band is too dense.
-const LABEL_THRESHOLD = 35;
+// 40, not 35: the 35 band now holds four entries in one corner, and labeling
+// them all cluttered the plot - they stay hover-discoverable instead.
+const LABEL_THRESHOLD = 40;
 
 const VIEW_W = 640;
 const VIEW_H = 360;
@@ -92,22 +94,26 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
   // already-placed label it would collide with (close in x AND in y).
   const labelYBySlug = new Map<string, number>();
   {
-    const placed: { cx: number; labelY: number }[] = [];
+    const placed: { cx: number; w: number; labelY: number }[] = [];
     const labeled = plottable
       .filter((d) => d.significance >= LABEL_THRESHOLD)
       .sort((a, b) => x(a.age) - x(b.age));
     for (const d of labeled) {
       const cx = x(d.age);
+      // Estimated rendered width at fontSize 14 - the collision test must use
+      // the actual text lengths, or long neighbours still overprint.
+      const w = d.problem.shortName.length * 7.5 + 8;
       let labelY = y(d.significance) - 12;
-      // Lift until no placed label is within a label's width and line height.
+      // Lift one line at a time until no placed label overlaps horizontally
+      // at this height.
       for (let guard = 0; guard < 6; guard++) {
         const hit = placed.some(
-          (p) => Math.abs(p.cx - cx) < 110 && Math.abs(p.labelY - labelY) < 14,
+          (p) => Math.abs(p.cx - cx) < (p.w + w) / 2 && Math.abs(p.labelY - labelY) < 14,
         );
         if (!hit) break;
         labelY -= 14;
       }
-      placed.push({ cx, labelY });
+      placed.push({ cx, w, labelY });
       labelYBySlug.set(d.problem.slug, labelY);
     }
   }
