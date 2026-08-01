@@ -5496,6 +5496,48 @@
     ]
   },
   {
+    "slug": "factorial-conjecture-two-variables",
+    "name": "Two-Variable Factorial Conjecture",
+    "shortName": "Factorial Conjecture (2 vars)",
+    "problemNumber": null,
+    "field": "Commutative Algebra, Transcendence",
+    "fieldGroup": "Algebra",
+    "resolution": "candidate",
+    "statement": "Let $\\mathcal{L}(x^{a}y^{b})=a!\\,b!$ on $\\mathbb{C}[x,y]$. The Factorial Conjecture asks whether $\\mathcal{L}(f^{m})=0$ for every $m\\geq 1$ forces $f=0$. The homogeneous two-variable case was settled by Liu and Sun; the inhomogeneous problem does not reduce to it, because radial integration couples the homogeneous layers through Gamma factors. A claimed proof settles the full two-variable case affirmatively.",
+    "posedBy": "Arno van den Essen, David Wright, Wenhua Zhao",
+    "yearPosed": 2011,
+    "solveType": "proved",
+    "solveDate": "2026-08-01",
+    "model": "GPT-5.6 Sol, Claude Opus 5",
+    "modelMaker": "OpenAI, Anthropic",
+    "humanCollaborators": [
+      "Christopher D. Long"
+    ],
+    "aiRole": "Per the author's disclosure, the manuscript was developed through interactive work with ChatGPT 5.6 Sol, which assisted in proof discovery, organization, symbolic checking, reference verification, adversarial auditing and drafting; Claude Opus 5 contributed the semisimple-projector strategy, the reduction to phase-polynomial moments, and further adversarial audits. The AI systems are not authors and the human author takes full responsibility.",
+    "verification": "unreviewed",
+    "verificationNote": "The author marks the 37-page draft explicitly as not yet peer reviewed and not formally verified. Published as a PDF and LaTeX source in a personal GitHub repository, with no independent check on record.",
+    "publication": "announcement",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://github.com/octonion/mathematics/tree/master/fc",
+    "sourceName": "Factorial conjecture manuscript (GitHub)",
+    "resultNote": "Claimed in a self-published research draft; a standalone by-product is the transcendence of the integral of exp(q) between distinct algebraic endpoints for nonconstant algebraic q",
+    "ageNote": "Introduced in the Image Conjecture work of van den Essen, Wright and Zhao; the homogeneous two-variable case was proved by Liu and Sun (2020).",
+    "aiContribution": "ai-co-developed",
+    "significance": 20,
+    "significanceNote": "A named conjecture from the Image Conjecture circle around the Jacobian conjecture, with a small dedicated literature; the two-variable case specifically.",
+    "links": [
+      {
+        "label": "Liu-Sun, homogeneous two-variable case",
+        "url": "https://doi.org/10.1017/S0004972719000546"
+      }
+    ]
+  },
+  {
     "slug": "feige-hypergraph-moore-bound",
     "name": "Feige's Hypergraph Moore-Bound Conjecture",
     "shortName": "Hypergraph Moore bound",
@@ -5821,6 +5863,42 @@
     "aiContribution": "ai-co-developed",
     "significance": 10,
     "significanceNote": "A named open question from a 2024 kinetic-theory paper by leading authors."
+  },
+  {
+    "slug": "gaussian-moments-conjecture",
+    "name": "Gaussian Moments Conjecture",
+    "shortName": "Gaussian Moments Conj.",
+    "problemNumber": null,
+    "field": "Probability, Commutative Algebra",
+    "fieldGroup": "Probability & statistics",
+    "resolution": "resolved",
+    "statement": "The Gaussian Moments Conjecture asks whether, for complex polynomials $P,Q$ in $n$ independent standard real Gaussian variables, $\\mathbb{E}(P^m)=0$ for all $m\\geq 1$ forces $\\mathbb{E}(QP^m)=0$ for all large $m$. Explicit counterexamples with $\\mathbb{E}(P^m)=0$ and $\\mathbb{E}(QP^m)=m!\\neq 0$ exist in three variables (a five-term quartic $P$) and four variables, so the conjecture is false in every dimension $n\\geq 3$.",
+    "posedBy": "Harm Derksen, Arno van den Essen, Wenhua Zhao",
+    "yearPosed": 2014,
+    "solveType": "disproved",
+    "solveDate": "2026-07-20",
+    "model": "GPT-5.6 Sol Pro, Claude Fable 5",
+    "modelMaker": "OpenAI, Anthropic",
+    "humanCollaborators": [
+      "Christopher D. Long"
+    ],
+    "aiRole": "Per the paper's AI-provenance section, the four-variable construction was produced by ChatGPT 5.6 Sol Pro without human intervention after the initial prompt, which told it the Jacobian conjecture had been disproved and asked whether a small Gaussian-moments counterexample might follow; shown that example, Claude Fable 5 found the three-variable construction and supplied independent algebraic checks. The author bears responsibility for the mathematics and exposition.",
+    "verification": "unreviewed",
+    "verificationNote": "A nine-page arXiv preprint. The counterexamples are explicit polynomials whose defining identity can be checked directly, but no independent review or formalization is on record.",
+    "publication": "preprint",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.18186",
+    "sourceName": "arXiv:2607.18186",
+    "resultNote": "Explicit counterexamples in dimensions 3 and 4, so GMC(n) fails for every n >= 3; the two-variable case is not settled here",
+    "ageNote": "From the Derksen-van den Essen-Zhao circle of Jacobian-conjecture-equivalent moment problems; the search here was prompted by Alpöge's announced counterexample to the Jacobian conjecture.",
+    "aiContribution": "ai-discovered",
+    "significance": 25,
+    "significanceNote": "A named conjecture in the Jacobian-conjecture circle, equivalent in part to the Image Conjecture: a real if specialist target, and its failure follows the Jacobian disproof it was prompted by."
   },
   {
     "slug": "gaussian-product-inequality-conjecture",
