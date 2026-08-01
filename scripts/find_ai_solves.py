@@ -10,8 +10,12 @@
      or AI-mentioning PR) and leanprover-community/mathlib4 (AI-disclosing PRs
      only - mathlib requires disclosure in the PR body, and every mathlib PR
      is "proofy" so that filter alone would drown the report).
-  3. Tao's ledger: the AI-contributions wiki page on teorth/erdosproblems -
-     new Erdős problem numbers appearing there.
+  3. Tao's ledger: the AI-contributions wiki page on teorth/erdosproblems,
+     parsed by table and outcome. Only PRIMARY sections (AI doing the
+     mathematics) can be solves; solve-grade rows (green full solutions,
+     white candidates) print in detail with their source links, partial /
+     variant / incorrect rows get one-liners, and secondary rows
+     (literature search, formalizing human proofs) only a count.
   4. Zenodo: recent records that look like a resolution and mention a model
      (some authors publish there instead of arXiv - the SSUF papers did).
   5. News feeds: OpenAI and DeepMind announcement RSS plus the Kourovka
@@ -119,7 +123,7 @@ def load_state() -> dict:
     state.setdefault("seen_arxiv", [])
     state.setdefault("seen_prs", [])  # formal-conjectures numbers (legacy key)
     state.setdefault("seen_mathlib_prs", [])
-    state.setdefault("seen_erdos_wiki", [])
+    state.setdefault("seen_erdos_rows", [])
     state.setdefault("seen_zenodo", [])
     state.setdefault("seen_feed_items", [])
     return state
@@ -283,15 +287,54 @@ def github_prs(repo: str, days: int, ai_only: bool, max_pages: int) -> list[dict
 
 # ---------------------------------------------------- Tao's Erdős ledger ----
 
-def erdos_wiki_numbers() -> list[int]:
-    """Erdős problem numbers currently cited on Tao's AI-contributions wiki.
+LEDGER_SECTIONS = [
+    "1(a) AI standalone", "1(b) AI alongside literature",
+    "1(c) AI building on literature", "1(d) AI with humans",
+    "2(a) literature search", "2(b) formalization",
+    "2(c) rewriting", "2(d) computation",
+]
 
-    Scanned on the RAW html: the page renders problems as bracketed link
-    text ("[684]") whose erdosproblems.com URL lives in the href attribute,
-    which tag-stripping would throw away.
+
+def erdos_ledger_rows() -> list[dict]:
+    """Structured rows from Tao's AI-contributions wiki.
+
+    The page is eight tables - four PRIMARY sections where the AI did
+    mathematics, four SECONDARY ones (literature search, formalizing human
+    proofs, rewriting, computation) that are not solves by the site's
+    methodology. Outcome colors are Tao's confidence: green = full/vetted,
+    white = unvetted candidate, yellow = partial/variant, red = incorrect.
+    Problem links live in href attributes, so cells are parsed before
+    tag-stripping.
     """
     html = fetch(ERDOS_WIKI_URL)
-    return sorted({int(m.group(1)) for m in ERDOS_NUM_RE.finditer(html)})
+    body = html.split('<div class="markdown-body"', 1)[-1]
+    tables = re.findall(r"<table.*?</table>", body, re.S)
+    rows = []
+    for ti, t in enumerate(tables[:8]):
+        heads = [re.sub(r"<[^>]+>", "", h).strip()
+                 for h in re.findall(r"<th[^>]*>(.*?)</th>", t, re.S)]
+        for raw in re.findall(r"<tr[^>]*>(.*?)</tr>", t, re.S):
+            tds = re.findall(r"<td[^>]*>(.*?)</td>", raw, re.S)
+            if not tds:
+                continue
+            cells = dict(zip(heads, (strip_tags(c).strip() for c in tds)))
+            nums = sorted({int(m.group(1)) for m in ERDOS_NUM_RE.finditer(tds[0])})
+            if not nums:
+                continue
+            links = [u for u in re.findall(r'href="([^"]+)"', raw)
+                     if "erdosproblems.com" not in u and not u.startswith("#")]
+            rows.append({
+                "nums": nums,
+                "section": LEDGER_SECTIONS[ti],
+                "primary": ti <= 3,
+                "systems": cells.get("AI systems", ""),
+                "date": cells.get("Date", ""),
+                "outcome": cells.get("Outcome", ""),
+                "links": links[:4],
+                "key": f"{','.join(map(str, nums))}|{LEDGER_SECTIONS[ti]}|"
+                       f"{cells.get('Date', '')}|{cells.get('Outcome', '')}",
+            })
+    return rows
 
 
 # ---------------------------------------------------------------- Zenodo ----
@@ -457,22 +500,44 @@ def main() -> int:
 
     if "erdos" in wanted:
         print("## Tao's AI-contributions ledger (teorth/erdosproblems wiki)\n")
-        seen = set(state["seen_erdos_wiki"])
+        seen = set(state["seen_erdos_rows"])
         try:
-            numbers = erdos_wiki_numbers()
+            rows = erdos_ledger_rows()
         except Exception as e:
-            numbers = []
+            rows = []
             print(f"_(wiki scan failed: {e})_")
-        fresh = [n for n in numbers if n not in seen]
-        seen.update(fresh)
-        # The ledger cites hundreds of problems; individual lines only for the
-        # ones the catalog does NOT have - those are the triage work.
-        untracked = [n for n in fresh if n not in known["erdos"]]
-        for n in untracked:
-            print(f"- [Erdős #{n}](https://www.erdosproblems.com/{n})")
-        print(f"\n_({len(numbers)} problems cited on the ledger, {len(fresh)} new since "
-              f"last run, of which {len(untracked)} not in the catalog)_\n")
-        state["seen_erdos_wiki"] = sorted(seen)
+        fresh = [r for r in rows if r["key"] not in seen]
+        seen.update(r["key"] for r in fresh)
+        # Only rows on problems the catalog lacks are triage work, and only
+        # PRIMARY rows can be solves. Solve-grade rows (a green full solution
+        # or a white unvetted candidate) get full detail; yellow partials and
+        # red incorrect claims get a one-liner; secondary rows just a count.
+        untracked = [r for r in fresh
+                     if not all(n in known["erdos"] for n in r["nums"])]
+        solve_grade = [r for r in untracked if r["primary"]
+                       and ("🟢" in r["outcome"] or "⚪" in r["outcome"])
+                       # A "new proof" of an already-solved problem is a
+                       # re-proof, not a first solve - out of scope.
+                       and "new proof" not in r["outcome"].lower()]
+        other_primary = [r for r in untracked if r["primary"] and r not in solve_grade]
+        secondary = [r for r in untracked if not r["primary"]]
+        if solve_grade:
+            print("### Solve-grade rows (full solutions and candidates)\n")
+        for r in solve_grade:
+            probs = ", ".join(f"[#{n}](https://www.erdosproblems.com/{n})" for n in r["nums"])
+            print(f"- {probs} **{r['outcome']}** - {r['systems']}, {r['date']} ({r['section']})")
+            for u in r["links"]:
+                print(f"  - <{u}>")
+        if other_primary:
+            print("\n### Other new primary rows (partials, variants, incorrect claims)\n")
+        for r in other_primary:
+            probs = ", ".join(f"#{n}" for n in r["nums"])
+            print(f"- {probs} {r['outcome']} - {r['systems']}, {r['date']} ({r['section']})")
+        print(f"\n_({len(rows)} ledger rows, {len(fresh)} new since last run: "
+              f"{len(solve_grade)} solve-grade, {len(other_primary)} other primary, "
+              f"{len(secondary)} secondary (literature/formalization/rewrite/compute, "
+              f"not solves) on uncatalogued problems)_\n")
+        state["seen_erdos_rows"] = sorted(seen)
 
     if "zenodo" in wanted:
         print("## Zenodo (resolution-flavoured records mentioning a model)\n")
