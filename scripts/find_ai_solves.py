@@ -1,21 +1,32 @@
 #!/usr/bin/env python3
-"""Finds candidate "problem solved with AI" items across two sources:
+"""Finds candidate "problem solved with AI" items across several sources:
 
   1. arXiv: recent papers in math / theory categories whose title or abstract
      smells like a resolution (conjecture, counterexample, disproof, open
      problem, ...). For each candidate the HTML full text (when arXiv has one)
      is fetched and searched for AI-model mentions - that is where AI-use
      disclosures actually live, not in the abstract.
-  2. GitHub: recent pull requests on google-deepmind/formal-conjectures, whose
-     merged PRs have been a steady source of Lean-checked (dis)proofs.
+  2. GitHub PRs: google-deepmind/formal-conjectures (any resolution-flavoured
+     or AI-mentioning PR) and leanprover-community/mathlib4 (AI-disclosing PRs
+     only - mathlib requires disclosure in the PR body, and every mathlib PR
+     is "proofy" so that filter alone would drown the report).
+  3. Tao's ledger: the AI-contributions wiki page on teorth/erdosproblems -
+     new Erdős problem numbers appearing there.
+  4. Zenodo: recent records that look like a resolution and mention a model
+     (some authors publish there instead of arXiv - the SSUF papers did).
+  5. News feeds: OpenAI and DeepMind announcement RSS plus the Kourovka
+     Notebook blog, filtered to math-resolution keywords.
 
 Zero dependencies (stdlib only). A state file remembers everything already
-reported, so repeated runs only surface NEW finds.
+reported, so repeated runs only surface NEW finds. Every source fails soft:
+a dead endpoint prints a note and the rest of the report still runs.
 
 Usage:
-  python scripts/find_ai_solves.py               # last 3 days, prints report
+  python scripts/find_ai_solves.py                    # last 3 days, all sources
   python scripts/find_ai_solves.py --days 7
-  python scripts/find_ai_solves.py --reset       # forget seen-state first
+  python scripts/find_ai_solves.py --sources github,zenodo   # subset (arxiv,
+                                                     # github, erdos, zenodo, feeds)
+  python scripts/find_ai_solves.py --reset            # forget seen-state first
 
 Output is a Markdown report on stdout: triage it against the methodology
 (vibemathed.com/methodology) before anything becomes an entry.
@@ -33,6 +44,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 # Windows consoles default to cp1252, which cannot print the math papers'
@@ -66,11 +78,33 @@ ARXIV_CATEGORIES = [
     "cs.CC", "cs.DM", "cs.DS", "cs.FL", "cs.LG", "quant-ph", "math-ph",
 ]
 
+# PR sources. ai_only repos report ONLY PRs whose title or body mentions a
+# model - the volume filter for repos where every PR is about proofs.
+PR_REPOS = [
+    {"repo": "google-deepmind/formal-conjectures", "ai_only": False, "max_pages": 3},
+    {"repo": "leanprover-community/mathlib4", "ai_only": True, "max_pages": 10},
+]
+
+# Announcement feeds worth watching, filtered by RESOLUTION_RE. The Kourovka
+# blog posts solution announcements for the notebook's problems.
+FEEDS = [
+    ("OpenAI news", "https://openai.com/news/rss.xml"),
+    ("DeepMind blog", "https://deepmind.google/blog/rss.xml"),
+    ("Kourovka Notebook", "https://kourovkanotebookorg.wordpress.com/feed/"),
+]
+
+ERDOS_WIKI_URL = (
+    "https://github.com/teorth/erdosproblems/wiki/AI-contributions-to-Erd%C5%91s-problems"
+)
+
 UA = {"User-Agent": "vibemathed-finder/1.0 (rasmus.lindahl1996@gmail.com)"}
 
 DATASET_URL = "https://vibemathed.com/api/dataset"
 ARXIV_ID_RE = re.compile(r"arxiv\.org/(?:abs|html|pdf)/(\d{4}\.\d{4,5})", re.IGNORECASE)
 FC_PR_RE = re.compile(r"github\.com/google-deepmind/formal-conjectures/pull/(\d+)", re.IGNORECASE)
+MATHLIB_PR_RE = re.compile(r"github\.com/leanprover-community/mathlib4/pull/(\d+)", re.IGNORECASE)
+ZENODO_ID_RE = re.compile(r"zenodo\.org/records?/(\d+)", re.IGNORECASE)
+ERDOS_NUM_RE = re.compile(r"erdosproblems\.com/(\d+)", re.IGNORECASE)
 
 
 def fetch(url: str, timeout: int = 30) -> str:
@@ -80,9 +114,15 @@ def fetch(url: str, timeout: int = 30) -> str:
 
 
 def load_state() -> dict:
-    if STATE_FILE.exists():
-        return json.loads(STATE_FILE.read_text())
-    return {"seen_arxiv": [], "seen_prs": []}
+    state = json.loads(STATE_FILE.read_text()) if STATE_FILE.exists() else {}
+    # Older state files predate the newer sources; default every key.
+    state.setdefault("seen_arxiv", [])
+    state.setdefault("seen_prs", [])  # formal-conjectures numbers (legacy key)
+    state.setdefault("seen_mathlib_prs", [])
+    state.setdefault("seen_erdos_wiki", [])
+    state.setdefault("seen_zenodo", [])
+    state.setdefault("seen_feed_items", [])
+    return state
 
 
 def save_state(state: dict) -> None:
@@ -105,32 +145,43 @@ def context_lines(text: str, pattern: re.Pattern, limit: int = 3) -> list[str]:
     return out
 
 
+def strip_tags(html: str) -> str:
+    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html))
+
+
 # -------------------------------------------------------------- catalog ----
 
-def catalog_index() -> tuple[set[str], set[int]]:
-    """arXiv ids and formal-conjectures PR numbers already in the live catalog.
+def catalog_index() -> dict:
+    """Ids already in the live catalog, per source kind.
 
     Pulled from the site's own public dataset endpoint (sourceUrl plus every
     extra link per entry), so finds that are already tracked get marked in the
     report instead of wasting triage time. Fails soft: if the site is
     unreachable, nothing gets marked and the report still prints.
     """
+    known = {"arxiv": set(), "fc_prs": set(), "mathlib_prs": set(),
+             "zenodo": set(), "erdos": set()}
     try:
         data = json.loads(fetch(DATASET_URL))
     except Exception as e:
         print(f"_(catalog check skipped: {e})_\n", file=sys.stderr)
-        return set(), set()
-    arxiv_ids: set[str] = set()
-    pr_numbers: set[int] = set()
+        return known
     for p in data.get("problems", []):
+        m = re.fullmatch(r"erdos-(\d+)", p.get("slug") or "")
+        if m:
+            known["erdos"].add(int(m.group(1)))
         urls = [p.get("sourceUrl") or "", p.get("citationsUrl") or ""]
         urls += [link.get("url") or "" for link in p.get("links", [])]
         for u in urls:
             for m in ARXIV_ID_RE.finditer(u):
-                arxiv_ids.add(m.group(1))
+                known["arxiv"].add(m.group(1))
             for m in FC_PR_RE.finditer(u):
-                pr_numbers.add(int(m.group(1)))
-    return arxiv_ids, pr_numbers
+                known["fc_prs"].add(int(m.group(1)))
+            for m in MATHLIB_PR_RE.finditer(u):
+                known["mathlib_prs"].add(int(m.group(1)))
+            for m in ZENODO_ID_RE.finditer(u):
+                known["zenodo"].add(int(m.group(1)))
+    return known
 
 
 # ---------------------------------------------------------------- arXiv ----
@@ -190,28 +241,135 @@ def arxiv_ai_mentions(paper: dict) -> list[str]:
 
 # --------------------------------------------------------------- GitHub ----
 
-def github_prs(repo: str, days: int) -> list[dict]:
-    """Recent PRs (any state); flags AI mentions and (dis)proof titles."""
+def github_prs(repo: str, days: int, ai_only: bool, max_pages: int) -> list[dict]:
+    """Recent PRs (any state), paginated back to the cutoff.
+
+    ai_only repos report only PRs whose title/body mentions a model; the rest
+    also report resolution-flavoured titles.
+    """
     cutoff = datetime.now(timezone.utc) - timedelta(days=days)
-    url = f"https://api.github.com/repos/{repo}/pulls?state=all&sort=created&direction=desc&per_page=100"
-    rows = json.loads(fetch(url))
     out = []
-    for pr in rows:
-        created = datetime.fromisoformat(pr["created_at"].replace("Z", "+00:00"))
-        if created < cutoff:
+    for page_no in range(1, max_pages + 1):
+        url = (f"https://api.github.com/repos/{repo}/pulls"
+               f"?state=all&sort=created&direction=desc&per_page=100&page={page_no}")
+        rows = json.loads(fetch(url))
+        if not rows:
             break
-        text = (pr["title"] or "") + "\n" + (pr["body"] or "")
-        ai = MODEL_RE.search(text) is not None
-        proofy = re.search(r"disprov|prove|counterexample|solv", pr["title"] or "", re.IGNORECASE) is not None
-        if ai or proofy:
-            out.append({
-                "number": pr["number"],
-                "title": pr["title"],
-                "url": pr["html_url"],
-                "state": pr["state"] + (" (merged)" if pr.get("merged_at") else ""),
-                "ai_mention": ai,
-                "snippets": context_lines(text, MODEL_RE) if ai else [],
-            })
+        past_cutoff = False
+        for pr in rows:
+            created = datetime.fromisoformat(pr["created_at"].replace("Z", "+00:00"))
+            if created < cutoff:
+                past_cutoff = True
+                break
+            text = (pr["title"] or "") + "\n" + (pr["body"] or "")
+            ai = MODEL_RE.search(text) is not None
+            proofy = re.search(
+                r"disprov|prove|counterexample|solv", pr["title"] or "", re.IGNORECASE
+            ) is not None
+            if (ai_only and ai) or (not ai_only and (ai or proofy)):
+                out.append({
+                    "number": pr["number"],
+                    "title": pr["title"],
+                    "url": pr["html_url"],
+                    "state": pr["state"] + (" (merged)" if pr.get("merged_at") else ""),
+                    "ai_mention": ai,
+                    "snippets": context_lines(text, MODEL_RE) if ai else [],
+                })
+        if past_cutoff:
+            break
+        time.sleep(1)  # unauthenticated API: 60 req/hour, be frugal
+    return out
+
+
+# ---------------------------------------------------- Tao's Erdős ledger ----
+
+def erdos_wiki_numbers() -> list[int]:
+    """Erdős problem numbers currently cited on Tao's AI-contributions wiki.
+
+    Scanned on the RAW html: the page renders problems as bracketed link
+    text ("[684]") whose erdosproblems.com URL lives in the href attribute,
+    which tag-stripping would throw away.
+    """
+    html = fetch(ERDOS_WIKI_URL)
+    return sorted({int(m.group(1)) for m in ERDOS_NUM_RE.finditer(html)})
+
+
+# ---------------------------------------------------------------- Zenodo ----
+
+def zenodo_recent(days: int) -> list[dict]:
+    """Recent Zenodo records that look like a resolution and mention a model."""
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    # No quoted phrases: Zenodo's query parser 400s on them. The client-side
+    # RESOLUTION_RE / MODEL_RE re-check below covers the lost precision.
+    q = urllib.parse.quote(
+        "(conjecture OR counterexample OR disproof) "
+        "AND (GPT OR Claude OR Gemini OR Codex)"
+    )
+    # size caps at 25 for unauthenticated requests; enough for a days-window.
+    data = json.loads(fetch(
+        f"https://zenodo.org/api/records?q={q}&sort=mostrecent&size=25"
+    ))
+    out = []
+    for hit in data.get("hits", {}).get("hits", []):
+        created = datetime.fromisoformat(hit["created"].replace("Z", "+00:00"))
+        if created < cutoff:
+            continue
+        meta = hit.get("metadata", {})
+        title = meta.get("title", "")
+        desc = strip_tags(meta.get("description", "") or "")
+        blob = f"{title}\n{desc}"
+        # The query casts wide; require both signals up close before reporting.
+        if not (RESOLUTION_RE.search(blob) and MODEL_RE.search(blob)):
+            continue
+        out.append({
+            "id": hit["id"],
+            "title": title,
+            "url": f"https://zenodo.org/records/{hit['id']}",
+            "created": created.date().isoformat(),
+            "snippets": context_lines(blob, MODEL_RE),
+        })
+    return out
+
+
+# ----------------------------------------------------------------- feeds ----
+
+def feed_items(name: str, url: str, days: int) -> list[dict]:
+    """RSS/Atom items in the window whose text is resolution-flavoured."""
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    root = ET.fromstring(fetch(url))
+    atom = {"a": "http://www.w3.org/2005/Atom"}
+    items = root.findall(".//item") or root.findall(".//a:entry", atom)
+    out = []
+    for it in items:
+        title = it.findtext("title") or it.findtext("a:title", "", atom) or ""
+        link = it.findtext("link") or ""
+        if not link:
+            link_el = it.find("a:link", atom)
+            link = link_el.get("href", "") if link_el is not None else ""
+        desc = it.findtext("description") or it.findtext("a:summary", "", atom) or ""
+        stamp = (it.findtext("pubDate") or it.findtext("a:updated", "", atom) or "").strip()
+        when = None
+        if stamp:
+            try:
+                when = parsedate_to_datetime(stamp)
+            except (TypeError, ValueError):
+                try:
+                    when = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+                except ValueError:
+                    when = None
+        if when is not None and when < cutoff:
+            continue
+        blob = strip_tags(f"{title} {desc}")
+        # Feeds are general-purpose; only math-resolution items make the cut.
+        if not RESOLUTION_RE.search(blob):
+            continue
+        out.append({
+            "key": f"{name}:{link or title}",
+            "feed": name,
+            "title": strip_tags(title).strip(),
+            "url": link.strip(),
+            "date": when.date().isoformat() if when else "?",
+        })
     return out
 
 
@@ -221,55 +379,140 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--days", type=int, default=3)
     ap.add_argument("--reset", action="store_true", help="forget previously seen items")
+    ap.add_argument(
+        "--sources", default="arxiv,github,erdos,zenodo,feeds",
+        help="comma list: arxiv, github, erdos, zenodo, feeds",
+    )
     args = ap.parse_args()
+    wanted = {s.strip() for s in args.sources.split(",") if s.strip()}
 
-    state = {"seen_arxiv": [], "seen_prs": []} if args.reset else load_state()
-    seen_arxiv, seen_prs = set(state["seen_arxiv"]), set(state["seen_prs"])
+    state = load_state()
+    if args.reset:
+        state = {k: [] for k in state}
 
-    known_arxiv, known_prs = catalog_index()
+    known = catalog_index()
 
     print(f"# AI-solve candidates - last {args.days} days\n")
-    print(f"_Catalog check: {len(known_arxiv)} arXiv ids and {len(known_prs)} "
-          f"formal-conjectures PRs already tracked on vibemathed.com._\n")
+    print(f"_Catalog check: {len(known['arxiv'])} arXiv ids, "
+          f"{len(known['fc_prs'])} formal-conjectures PRs, "
+          f"{len(known['mathlib_prs'])} mathlib PRs, "
+          f"{len(known['zenodo'])} Zenodo records and "
+          f"{len(known['erdos'])} Erdős numbers already tracked on vibemathed.com._\n")
 
-    print("## arXiv (resolution-flavoured papers mentioning a model)\n")
-    papers = arxiv_recent(args.days)
-    new_papers = [p for p in papers if p["id"] not in seen_arxiv]
-    # The full-text fetches dominate the runtime and are independent; a small
-    # pool keeps a week-sized sweep to minutes while staying polite to arXiv.
-    with ThreadPoolExecutor(max_workers=4) as pool:
-        all_snippets = list(pool.map(arxiv_ai_mentions, new_papers))
-    hits = 0
-    for p, snippets in zip(new_papers, all_snippets):
-        seen_arxiv.add(p["id"])
-        if not snippets:
-            continue
-        hits += 1
-        # Marked rather than hidden: one paper can hold a second, untracked
-        # result, so "already in catalog" is a triage hint, not a filter.
-        tracked = " **[already in catalog]**" if p["id"].split("v")[0] in known_arxiv else ""
-        print(f"### [{p['title']}](https://arxiv.org/abs/{p['id']}){tracked}")
-        print(f"- id: {p['id']}")
-        for s in snippets:
-            print(f"- {s}")
-        print()
-    print(f"_({len(papers)} resolution-flavoured papers scanned, {hits} new with AI mentions)_\n")
+    if "arxiv" in wanted:
+        print("## arXiv (resolution-flavoured papers mentioning a model)\n")
+        seen = set(state["seen_arxiv"])
+        try:
+            papers = arxiv_recent(args.days)
+        except Exception as e:
+            papers = []
+            print(f"_(arXiv scan failed: {e})_\n")
+        new_papers = [p for p in papers if p["id"] not in seen]
+        # The full-text fetches dominate the runtime and are independent; a small
+        # pool keeps a week-sized sweep to minutes while staying polite to arXiv.
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            all_snippets = list(pool.map(arxiv_ai_mentions, new_papers))
+        hits = 0
+        for p, snippets in zip(new_papers, all_snippets):
+            seen.add(p["id"])
+            if not snippets:
+                continue
+            hits += 1
+            # Marked rather than hidden: one paper can hold a second, untracked
+            # result, so "already in catalog" is a triage hint, not a filter.
+            tracked = " **[already in catalog]**" if p["id"].split("v")[0] in known["arxiv"] else ""
+            print(f"### [{p['title']}](https://arxiv.org/abs/{p['id']}){tracked}")
+            print(f"- id: {p['id']}")
+            for s in snippets:
+                print(f"- {s}")
+            print()
+        print(f"_({len(papers)} resolution-flavoured papers scanned, {hits} new with AI mentions)_\n")
+        state["seen_arxiv"] = sorted(seen)
 
-    print("## google-deepmind/formal-conjectures PRs\n")
-    prs = github_prs("google-deepmind/formal-conjectures", args.days)
-    new_prs = [pr for pr in prs if pr["number"] not in seen_prs]
-    for pr in new_prs:
-        seen_prs.add(pr["number"])
-        flag = " [AI mention]" if pr["ai_mention"] else ""
-        if pr["number"] in known_prs:
-            flag += " **[already in catalog]**"
-        print(f"- [#{pr['number']} {pr['title']}]({pr['url']}) - {pr['state']}{flag}")
-        for s in pr["snippets"]:
-            print(f"  - {s}")
-    print(f"\n_({len(prs)} matching PRs in window, {len(new_prs)} new)_")
+    if "github" in wanted:
+        for cfg in PR_REPOS:
+            repo = cfg["repo"]
+            legacy = repo == "google-deepmind/formal-conjectures"
+            state_key = "seen_prs" if legacy else "seen_mathlib_prs"
+            known_key = "fc_prs" if legacy else "mathlib_prs"
+            gate = " (AI-disclosing PRs only)" if cfg["ai_only"] else ""
+            print(f"## {repo} PRs{gate}\n")
+            seen = set(state[state_key])
+            try:
+                prs = github_prs(repo, args.days, cfg["ai_only"], cfg["max_pages"])
+            except Exception as e:
+                prs = []
+                print(f"_(scan failed: {e})_")
+            new_prs = [pr for pr in prs if pr["number"] not in seen]
+            for pr in new_prs:
+                seen.add(pr["number"])
+                flag = " [AI mention]" if pr["ai_mention"] else ""
+                if pr["number"] in known[known_key]:
+                    flag += " **[already in catalog]**"
+                print(f"- [#{pr['number']} {pr['title']}]({pr['url']}) - {pr['state']}{flag}")
+                for s in pr["snippets"]:
+                    print(f"  - {s}")
+            print(f"\n_({len(prs)} matching PRs in window, {len(new_prs)} new)_\n")
+            state[state_key] = sorted(seen)
 
-    state["seen_arxiv"] = sorted(seen_arxiv)
-    state["seen_prs"] = sorted(seen_prs)
+    if "erdos" in wanted:
+        print("## Tao's AI-contributions ledger (teorth/erdosproblems wiki)\n")
+        seen = set(state["seen_erdos_wiki"])
+        try:
+            numbers = erdos_wiki_numbers()
+        except Exception as e:
+            numbers = []
+            print(f"_(wiki scan failed: {e})_")
+        fresh = [n for n in numbers if n not in seen]
+        seen.update(fresh)
+        # The ledger cites hundreds of problems; individual lines only for the
+        # ones the catalog does NOT have - those are the triage work.
+        untracked = [n for n in fresh if n not in known["erdos"]]
+        for n in untracked:
+            print(f"- [Erdős #{n}](https://www.erdosproblems.com/{n})")
+        print(f"\n_({len(numbers)} problems cited on the ledger, {len(fresh)} new since "
+              f"last run, of which {len(untracked)} not in the catalog)_\n")
+        state["seen_erdos_wiki"] = sorted(seen)
+
+    if "zenodo" in wanted:
+        print("## Zenodo (resolution-flavoured records mentioning a model)\n")
+        seen = set(state["seen_zenodo"])
+        try:
+            records = zenodo_recent(args.days)
+        except Exception as e:
+            records = []
+            print(f"_(Zenodo scan failed: {e})_")
+        new_records = [r for r in records if r["id"] not in seen]
+        for r in new_records:
+            seen.add(r["id"])
+            tracked = " **[already in catalog]**" if r["id"] in known["zenodo"] else ""
+            print(f"### [{r['title']}]({r['url']}){tracked}")
+            print(f"- uploaded {r['created']}")
+            for s in r["snippets"]:
+                print(f"- {s}")
+            print()
+        print(f"_({len(records)} matching records in window, {len(new_records)} new)_\n")
+        state["seen_zenodo"] = sorted(seen)
+
+    if "feeds" in wanted:
+        print("## Announcement feeds\n")
+        seen = set(state["seen_feed_items"])
+        shown = 0
+        for name, url in FEEDS:
+            try:
+                items = feed_items(name, url, args.days)
+            except Exception as e:
+                print(f"_({name} feed failed: {e})_")
+                continue
+            for it in items:
+                if it["key"] in seen:
+                    continue
+                seen.add(it["key"])
+                shown += 1
+                print(f"- **{it['feed']}** [{it['title']}]({it['url']}) - {it['date']}")
+        print(f"\n_({shown} new resolution-flavoured feed items)_")
+        state["seen_feed_items"] = sorted(seen)
+
     save_state(state)
     return 0
 
