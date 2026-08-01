@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getPublishedProblems, getRecentActivity, getUserCount } from "@/lib/data";
 import type { CardEntry } from "@/lib/problems";
 import { SITE_URL } from "@/lib/site";
 import { Highlights } from "@/components/Highlights";
-import { Icon } from "@/components/Icons";
 import { ProblemCards } from "@/components/ProblemCards";
 import { RecentActivity } from "@/components/RecentActivity";
 import { StatBand } from "@/components/StatBand";
@@ -129,18 +127,7 @@ export default async function Home() {
         <Highlights problems={problems} />
       </section>
 
-      {/* A quiet button, right-aligned under the numbers it extends. */}
-      <div className="mt-2.5 flex justify-end">
-        <Link
-          href="/stats"
-          className="inline-flex items-center gap-1.5 rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-2.5 py-1.5 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)]"
-        >
-          <Icon name="pulse" size={12} />
-          See the charts
-        </Link>
-      </div>
-
-      <section className="mt-10">
+      <section className="mt-8">
         <h2 className="mb-3 font-serif text-xl text-[var(--ink)]">All entries</h2>
         <ProblemCards problems={cards} />
       </section>
