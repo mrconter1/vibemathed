@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getPublishedProblems } from "@/lib/data";
 import { NOTABILITY_HELP } from "@/lib/display";
+import { ContributionGrowthChart } from "@/components/ContributionGrowthChart";
 import { CumulativeChart } from "@/components/CumulativeChart";
 import { Icon, type IconName } from "@/components/Icons";
 import { ModelsChart } from "@/components/ModelsChart";
@@ -93,6 +94,9 @@ export default async function StatsPage() {
         </div>
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <OpenSourceChart problems={resolved} />
+        </div>
+        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5 lg:col-span-2">
+          <ContributionGrowthChart problems={resolved} />
         </div>
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5 lg:col-span-2">
           <ModelsChart problems={resolved} />

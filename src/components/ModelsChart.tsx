@@ -10,8 +10,15 @@ const FAMILIES: { label: string; test: RegExp }[] = [
   { label: "Google DeepMind", test: /gemini|deepmind|alphaevolve|alphaproof/i },
   { label: "Anthropic (Claude)", test: /claude/i },
   { label: "Harmonic (Aristotle)", test: /aristotle|harmonic/i },
+  { label: "xAI (Grok)", test: /grok/i },
   { label: "Open-weights (DeepSeek, GLM)", test: /deepseek|glm/i },
-  { label: "Other systems", test: /aletheia|archivara|multiscalar|seed prover|alphaproof/i },
+  {
+    // Agent harnesses and systems that do not name (or do not disclose) a
+    // frontier base model. Harness entries that DO name one (e.g. "Rethlas
+    // (GPT-5.6 Sol)") also count toward that vendor, by design.
+    label: "Agent systems / other",
+    test: /aletheia|archivara|multiscalar|seed prover|axiomprover|demonstrandum|qed|tars|rethlas|archon|proofcouncil|hy3|hyra|capy/i,
+  },
 ];
 
 export function ModelsChart({ problems }: { problems: MathProblem[] }) {
