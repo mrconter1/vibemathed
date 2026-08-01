@@ -36,13 +36,21 @@ function Composer({
   initial?: string;
   submitLabel: string;
   busy: boolean;
-  onSubmit: (text: string) => void;
+  /// Resolves true on success, so the composer knows to clear itself - a
+  /// posted comment must not linger in the box.
+  onSubmit: (text: string) => Promise<boolean>;
   onCancel?: () => void;
   autoFocus?: boolean;
 }) {
   const [text, setText] = useState(initial ?? "");
   const empty = text.trim().length === 0;
   const tooLong = text.trim().length > COMMENT_MAX_LENGTH;
+
+  async function submit() {
+    if (empty || tooLong) return;
+    const ok = await onSubmit(text);
+    if (ok) setText("");
+  }
 
   return (
     <div>
@@ -57,7 +65,7 @@ function Composer({
           // Ctrl/Cmd+Enter submits, matching most comment boxes.
           if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && !empty && !tooLong) {
             e.preventDefault();
-            onSubmit(text);
+            void submit();
           }
         }}
       />
@@ -66,7 +74,7 @@ function Composer({
           type="button"
           className={primaryBtn}
           disabled={busy || empty || tooLong}
-          onClick={() => onSubmit(text)}
+          onClick={() => void submit()}
         >
           {busy ? "Saving…" : submitLabel}
         </button>
@@ -109,17 +117,18 @@ function Comment({
   // Ownership is re-checked on the server; this only controls the affordance.
   const mine = userId !== null && comment.authorId === userId;
 
-  async function save(text: string) {
+  async function save(text: string): Promise<boolean> {
     setBusy(true);
     setError(null);
     const result = await editComment(comment.id, text, slug);
     setBusy(false);
     if (!result.ok) {
       setError(result.error);
-      return;
+      return false;
     }
     onChanged(result.comment);
     setEditing(false);
+    return true;
   }
 
   async function remove() {
@@ -226,16 +235,17 @@ export function CommentsSection({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function post(text: string) {
+  async function post(text: string): Promise<boolean> {
     setBusy(true);
     setError(null);
     const result = await addComment(slug, text);
     setBusy(false);
     if (!result.ok) {
       setError(result.error);
-      return;
+      return false;
     }
     setComments((prev) => [...prev, result.comment]);
+    return true;
   }
 
   return (
