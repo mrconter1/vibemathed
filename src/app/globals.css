@@ -222,21 +222,29 @@ select option::checkmark {
  * Display math ($$...$$) is a rigid block that cannot reflow. On narrow
  * screens a long formula must scroll inside its own box instead of widening
  * the page. Site-wide: statements, notes and comments all render KaTeX.
+ *
+ * The block padding matters: overflow-y is a clip edge, and at some zoom
+ * levels fractional-pixel rounding shaves the tallest glyphs (fraction bars,
+ * exponents) right at the top of the box. A little breathing room keeps the
+ * math off the edge.
  */
 .katex-display {
   overflow-x: auto;
   overflow-y: hidden;
+  padding-block: 0.2em;
 }
 
 /*
  * Prose paragraphs that render INLINE KaTeX (statements, AI-role and
  * verification notes). Inline math cannot line-break inside delimiters, so a
  * formula wider than a phone must scroll inside its paragraph - without this
- * it would be clipped dead by the root overflow-x guard above.
+ * it would be clipped dead by the root overflow-x guard above. Same
+ * clip-edge padding reasoning as .katex-display.
  */
 .math-prose {
   overflow-x: auto;
   overflow-y: hidden;
+  padding-block: 0.15em;
 }
 
 /*

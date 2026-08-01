@@ -11,9 +11,10 @@ import { reportProblem } from "@/app/actions/report";
 import { Icon } from "@/components/Icons";
 import { useViewer } from "@/components/ViewerProvider";
 
-/// Matches the vote buttons beside it: same border, radius and hover wash.
+/// Matches the vote buttons beside it: same border, radius, hover wash and
+/// EXACT height (their text-sm line + py-1.5 + border lands on 34px).
 export const CORNER_ICON_BUTTON =
-  "inline-flex h-8 w-8 items-center justify-center rounded border border-[var(--hairline)] text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)]";
+  "inline-flex h-[34px] w-[34px] items-center justify-center rounded border border-[var(--hairline)] text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)]";
 
 const BODY_MAX = 1000;
 
@@ -60,7 +61,9 @@ export function ReportEntryDialog({ slug }: { slug: string }) {
   }
 
   if (!loaded) {
-    return <span className="inline-block h-8 w-8 rounded bg-[var(--hairline)]/40" aria-hidden />;
+    return (
+      <span className="inline-block h-[34px] w-[34px] rounded bg-[var(--hairline)]/40" aria-hidden />
+    );
   }
 
   if (!signedIn) {

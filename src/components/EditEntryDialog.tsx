@@ -71,7 +71,9 @@ export function EditEntryDialog({
   }
 
   if (!loaded) {
-    return <span className="inline-block h-8 w-8 rounded bg-[var(--hairline)]/40" aria-hidden />;
+    return (
+      <span className="inline-block h-[34px] w-[34px] rounded bg-[var(--hairline)]/40" aria-hidden />
+    );
   }
 
   if (!signedIn) {
