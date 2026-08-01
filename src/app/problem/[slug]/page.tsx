@@ -173,8 +173,12 @@ export default async function ProblemPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Link href="/" className="text-xs text-[var(--accent-blue)] hover:underline">
-        ← All problems
+      <Link
+        href="/"
+        className="inline-flex items-center gap-1.5 rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-2.5 py-1.5 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] hover:text-[var(--ink)]"
+      >
+        <span aria-hidden>←</span>
+        All problems
       </Link>
 
       {/* The entry itself sits on a raised sheet, like the cards it came

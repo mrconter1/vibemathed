@@ -126,7 +126,10 @@ export default async function Home() {
       >
         <StatBand problems={problems} users={users} />
         <RecentActivity activity={activity} />
-        <Highlights problems={problems} />
+        {/* Five rows, matching the activity feed: the highlight cards then
+            fill the column height the feed forces with real content instead
+            of stretching four rows over blank space. */}
+        <Highlights problems={problems} rows={5} />
       </section>
 
       <section className="mt-8">
