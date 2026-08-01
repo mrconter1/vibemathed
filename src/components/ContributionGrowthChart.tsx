@@ -8,8 +8,10 @@ import { AI_CONTRIBUTION } from "@/lib/display";
 // scales and hover behaviour as CumulativeChart, so the two read as siblings.
 
 const VIEW_W = 640;
-const VIEW_H = 300;
-const MARGIN = { top: 16, right: 20, bottom: 40, left: 44 };
+// Same frame as CumulativeChart, so the two line charts render at matching
+// heights when they share a dashboard row.
+const VIEW_H = 360;
+const MARGIN = { top: 20, right: 20, bottom: 40, left: 44 };
 const PLOT_W = VIEW_W - MARGIN.left - MARGIN.right;
 const PLOT_H = VIEW_H - MARGIN.top - MARGIN.bottom;
 

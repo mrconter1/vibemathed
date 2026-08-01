@@ -79,9 +79,9 @@ export default async function StatsPage() {
       </dl>
 
       {/* Two-column grid, single column on mobile. The two wide SVG charts
-          share the top row, the two compact ratio pies the middle row, and the
-          per-system bars get a full-width row - horizontal bars only gain from
-          the extra width. */}
+          share the top row, the two compact ratio pies the middle row, and
+          the tier-growth lines pair with the per-system bars on the bottom
+          row. */}
       <section className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <CumulativeChart problems={resolved} />
@@ -95,10 +95,10 @@ export default async function StatsPage() {
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <OpenSourceChart problems={resolved} />
         </div>
-        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5 lg:col-span-2">
+        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <ContributionGrowthChart problems={resolved} />
         </div>
-        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5 lg:col-span-2">
+        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <ModelsChart problems={resolved} />
         </div>
       </section>
