@@ -84,6 +84,24 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
+/*
+ * Entry-card feedback, deliberately NOT Tailwind hover: utilities. Hover
+ * exists only for real mouse pointers - on touch devices browsers emulate
+ * :hover on tap-and-hold, and repainting the color-mix background under
+ * Chrome's auto-dark inversion is a bright flash across the card. The focus
+ * border likewise only answers KEYBOARD focus (:focus-visible), not the
+ * focus a finger tap leaves behind.
+ */
+@media (hover: hover) and (pointer: fine) {
+  .entry-card:hover {
+    border-color: var(--ink-muted);
+    background: color-mix(in srgb, var(--ink) 3%, var(--paper-raised));
+  }
+}
+.entry-card:has(:focus-visible) {
+  border-color: var(--accent-blue);
+}
+
 body {
   background: var(--paper);
   color: var(--ink);

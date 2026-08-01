@@ -235,7 +235,12 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
     // The whole card is clickable: the title link's ::after stretches over the
     // card (so semantics and keyboard focus stay on a real link), and every
     // interactive child sits above the overlay with `relative z-10`.
-    <article className="group relative rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3.5 transition-colors hover:border-[var(--ink-muted)] hover:bg-[color-mix(in_srgb,var(--ink)_3%,var(--paper-raised))] focus-within:border-[var(--accent-blue)]">
+    // Hover/focus feedback lives in globals.css (.entry-card), gated to real
+    // mouse pointers and keyboard focus: on touch devices an emulated :hover
+    // or tap-focus repaint is exactly the "card flashes when I press it"
+    // report under Chrome's auto-dark mode, and a finger on the card needs no
+    // hover affordance anyway.
+    <article className="entry-card group relative rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3.5 transition-colors">
       {/* Only the HEADER shares a row with the votes. Everything below runs
           the full width of the card - when the votes sat in a full-height
           flex column they reserved their width all the way down, wrapping
