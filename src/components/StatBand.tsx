@@ -21,6 +21,7 @@ interface Tile {
 }
 
 function computeTiles(problems: ProblemWithVotes[], users: number): Tile[] {
+  const resolved = problems.filter((p) => p.resolution === "resolved").length;
   const lean = problems.filter((p) => p.verification === "lean-verified").length;
   const votes = problems.reduce((sum, p) => sum + p.upvotes + p.downvotes, 0);
   const comments = problems.reduce((sum, p) => sum + p.commentCount, 0);
@@ -35,7 +36,13 @@ function computeTiles(problems: ProblemWithVotes[], users: number): Tile[] {
   );
 
   return [
-    { icon: "layers", label: "Tracked problems", value: String(problems.length) },
+    {
+      icon: "layers",
+      label: "Tracked problems",
+      value: String(problems.length),
+      // A sub line like its three siblings, so the row reads as one family.
+      sub: `${resolved} fully resolved`,
+    },
     {
       icon: "hourglass",
       label: "Combined years open",

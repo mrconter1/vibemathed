@@ -35,7 +35,9 @@ export default function AboutPage() {
           curating and cataloguing the mathematical problems that have been
           solved, fully or partially, by AI models. The record spans famous
           conjectures as well as the long tail of specialist questions and the
-          numbered Erdős problems.
+          numbered Erdős problems. It went live on July 20, 2026 as the first
+          website dedicated to keeping this record, and remains the only
+          community-curated one.
         </p>
         <p className="text-sm">
           Entries are submitted, reviewed and curated in the open by people who
