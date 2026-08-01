@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { MODEL_FAMILIES } from "@/lib/display";
 import type { MathProblem } from "@/lib/problems";
+import { bucketKey, bucketLabel, bucketRange, type Granularity } from "@/lib/time-buckets";
+import { GranularityToggle } from "@/components/GranularityToggle";
 
 // Cumulative solves per AI-system family over time - the volume race, not
 // just its final score. Same frame and hover behaviour as the other line
@@ -26,19 +28,6 @@ const MARGIN = { top: 20, right: 20, bottom: 40, left: 44 };
 const PLOT_W = VIEW_W - MARGIN.left - MARGIN.right;
 const PLOT_H = VIEW_H - MARGIN.top - MARGIN.bottom;
 
-const MONTH = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-function monthKey(solveDate: string): string {
-  if (/^\d{4}-\d{2}/.test(solveDate)) return solveDate.slice(0, 7);
-  if (/^\d{4}$/.test(solveDate)) return `${solveDate}-06`;
-  return solveDate.slice(0, 7);
-}
-
-function label(key: string): string {
-  const [y, m] = key.split("-").map(Number);
-  return `${MONTH[m - 1]} '${String(y).slice(2)}`;
-}
-
 function niceMax(v: number, step: number) {
   return Math.max(step, Math.ceil(v / step) * step);
 }
@@ -47,6 +36,8 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hover, setHover] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
+  // Calendar-aligned time buckets, month by default (see time-buckets.ts).
+  const [gran, setGran] = useState<Granularity>("month");
   // Legend chips toggle series on and off; the y-axis rescales to what is
   // visible, so hiding the runaway leader zooms the rest into view.
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
@@ -66,25 +57,15 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  const keys = problems.map((p) => monthKey(p.solveDate)).sort();
+  const keys = problems.map((p) => bucketKey(p.solveDate, gran)).sort();
   if (keys.length === 0) return null;
 
-  const range: string[] = [];
-  let [y, m] = keys[0].split("-").map(Number);
-  const [ey, em] = keys[keys.length - 1].split("-").map(Number);
-  while (y < ey || (y === ey && m <= em)) {
-    range.push(`${y}-${String(m).padStart(2, "0")}`);
-    m += 1;
-    if (m > 12) {
-      m = 1;
-      y += 1;
-    }
-  }
+  const range = bucketRange(keys[0], keys[keys.length - 1], gran);
 
   const series = MODEL_FAMILIES.map((f) => {
     const famKeys = problems
       .filter((p) => f.test.test(p.model))
-      .map((p) => monthKey(p.solveDate));
+      .map((p) => bucketKey(p.solveDate, gran));
     return {
       key: f.key,
       label: f.label,
@@ -155,6 +136,9 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
             </button>
           );
         })}
+        <span className="ml-auto">
+          <GranularityToggle value={gran} onChange={setGran} />
+        </span>
       </div>
 
       <div className="mt-3 flex flex-1 flex-col justify-center">
@@ -211,7 +195,7 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
                   className="font-mono"
                   style={{ fontSize: 13, fill: "var(--ink-muted)" }}
                 >
-                  {label(mk)}
+                  {bucketLabel(mk, gran)}
                 </text>
               ) : null,
             )}
@@ -263,7 +247,7 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
                 transform: "translate(-50%, 0)",
               }}
             >
-              <span className="font-serif text-[var(--ink)]">{label(range[active])}</span>
+              <span className="font-serif text-[var(--ink)]">{bucketLabel(range[active], gran)}</span>
               {visible.map((s) => (
                 <span
                   key={s.key}

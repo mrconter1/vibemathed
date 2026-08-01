@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { MathProblem } from "@/lib/problems";
+import { bucketKey, bucketLabel, bucketRange, type Granularity } from "@/lib/time-buckets";
+import { GranularityToggle } from "@/components/GranularityToggle";
 
 const VIEW_W = 640;
 // Matches the notability chart's aspect ratio so the two wide charts render at
@@ -11,22 +13,6 @@ const MARGIN = { top: 20, right: 20, bottom: 40, left: 44 };
 const PLOT_W = VIEW_W - MARGIN.left - MARGIN.right;
 const PLOT_H = VIEW_H - MARGIN.top - MARGIN.bottom;
 
-const MONTH = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-// solveDate is "YYYY-MM-DD" | "YYYY-MM" | "YYYY". Bucket to a month key; a bare
-// year (a couple of the imported entries) is placed mid-year so it doesn't
-// distort the front of the timeline.
-function monthKey(solveDate: string): string {
-  if (/^\d{4}-\d{2}/.test(solveDate)) return solveDate.slice(0, 7);
-  if (/^\d{4}$/.test(solveDate)) return `${solveDate}-06`;
-  return solveDate.slice(0, 7);
-}
-
-function label(key: string): string {
-  const [y, m] = key.split("-").map(Number);
-  return `${MONTH[m - 1]} '${String(y).slice(2)}`;
-}
-
 function niceMax(v: number, step: number) {
   return Math.max(step, Math.ceil(v / step) * step);
 }
@@ -35,6 +21,8 @@ export function CumulativeChart({ problems }: { problems: MathProblem[] }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hover, setHover] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
+  // Calendar-aligned time buckets, month by default (see time-buckets.ts).
+  const [gran, setGran] = useState<Granularity>("month");
 
   // Only wire up hover on devices with a real (mouse) pointer.
   useEffect(() => {
@@ -45,21 +33,11 @@ export function CumulativeChart({ problems }: { problems: MathProblem[] }) {
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  const keys = problems.map((p) => monthKey(p.solveDate)).sort();
+  const keys = problems.map((p) => bucketKey(p.solveDate, gran)).sort();
   if (keys.length === 0) return null;
 
-  // Build a continuous month range from first to last solve.
-  const range: string[] = [];
-  let [y, m] = keys[0].split("-").map(Number);
-  const [ey, em] = keys[keys.length - 1].split("-").map(Number);
-  while (y < ey || (y === ey && m <= em)) {
-    range.push(`${y}-${String(m).padStart(2, "0")}`);
-    m += 1;
-    if (m > 12) {
-      m = 1;
-      y += 1;
-    }
-  }
+  // Continuous bucket range from first to last solve.
+  const range = bucketRange(keys[0], keys[keys.length - 1], gran);
 
   const cumulative = range.map((mk) => keys.filter((k) => k <= mk).length);
   const total = problems.length;
@@ -90,7 +68,10 @@ export function CumulativeChart({ problems }: { problems: MathProblem[] }) {
 
   return (
     <div className="flex h-full flex-col">
-      <h2 className="font-serif text-lg text-[var(--ink)]">Problems solved over time</h2>
+      <div className="flex items-start justify-between gap-3">
+        <h2 className="font-serif text-lg text-[var(--ink)]">Problems solved over time</h2>
+        <GranularityToggle value={gran} onChange={setGran} />
+      </div>
       <p className="mt-1 text-xs text-[var(--ink-muted)]">
         Cumulative count of tracked resolutions, {total} to date.
       </p>
@@ -147,7 +128,7 @@ export function CumulativeChart({ problems }: { problems: MathProblem[] }) {
                 className="font-mono"
                 style={{ fontSize: 13, fill: "var(--ink-muted)" }}
               >
-                {label(mk)}
+                {bucketLabel(mk, gran)}
               </text>
             ) : null,
           )}
@@ -196,7 +177,7 @@ export function CumulativeChart({ problems }: { problems: MathProblem[] }) {
               transform: "translate(-50%, calc(-100% - 10px))",
             }}
           >
-            <span className="font-serif text-[var(--ink)]">{label(range[active])}</span>
+            <span className="font-serif text-[var(--ink)]">{bucketLabel(range[active], gran)}</span>
             <span className="ml-2 font-mono tabular-nums text-[var(--ink-secondary)]">
               {cumulative[active]} solved
             </span>
