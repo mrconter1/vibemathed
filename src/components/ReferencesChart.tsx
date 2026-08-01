@@ -46,6 +46,16 @@ function ticks(max: number, step: number) {
 export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const router = useRouter();
+  // Legend chips toggle point groups (proved / disproved / under review).
+  // Axes stay fixed so toggling declutters without reflowing the plot.
+  const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
+  const toggleGroup = (key: string) =>
+    setHidden((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
 
   // Resolved entries plot as filled dots; CANDIDATE entries (a full solution
   // claimed and vetted, community review pending) plot as hollow rings so a
@@ -79,14 +89,18 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
   const x = (age: number) => MARGIN.left + (age / xMax) * PLOT_W;
   const y = (sig: number) => MARGIN.top + PLOT_H - (sig / yMax) * PLOT_H;
 
-  const active = plottable.find((d) => d.problem.slug === activeSlug);
   // Legend reflects only series actually drawn as points.
   const seriesPresent = Array.from(new Set(plottable.map((d) => d.problem.solveType))).filter(
     (t) => t in SOLVE_TYPE_COLOR,
   );
 
+  const shown = plottable.filter(
+    (d) => !hidden.has(d.problem.solveType) && !(d.claimed && hidden.has("claimed")),
+  );
+  const active = shown.find((d) => d.problem.slug === activeSlug);
+
   // Draw the dense low band first so the labeled strikes sit on top of it.
-  const drawOrder = [...plottable].sort((a, b) => a.significance - b.significance);
+  const drawOrder = [...shown].sort((a, b) => a.significance - b.significance);
 
   // Label de-collision: several labeled points share a score band (four sit
   // at 35), so neighbouring labels would overprint. Greedy level stacking:
@@ -124,24 +138,47 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
         <h2 className="font-serif text-lg text-[var(--ink)]">
           Significance vs. age at resolution
         </h2>
-        <ul className="flex flex-wrap gap-4 text-sm text-[var(--ink-secondary)]">
-          {seriesPresent.map((type) => (
-            <li key={type} className="flex items-center gap-1.5">
-              <span
-                aria-hidden
-                className="inline-block h-2.5 w-2.5 rounded-full"
-                style={{ backgroundColor: SOLVE_TYPE_COLOR[type] }}
-              />
-              {SOLVE_TYPE_LABEL[type] ?? type}
-            </li>
-          ))}
+        <ul className="flex flex-wrap gap-2.5 text-sm text-[var(--ink-secondary)]">
+          {seriesPresent.map((type) => {
+            const off = hidden.has(type);
+            return (
+              <li key={type}>
+                <button
+                  type="button"
+                  onClick={() => toggleGroup(type)}
+                  aria-pressed={!off}
+                  title={off ? "Show points" : "Hide points"}
+                  className={`flex items-center gap-1.5 rounded px-1 py-0.5 transition-opacity ${
+                    off ? "opacity-40 line-through" : ""
+                  }`}
+                >
+                  <span
+                    aria-hidden
+                    className="inline-block h-2.5 w-2.5 rounded-full"
+                    style={{ backgroundColor: SOLVE_TYPE_COLOR[type] }}
+                  />
+                  {SOLVE_TYPE_LABEL[type] ?? type}
+                </button>
+              </li>
+            );
+          })}
           {anyClaimed && (
-            <li className="flex items-center gap-1.5">
-              <span
-                aria-hidden
-                className="inline-block h-2.5 w-2.5 rounded-full border-2 border-[var(--ink-secondary)]"
-              />
-              Under review
+            <li>
+              <button
+                type="button"
+                onClick={() => toggleGroup("claimed")}
+                aria-pressed={!hidden.has("claimed")}
+                title={hidden.has("claimed") ? "Show points" : "Hide points"}
+                className={`flex items-center gap-1.5 rounded px-1 py-0.5 transition-opacity ${
+                  hidden.has("claimed") ? "opacity-40 line-through" : ""
+                }`}
+              >
+                <span
+                  aria-hidden
+                  className="inline-block h-2.5 w-2.5 rounded-full border-2 border-[var(--ink-secondary)]"
+                />
+                Under review
+              </button>
             </li>
           )}
         </ul>

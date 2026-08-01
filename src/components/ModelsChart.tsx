@@ -47,6 +47,16 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hover, setHover] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
+  // Legend chips toggle series on and off; the y-axis rescales to what is
+  // visible, so hiding the runaway leader zooms the rest into view.
+  const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
+  const toggleSeries = (key: string) =>
+    setHidden((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
 
   useEffect(() => {
     const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
@@ -86,7 +96,8 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
     .filter((s) => s.total > 0)
     .sort((a, b) => b.total - a.total);
 
-  const yMax = niceMax(Math.max(...series.map((s) => s.total)), 20);
+  const visible = series.filter((s) => !hidden.has(s.key));
+  const yMax = niceMax(Math.max(1, ...visible.map((s) => s.total)), 20);
 
   const x = (i: number) =>
     MARGIN.left + (range.length === 1 ? PLOT_W / 2 : (i / (range.length - 1)) * PLOT_W);
@@ -117,19 +128,33 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
         named on it.
       </p>
 
-      {/* Legend doubles as the standings. */}
-      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
-        {series.map((s) => (
-          <span key={s.key} className="inline-flex items-center gap-1.5">
-            <span
-              aria-hidden
-              className="inline-block h-2 w-2 rounded-full"
-              style={{ backgroundColor: s.color }}
-            />
-            <span className="text-[var(--ink-secondary)]">{s.label}</span>
-            <span className="font-mono tabular-nums text-[var(--ink-muted)]">{s.total}</span>
-          </span>
-        ))}
+      {/* Legend doubles as the standings AND the visibility toggles. */}
+      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+        {series.map((s) => {
+          const off = hidden.has(s.key);
+          return (
+            <button
+              key={s.key}
+              type="button"
+              onClick={() => toggleSeries(s.key)}
+              aria-pressed={!off}
+              title={off ? "Show series" : "Hide series"}
+              className={`inline-flex items-center gap-1.5 rounded px-1 py-0.5 transition-opacity ${
+                off ? "opacity-40" : ""
+              }`}
+            >
+              <span
+                aria-hidden
+                className="inline-block h-2 w-2 rounded-full"
+                style={{ backgroundColor: s.color }}
+              />
+              <span className={`text-[var(--ink-secondary)] ${off ? "line-through" : ""}`}>
+                {s.label}
+              </span>
+              <span className="font-mono tabular-nums text-[var(--ink-muted)]">{s.total}</span>
+            </button>
+          );
+        })}
       </div>
 
       <div className="mt-3 flex flex-1 flex-col justify-center">
@@ -164,7 +189,7 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
               </g>
             ))}
 
-            {series.map((s) => (
+            {visible.map((s) => (
               <polyline
                 key={s.key}
                 points={s.cumulative.map((v, i) => `${x(i)},${yScale(v)}`).join(" ")}
@@ -202,7 +227,7 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
                   strokeWidth={1}
                   strokeDasharray="3 3"
                 />
-                {series.map((s) => (
+                {visible.map((s) => (
                   <circle
                     key={s.key}
                     cx={x(active)}
@@ -239,7 +264,7 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
               }}
             >
               <span className="font-serif text-[var(--ink)]">{label(range[active])}</span>
-              {series.map((s) => (
+              {visible.map((s) => (
                 <span
                   key={s.key}
                   className="ml-2 inline-flex items-center gap-1 font-mono tabular-nums text-[var(--ink-secondary)]"
