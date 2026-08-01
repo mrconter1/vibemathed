@@ -121,6 +121,8 @@ export async function updateProblem(
       humanCollaborators: true,
       aiRole: true,
       verification: true,
+      publication: true,
+      resolutionMethod: true,
       verificationNote: true,
       resultNote: true,
       ageNote: true,
@@ -166,12 +168,14 @@ export async function updateProblem(
     return { ok: true, changed: 0 };
   }
 
-  // Moving an entry up or down the trust ladder - or changing what the entry
-  // claims happened to the problem - is the highest-consequence edit on the
-  // site, so it has to come with its justification. Requiring the note to
-  // change in the same edit means the changelog always records WHY it moved,
-  // not just that it did.
-  const movedTier = changes.some((c) => c.field === "Verification" || c.field === "Status");
+  // Moving an entry up or down the trust ladder, moving it through the
+  // publication pipeline, or changing what the entry claims happened to the
+  // problem - these are the highest-consequence edits on the site, so they
+  // have to come with their justification. Requiring the note to change in
+  // the same edit means the changelog always records WHY it moved.
+  const movedTier = changes.some(
+    (c) => c.field === "Verification" || c.field === "Status" || c.field === "Publication",
+  );
   const explained = changes.some((c) => c.field === "Verification note");
   if (movedTier && !explained) {
     return {

@@ -46,6 +46,8 @@ export type EditableKey =
   | "humanCollaborators"
   | "aiRole"
   | "verification"
+  | "publication"
+  | "resolutionMethod"
   | "verificationNote"
   | "resultNote"
   | "ageNote"
@@ -104,14 +106,29 @@ export const AI_CONTRIBUTION_OPTIONS = [
   { value: "ai-assisted", label: "AI-assisted" },
 ];
 
-/// The verification trust ladder, strongest first.
+/// The verification trust ladder, strongest first: how checked the
+/// mathematics is.
 export const VERIFICATION_OPTIONS = [
   { value: "lean-verified", label: "Lean-verified" },
   { value: "expert-verified", label: "Expert-verified" },
   { value: "site-confirmed", label: "Site-confirmed" },
-  { value: "preprint-unrefereed", label: "Preprint (unrefereed)" },
-  { value: "announced-unreviewed", label: "Announced (unreviewed)" },
+  { value: "unreviewed", label: "Unreviewed" },
   { value: "contested", label: "Contested" },
+];
+
+/// Where the claim lives in the scholarly pipeline.
+export const PUBLICATION_OPTIONS = [
+  { value: "announcement", label: "Announcement" },
+  { value: "preprint", label: "Preprint" },
+  { value: "peer-reviewed", label: "Peer-reviewed" },
+];
+
+/// How the resolution was achieved: an explicit object, a finite certificate
+/// or exhaustive case analysis, or a conceptual proof.
+export const RESOLUTION_METHOD_OPTIONS = [
+  { value: "construction", label: "Construction (explicit object)" },
+  { value: "computation", label: "Computation (finite certificate)" },
+  { value: "argument", label: "Argument (conceptual proof)" },
 ];
 
 export const EDITABLE_FIELDS: FieldSpec[] = [
@@ -198,7 +215,21 @@ export const EDITABLE_FIELDS: FieldSpec[] = [
     kind: "choice",
     required: true,
     options: VERIFICATION_OPTIONS,
-    help: "Changing this requires updating the note below in the same edit, so the reason is on record.",
+    help: "How checked the mathematics is. Changing this requires updating the note below in the same edit, so the reason is on record.",
+  },
+  {
+    key: "publication",
+    label: "Publication",
+    kind: "choice",
+    options: PUBLICATION_OPTIONS,
+    help: "Where the claim lives: a bare announcement, a preprint, or a peer-reviewed venue. Changing this also requires updating the verification note.",
+  },
+  {
+    key: "resolutionMethod",
+    label: "Method",
+    kind: "choice",
+    options: RESOLUTION_METHOD_OPTIONS,
+    help: "The decisive step: an explicit object, a finite certificate or case analysis, or a conceptual proof. Classify by what the result hinged on.",
   },
   {
     key: "verificationNote",

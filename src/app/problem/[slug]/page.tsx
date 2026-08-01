@@ -3,7 +3,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getActivity, getComments, getProblemBySlug } from "@/lib/data";
 import { ageAtSolve, type ProblemWithVotes } from "@/lib/problems";
-import { AI_CONTRIBUTION, DASH, RESOLUTION, SOLVE_TYPE, VERIFICATION } from "@/lib/display";
+import {
+  AI_CONTRIBUTION,
+  DASH,
+  PUBLICATION,
+  RESOLUTION,
+  RESOLUTION_METHOD,
+  SOLVE_TYPE,
+  VERIFICATION,
+} from "@/lib/display";
 import { toEditableValues } from "@/lib/editable";
 import { SITE_URL } from "@/lib/site";
 import { Changelog } from "@/components/Changelog";
@@ -123,6 +131,13 @@ export default async function ProblemPage({
       "AI contribution",
       p.aiContribution ? (AI_CONTRIBUTION[p.aiContribution]?.label ?? p.aiContribution) : DASH,
     ],
+    // The decisive step: object, certificate, or conceptual proof.
+    [
+      "Method",
+      p.resolutionMethod
+        ? (RESOLUTION_METHOD[p.resolutionMethod]?.label ?? p.resolutionMethod)
+        : DASH,
+    ],
     ["Field", p.field ?? p.fieldGroup ?? DASH],
     ["Posed by", p.posedBy ?? DASH],
     ["Year posed", p.yearPosed?.toString() ?? DASH],
@@ -135,6 +150,11 @@ export default async function ProblemPage({
       p.humanCollaborators.length ? p.humanCollaborators.join(", ") : DASH,
     ],
     ["Verification", v?.label ?? p.verification],
+    // Orthogonal to verification: where the claim lives in the pipeline.
+    [
+      "Publication",
+      p.publication ? (PUBLICATION[p.publication]?.label ?? p.publication) : DASH,
+    ],
     // The AI-estimated problem weight (see methodology); dash until assessed.
     ["Significance", p.significance !== null && p.significance !== undefined ? `${p.significance} / 100` : DASH],
     [

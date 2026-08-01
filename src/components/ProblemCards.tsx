@@ -17,11 +17,15 @@ import {
   ageAtSolve,
   AI_CONTRIBUTIONS,
   FIELD_GROUPS,
+  PUBLICATION_STATUSES,
+  RESOLUTION_METHODS,
   RESOLUTION_STATUSES,
   type AiContribution,
   type CardEntry,
   type FieldGroup,
   type Period,
+  type PublicationStatus,
+  type ResolutionMethod,
   type ResolutionStatus,
   type SolveType,
   type VerificationStatus,
@@ -30,7 +34,9 @@ import {
   AI_CONTRIBUTION,
   DASH,
   MODEL_FAMILIES,
+  PUBLICATION,
   RESOLUTION,
+  RESOLUTION_METHOD,
   SIGNIFICANCE_HELP,
   SOLVE_TYPE,
   VERIFICATION,
@@ -94,6 +100,8 @@ interface StoredSettings {
   contributionFilter: string;
   modelFilter: string;
   verificationFilter: string;
+  publicationFilter: string;
+  methodFilter: string;
   sortKey: SortKey;
   sortDir: SortDir;
   period: Period;
@@ -175,7 +183,13 @@ function Fact({ label, children }: { label: string; children: React.ReactNode })
 
 function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string | null }) {
   const st = SOLVE_TYPE[p.solveType];
-  const v = VERIFICATION[p.verification];
+  // The trust badge: verification when it says something; the publication
+  // stage as the fallback when nobody independent has checked yet -
+  // reproducing the old single-ladder look over honest two-axis data.
+  const v =
+    p.verification === "unreviewed" && p.publication
+      ? PUBLICATION[p.publication]
+      : VERIFICATION[p.verification];
   const res = RESOLUTION[p.resolution];
   const age = ageAtSolve(p);
 
@@ -389,6 +403,8 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
   const [contributionFilter, setContributionFilter] = useState("all");
   const [modelFilter, setModelFilter] = useState("all");
   const [verificationFilter, setVerificationFilter] = useState("all");
+  const [publicationFilter, setPublicationFilter] = useState("all");
+  const [methodFilter, setMethodFilter] = useState("all");
   const [sortKey, setSortKey] = useState<SortKey>("solveDate");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [period, setPeriod] = useState<Period>("all");
@@ -436,8 +452,14 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
   // entry falls back silently.
   /* eslint-disable react-hooks/set-state-in-effect */
   const [restored, setRestored] = useState(false);
-  // Gates URL mirroring until the first post-restore persist has passed.
-  const urlSyncArmed = useRef(false);
+  // URL mirroring happens only after an explicit interaction with a control.
+  // A "first persist run" heuristic breaks under StrictMode's double effects
+  // (the second run wrote remembered settings into a freshly loaded URL);
+  // this flag is set in the handlers themselves, so it cannot misfire.
+  const touched = useRef(false);
+  const touch = () => {
+    touched.current = true;
+  };
   useEffect(() => {
     // Two sources, URL first: a shared link's query params beat this
     // browser's remembered settings, key by key. Every value is validated
@@ -483,6 +505,14 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
     if (verification === "all" || (verification ?? "") in VERIFICATION) {
       setVerificationFilter(verification as string);
     }
+    const publication = pick("publication", s.publicationFilter);
+    if (publication === "all" || PUBLICATION_STATUSES.includes(publication as PublicationStatus)) {
+      setPublicationFilter(publication as string);
+    }
+    const method = pick("method", s.methodFilter);
+    if (method === "all" || RESOLUTION_METHODS.includes(method as ResolutionMethod)) {
+      setMethodFilter(method as string);
+    }
     const sort = pick("sort", s.sortKey);
     if (SORTS.some((x) => x.key === sort)) setSortKey(sort as SortKey);
     const dir = pick("dir", s.sortDir);
@@ -509,6 +539,8 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
         contributionFilter,
         modelFilter,
         verificationFilter,
+        publicationFilter,
+        methodFilter,
         sortKey,
         sortDir,
         period,
@@ -519,13 +551,10 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
       // Storage full or blocked - the list still works, it just won't persist.
     }
     // Mirror non-default settings into the URL so a filtered view is
-    // shareable - but only once the VISITOR changes something. The first run
-    // after restore reflects remembered settings, and loading vibemathed.com
-    // must stay vibemathed.com (and a shared link must keep its params).
-    if (!urlSyncArmed.current) {
-      urlSyncArmed.current = true;
-      return;
-    }
+    // shareable - but only once the VISITOR changes something. Loading or
+    // navigating to the page must leave the address bare (and a shared
+    // link's params untouched).
+    if (!touched.current) return;
     const q = new URLSearchParams();
     if (fieldFilter !== "all") q.set("field", fieldFilter);
     if (resultFilter !== "all") q.set("result", resultFilter);
@@ -533,13 +562,15 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
     if (contributionFilter !== "all") q.set("contribution", contributionFilter);
     if (modelFilter !== "all") q.set("model", modelFilter);
     if (verificationFilter !== "all") q.set("verification", verificationFilter);
+    if (publicationFilter !== "all") q.set("publication", publicationFilter);
+    if (methodFilter !== "all") q.set("method", methodFilter);
     if (sortKey !== "solveDate") q.set("sort", sortKey);
     if (sortDir !== "desc") q.set("dir", sortDir);
     if (period !== "all") q.set("period", period);
     if (perPage !== 25) q.set("per", String(perPage));
     const qs = q.toString();
     window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
-  }, [restored, fieldFilter, resultFilter, statusFilter, contributionFilter, modelFilter, verificationFilter, sortKey, sortDir, period, perPage]);
+  }, [restored, fieldFilter, resultFilter, statusFilter, contributionFilter, modelFilter, verificationFilter, publicationFilter, methodFilter, sortKey, sortDir, period, perPage]);
 
   // Statements beyond the first default-sort page ship without their rendered
   // HTML; one background fetch fills the map after hydration (see CardEntry).
@@ -615,6 +646,24 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
       label: "Verification",
       options: verifications.map((v) => ({ value: v, label: VERIFICATION[v].label })),
     },
+    {
+      key: "publication",
+      label: "Publication",
+      options: PUBLICATION_STATUSES.filter((v) =>
+        problems.some((p) => p.publication === v),
+      ).map((v) => ({ value: v, label: PUBLICATION[v].label })),
+    },
+    ...(problems.some((p) => p.resolutionMethod)
+      ? [
+          {
+            key: "method",
+            label: "Method",
+            options: RESOLUTION_METHODS.filter((v) =>
+              problems.some((p) => p.resolutionMethod === v),
+            ).map((v) => ({ value: v, label: RESOLUTION_METHOD[v].label })),
+          },
+        ]
+      : []),
   ];
 
   const filterValues: Record<string, string> = {
@@ -623,14 +672,19 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
     contribution: contributionFilter,
     model: modelFilter,
     verification: verificationFilter,
+    publication: publicationFilter,
+    method: methodFilter,
   };
 
   function setFilter(key: string, value: string) {
+    touch();
     if (key === "result") setResultFilter(value);
     else if (key === "status") setStatusFilter(value);
     else if (key === "contribution") setContributionFilter(value);
     else if (key === "model") setModelFilter(value);
     else if (key === "verification") setVerificationFilter(value);
+    else if (key === "publication") setPublicationFilter(value);
+    else if (key === "method") setMethodFilter(value);
   }
 
   const filtered = useMemo(() => {
@@ -645,6 +699,8 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
         if (fam && !fam.test.test(p.model)) return false;
       }
       if (verificationFilter !== "all" && p.verification !== verificationFilter) return false;
+      if (publicationFilter !== "all" && p.publication !== publicationFilter) return false;
+      if (methodFilter !== "all" && p.resolutionMethod !== methodFilter) return false;
       if (!q) return true;
       const haystack = [
         p.name,
@@ -660,7 +716,7 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [problems, query, fieldFilter, resultFilter, statusFilter, contributionFilter, modelFilter, verificationFilter]);
+  }, [problems, query, fieldFilter, resultFilter, statusFilter, contributionFilter, modelFilter, verificationFilter, publicationFilter, methodFilter]);
 
   const sorted = useMemo(() => {
     const arr = [...filtered];
@@ -693,6 +749,8 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
     contributionFilter,
     modelFilter,
     verificationFilter,
+    publicationFilter,
+    methodFilter,
     perPage,
     sortKey,
     sortDir,
@@ -726,7 +784,9 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
     statusFilter !== "all" ||
     contributionFilter !== "all" ||
     modelFilter !== "all" ||
-    verificationFilter !== "all";
+    verificationFilter !== "all" ||
+    publicationFilter !== "all" ||
+    methodFilter !== "all";
 
   // `grow justify-center sm:grow-0`: on a phone the wrapped chip rows
   // stretch to fill the full width instead of leaving a ragged right edge;
@@ -743,7 +803,7 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
       {/* Field taxonomy chips, with counts. One row that wraps; groups with no
           entries never render. */}
       <div className="mb-2.5 flex flex-wrap items-center gap-1.5">
-        <button type="button" onClick={() => setFieldFilter("all")} className={chip(fieldFilter === "all")}>
+        <button type="button" onClick={() => { touch(); setFieldFilter("all"); }} className={chip(fieldFilter === "all")}>
           All fields
           <span className="font-mono text-[11px] text-[var(--ink-muted)]">{problems.length}</span>
         </button>
@@ -751,7 +811,7 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
           <button
             key={group}
             type="button"
-            onClick={() => setFieldFilter(group)}
+            onClick={() => { touch(); setFieldFilter(group); }}
             className={chip(fieldFilter === group)}
           >
             {group}
@@ -802,6 +862,7 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
           })}
           <button
             onClick={() => {
+              touch();
               setQuery("");
               setFieldFilter("all");
               setResultFilter("all");
@@ -809,6 +870,8 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
               setContributionFilter("all");
               setModelFilter("all");
               setVerificationFilter("all");
+              setPublicationFilter("all");
+              setMethodFilter("all");
             }}
             className="ml-1 text-xs text-[var(--accent-blue)] hover:underline"
           >
@@ -826,6 +889,7 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
           id="sort"
           value={sortKey}
           onChange={(e) => {
+            touch();
             const key = e.target.value as SortKey;
             setSortKey(key);
             setSortDir(NUMERIC_KEYS.includes(key) ? "desc" : "asc");
@@ -840,7 +904,7 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
         </select>
         <button
           type="button"
-          onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
+          onClick={() => { touch(); setSortDir((d) => (d === "asc" ? "desc" : "asc")); }}
           aria-label={sortDir === "asc" ? "Sort ascending" : "Sort descending"}
           className="inline-flex h-9 items-center gap-1 rounded border border-[var(--hairline)] bg-[var(--paper-raised)] px-2.5 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] hover:text-[var(--ink)]"
         >
@@ -862,7 +926,7 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
               <button
                 key={p.key}
                 type="button"
-                onClick={() => setPeriod(p.key)}
+                onClick={() => { touch(); setPeriod(p.key); }}
                 aria-pressed={period === p.key}
                 className={`px-2.5 text-xs transition-colors ${
                   i > 0 ? "border-l border-[var(--hairline)]" : ""
@@ -955,7 +1019,7 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
 
         <select
           value={perPage}
-          onChange={(e) => setPerPage(Number(e.target.value))}
+          onChange={(e) => { touch(); setPerPage(Number(e.target.value)); }}
           aria-label="Entries per page"
           className={`${selectClass} ml-auto`}
         >

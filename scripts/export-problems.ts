@@ -46,6 +46,8 @@ async function main() {
       aiRole: p.aiRole,
       verification: p.verification,
       verificationNote: p.verificationNote,
+      publication: p.publication,
+      resolutionMethod: p.resolutionMethod,
       citations: p.citations,
       citationsPaper: p.citationsPaper,
       citationsSource: p.citationsSource,

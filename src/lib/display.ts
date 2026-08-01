@@ -6,6 +6,8 @@
 
 import type {
   AiContribution,
+  PublicationStatus,
+  ResolutionMethod,
   ResolutionStatus,
   SolveType,
   VerificationStatus,
@@ -66,7 +68,8 @@ export const AI_CONTRIBUTION: Record<
 
 export type StatusIconKind = "check" | "clock" | "alert" | "info";
 
-/// The verification "trust ladder", strongest first.
+/// The verification "trust ladder", strongest first: how CHECKED the
+/// mathematics is, independent of where the claim was published.
 export const VERIFICATION: Record<
   VerificationStatus,
   { label: string; color: string; icon: StatusIconKind }
@@ -74,17 +77,28 @@ export const VERIFICATION: Record<
   "lean-verified": { label: "Lean-verified", color: "var(--status-good)", icon: "check" },
   "expert-verified": { label: "Expert-verified", color: "var(--status-good)", icon: "check" },
   "site-confirmed": { label: "Site-confirmed", color: "var(--accent-blue)", icon: "check" },
-  "preprint-unrefereed": {
-    label: "Preprint (unrefereed)",
-    color: "var(--status-warning)",
-    icon: "clock",
-  },
-  "announced-unreviewed": {
-    label: "Announced (unreviewed)",
-    color: "var(--ink-muted)",
-    icon: "info",
-  },
+  unreviewed: { label: "Unreviewed", color: "var(--ink-muted)", icon: "info" },
   contested: { label: "Contested", color: "var(--status-critical)", icon: "alert" },
+};
+
+/// Where the claim lives in the scholarly pipeline. On cards this shows only
+/// as the badge fallback when verification is "unreviewed" - reproducing the
+/// old single-ladder look while the data stays honest underneath.
+export const PUBLICATION: Record<
+  PublicationStatus,
+  { label: string; color: string; icon: StatusIconKind }
+> = {
+  announcement: { label: "Announced", color: "var(--ink-muted)", icon: "info" },
+  preprint: { label: "Preprint", color: "var(--status-warning)", icon: "clock" },
+  "peer-reviewed": { label: "Peer-reviewed", color: "var(--status-good)", icon: "check" },
+};
+
+/// How the resolution was achieved - the axis proved/disproved cannot
+/// express (a proof of X is a disproof of not-X).
+export const RESOLUTION_METHOD: Record<ResolutionMethod, { label: string }> = {
+  construction: { label: "Construction" },
+  computation: { label: "Computation" },
+  argument: { label: "Argument" },
 };
 
 /// Explanation of the notability score, shown wherever the number appears.

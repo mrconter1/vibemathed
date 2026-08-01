@@ -87,14 +87,43 @@ export interface LinkRef {
   url: string;
 }
 
-// An ordinal "trust ladder", strongest to weakest.
+// How CHECKED the mathematics is, strongest to weakest. Deliberately
+// orthogonal to `publication` (where the claim lives): a Lean-verified result
+// can live in an unrefereed preprint or a bare company announcement, and the
+// old single ladder conflated the two.
 export type VerificationStatus =
   | "lean-verified" // formal proof machine-checked in Lean (strongest)
   | "expert-verified" // independently checked and endorsed by named domain experts
   | "site-confirmed" // erdosproblems.com's official status marks it solved (not Lean)
-  | "preprint-unrefereed" // written up in an arXiv preprint, not yet peer-reviewed
-  | "announced-unreviewed" // publicly claimed with a construction, no independent check yet
+  | "unreviewed" // nobody independent has checked the mathematics yet
   | "contested"; // actively disputed or partially walked back
+
+/// Where the claim lives in the scholarly pipeline - orthogonal to
+/// `verification`.
+export type PublicationStatus =
+  | "announcement" // blog post, repository, tracker page or social post only
+  | "preprint" // a manuscript on arXiv or similar
+  | "peer-reviewed"; // accepted by a journal or conference
+
+export const PUBLICATION_STATUSES: PublicationStatus[] = [
+  "announcement",
+  "preprint",
+  "peer-reviewed",
+];
+
+/// HOW the resolution was achieved - the nature of the decisive step, which
+/// proved/disproved cannot express (a proof of X is a disproof of not-X; the
+/// interesting distinction is object vs certificate vs theory).
+export type ResolutionMethod =
+  | "construction" // an explicit object settles it (counterexample, witness)
+  | "computation" // a finite certificate or exhaustive case analysis
+  | "argument"; // a conceptual proof
+
+export const RESOLUTION_METHODS: ResolutionMethod[] = [
+  "construction",
+  "computation",
+  "argument",
+];
 
 export interface MathProblem {
   /** URL-safe unique id */
@@ -140,6 +169,10 @@ export interface MathProblem {
   aiRole: string | null;
   verification: VerificationStatus;
   verificationNote: string | null;
+  /** Where the claim lives in the publication pipeline; null = unmigrated. */
+  publication?: PublicationStatus | null;
+  /** How the resolution was achieved; null = not yet classified. */
+  resolutionMethod?: ResolutionMethod | null;
   /** Reference count for the paper in `citationsPaper`. Null until looked up. */
   citations: number | null;
   citationsPaper: string | null;
@@ -260,6 +293,10 @@ export interface CardEntry {
   humanCollaborators: string[];
   verification: VerificationStatus;
   verificationNote: string | null;
+  /** Where the claim lives in the publication pipeline; null = unmigrated. */
+  publication?: PublicationStatus | null;
+  /** How the resolution was achieved; null = not yet classified. */
+  resolutionMethod?: ResolutionMethod | null;
   significance: number | null;
   significanceNote: string | null;
   resultNote: string | null;
@@ -281,8 +318,7 @@ const VERIFICATION_STATUSES: VerificationStatus[] = [
   "lean-verified",
   "expert-verified",
   "site-confirmed",
-  "preprint-unrefereed",
-  "announced-unreviewed",
+  "unreviewed",
   "contested",
 ];
 
@@ -376,6 +412,24 @@ export function assertProblem(value: unknown, index: number): MathProblem {
   if (!VERIFICATION_STATUSES.includes(p.verification as VerificationStatus)) {
     throw new Error(
       `${where}: "verification" must be one of ${VERIFICATION_STATUSES.join(", ")}`,
+    );
+  }
+  if (
+    p.publication !== undefined &&
+    p.publication !== null &&
+    !PUBLICATION_STATUSES.includes(p.publication as PublicationStatus)
+  ) {
+    throw new Error(
+      `${where}: "publication" must be one of ${PUBLICATION_STATUSES.join(", ")} when present`,
+    );
+  }
+  if (
+    p.resolutionMethod !== undefined &&
+    p.resolutionMethod !== null &&
+    !RESOLUTION_METHODS.includes(p.resolutionMethod as ResolutionMethod)
+  ) {
+    throw new Error(
+      `${where}: "resolutionMethod" must be one of ${RESOLUTION_METHODS.join(", ")} when present`,
     );
   }
 

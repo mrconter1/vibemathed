@@ -2,12 +2,23 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   AI_CONTRIBUTIONS,
+  PUBLICATION_STATUSES,
+  RESOLUTION_METHODS,
   RESOLUTION_STATUSES,
   type AiContribution,
+  type PublicationStatus,
+  type ResolutionMethod,
   type ResolutionStatus,
   type VerificationStatus,
 } from "@/lib/problems";
-import { AI_CONTRIBUTION, NOTABILITY_HELP, RESOLUTION, VERIFICATION } from "@/lib/display";
+import {
+  AI_CONTRIBUTION,
+  NOTABILITY_HELP,
+  PUBLICATION,
+  RESOLUTION,
+  RESOLUTION_METHOD,
+  VERIFICATION,
+} from "@/lib/display";
 import { StatusIcon } from "@/components/StatusIcon";
 
 // The permanent home for the rules that otherwise live only in tooltips and
@@ -38,11 +49,25 @@ const VERIFICATION_DETAIL: Record<VerificationStatus, string> = {
   "expert-verified": "Independently checked and endorsed by named domain experts.",
   "site-confirmed":
     "For Erdős problems: erdosproblems.com officially marks the problem solved, without a formal proof artifact.",
-  "preprint-unrefereed": "Written up in a public preprint that has not yet been peer-reviewed.",
-  "announced-unreviewed":
-    "Publicly claimed with enough detail to check, but nobody independent has checked it yet.",
+  unreviewed:
+    "Nobody independent has checked the mathematics yet, whatever venue the claim lives in.",
   contested:
     "Actively disputed or partially walked back. The entry stays listed so the dispute is on record.",
+};
+
+const PUBLICATION_DETAIL: Record<PublicationStatus, string> = {
+  announcement:
+    "The claim lives in a blog post, a repository, a tracker page or a social post - no manuscript venue.",
+  preprint: "A manuscript on arXiv or a similar server, not yet refereed.",
+  "peer-reviewed": "Accepted by a journal or a conference.",
+};
+
+const METHOD_DETAIL: Record<ResolutionMethod, string> = {
+  construction:
+    "An explicit object settles it: a counterexample, a witness, a presentation. Classified by the decisive step per the source.",
+  computation:
+    "A finite certificate or an exhaustive case analysis carries the result - neither an object nor a theory.",
+  argument: "A conceptual proof: the resolution is an idea, not a search hit.",
 };
 
 const AI_CONTRIBUTION_DETAIL: Record<AiContribution, string> = {
@@ -129,6 +154,21 @@ export default function MethodologyPage() {
           ))}
         </dl>
         <p>
+          The result records the fate of the statement <em>as it was posed</em>
+          - a proof of X is logically a disproof of not-X, so proved versus
+          disproved tracks whether the community&apos;s expectation held, not a
+          property of the mathematics. What the resolution actually consisted
+          of is the <strong className="text-[var(--ink)]">method</strong>:
+        </p>
+        <dl className="space-y-2.5">
+          {RESOLUTION_METHODS.map((m) => (
+            <div key={m}>
+              <dt className="font-medium text-[var(--ink)]">{RESOLUTION_METHOD[m].label}</dt>
+              <dd className="text-[var(--ink-secondary)]">{METHOD_DETAIL[m]}</dd>
+            </div>
+          ))}
+        </dl>
+        <p>
           Separately, an entry can carry a <strong className="text-[var(--status-critical)]">claim
           issue</strong>: a documented problem with the claim itself, such as a refuted
           lemma or a misformalized formal statement. Claim issues render as a
@@ -184,12 +224,32 @@ export default function MethodologyPage() {
           ))}
         </dl>
         <p>
-          Both the status and the verification tier are editable by signed-in
+          Verification says how checked the mathematics is; separately, every
+          entry records where the claim lives in the scholarly pipeline - the
+          two are independent, and a Lean-verified result can sit in a bare
+          company announcement:
+        </p>
+        <dl className="space-y-2.5">
+          {PUBLICATION_STATUSES.map((v) => (
+            <div key={v}>
+              <dt
+                className="inline-flex items-center gap-1.5 font-medium"
+                style={{ color: PUBLICATION[v].color }}
+              >
+                <StatusIcon kind={PUBLICATION[v].icon} color={PUBLICATION[v].color} />
+                {PUBLICATION[v].label}
+              </dt>
+              <dd className="text-[var(--ink-secondary)]">{PUBLICATION_DETAIL[v]}</dd>
+            </div>
+          ))}
+        </dl>
+        <p>
+          Status, verification and publication are editable by signed-in
           readers, because they genuinely change over an entry&apos;s life - a
           preprint gets refereed, a candidate gets accepted, a claim gets
-          walked back. Changing either requires updating the verification note
-          in the same edit, and every change lands in the entry&apos;s public
-          changelog.
+          walked back. Changing any of them requires updating the verification
+          note in the same edit, and every change lands in the entry&apos;s
+          public changelog.
         </p>
       </Section>
 

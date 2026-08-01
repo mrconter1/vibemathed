@@ -79,8 +79,16 @@ model Problem {
   humanCollaborators String[]
   /// What the model did. Sparse, like `statement`.
   aiRole        String?
+  /// How CHECKED the mathematics is: "lean-verified" | "expert-verified" |
+  /// "site-confirmed" | "unreviewed" | "contested". Orthogonal to
+  /// `publication` - the old single ladder conflated the two.
   verification  String
   verificationNote String?
+  /// Where the claim lives: "announcement" | "preprint" | "peer-reviewed".
+  publication   String?
+  /// How the resolution was achieved: "construction" | "computation" |
+  /// "argument". Null = not yet classified.
+  resolutionMethod String?
   /// What happened to the PROBLEM, as opposed to how trustworthy the claim is
   /// (`verification`): "resolved" | "partial" | "variant" | "candidate" |
   /// "retracted". Same string-not-enum convention as `solveType`.

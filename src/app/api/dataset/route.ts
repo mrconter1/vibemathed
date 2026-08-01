@@ -31,6 +31,8 @@ export async function GET() {
     aiRole: p.aiRole,
     verification: p.verification,
     verificationNote: p.verificationNote,
+    publication: p.publication ?? null,
+    resolutionMethod: p.resolutionMethod ?? null,
     citations: p.citations,
     citationsPaper: p.citationsPaper,
     citationsSource: p.citationsSource,

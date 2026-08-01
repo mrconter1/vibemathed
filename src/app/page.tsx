@@ -47,6 +47,8 @@ export default async function Home() {
     humanCollaborators: p.humanCollaborators,
     verification: p.verification,
     verificationNote: p.verificationNote,
+    publication: p.publication ?? null,
+    resolutionMethod: p.resolutionMethod ?? null,
     significance: p.significance ?? null,
     significanceNote: p.significanceNote ?? null,
     resultNote: p.resultNote ?? null,
