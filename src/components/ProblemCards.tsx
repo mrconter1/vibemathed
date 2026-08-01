@@ -72,7 +72,10 @@ const SORTS: { key: SortKey; label: string }[] = [
   { key: "name", label: "Name" },
 ];
 
-// Sorts that can be scoped to a time window. Everything else ignores the period.
+// The period means two things, by sort. On the engagement sorts it windows
+// the METRIC (votes/comments gained that period, across all entries); on
+// every other sort it FILTERS the list to entries from that period (by date
+// added for the Added sort, by solve date otherwise).
 const TIME_SENSITIVE: SortKey[] = ["score", "discussion"];
 
 const PERIODS: { key: Period; label: string }[] = [
@@ -80,6 +83,11 @@ const PERIODS: { key: Period; label: string }[] = [
   { key: "month", label: "Month" },
   { key: "all", label: "All time" },
 ];
+
+// The clock for period cutoffs, fixed at module load: render purity wants a
+// stable now, and a cutoff drifting by the age of the tab is nothing against
+// 7/30-day windows.
+const LOADED_AT = Date.now();
 
 // These default to descending on first pick (highest / most recent first, so
 // entries with no value - stored as -1 - sink instead of leading). "added" is
@@ -411,8 +419,6 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(25);
 
-  const timeSensitive = TIME_SENSITIVE.includes(sortKey);
-
   // Field chips: every group that actually occurs, with its count, in fixed
   // taxonomy order. Entries without a group (possible on community rows) are
   // only reachable via "All fields".
@@ -689,7 +695,24 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
+    // Rolling 7/30-day cutoff, matching the engagement metrics' windows. Only
+    // non-engagement sorts date-filter; score/discussion window their metric
+    // in sortValue instead, ranking the WHOLE list by that period's activity.
+    const dateFiltering = period !== "all" && !TIME_SENSITIVE.includes(sortKey);
+    const cutoff = dateFiltering
+      ? new Date(LOADED_AT - (period === "week" ? 7 : 30) * 86400000)
+          .toISOString()
+          .slice(0, 10)
+      : "";
     return problems.filter((p) => {
+      if (dateFiltering) {
+        // "Added" scopes by when the entry entered the catalog; every other
+        // sort scopes by when the problem was solved. Imprecise solve dates
+        // ("2026-07") compare lexically and sit out of week-sized windows,
+        // which is the honest reading of a date that vague.
+        const stamp = sortKey === "added" ? p.addedAt.slice(0, 10) : p.solveDate;
+        if (stamp < cutoff) return false;
+      }
       if (fieldFilter !== "all" && p.fieldGroup !== fieldFilter) return false;
       if (resultFilter !== "all" && p.solveType !== resultFilter) return false;
       if (statusFilter !== "all" && p.resolution !== statusFilter) return false;
@@ -716,7 +739,7 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [problems, query, fieldFilter, resultFilter, statusFilter, contributionFilter, modelFilter, verificationFilter, publicationFilter, methodFilter]);
+  }, [problems, query, period, sortKey, fieldFilter, resultFilter, statusFilter, contributionFilter, modelFilter, verificationFilter, publicationFilter, methodFilter]);
 
   const sorted = useMemo(() => {
     const arr = [...filtered];
@@ -914,33 +937,32 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
           </span>
         </button>
 
-        {/* Period only appears for sorts it can actually change - putting six
-            sort/period permutations in the dropdown would bloat it to 15. */}
-        {timeSensitive && (
-          <div
-            role="group"
-            aria-label="Time period"
-            className="inline-flex h-9 overflow-hidden rounded border border-[var(--hairline)] bg-[var(--paper-raised)]"
-          >
-            {PERIODS.map((p, i) => (
-              <button
-                key={p.key}
-                type="button"
-                onClick={() => { touch(); setPeriod(p.key); }}
-                aria-pressed={period === p.key}
-                className={`px-2.5 text-xs transition-colors ${
-                  i > 0 ? "border-l border-[var(--hairline)]" : ""
-                } ${
-                  period === p.key
-                    ? "bg-[color-mix(in_srgb,var(--accent-blue)_12%,transparent)] font-medium text-[var(--accent-blue)]"
-                    : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
-                }`}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-        )}
+        {/* Period applies to every sort: it windows the metric on the
+            engagement sorts and date-filters the list on the rest (see
+            TIME_SENSITIVE). All time is the default. */}
+        <div
+          role="group"
+          aria-label="Time period"
+          className="inline-flex h-9 overflow-hidden rounded border border-[var(--hairline)] bg-[var(--paper-raised)]"
+        >
+          {PERIODS.map((p, i) => (
+            <button
+              key={p.key}
+              type="button"
+              onClick={() => { touch(); setPeriod(p.key); }}
+              aria-pressed={period === p.key}
+              className={`px-2.5 text-xs transition-colors ${
+                i > 0 ? "border-l border-[var(--hairline)]" : ""
+              } ${
+                period === p.key
+                  ? "bg-[color-mix(in_srgb,var(--accent-blue)_12%,transparent)] font-medium text-[var(--accent-blue)]"
+                  : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
 
         {sortKey === "significance" && (
           <InfoTip content={SIGNIFICANCE_HELP} label="Significance" />
