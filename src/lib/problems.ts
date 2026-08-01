@@ -199,6 +199,9 @@ export type ProblemWithVotes = MathProblem & {
   commentCount: number;
   /// Pseudonym of whoever submitted this entry, or null for curated ones.
   submittedBy: string | null;
+  /// ISO timestamp of when the entry was added to the record (row creation) -
+  /// distinct from `solveDate`, which is when the mathematics happened.
+  addedAt: string;
 };
 
 /// A problem plus engagement inside recent time windows.

@@ -67,6 +67,7 @@ const PROBLEM_SELECT = {
   ageNote: true,
   sourceUrl: true,
   sourceName: true,
+  createdAt: true,
   links: { select: { label: true, url: true }, orderBy: { position: "asc" } },
   upvotes: true,
   downvotes: true,
@@ -119,6 +120,7 @@ function toProblem(r: ProblemRow): ProblemWithVotes {
     commentCount: r._count.comments,
     // Null for the curated baseline; a pseudonym for community submissions.
     submittedBy: r.submittedBy?.pseudonym ?? null,
+    addedAt: r.createdAt.toISOString(),
   };
 }
 

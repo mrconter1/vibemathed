@@ -41,6 +41,7 @@ import { VoteButtons } from "@/components/VoteButtons";
 
 type SortKey =
   | "solveDate"
+  | "added"
   | "score"
   | "discussion"
   | "name"
@@ -54,6 +55,7 @@ type SortDir = "asc" | "desc";
 
 const SORTS: { key: SortKey; label: string }[] = [
   { key: "solveDate", label: "Date solved" },
+  { key: "added", label: "Date added" },
   { key: "score", label: "Top voted" },
   { key: "discussion", label: "Most discussed" },
   { key: "name", label: "Name" },
@@ -75,8 +77,9 @@ const PERIODS: { key: Period; label: string }[] = [
 ];
 
 // These default to descending on first pick (highest / most recent first, so
-// entries with no value - stored as -1 - sink instead of leading).
-const NUMERIC_KEYS: SortKey[] = ["solveDate", "age", "renown", "score", "discussion"];
+// entries with no value - stored as -1 - sink instead of leading). "added" is
+// an ISO string, but "most recent first" is equally the right default.
+const NUMERIC_KEYS: SortKey[] = ["solveDate", "added", "age", "renown", "score", "discussion"];
 
 const PAGE_SIZES = [10, 25, 50, 100];
 
@@ -101,6 +104,9 @@ function sortValue(p: ProblemCardData, key: SortKey, period: Period): string | n
   switch (key) {
     case "solveDate":
       return p.solveDate;
+    case "added":
+      // ISO timestamps sort correctly as strings.
+      return p.addedAt;
     case "score":
       // "Top voted" ranks on NET score, not raw upvotes - otherwise a
       // 50-up/49-down brawl outranks a clean 20-up/0-down entry.
