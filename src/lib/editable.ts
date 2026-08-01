@@ -110,7 +110,7 @@ export const AI_CONTRIBUTION_OPTIONS = [
 /// mathematics is.
 export const VERIFICATION_OPTIONS = [
   { value: "lean-verified", label: "Lean-verified" },
-  { value: "expert-verified", label: "Expert-verified" },
+  { value: "expert-verified", label: "Independently expert-verified" },
   { value: "site-confirmed", label: "Site-confirmed" },
   { value: "unreviewed", label: "Unreviewed" },
   { value: "contested", label: "Contested" },

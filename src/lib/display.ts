@@ -75,7 +75,13 @@ export const VERIFICATION: Record<
   { label: string; color: string; icon: StatusIconKind }
 > = {
   "lean-verified": { label: "Lean-verified", color: "var(--status-good)", icon: "check" },
-  "expert-verified": { label: "Expert-verified", color: "var(--status-good)", icon: "check" },
+  // "Independently" is load-bearing: an author checking their own proofs is
+  // an expert verifying too, and that must stay Unreviewed.
+  "expert-verified": {
+    label: "Independently expert-verified",
+    color: "var(--status-good)",
+    icon: "check",
+  },
   "site-confirmed": { label: "Site-confirmed", color: "var(--accent-blue)", icon: "check" },
   unreviewed: { label: "Unreviewed", color: "var(--ink-muted)", icon: "info" },
   contested: { label: "Contested", color: "var(--status-critical)", icon: "alert" },

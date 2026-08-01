@@ -46,7 +46,8 @@ export const metadata: Metadata = {
 const VERIFICATION_DETAIL: Record<VerificationStatus, string> = {
   "lean-verified":
     "A formal proof machine-checked end to end by the Lean kernel - the strongest evidence a proof can carry. Entries checked modulo explicitly named literature inputs say so in their verification note.",
-  "expert-verified": "Independently checked and endorsed by named domain experts.",
+  "expert-verified":
+    "Checked and endorsed by named domain experts with no stake in the claim. The authors checking their own work does not count, however expert they are - that stays Unreviewed.",
   "site-confirmed":
     "For Erdős problems: erdosproblems.com officially marks the problem solved, without a formal proof artifact.",
   unreviewed:
