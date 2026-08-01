@@ -80,30 +80,29 @@ export default async function StatsPage() {
         ))}
       </dl>
 
-      {/* Two-column grid, single column on mobile. The two wide SVG charts
-          share the top row, the two compact ratio pies the middle row, and
-          the tier-growth lines pair with the per-system bars on the bottom
-          row. */}
+      {/* Two-column grid, single column on mobile, ordered by interest: the
+          significance scatter and the vendor race on top, the two growth
+          lines second, the ratio pies last. */}
       <section className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
-          <CumulativeChart problems={resolved} />
-        </div>
-        {/* Whole record: the chart itself splits resolved (filled) from
+        {/* Whole record: the scatter itself splits resolved (filled) from
             candidate (hollow) and excludes partial/variant/retracted. */}
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <ReferencesChart problems={problems} />
+        </div>
+        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
+          <ModelsChart problems={resolved} />
+        </div>
+        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
+          <CumulativeChart problems={resolved} />
+        </div>
+        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
+          <ContributionGrowthChart problems={resolved} />
         </div>
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <SolveRatioChart problems={resolved} />
         </div>
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <OpenSourceChart problems={resolved} />
-        </div>
-        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
-          <ContributionGrowthChart problems={resolved} />
-        </div>
-        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
-          <ModelsChart problems={resolved} />
         </div>
       </section>
     </main>
