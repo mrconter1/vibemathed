@@ -22,6 +22,18 @@ export function NotificationsMenu() {
   const [items, setItems] = useState<NotificationItem[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const prefetched = useRef(false);
+
+  // When the badge shows a count, fetch the feed ahead of the click so the
+  // panel opens populated. Deliberately does NOT touch the watermark - only
+  // opening the panel marks things seen.
+  useEffect(() => {
+    if (!loaded || !signedIn || notifications === 0 || prefetched.current) return;
+    prefetched.current = true;
+    getNotifications().then((result) => {
+      if (result.ok) setItems(result.items);
+    });
+  }, [loaded, signedIn, notifications]);
 
   // Close on outside click or Escape, same idiom as the account menu.
   useEffect(() => {
@@ -47,13 +59,15 @@ export function NotificationsMenu() {
   async function openPanel() {
     setOpen(true);
     setError(null);
-    setItems(null);
-    const result = await getNotifications();
-    if (!result.ok) {
-      setError(result.error);
-      return;
+    // A prefetched feed opens instantly; otherwise fetch now.
+    if (items === null) {
+      const result = await getNotifications();
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      setItems(result.items);
     }
-    setItems(result.items);
     // Everything shown is now seen: move the server watermark, zero the badge.
     void markNotificationsSeen();
     clearNotifications();

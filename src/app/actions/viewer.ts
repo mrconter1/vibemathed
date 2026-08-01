@@ -21,7 +21,7 @@ export async function getViewerState(): Promise<ViewerState> {
 
   const userId = session.user.id;
 
-  const [votes, pendingReviews, openReports, me] = await Promise.all([
+  const [votes, pendingReviews, openReports, unread] = await Promise.all([
     prisma.problemVote.findMany({
       where: { userId },
       select: { vote: true, problem: { select: { slug: true } } },
@@ -32,29 +32,30 @@ export async function getViewerState(): Promise<ViewerState> {
     admin
       ? prisma.problemReport.count({ where: { status: "open" } })
       : Promise.resolve(0),
-    prisma.user.findUnique({
-      where: { id: userId },
-      select: { notificationsSeenAt: true },
-    }),
+    // Unread = comments by OTHERS, newer than the viewer's watermark, on
+    // published entries the viewer submitted or has commented on. Raw SQL so
+    // the watermark join happens inside ONE query - fetching the watermark
+    // first and counting after doubled the action's latency, and this whole
+    // fetch gates how fast the header controls appear.
+    prisma.$queryRaw<{ count: bigint }[]>`
+      SELECT count(*) AS count
+      FROM "Comment" c
+      JOIN "Problem" p ON p.id = c."problemId"
+      JOIN "User" u ON u.id = ${userId}
+      WHERE c."createdAt" > u."notificationsSeenAt"
+        AND (c."userId" IS NULL OR c."userId" <> ${userId})
+        AND p.status = 'published'::"ProblemStatus"
+        AND (
+          p."submittedById" = ${userId}
+          OR EXISTS (
+            SELECT 1 FROM "Comment" c2
+            WHERE c2."problemId" = p.id AND c2."userId" = ${userId}
+          )
+        )
+    `,
   ]);
 
-  // Unread = comments by OTHERS, newer than the viewer's watermark, on
-  // published entries the viewer submitted or has commented on.
-  const notifications = me
-    ? await prisma.comment.count({
-        where: {
-          createdAt: { gt: me.notificationsSeenAt },
-          NOT: { userId },
-          problem: {
-            status: "published",
-            OR: [
-              { submittedById: userId },
-              { comments: { some: { userId } } },
-            ],
-          },
-        },
-      })
-    : 0;
+  const notifications = Number(unread[0]?.count ?? 0);
 
   return {
     signedIn: true,
