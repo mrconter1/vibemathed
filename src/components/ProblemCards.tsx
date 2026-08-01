@@ -186,6 +186,51 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
   const res = RESOLUTION[p.resolution];
   const age = ageAtSolve(p);
 
+  // Result dot + status pill + contribution pill. Rendered twice: beside the
+  // title on desktop, but on a phone the header column stops ~90px short of
+  // the card edge (the vote column reserves its width even below the
+  // buttons), which wrapped the pills after two despite visible space - so
+  // there they render below the header at the true full card width.
+  const badges = (
+    <>
+      <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-xs">
+        <span
+          aria-hidden
+          className="inline-block h-2 w-2 rounded-full"
+          style={{ backgroundColor: st.color }}
+        />
+        <span className="text-[var(--ink-secondary)]">{st.label}</span>
+      </span>
+      {/* A non-default resolution qualifies the headline claim, so it sits
+          right beside it as a small pill. "Resolved" renders nothing - the
+          default state should add no noise. */}
+      {res.pill && (
+        <span
+          className="inline-flex items-center whitespace-nowrap rounded-full border px-2 py-px text-[11px] font-medium"
+          style={{
+            color: res.color,
+            borderColor: `color-mix(in srgb, ${res.color} 40%, transparent)`,
+          }}
+        >
+          {res.pill}
+        </span>
+      )}
+      {/* Same convention for the AI-contribution axis; unclassified entries
+          show nothing. */}
+      {p.aiContribution && AI_CONTRIBUTION[p.aiContribution]?.pill && (
+        <span
+          className="inline-flex items-center whitespace-nowrap rounded-full border px-2 py-px text-[11px] font-medium"
+          style={{
+            color: AI_CONTRIBUTION[p.aiContribution].color,
+            borderColor: `color-mix(in srgb, ${AI_CONTRIBUTION[p.aiContribution].color} 40%, transparent)`,
+          }}
+        >
+          {AI_CONTRIBUTION[p.aiContribution].pill}
+        </span>
+      )}
+    </>
+  );
+
   return (
     // The whole card is clickable: the title link's ::after stretches over the
     // card (so semantics and keyboard focus stay on a real link), and every
@@ -207,48 +252,9 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
                 {p.name}
               </Link>
             </h3>
-            {/* Result dot + status pill + contribution pill travel as ONE
-                flex item: either they all fit beside the title, or the whole
-                group drops below it with the full card width - so the badges
-                share a line unless a full row genuinely cannot hold them
-                (only then does the group's own flex-wrap split it). Placed
-                individually they used to wrap one by one after the title. */}
-            <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-              <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-xs">
-                <span
-                  aria-hidden
-                  className="inline-block h-2 w-2 rounded-full"
-                  style={{ backgroundColor: st.color }}
-                />
-                <span className="text-[var(--ink-secondary)]">{st.label}</span>
-              </span>
-              {/* A non-default resolution qualifies the headline claim, so it
-                  sits right beside it as a small pill. "Resolved" renders
-                  nothing - the default state should add no noise. */}
-              {res.pill && (
-                <span
-                  className="inline-flex items-center whitespace-nowrap rounded-full border px-2 py-px text-[11px] font-medium"
-                  style={{
-                    color: res.color,
-                    borderColor: `color-mix(in srgb, ${res.color} 40%, transparent)`,
-                  }}
-                >
-                  {res.pill}
-                </span>
-              )}
-              {/* Same convention for the AI-contribution axis; unclassified
-                  entries show nothing. */}
-              {p.aiContribution && AI_CONTRIBUTION[p.aiContribution]?.pill && (
-                <span
-                  className="inline-flex items-center whitespace-nowrap rounded-full border px-2 py-px text-[11px] font-medium"
-                  style={{
-                    color: AI_CONTRIBUTION[p.aiContribution].color,
-                    borderColor: `color-mix(in srgb, ${AI_CONTRIBUTION[p.aiContribution].color} 40%, transparent)`,
-                  }}
-                >
-                  {AI_CONTRIBUTION[p.aiContribution].pill}
-                </span>
-              )}
+            {/* Desktop placement: beside the title, as one group. */}
+            <span className="hidden flex-wrap items-center gap-x-2.5 gap-y-1 sm:flex">
+              {badges}
             </span>
           </div>
         </div>
@@ -261,6 +267,11 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
 
       {/* Everything below the header spans the whole card. */}
       <div className="min-w-0">
+        {/* Mobile placement of the badges: full card width, so all three fit
+            one line on any normal phone. */}
+        <span className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1 sm:hidden">
+          {badges}
+        </span>
         {/* The result qualifier can be a whole sentence, so it lives below
             the header row where it wraps at the FULL card width instead of
             squeezing beside the vote buttons. */}
