@@ -5,7 +5,7 @@ import Link from "next/link";
 // is. Everything procedural lives on the methodology page.
 
 const DESCRIPTION =
-  "VibeMathed is a community of mathematicians and enthusiasts tracking, curating and cataloguing mathematical problems solved, fully or partially, by AI models.";
+  "VibeMathed is a record of the mathematical problems AI models have solved, in full or in part, kept by a community of mathematicians and enthusiasts.";
 
 export const metadata: Metadata = {
   title: "About",
@@ -31,14 +31,13 @@ export default function AboutPage() {
           full ink, one size up from the supporting prose. */}
       <article className="my-auto w-full max-w-2xl space-y-5 self-center rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-5 py-6 leading-relaxed text-[var(--ink-secondary)] sm:px-8 sm:py-8">
         <p className="font-serif text-base text-[var(--ink)]">
-          VibeMathed is a community of mathematicians and enthusiasts tracking,
-          curating and cataloguing the mathematical problems that have been
-          solved, fully or partially, by AI models. The record spans famous
-          conjectures as well as the long tail of specialist questions and the
-          numbered Erdős problems. It went live on July 20, 2026 as the first
-          website dedicated to tracking these results across all of
-          mathematics, and the first and so far only one curated by a
-          community.
+          VibeMathed is a record of the mathematical problems that AI models
+          have solved, in full or in part, kept by a community of
+          mathematicians and enthusiasts. It spans everything from famous
+          conjectures to the long tail of specialist questions and the
+          numbered Erdős problems. When it went live on July 20, 2026, it was
+          the first site to track these results across all of mathematics, and
+          it is still the only one curated by a community.
         </p>
         <p className="text-sm">
           Entries are submitted, reviewed and curated in the open by people who
