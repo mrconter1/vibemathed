@@ -89,7 +89,12 @@ export function NotificationsMenu() {
         <div
           role="dialog"
           aria-label="Notifications"
-          className="absolute right-0 z-50 mt-2 w-80 rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] shadow-lg"
+          // The bell is NOT at the screen edge (the account button sits to
+          // its right), so a right-anchored 320px panel would clip off the
+          // left of a phone. Below sm it becomes a fixed sheet clamped to
+          // the viewport, under the header row; from sm up it anchors to
+          // the bell as a normal dropdown.
+          className="fixed inset-x-3 top-12 z-50 rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] shadow-lg sm:absolute sm:inset-x-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-80"
         >
           <p className="border-b border-[var(--hairline)] px-3.5 py-2.5 font-serif text-sm text-[var(--ink)]">
             Notifications
