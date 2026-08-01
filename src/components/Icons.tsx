@@ -15,7 +15,8 @@ export type IconName =
   | "bubble" // comments
   | "globe" // Wikipedia notability
   | "votes" // votes cast
-  | "alert"; // contested results
+  | "alert" // contested results
+  | "funnel"; // list filters
 
 const PATHS: Record<IconName, React.ReactNode> = {
   layers: (
@@ -93,6 +94,15 @@ const PATHS: Record<IconName, React.ReactNode> = {
       <path d="M8 2.2l6.3 11.1H1.7L8 2.2z" strokeLinejoin="round" />
       <path d="M8 6.8v3" strokeLinecap="round" />
       <circle cx="8" cy="11.6" r="0.15" fill="currentColor" />
+    </>
+  ),
+  funnel: (
+    <>
+      <path
+        d="M2 3h12L9.6 8.6v4.2l-3.2 1.4V8.6L2 3z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </>
   ),
 };

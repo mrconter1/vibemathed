@@ -34,6 +34,7 @@ import {
   SOLVE_TYPE,
   VERIFICATION,
 } from "@/lib/display";
+import { FilterPanel, type FilterFacet } from "@/components/FilterPanel";
 import { Icon } from "@/components/Icons";
 import { StatusIcon } from "@/components/StatusIcon";
 import { InfoTip, StarNote } from "@/components/Tooltip";
@@ -503,11 +504,65 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
   }, [restored, fieldFilter, resultFilter, statusFilter, contributionFilter, verificationFilter, sortKey, sortDir, period, perPage]);
 
   // Only offer verification statuses that actually occur, in ladder order, so
-  // the dropdown never lists an empty category.
+  // the panel never lists an empty category.
   const verifications = useMemo(() => {
     const present = new Set(problems.map((p) => p.verification));
     return (Object.keys(VERIFICATION) as VerificationStatus[]).filter((v) => present.has(v));
   }, [problems]);
+
+  // The facet groups the Filters panel offers. Same visibility rules the old
+  // dropdown row used: status hides while the dataset is uniform,
+  // contribution appears with the first classified entry.
+  const facets: FilterFacet[] = [
+    {
+      key: "result",
+      label: "Result",
+      options: (Object.keys(SOLVE_TYPE) as SolveType[]).map((t) => ({
+        value: t,
+        label: SOLVE_TYPE[t].label,
+      })),
+    },
+    ...(resolutions.length > 1
+      ? [
+          {
+            key: "status",
+            label: "Status",
+            options: resolutions.map((r) => ({ value: r, label: RESOLUTION[r].label })),
+          },
+        ]
+      : []),
+    ...(contributions.length > 0
+      ? [
+          {
+            key: "contribution",
+            label: "AI contribution",
+            options: contributions.map((c) => ({
+              value: c,
+              label: AI_CONTRIBUTION[c].label,
+            })),
+          },
+        ]
+      : []),
+    {
+      key: "verification",
+      label: "Verification",
+      options: verifications.map((v) => ({ value: v, label: VERIFICATION[v].label })),
+    },
+  ];
+
+  const filterValues: Record<string, string> = {
+    result: resultFilter,
+    status: statusFilter,
+    contribution: contributionFilter,
+    verification: verificationFilter,
+  };
+
+  function setFilter(key: string, value: string) {
+    if (key === "result") setResultFilter(value);
+    else if (key === "status") setStatusFilter(value);
+    else if (key === "contribution") setContributionFilter(value);
+    else if (key === "verification") setVerificationFilter(value);
+  }
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -645,66 +700,31 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
             className="h-9 w-full rounded border border-[var(--hairline)] bg-[var(--paper-raised)] pl-8 pr-3 text-sm text-[var(--ink)] transition-colors placeholder:text-[var(--ink-muted)] hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
           />
         </span>
-        <select
-          value={resultFilter}
-          onChange={(e) => setResultFilter(e.target.value)}
-          aria-label="Filter by result"
-          className={selectClass}
-        >
-          <option value="all">All results</option>
-          {(Object.keys(SOLVE_TYPE) as SolveType[]).map((t) => (
-            <option key={t} value={t}>
-              {SOLVE_TYPE[t].label}
-            </option>
-          ))}
-        </select>
-        {/* Hidden while the whole dataset shares one status - appears by
-            itself once a candidate, partial or retracted entry exists. */}
-        {resolutions.length > 1 && (
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            aria-label="Filter by status"
-            className={selectClass}
-          >
-            <option value="all">All statuses</option>
-            {resolutions.map((r) => (
-              <option key={r} value={r}>
-                {RESOLUTION[r].label}
-              </option>
-            ))}
-          </select>
-        )}
-        {/* Appears once a single classified entry exists - see `contributions`. */}
-        {contributions.length > 0 && (
-          <select
-            value={contributionFilter}
-            onChange={(e) => setContributionFilter(e.target.value)}
-            aria-label="Filter by AI contribution"
-            className={selectClass}
-          >
-            <option value="all">All AI contribution</option>
-            {contributions.map((c) => (
-              <option key={c} value={c}>
-                {AI_CONTRIBUTION[c].label}
-              </option>
-            ))}
-          </select>
-        )}
-        <select
-          value={verificationFilter}
-          onChange={(e) => setVerificationFilter(e.target.value)}
-          aria-label="Filter by verification"
-          className={selectClass}
-        >
-          <option value="all">All verification</option>
-          {verifications.map((v) => (
-            <option key={v} value={v}>
-              {VERIFICATION[v].label}
-            </option>
-          ))}
-        </select>
-        {filtersActive && (
+        <FilterPanel facets={facets} values={filterValues} onChange={setFilter} />
+      </div>
+
+      {/* Active facets stay visible as removable chips while the panel is
+          closed, on their own row under the search box, with Clear at the
+          end. The row only exists while something is filtered. */}
+      {filtersActive && (
+        <div className="mb-2.5 flex flex-wrap items-center gap-1.5">
+          {facets.map((f) => {
+            const v = filterValues[f.key];
+            if (v === "all") return null;
+            const label = f.options.find((o) => o.value === v)?.label ?? v;
+            return (
+              <button
+                key={f.key}
+                type="button"
+                onClick={() => setFilter(f.key, "all")}
+                aria-label={`Remove filter: ${label}`}
+                className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-[var(--accent-blue)] bg-[color-mix(in_srgb,var(--accent-blue)_10%,transparent)] px-2.5 py-1 text-xs font-medium text-[var(--accent-blue)]"
+              >
+                {label}
+                <span aria-hidden>×</span>
+              </button>
+            );
+          })}
           <button
             onClick={() => {
               setQuery("");
@@ -714,12 +734,12 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
               setContributionFilter("all");
               setVerificationFilter("all");
             }}
-            className="text-xs text-[var(--accent-blue)] hover:underline"
+            className="ml-1 text-xs text-[var(--accent-blue)] hover:underline"
           >
             Clear
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Sort - explicit, because cards have no column headers to click */}
       <div className="mb-3 flex flex-wrap items-center gap-2 border-t border-[var(--hairline)] pt-2.5">
@@ -784,8 +804,18 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
 
         {sortKey === "renown" && <InfoTip content={NOTABILITY_HELP} label="Notability" />}
 
+        {/* The live result count: reads "all N entries" untouched, and
+            "showing X of N entries" the moment a filter or search bites. */}
         <span className="ml-auto text-xs text-[var(--ink-muted)]">
-          {sorted.length} of {problems.length}
+          {sorted.length === problems.length ? (
+            <>all {problems.length} entries</>
+          ) : (
+            <>
+              showing{" "}
+              <span className="font-medium text-[var(--ink-secondary)]">{sorted.length}</span> of{" "}
+              {problems.length} entries
+            </>
+          )}
         </span>
       </div>
 
