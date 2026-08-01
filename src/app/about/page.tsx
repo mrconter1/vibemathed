@@ -36,8 +36,9 @@ export default function AboutPage() {
           solved, fully or partially, by AI models. The record spans famous
           conjectures as well as the long tail of specialist questions and the
           numbered Erdős problems. It went live on July 20, 2026 as the first
-          website dedicated to keeping this record, and remains the only
-          community-curated one.
+          website dedicated to tracking these results across all of
+          mathematics, and the first and so far only one curated by a
+          community.
         </p>
         <p className="text-sm">
           Entries are submitted, reviewed and curated in the open by people who
