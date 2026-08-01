@@ -19,9 +19,9 @@ import {
   FIELD_GROUPS,
   RESOLUTION_STATUSES,
   type AiContribution,
+  type CardEntry,
   type FieldGroup,
   type Period,
-  type ProblemCardData,
   type ResolutionStatus,
   type SolveType,
   type VerificationStatus,
@@ -100,7 +100,7 @@ interface StoredSettings {
   perPage: number;
 }
 
-function sortValue(p: ProblemCardData, key: SortKey, period: Period): string | number {
+function sortValue(p: CardEntry, key: SortKey, period: Period): string | number {
   switch (key) {
     case "solveDate":
       return p.solveDate;
@@ -173,7 +173,7 @@ function Fact({ label, children }: { label: string; children: React.ReactNode })
   );
 }
 
-function ProblemCard({ p }: { p: ProblemCardData }) {
+function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string | null }) {
   const st = SOLVE_TYPE[p.solveType];
   const v = VERIFICATION[p.verification];
   const res = RESOLUTION[p.resolution];
@@ -282,12 +282,12 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
           {p.field ?? DASH}
         </p>
 
-        {/* Statement - present on roughly one entry in five. Math was
-            rendered to HTML on the server, so no KaTeX runs here. */}
-        {p.statementHtml && (
+        {/* Statement, rendered to HTML on the server so no KaTeX runs here.
+            Beyond the first page it arrives via the lazy statements map. */}
+        {statementHtml && (
           <p
             className="math-prose mt-2.5 text-sm leading-relaxed text-[var(--ink-secondary)]"
-            dangerouslySetInnerHTML={{ __html: p.statementHtml }}
+            dangerouslySetInnerHTML={{ __html: statementHtml }}
           />
         )}
 
@@ -381,7 +381,7 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
   );
 }
 
-export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
+export function ProblemCards({ problems }: { problems: CardEntry[] }) {
   const [query, setQuery] = useState("");
   const [fieldFilter, setFieldFilter] = useState("all");
   const [resultFilter, setResultFilter] = useState("all");
@@ -437,54 +437,59 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
   /* eslint-disable react-hooks/set-state-in-effect */
   const [restored, setRestored] = useState(false);
   useEffect(() => {
+    // Two sources, URL first: a shared link's query params beat this
+    // browser's remembered settings, key by key. Every value is validated
+    // against what the UI can actually offer today, so a stale or tampered
+    // entry falls back silently.
+    let s: Partial<StoredSettings> = {};
     try {
-      const s = JSON.parse(
-        localStorage.getItem(SETTINGS_KEY) ?? "null",
-      ) as Partial<StoredSettings> | null;
-      if (s) {
-        if (
-          s.fieldFilter === "all" ||
-          FIELD_GROUPS.includes(s.fieldFilter as FieldGroup)
-        ) {
-          setFieldFilter(s.fieldFilter as string);
-        }
-        if (s.resultFilter === "all" || (s.resultFilter ?? "") in SOLVE_TYPE) {
-          setResultFilter(s.resultFilter as string);
-        }
-        if (
-          s.statusFilter === "all" ||
-          RESOLUTION_STATUSES.includes(s.statusFilter as ResolutionStatus)
-        ) {
-          setStatusFilter(s.statusFilter as string);
-        }
-        if (
-          s.contributionFilter === "all" ||
-          AI_CONTRIBUTIONS.includes(s.contributionFilter as AiContribution)
-        ) {
-          setContributionFilter(s.contributionFilter as string);
-        }
-        if (
-          s.modelFilter === "all" ||
-          MODEL_FAMILIES.some((f) => f.key === s.modelFilter)
-        ) {
-          setModelFilter(s.modelFilter as string);
-        }
-        if (
-          s.verificationFilter === "all" ||
-          (s.verificationFilter ?? "") in VERIFICATION
-        ) {
-          setVerificationFilter(s.verificationFilter as string);
-        }
-        if (SORTS.some((x) => x.key === s.sortKey)) setSortKey(s.sortKey as SortKey);
-        if (s.sortDir === "asc" || s.sortDir === "desc") setSortDir(s.sortDir);
-        if (PERIODS.some((x) => x.key === s.period)) setPeriod(s.period as Period);
-        if (typeof s.perPage === "number" && PAGE_SIZES.includes(s.perPage)) {
-          setPerPage(s.perPage);
-        }
-      }
+      s =
+        (JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? "null") as
+          | Partial<StoredSettings>
+          | null) ?? {};
     } catch {
       // Malformed storage reads as "nothing stored".
     }
+    const url = new URLSearchParams(window.location.search);
+    const pick = (param: string, storedValue: string | undefined) =>
+      url.get(param) ?? storedValue;
+
+    const field = pick("field", s.fieldFilter);
+    if (field === "all" || FIELD_GROUPS.includes(field as FieldGroup)) {
+      setFieldFilter(field as string);
+    }
+    const result = pick("result", s.resultFilter);
+    if (result === "all" || (result ?? "") in SOLVE_TYPE) {
+      setResultFilter(result as string);
+    }
+    const status = pick("status", s.statusFilter);
+    if (status === "all" || RESOLUTION_STATUSES.includes(status as ResolutionStatus)) {
+      setStatusFilter(status as string);
+    }
+    const contribution = pick("contribution", s.contributionFilter);
+    if (
+      contribution === "all" ||
+      AI_CONTRIBUTIONS.includes(contribution as AiContribution)
+    ) {
+      setContributionFilter(contribution as string);
+    }
+    const model = pick("model", s.modelFilter);
+    if (model === "all" || MODEL_FAMILIES.some((f) => f.key === model)) {
+      setModelFilter(model as string);
+    }
+    const verification = pick("verification", s.verificationFilter);
+    if (verification === "all" || (verification ?? "") in VERIFICATION) {
+      setVerificationFilter(verification as string);
+    }
+    const sort = pick("sort", s.sortKey);
+    if (SORTS.some((x) => x.key === sort)) setSortKey(sort as SortKey);
+    const dir = pick("dir", s.sortDir);
+    if (dir === "asc" || dir === "desc") setSortDir(dir);
+    const period_ = pick("period", s.period);
+    if (PERIODS.some((x) => x.key === period_)) setPeriod(period_ as Period);
+    const per = url.get("per") ?? (s.perPage !== undefined ? String(s.perPage) : null);
+    if (per !== null && PAGE_SIZES.includes(Number(per))) setPerPage(Number(per));
+
     setRestored(true);
     // Once per mount on purpose so it cannot undo choices made since.
   }, []);
@@ -511,7 +516,42 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
     } catch {
       // Storage full or blocked - the list still works, it just won't persist.
     }
+    // Mirror non-default settings into the URL so a filtered view is
+    // shareable; defaults keep the address bare.
+    const q = new URLSearchParams();
+    if (fieldFilter !== "all") q.set("field", fieldFilter);
+    if (resultFilter !== "all") q.set("result", resultFilter);
+    if (statusFilter !== "all") q.set("status", statusFilter);
+    if (contributionFilter !== "all") q.set("contribution", contributionFilter);
+    if (modelFilter !== "all") q.set("model", modelFilter);
+    if (verificationFilter !== "all") q.set("verification", verificationFilter);
+    if (sortKey !== "solveDate") q.set("sort", sortKey);
+    if (sortDir !== "desc") q.set("dir", sortDir);
+    if (period !== "all") q.set("period", period);
+    if (perPage !== 25) q.set("per", String(perPage));
+    const qs = q.toString();
+    window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
   }, [restored, fieldFilter, resultFilter, statusFilter, contributionFilter, modelFilter, verificationFilter, sortKey, sortDir, period, perPage]);
+
+  // Statements beyond the first default-sort page ship without their rendered
+  // HTML; one background fetch fills the map after hydration (see CardEntry).
+  const [lateStatements, setLateStatements] = useState<Record<string, string> | null>(null);
+  useEffect(() => {
+    if (!problems.some((p) => p.hasStatement && p.statementHtml === null)) return;
+    let alive = true;
+    fetch("/api/statements")
+      .then((r) => (r.ok ? (r.json() as Promise<Record<string, string>>) : null))
+      .then((map) => {
+        if (alive && map) setLateStatements(map);
+      })
+      .catch(() => {
+        // First-page statements are inline regardless; deeper cards just
+        // render without prose until a retry on next navigation.
+      });
+    return () => {
+      alive = false;
+    };
+  }, [problems]);
 
   // Only offer verification statuses that actually occur, in ladder order, so
   // the panel never lists an empty category.
@@ -857,7 +897,11 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
       ) : (
         <div className="flex flex-col gap-2.5">
           {paged.map((p) => (
-            <ProblemCard key={p.slug} p={p} />
+            <ProblemCard
+              key={p.slug}
+              p={p}
+              statementHtml={p.statementHtml ?? lateStatements?.[p.slug] ?? null}
+            />
           ))}
         </div>
       )}

@@ -138,6 +138,8 @@ model Problem {
 
   @@index([status])
   @@index([solveDate])
+  /// The list read's exact shape: published rows ordered by solve date.
+  @@index([status, solveDate])
   @@index([submittedById])
 }
 

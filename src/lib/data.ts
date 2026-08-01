@@ -22,6 +22,7 @@ import {
   type SiteActivityView,
 } from "@/lib/activity";
 import { formatCommentDate, renderCommentHtml } from "@/lib/comment-render";
+import { texToHtml } from "@/components/TeX";
 import type { CommentView } from "@/lib/comments";
 import { resolveSnapshot } from "@/lib/identity";
 import type {
@@ -447,6 +448,23 @@ export async function getUserProfile(pseudonym: string): Promise<UserProfile | n
       problemSlug: a.problem.slug,
     })),
   };
+}
+
+/// Rendered statement HTML for every published entry that has one, keyed by
+/// slug. Serves /api/statements: the home page inlines only the first page's
+/// statements, and the client fetches this map once for the rest - so page
+/// weight stops growing with the catalog. KaTeX runs inside the cached read,
+/// not per request.
+export async function getStatementHtmlMap(): Promise<Record<string, string>> {
+  "use cache";
+  cacheTag("problems");
+  cacheLife("minutes");
+
+  const rows = await prisma.problem.findMany({
+    where: { status: "published", statement: { not: null } },
+    select: { slug: true, statement: true },
+  });
+  return Object.fromEntries(rows.map((r) => [r.slug, texToHtml(r.statement!)]));
 }
 
 /// Total registered accounts, for the community tile on the home page.

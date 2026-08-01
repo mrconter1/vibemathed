@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getPublishedProblems, getRecentActivity, getUserCount } from "@/lib/data";
-import type { ProblemCardData } from "@/lib/problems";
+import type { CardEntry } from "@/lib/problems";
 import { SITE_URL } from "@/lib/site";
 import { Highlights } from "@/components/Highlights";
 import { ProblemCards } from "@/components/ProblemCards";
@@ -22,11 +22,46 @@ export default async function Home() {
     getUserCount(),
   ]);
 
-  // Statement math is rendered to HTML here, on the server, so the client cards
-  // can show real math without KaTeX ever reaching the browser bundle.
-  const cards: ProblemCardData[] = problems.map((p) => ({
-    ...p,
-    statementHtml: p.statement ? texToHtml(p.statement) : null,
+  // Statement math is rendered to HTML here, on the server, so the client
+  // cards can show real math without KaTeX ever reaching the browser bundle.
+  // Only the first default-sort page ships its statements inline; the rest of
+  // the map arrives via /api/statements after hydration (see CardEntry).
+  const INLINE_STATEMENTS = 25;
+  const cards: CardEntry[] = problems.map((p, i) => ({
+    slug: p.slug,
+    name: p.name,
+    problemNumber: p.problemNumber,
+    field: p.field,
+    fieldGroup: p.fieldGroup,
+    hasStatement: p.statement !== null,
+    statementHtml:
+      p.statement && i < INLINE_STATEMENTS ? texToHtml(p.statement) : null,
+    posedBy: p.posedBy,
+    yearPosed: p.yearPosed,
+    solveType: p.solveType,
+    resolution: p.resolution,
+    claimIssueNote: p.claimIssueNote ?? null,
+    aiContribution: p.aiContribution ?? null,
+    solveDate: p.solveDate,
+    model: p.model,
+    modelMaker: p.modelMaker,
+    humanCollaborators: p.humanCollaborators,
+    verification: p.verification,
+    verificationNote: p.verificationNote,
+    significance: p.significance ?? null,
+    significanceNote: p.significanceNote ?? null,
+    resultNote: p.resultNote ?? null,
+    ageNote: p.ageNote ?? null,
+    upvotes: p.upvotes,
+    downvotes: p.downvotes,
+    score: p.score,
+    score7d: p.score7d,
+    score30d: p.score30d,
+    comments7d: p.comments7d,
+    comments30d: p.comments30d,
+    commentCount: p.commentCount,
+    submittedBy: p.submittedBy,
+    addedAt: p.addedAt,
   }));
 
   // Two schema.org objects on the home page. WebSite is what Google reads the

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getActivity, getComments, getProblemBySlug, getPublishedSlugs } from "@/lib/data";
+import { getActivity, getComments, getProblemBySlug } from "@/lib/data";
 import { ageAtSolve, type ProblemWithVotes } from "@/lib/problems";
 import { AI_CONTRIBUTION, DASH, RESOLUTION, SOLVE_TYPE, VERIFICATION } from "@/lib/display";
 import { toEditableValues } from "@/lib/editable";
@@ -21,9 +21,26 @@ function describe(p: ProblemWithVotes): string {
   return `${p.name} was ${verb} with ${p.model}${maker} in the loop, ${p.solveDate}.`;
 }
 
+// Prerender only the pages people actually land on cold - the newest 30 and
+// everything significant - instead of the whole catalog: build time stays
+// flat as the record grows, and the long tail renders on demand into the
+// per-slug cache on first visit.
 export async function generateStaticParams() {
-  const slugs = await getPublishedSlugs();
-  return slugs.map((slug) => ({ slug }));
+  const { prisma } = await import("@/lib/prisma");
+  const [recent, major] = await Promise.all([
+    prisma.problem.findMany({
+      where: { status: "published" },
+      orderBy: { createdAt: "desc" },
+      take: 30,
+      select: { slug: true },
+    }),
+    prisma.problem.findMany({
+      where: { status: "published", significance: { gte: 35 } },
+      select: { slug: true },
+    }),
+  ]);
+  const slugs = new Set([...recent, ...major].map((r) => r.slug));
+  return [...slugs].map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -54,11 +71,16 @@ export default async function ProblemPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const p = await getProblemBySlug(slug);
+  // All three reads in parallel - comments and activity do not depend on the
+  // problem row, and a missing slug just returns empty lists from them.
+  const [p, comments, activity] = await Promise.all([
+    getProblemBySlug(slug),
+    getComments(slug),
+    getActivity(slug),
+  ]);
   if (!p) notFound();
   const age = ageAtSolve(p);
   const v = VERIFICATION[p.verification];
-  const [comments, activity] = await Promise.all([getComments(slug), getActivity(slug)]);
   // Built from data the page already has, so opening the editor costs no query.
   const editable = toEditableValues(p);
 

@@ -230,11 +230,51 @@ export type ProblemWithTrends = ProblemWithVotes & {
   comments30d: number;
 };
 
-/// What the client-side entry cards receive: an entry, its counts, and its
-/// statement with math already rendered to HTML on the server.
-export type ProblemCardData = ProblemWithTrends & {
+/// What the client-side entry cards receive: ONLY the fields the list
+/// actually renders, filters or sorts on. The full MathProblem used to be
+/// serialized per card, which shipped long unused strings (aiRole, citations,
+/// source names, raw TeX) for every entry - at 232 entries that was most of a
+/// 1.7 MB page.
+///
+/// `statementHtml` is populated only for the first page of the default sort;
+/// deeper entries ship `hasStatement: true` with a null html and the client
+/// fetches the full slug->html map once from /api/statements, off the
+/// critical path.
+export interface CardEntry {
+  slug: string;
+  name: string;
+  problemNumber: number | null;
+  field: string | null;
+  fieldGroup: FieldGroup | null;
+  hasStatement: boolean;
   statementHtml: string | null;
-};
+  posedBy: string | null;
+  yearPosed: number | null;
+  solveType: SolveType;
+  resolution: ResolutionStatus;
+  claimIssueNote: string | null;
+  aiContribution: AiContribution | null;
+  solveDate: string;
+  model: string;
+  modelMaker: string | null;
+  humanCollaborators: string[];
+  verification: VerificationStatus;
+  verificationNote: string | null;
+  significance: number | null;
+  significanceNote: string | null;
+  resultNote: string | null;
+  ageNote: string | null;
+  upvotes: number;
+  downvotes: number;
+  score: number;
+  score7d: number;
+  score30d: number;
+  comments7d: number;
+  comments30d: number;
+  commentCount: number;
+  submittedBy: string | null;
+  addedAt: string;
+}
 
 const SOLVE_TYPES: SolveType[] = ["proved", "disproved"];
 const VERIFICATION_STATUSES: VerificationStatus[] = [
@@ -343,7 +383,7 @@ export function assertProblem(value: unknown, index: number): MathProblem {
 }
 
 /** Years a problem was open before resolution, or null if the posed year is unknown. */
-export function ageAtSolve(problem: MathProblem): number | null {
+export function ageAtSolve(problem: Pick<MathProblem, "yearPosed" | "solveDate">): number | null {
   if (problem.yearPosed === null) return null;
   const solveYear = parseInt(problem.solveDate.slice(0, 4), 10);
   if (Number.isNaN(solveYear)) return null;
