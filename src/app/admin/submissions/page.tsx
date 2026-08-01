@@ -73,7 +73,9 @@ async function Queue() {
     sourceUrl: r.sourceUrl,
     sourceName: r.sourceName,
     submittedBy: resolveSnapshot(r.submittedBy?.pseudonym ?? null, r.submittedBy !== null),
-    submittedAt: formatCommentDate(r.createdAt),
+    // Date AND time: three spam entries in one night made clear that "when
+    // exactly" matters when reviewing a queue.
+    submittedAt: `${formatCommentDate(r.createdAt)}, ${String(r.createdAt.getUTCHours()).padStart(2, "0")}:${String(r.createdAt.getUTCMinutes()).padStart(2, "0")} UTC`,
   }));
 
   return (

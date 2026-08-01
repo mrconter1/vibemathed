@@ -201,45 +201,52 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
                 {p.name}
               </Link>
             </h3>
-            <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-xs">
-              <span
-                aria-hidden
-                className="inline-block h-2 w-2 rounded-full"
-                style={{ backgroundColor: st.color }}
-              />
-              <span className="text-[var(--ink-secondary)]">{st.label}</span>
-            </span>
-            {/* A non-default resolution qualifies the headline claim, so it
-                sits right beside it as a small pill. "Resolved" renders
-                nothing - the default state should add no noise. */}
-            {res.pill && (
-              <span
-                className="inline-flex items-center whitespace-nowrap rounded-full border px-2 py-px text-[11px] font-medium"
-                style={{
-                  color: res.color,
-                  borderColor: `color-mix(in srgb, ${res.color} 40%, transparent)`,
-                }}
-              >
-                {res.pill}
+            {/* Result dot + status pill + contribution pill travel as ONE
+                flex item: either they all fit beside the title, or the whole
+                group drops below it with the full card width - so the badges
+                share a line unless a full row genuinely cannot hold them
+                (only then does the group's own flex-wrap split it). Placed
+                individually they used to wrap one by one after the title. */}
+            <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+              <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-xs">
+                <span
+                  aria-hidden
+                  className="inline-block h-2 w-2 rounded-full"
+                  style={{ backgroundColor: st.color }}
+                />
+                <span className="text-[var(--ink-secondary)]">{st.label}</span>
               </span>
-            )}
-            {/* The note sits OUTSIDE the nowrap badge: it can be a whole
+              {/* A non-default resolution qualifies the headline claim, so it
+                  sits right beside it as a small pill. "Resolved" renders
+                  nothing - the default state should add no noise. */}
+              {res.pill && (
+                <span
+                  className="inline-flex items-center whitespace-nowrap rounded-full border px-2 py-px text-[11px] font-medium"
+                  style={{
+                    color: res.color,
+                    borderColor: `color-mix(in srgb, ${res.color} 40%, transparent)`,
+                  }}
+                >
+                  {res.pill}
+                </span>
+              )}
+              {/* Same convention for the AI-contribution axis; unclassified
+                  entries show nothing. */}
+              {p.aiContribution && AI_CONTRIBUTION[p.aiContribution]?.pill && (
+                <span
+                  className="inline-flex items-center whitespace-nowrap rounded-full border px-2 py-px text-[11px] font-medium"
+                  style={{
+                    color: AI_CONTRIBUTION[p.aiContribution].color,
+                    borderColor: `color-mix(in srgb, ${AI_CONTRIBUTION[p.aiContribution].color} 40%, transparent)`,
+                  }}
+                >
+                  {AI_CONTRIBUTION[p.aiContribution].pill}
+                </span>
+              )}
+            </span>
+            {/* The note sits OUTSIDE the badge group: it can be a whole
                 sentence, which on a phone must wrap rather than drag the page
                 wider than the viewport. */}
-            {/* Same convention for the AI-contribution axis: "AI-discovered"
-                is the headline case and renders nothing; the tiers that
-                qualify it get a quiet pill. Unclassified entries show nothing. */}
-            {p.aiContribution && AI_CONTRIBUTION[p.aiContribution]?.pill && (
-              <span
-                className="inline-flex items-center whitespace-nowrap rounded-full border px-2 py-px text-[11px] font-medium"
-                style={{
-                  color: AI_CONTRIBUTION[p.aiContribution].color,
-                  borderColor: `color-mix(in srgb, ${AI_CONTRIBUTION[p.aiContribution].color} 40%, transparent)`,
-                }}
-              >
-                {AI_CONTRIBUTION[p.aiContribution].pill}
-              </span>
-            )}
             {p.resultNote && (
               <span className="text-xs text-[var(--ink-muted)]">({p.resultNote})</span>
             )}
@@ -569,8 +576,11 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
     contributionFilter !== "all" ||
     verificationFilter !== "all";
 
+  // `grow justify-center sm:grow-0`: on a phone the wrapped chip rows
+  // stretch to fill the full width instead of leaving a ragged right edge;
+  // on wider screens they keep their natural size.
   const chip = (active: boolean) =>
-    `inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1 text-xs transition-colors ${
+    `inline-flex grow items-center justify-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1 text-xs transition-colors sm:grow-0 ${
       active
         ? "border-[var(--accent-blue)] bg-[color-mix(in_srgb,var(--accent-blue)_10%,transparent)] font-medium text-[var(--accent-blue)]"
         : "border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-secondary)] hover:border-[var(--ink-muted)] hover:text-[var(--ink)]"
