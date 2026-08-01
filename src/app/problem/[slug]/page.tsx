@@ -190,16 +190,21 @@ export default async function ProblemPage({
         <div className="flex items-start justify-between gap-4">
           <h1 className="font-serif text-2xl text-[var(--ink)] sm:text-3xl">{p.name}</h1>
           {/* One control corner: votes, then the two quiet icon affordances
-              (report, edit) in the same 32px bordered idiom. */}
-          <div className="flex shrink-0 items-start gap-1.5 pt-1">
+              (report, edit) in the same bordered idiom. Four controls in a
+              row is ~200px, which crushes long titles on phones - below sm
+              the corner stacks into two rows of two (votes above, icons
+              below), right-aligned. */}
+          <div className="flex shrink-0 flex-col items-end gap-1.5 pt-1 sm:flex-row sm:items-start">
             <VoteButtons
               slug={p.slug}
               upvotes={p.upvotes}
               downvotes={p.downvotes}
               size="lg"
             />
-            <ReportEntryDialog slug={p.slug} />
-            <EditEntryDialog slug={p.slug} initial={editable} />
+            <div className="flex gap-1.5">
+              <ReportEntryDialog slug={p.slug} />
+              <EditEntryDialog slug={p.slug} initial={editable} />
+            </div>
           </div>
         </div>
 
