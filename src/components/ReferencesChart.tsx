@@ -123,9 +123,8 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
       </div>
 
       <p className="mt-1 text-xs text-[var(--ink-muted)]">
-        AI-estimated problem weight before the solve (Riemann would be 100 - see
-        the methodology). The dense band is the record&apos;s honest shape; the
-        labeled points are the strikes up the ladder. Click a point to open it.
+        AI-estimated problem weight before the solve, 0-100 (Riemann = 100).
+        Click a point to open it.
       </p>
 
       <div className="relative mt-3" style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}` }}>
