@@ -171,9 +171,11 @@ def catalog_index() -> dict:
         print(f"_(catalog check skipped: {e})_\n", file=sys.stderr)
         return known
     for p in data.get("problems", []):
-        m = re.fullmatch(r"erdos-(\d+)", p.get("slug") or "")
-        if m:
-            known["erdos"].add(int(m.group(1)))
+        # The problemNumber FIELD, not the slug: famous Erdős problems live
+        # under named slugs (erdos-planar-unit-distance is #90), so slug
+        # parsing alone under-counts what the catalog already tracks.
+        if p.get("problemNumber") is not None:
+            known["erdos"].add(int(p["problemNumber"]))
         urls = [p.get("sourceUrl") or "", p.get("citationsUrl") or ""]
         urls += [link.get("url") or "" for link in p.get("links", [])]
         for u in urls:
