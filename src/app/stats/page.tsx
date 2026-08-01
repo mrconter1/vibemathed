@@ -8,7 +8,6 @@ import { Icon, type IconName } from "@/components/Icons";
 import { ModelsChart } from "@/components/ModelsChart";
 import { OpenSourceChart } from "@/components/OpenSourceChart";
 import { ReferencesChart } from "@/components/ReferencesChart";
-import { SignificanceChart } from "@/components/SignificanceChart";
 import { SolveRatioChart } from "@/components/SolveRatioChart";
 import { InfoTip } from "@/components/Tooltip";
 
@@ -103,10 +102,6 @@ export default async function StatsPage() {
         </div>
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <ModelsChart problems={resolved} />
-        </div>
-        {/* Whole record, not just resolved: significance is problem-level. */}
-        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5 lg:col-span-2">
-          <SignificanceChart problems={problems} />
         </div>
       </section>
     </main>

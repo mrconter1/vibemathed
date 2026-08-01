@@ -4,16 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ageAtSolve, type MathProblem } from "@/lib/problems";
 
-// This chart plots NOTABILITY (Wikipedia language editions), not citations.
-// Most entries score 0 - that dense band along the x-axis is the point:
-// almost every AI-resolved Erdős problem is obscure, regardless of how long it
-// stood open. The handful with a dedicated Wikipedia article rise above it.
-// (Component/file kept named "References*" to avoid an import churn; it is a
-// notability chart now.)
+// This chart plots SIGNIFICANCE (the AI-estimated problem weight) against how
+// long the problem stood open. The dense band at 10 is the point: almost every
+// AI-resolved problem is real but unfamous, regardless of age. The labeled
+// points rising above are the strikes up the ladder. (Component/file kept
+// named "References*" through two metric changes to avoid import churn.)
 
 // Categorical colors validated against the --paper chart surface (#f3efe3):
-//   #2a78d6 blue (proved), #eb6834 orange (disproved). "resolved" uses a
-//   neutral grey, so it needs no hue-contrast validation.
+//   #2a78d6 blue (proved), #eb6834 orange (disproved).
 const SOLVE_TYPE_COLOR: Record<string, string> = {
   proved: "var(--accent-blue)",
   disproved: "var(--accent-orange)",
@@ -23,6 +21,9 @@ const SOLVE_TYPE_LABEL: Record<string, string> = {
   proved: "Proved",
   disproved: "Disproved",
 };
+
+// Points at or above this get a name label; below it the band is too dense.
+const LABEL_THRESHOLD = 35;
 
 const VIEW_W = 640;
 const VIEW_H = 360;
@@ -44,23 +45,27 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const router = useRouter();
 
-  // Every entry now has a posed year, so age is always defined and all points
-  // plot. Notability (y) is 0 for most - those sit on the baseline.
-  const withAge = problems.map((p) => ({ problem: p, age: ageAtSolve(p) }));
-  const plottable = withAge.filter(
-    (d): d is { problem: (typeof d)["problem"]; age: number } => d.age !== null,
+  // Needs both a posed year (for age) and a significance score to plot.
+  const enriched = problems.map((p) => ({
+    problem: p,
+    age: ageAtSolve(p),
+    significance: p.significance ?? null,
+  }));
+  const plottable = enriched.filter(
+    (d): d is { problem: MathProblem; age: number; significance: number } =>
+      d.age !== null && d.significance !== null,
   );
-  const pending = withAge.length - plottable.length;
+  const pending = enriched.length - plottable.length;
 
   const xMax = niceMax(Math.max(1, ...plottable.map((d) => d.age)), 20);
-  const yStep = 5;
-  const yMax = niceMax(Math.max(1, ...plottable.map((d) => d.problem.renownLangs)), yStep);
+  const yStep = 10;
+  const yMax = niceMax(Math.max(1, ...plottable.map((d) => d.significance)), yStep);
 
   const xTicks = ticks(xMax, 20);
   const yTicks = ticks(yMax, yStep);
 
   const x = (age: number) => MARGIN.left + (age / xMax) * PLOT_W;
-  const y = (langs: number) => MARGIN.top + PLOT_H - (langs / yMax) * PLOT_H;
+  const y = (sig: number) => MARGIN.top + PLOT_H - (sig / yMax) * PLOT_H;
 
   const active = plottable.find((d) => d.problem.slug === activeSlug);
   // Legend reflects only series actually drawn as points.
@@ -68,13 +73,15 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
     (t) => t in SOLVE_TYPE_COLOR,
   );
 
-  // Draw the zero band first so the few notable outliers sit on top of it.
-  const drawOrder = [...plottable].sort((a, b) => a.problem.renownLangs - b.problem.renownLangs);
+  // Draw the dense low band first so the labeled strikes sit on top of it.
+  const drawOrder = [...plottable].sort((a, b) => a.significance - b.significance);
 
   return (
     <div>
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h2 className="font-serif text-lg text-[var(--ink)]">Notability vs. age at resolution</h2>
+        <h2 className="font-serif text-lg text-[var(--ink)]">
+          Significance vs. age at resolution
+        </h2>
         <ul className="flex gap-4 text-sm text-[var(--ink-secondary)]">
           {seriesPresent.map((type) => (
             <li key={type} className="flex items-center gap-1.5">
@@ -90,8 +97,9 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
       </div>
 
       <p className="mt-1 text-xs text-[var(--ink-muted)]">
-        Notability = Wikipedia language editions with a dedicated article. Most score 0 (the
-        baseline band); a few famous ones rise above. Click a point to open it.
+        AI-estimated problem weight before the solve (Riemann would be 100 - see
+        the methodology). The dense band is the record&apos;s honest shape; the
+        labeled points are the strikes up the ladder. Click a point to open it.
       </p>
 
       <div className="relative mt-3" style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}` }}>
@@ -99,7 +107,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
           viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
           className="h-full w-full overflow-visible"
           role="img"
-          aria-label="Scatter chart of Wikipedia notability (language editions) against how many years each problem was open before resolution. Most points lie on the zero baseline; a few rise above."
+          aria-label="Scatter chart of AI-estimated significance against how many years each problem was open before resolution. Most points form a band at 10; a few labeled points rise above."
         >
           {/* gridlines */}
           {yTicks.map((t) => (
@@ -175,16 +183,16 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
             transform="rotate(-90)"
             style={{ fontSize: 14, fill: "var(--ink-secondary)" }}
           >
-            Notability (Wikipedia languages)
+            Significance (0-100)
           </text>
 
           {/* points */}
-          {drawOrder.map(({ problem, age }) => {
+          {drawOrder.map(({ problem, age, significance }) => {
             const cx = x(age);
-            const cy = y(problem.renownLangs);
+            const cy = y(significance);
             const color = SOLVE_TYPE_COLOR[problem.solveType] ?? "var(--ink)";
             const isActive = activeSlug === problem.slug;
-            const isOutlier = problem.renownLangs > 0;
+            const isOutlier = significance >= LABEL_THRESHOLD;
             // Labels near either edge anchor inward so they stay inside the
             // viewBox - the svg has overflow visible, and a centred label on
             // an edge point would poke out of the card (and on phones, widen
@@ -238,7 +246,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
             className="pointer-events-none absolute z-10 w-56 rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] p-3 text-xs shadow-sm"
             style={{
               left: `${(x(active.age) / VIEW_W) * 100}%`,
-              top: `${(y(active.problem.renownLangs) / VIEW_H) * 100}%`,
+              top: `${(y(active.significance) / VIEW_H) * 100}%`,
               transform: "translate(-50%, calc(-100% - 16px))",
             }}
           >
@@ -249,8 +257,8 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
             <dl className="mt-2 grid grid-cols-2 gap-x-2 gap-y-1 font-mono text-[var(--ink-secondary)]">
               <dt className="text-[var(--ink-muted)]">Age</dt>
               <dd>{active.age}y</dd>
-              <dt className="text-[var(--ink-muted)]">Notability</dt>
-              <dd>{active.problem.renownLangs} langs</dd>
+              <dt className="text-[var(--ink-muted)]">Significance</dt>
+              <dd>{active.significance} / 100</dd>
             </dl>
           </div>
         )}
@@ -258,7 +266,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
 
       {pending > 0 && (
         <p className="mt-2 text-xs text-[var(--ink-muted)]">
-          {`${pending} of ${problems.length} entries have no posed year, so aren't plotted.`}
+          {`${pending} of ${problems.length} entries lack a posed year or a score, so aren't plotted.`}
         </p>
       )}
     </div>
