@@ -1488,6 +1488,53 @@
     "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
   },
   {
+    "slug": "erdos-1151",
+    "name": "Erdős Problem #1151",
+    "shortName": "Erdős #1151",
+    "problemNumber": 1151,
+    "field": "Analysis, Polynomials",
+    "fieldGroup": "Analysis",
+    "resolution": "candidate",
+    "statement": "Let $\\mathcal{L}^nf$ be the Lagrange interpolation polynomials of a continuous $f$ on the Chebyshev nodes. Prove that, for any closed $A\\subseteq [-1,1]$, there exists a continuous function $f$ such that $A$ is the set of limit points of $\\mathcal{L}^nf(x)$.",
+    "posedBy": "Paul Erdős",
+    "yearPosed": 1999,
+    "solveType": "proved",
+    "solveDate": "2026-04-30",
+    "model": "GPT-5.5 Pro, Codex",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Przemysław Chojecki",
+      "Allen Hart"
+    ],
+    "aiRole": "The solution was obtained with GPT-5.5 Pro using an explicit primitive-row decomposition of the Chebyshev-node measures; Theorem 1.1(a), the main contribution, was subsequently formalized largely autonomously by ChatGPT and Codex.",
+    "verification": "lean-verified",
+    "verificationNote": "Theorem 1.1(a), the main part of the contribution, is formalized in Lean and the formalization was confirmed correct on the forum; part (b) is unformalized because it depends on an Erdős result absent from mathlib. erdosproblems.com still lists the problem open.",
+    "publication": "announcement",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://www.erdosproblems.com/1151",
+    "sourceName": "erdosproblems.com/1151",
+    "resultNote": "An elementary solution via a primitive-row decomposition of the Chebyshev-node measures; the main theorem is formalized in Lean, but erdosproblems.com still lists the problem open",
+    "ageNote": "As recorded in the 1999 problem collection [Va99]; the question itself is older.",
+    "aiContribution": "ai-co-developed",
+    "significance": 10,
+    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "links": [
+      {
+        "label": "Write-up",
+        "url": "https://www.ulam.ai/research/erdos1151.pdf"
+      },
+      {
+        "label": "Lean formalization of Theorem 1.1(a)",
+        "url": "https://github.com/AllenGrahamHart/FormalConjectures-Bench/tree/main/formalizations/erdos1151"
+      }
+    ]
+  },
+  {
     "slug": "erdos-1153",
     "name": "Erdős Problem #1153",
     "shortName": "Erdős #1153",
@@ -1860,6 +1907,48 @@
     "aiContribution": "ai-discovered",
     "significance": 10,
     "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+  },
+  {
+    "slug": "erdos-1201",
+    "name": "Erdős Problem #1201",
+    "shortName": "Erdős #1201",
+    "problemNumber": 1201,
+    "field": "Number Theory, Primes",
+    "fieldGroup": "Number theory",
+    "resolution": "partial",
+    "statement": "Is it true that for every $\\epsilon,\\eta>0$ there exists a $k$ such that the density of $n$ for which $P(n(n+1)\\cdots(n+k))>n^{1-\\epsilon}$ is at least $1-\\eta$, where $P(m)$ is the greatest prime divisor of $m$? A short argument via the Matomäki-Radziwiłł theorem establishes the lower-density version.",
+    "posedBy": "Paul Erdős",
+    "yearPosed": 1976,
+    "solveType": "proved",
+    "solveDate": "2026-04-30",
+    "model": "GPT-5.5 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Przemysław Chojecki"
+    ],
+    "aiRole": "The deduction from the Matomäki-Radziwiłł theorem on multiplicative functions was written by GPT-5.5 Pro; Tao and Sawin's forum discussion pinned down exactly what the known results do and do not give for this problem.",
+    "verification": "unreviewed",
+    "verificationNote": "Discussed on the problem's forum, including by Tao, who delineated the remaining natural-density gap; no independent review of the note itself.",
+    "publication": "announcement",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://www.erdosproblems.com/1201",
+    "sourceName": "erdosproblems.com/1201",
+    "resultNote": "As Tao notes on the problem page, the claim establishes natural LOWER density at least 1-eta but not that the natural density exists, so the problem as stated remains technically open",
+    "ageNote": "Erdős proved the $n^{1/2-\\epsilon}$ version in a 1976 paper and conjectured the strengthening there; catalogued from his 1980 problem list.",
+    "aiContribution": "ai-co-developed",
+    "significance": 10,
+    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "links": [
+      {
+        "label": "GPT-5.5 Pro note",
+        "url": "https://www.ulam.ai/research/erdos1201.pdf"
+      }
+    ]
   },
   {
     "slug": "erdos-1202",
@@ -2645,6 +2734,47 @@
     "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
   },
   {
+    "slug": "erdos-326",
+    "name": "Erdős Problem #326",
+    "shortName": "Erdős #326",
+    "problemNumber": 326,
+    "field": "Number Theory, Additive Bases",
+    "fieldGroup": "Number theory",
+    "resolution": "candidate",
+    "statement": "Does there exist $A=\\{a_1<a_2<\\cdots\\}\\subset \\mathbb{N}$ which is a minimal basis of order $2$ (every large integer is the sum of $2$ elements from $A$, and no proper subset of $A$ has this property) such that $\\lim_{k\\to \\infty}a_k/k^2=c$ for some $c\\neq 0$? A claimed construction gives a minimal basis with $A(x)=C\\sqrt{x}+O(1)$, answering the question affirmatively; Erdős and Graham had conjectured a negative answer.",
+    "posedBy": "Paul Erdős, Ronald Graham",
+    "yearPosed": 1980,
+    "solveType": "proved",
+    "solveDate": "2026-06-14",
+    "model": "GPT-5.5, Aristotle, Codex",
+    "modelMaker": "OpenAI, Harmonic",
+    "humanCollaborators": [
+      "Aron Bhalla"
+    ],
+    "aiRole": "Per the author's disclosure, most of the mathematics is his own, with GPT-5.5 used to stress-test ideas, suggest revisions, identify gaps and write up some proofs; the solution was then formalized over several weeks with Aristotle, Codex and GPT-5.5 into a roughly 15,000-line Lean proof confirming all claims in the manuscript.",
+    "verification": "lean-verified",
+    "verificationNote": "The author reports a ~15,000-line Lean formalization, type-checkable online, confirming all claims of the manuscript. It has not been independently audited for statement fidelity, and erdosproblems.com has not accepted the claim: the site's owner found the AI-written exposition hard to digest while stressing that this was not a correctness objection.",
+    "publication": "announcement",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://www.erdosproblems.com/326",
+    "sourceName": "erdosproblems.com/326",
+    "resultNote": "Affirmative answer claimed, contrary to the negative answer Erdős and Graham conjectured; erdosproblems.com still lists the problem open",
+    "aiContribution": "ai-assisted",
+    "significance": 10,
+    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "links": [
+      {
+        "label": "Manuscript (latest version)",
+        "url": "https://drive.google.com/file/d/1VKaFmiMWWMW7NME-L47HVGSWOoBt9sug/view?usp=sharing"
+      }
+    ]
+  },
+  {
     "slug": "erdos-330",
     "name": "Erdős Problem #330",
     "shortName": "Erdős #330",
@@ -2741,6 +2871,51 @@
     "aiContribution": "ai-discovered",
     "significance": 10,
     "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+  },
+  {
+    "slug": "erdos-346",
+    "name": "Erdős Problem #346",
+    "shortName": "Erdős #346",
+    "problemNumber": 346,
+    "field": "Number Theory, Complete Sequences",
+    "fieldGroup": "Number theory",
+    "resolution": "candidate",
+    "statement": "Let $A=\\{1\\leq a_1< a_2<\\cdots\\}$ be a set of integers such that $A\\backslash B$ is complete for any finite subset $B$ and not complete for any infinite subset $B$. If $a_{n+1}/a_n \\geq 1+\\epsilon$ for all $n$, must $\\lim_n a_{n+1}/a_n=(1+\\sqrt{5})/2$? Under the reading where the ratio limit is assumed to exist, a Lean-verified argument forces the limit to be the golden ratio; a separate construction disproves the literal statement where convergence is not assumed.",
+    "posedBy": "Paul Erdős, Ronald Graham",
+    "yearPosed": 1980,
+    "solveType": "proved",
+    "solveDate": "2026-06-21",
+    "model": "ChatGPT, Codex",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Kenta Kitamura"
+    ],
+    "aiRole": "Kitamura's affirmative Lean 4 formalization of the limit-exists reading was produced with ChatGPT and Codex; days earlier, GPT Pro with Codex had produced a Lean-checked disproof of the literal reading (Liam Price), which the forum classes as solving a variant with precursors in Burr-Erdős 1981.",
+    "verification": "lean-verified",
+    "verificationNote": "A community screening found the Lean of the variant disproof correct and corresponding to its paper (one typo); the affirmative limit-exists formalization reports standard axioms only. erdosproblems.com still lists the problem open.",
+    "publication": "announcement",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://www.erdosproblems.com/346",
+    "sourceName": "erdosproblems.com/346",
+    "resultNote": "The problem statement is ambiguous: the limit-exists reading is claimed proved (Lean), while the convergence-from-hypotheses reading was disproved by a Lean-checked construction of Price that the community classes as a variant",
+    "aiContribution": "ai-co-developed",
+    "significance": 10,
+    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "links": [
+      {
+        "label": "Kitamura's Lean formalization",
+        "url": "https://github.com/KitaKen1/erdos346-ratio-limit-lean"
+      },
+      {
+        "label": "Price's disproof of the literal reading",
+        "url": "https://www.overleaf.com/read/tgrrgqpbjpht#c5a085"
+      }
+    ]
   },
   {
     "slug": "erdos-347",
@@ -3441,6 +3616,47 @@
     "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
   },
   {
+    "slug": "erdos-550",
+    "name": "Erdős Problem #550",
+    "shortName": "Erdős #550",
+    "problemNumber": 550,
+    "field": "Graph Theory, Ramsey Theory",
+    "fieldGroup": "Combinatorics",
+    "resolution": "candidate",
+    "statement": "Let $m_1\\leq\\cdots\\leq m_k$ and $n$ be sufficiently large. If $T$ is a tree on $n$ vertices and $G$ is the complete multipartite graph with vertex class sizes $m_1,\\ldots,m_k$, prove that $R(T,G)\\leq (\\chi(G)-1)(R(T,K_{m_1,m_2})-1)+m_1$.",
+    "posedBy": "Paul Erdős, Ralph Faudree, Cecil Rousseau, Richard Schelp",
+    "yearPosed": 1985,
+    "solveType": "proved",
+    "solveDate": "2026-06-22",
+    "model": "ChatGPT",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Eric Li"
+    ],
+    "aiRole": "The paper's disclosure states ChatGPT was used for ideation, formulation, proof exploration and refinement, narrowing the search space, programming and orchestration, with the author taking responsibility for the final contents; forum readers describe it as an affirmative paper almost purely by AI.",
+    "verification": "unreviewed",
+    "verificationNote": "AI screenings on the forum initially flagged issues that turned out to be PDF-parsing artifacts; a re-run against the TeX source found no issues. No independent human review yet, and the site's owner is explicitly reserving judgement.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://www.erdosproblems.com/550",
+    "sourceName": "erdosproblems.com/550",
+    "resultNote": "Claimed proved in a preprint of E. Li; erdosproblems.com still lists the problem open pending human review",
+    "aiContribution": "ai-discovered",
+    "significance": 10,
+    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "links": [
+      {
+        "label": "arXiv preprint",
+        "url": "https://arxiv.org/abs/2606.23659"
+      }
+    ]
+  },
+  {
     "slug": "erdos-584",
     "name": "Erdős Problem #584",
     "shortName": "Erdős #584",
@@ -3606,6 +3822,47 @@
     "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
   },
   {
+    "slug": "erdos-623",
+    "name": "Erdős Problem #623",
+    "shortName": "Erdős #623",
+    "problemNumber": 623,
+    "field": "Set Theory, Infinite Combinatorics",
+    "fieldGroup": "Combinatorics",
+    "resolution": "candidate",
+    "statement": "Let $X$ be a set of cardinality $\\aleph_\\omega$ and $f$ a function from the finite subsets of $X$ to $X$ such that $f(A)\\not\\in A$ for all $A$. Must there exist an infinite independent $Y\\subseteq X$, i.e. with $f(B)\\not\\in Y$ for all finite $B\\subset Y$? Claimed resolution: the positive assertion is equivalent to Koepke's free-subset property, hence independent of ZFC, with consistency strength exactly a measurable cardinal.",
+    "posedBy": "Paul Erdős, András Hajnal",
+    "yearPosed": 1958,
+    "solveType": "proved",
+    "solveDate": "2026-06-04",
+    "model": "GPT-5.5 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Sungchul Lee"
+    ],
+    "aiRole": "The equivalence to Koepke's free-subset property and the resulting consistency analysis were obtained with the assistance of GPT-5.5 Pro; the author checked the mathematical details.",
+    "verification": "unreviewed",
+    "verificationNote": "An AI screening on the forum found no issues and forum readers concur it would fully resolve the problem in the set-theoretic sense, but there is no independent expert review and erdosproblems.com still lists the problem open.",
+    "publication": "announcement",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://www.erdosproblems.com/623",
+    "sourceName": "erdosproblems.com/623",
+    "resultNote": "Resolved (if correct) by an independence result rather than a proof or disproof in ZFC: consistency of the positive answer is equivalent to a measurable cardinal, of the negative to ZFC alone",
+    "aiContribution": "ai-co-developed",
+    "significance": 10,
+    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "links": [
+      {
+        "label": "Paper and LaTeX source",
+        "url": "https://github.com/lsngchl/Erdos623"
+      }
+    ]
+  },
+  {
     "slug": "erdos-650",
     "name": "Erdős Problem #650",
     "shortName": "Erdős #650",
@@ -3736,6 +3993,47 @@
     "aiContribution": "ai-discovered",
     "significance": 10,
     "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+  },
+  {
+    "slug": "erdos-671",
+    "name": "Erdős Problem #671",
+    "shortName": "Erdős #671",
+    "problemNumber": 671,
+    "field": "Analysis, Interpolation",
+    "fieldGroup": "Analysis",
+    "resolution": "candidate",
+    "statement": "For triangular arrays of nodes $a_i^n\\in[-1,1]$ let $\\mathcal{L}^nf$ be the Lagrange interpolation polynomials of a continuous $f$, with fundamental polynomials $p_i^n$. Is there a choice of nodes such that for every continuous $f$ there is some $x$ where $\\limsup_n \\sum_i\\lvert p_{i}^n(x)\\rvert=\\infty$ and yet $\\mathcal{L}^nf(x) \\to f(x)$? Is there a choice with $\\limsup_n \\sum_i\\lvert p_{i}^n(x)\\rvert=\\infty$ for every $x$, yet for every continuous $f$ some $x$ has $\\mathcal{L}^nf(x)\\to f(x)$? Both questions are claimed resolved in the affirmative.",
+    "posedBy": "Paul Erdős",
+    "yearPosed": 1982,
+    "solveType": "proved",
+    "solveDate": "2026-06-22",
+    "model": "GPT-5.5 Pro, Codex",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Liam Price"
+    ],
+    "aiRole": "GPT Pro produced the affirmative resolutions of both questions and Codex the Lean formalization; the humans directed the models with a writing-style prompt and cleaned up terminology, a workflow the site's owner singled out as unusually readable for AI-assisted papers.",
+    "verification": "lean-verified",
+    "verificationNote": "The argument comes with a Codex-produced Lean formalization checkable online; no independent audit of statement fidelity, and erdosproblems.com still lists the problem open with the claims filed.",
+    "publication": "announcement",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://www.erdosproblems.com/671",
+    "sourceName": "erdosproblems.com/671",
+    "resultNote": "Both parts claimed answered affirmatively, with a Lean formalization; two proof claims are filed on erdosproblems.com but the problem is still listed open",
+    "aiContribution": "ai-discovered",
+    "significance": 10,
+    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "links": [
+      {
+        "label": "Write-up",
+        "url": "https://www.overleaf.com/read/gqmfrhsprtqm#59ac11"
+      }
+    ]
   },
   {
     "slug": "erdos-684",
@@ -4311,6 +4609,47 @@
     "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
   },
   {
+    "slug": "erdos-856",
+    "name": "Erdős Problem #856",
+    "shortName": "Erdős #856",
+    "problemNumber": 856,
+    "field": "Number Theory",
+    "fieldGroup": "Number theory",
+    "resolution": "candidate",
+    "statement": "Let $k\\geq 3$ and $f_k(N)$ be the maximum of $\\sum_{n\\in A}\\frac{1}{n}$ over all $A\\subseteq\\{1,\\ldots,N\\}$ containing no $k$ subsets with the same pairwise least common multiple. Estimate $f_k(N)$. The claimed answer: $f_k(N)=(\\log N)^{\\gamma_k+o(1)}$, where $\\gamma_k$ is a weighted generalization of the Tang-Zhang sunflower capacity.",
+    "posedBy": "Paul Erdős",
+    "yearPosed": 1970,
+    "solveType": "proved",
+    "solveDate": "2026-04-15",
+    "model": "GPT-5.4 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Przemysław Chojecki"
+    ],
+    "aiRole": "A weighted version of the Tang-Zhang sunflower-capacity argument giving the exact logarithmic exponent was developed with GPT-5.4 Pro, using a mass-transport idea from the forum's discussion of problem #1196.",
+    "verification": "unreviewed",
+    "verificationNote": "An AI screening found no issues and no prior literature with the result; the site's owner unpacked and restated the main claim without checking details, a Lean formalization attempt hit missing mathlib prerequisites, and the problem is still listed open.",
+    "publication": "announcement",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://www.erdosproblems.com/856",
+    "sourceName": "erdosproblems.com/856",
+    "resultNote": "Identifies the exponent as a variational sunflower-capacity constant, sharpening the Tang-Zhang bounds; the value of that constant itself remains open, as does site acceptance",
+    "aiContribution": "ai-co-developed",
+    "significance": 10,
+    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "links": [
+      {
+        "label": "Write-up",
+        "url": "https://www.ulam.ai/research/erdos856-final.pdf"
+      }
+    ]
+  },
+  {
     "slug": "erdos-858",
     "name": "Erdős Problem #858",
     "shortName": "Erdős #858",
@@ -4446,6 +4785,47 @@
     "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
   },
   {
+    "slug": "erdos-870",
+    "name": "Erdős Problem #870",
+    "shortName": "Erdős #870",
+    "problemNumber": 870,
+    "field": "Number Theory, Additive Bases",
+    "fieldGroup": "Number theory",
+    "resolution": "candidate",
+    "statement": "Let $k\\geq 3$ and $A$ be an additive basis of order $k$. Does there exist a constant $c=c(k)>0$ such that if $r(n)\\geq c\\log n$ for all large $n$ (where $r(n)$ counts representations of $n$ as a sum of at most $k$ elements of $A$) then $A$ must contain a minimal basis of order $k$? The claimed answer is no, for every $k\\geq 3$.",
+    "posedBy": "Paul Erdős, Melvyn Nathanson",
+    "yearPosed": 1979,
+    "solveType": "disproved",
+    "solveDate": "2026-05-02",
+    "model": "GPT-5.4 Pro, GPT-5.5 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "David Turturean"
+    ],
+    "aiRole": "The proof was developed via an automated multi-turn scaffold that iteratively queried GPT-5.4 Pro and GPT-5.5 Pro over roughly forty turns, with constructions inspired by the Larsen-Larsen order-2 basis; the author later reworked the k=3 case after community concerns and verified the write-up himself and with GPT-5.5 Pro.",
+    "verification": "unreviewed",
+    "verificationNote": "Verification so far is by the author and by GPT-5.5 model runs he links; a Lean formalization attempt is blocked because the underlying Larsen-Larsen probabilistic construction resists autoformalization. No independent human review.",
+    "publication": "announcement",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://www.erdosproblems.com/870",
+    "sourceName": "erdosproblems.com/870",
+    "resultNote": "A total refutation is claimed for all k>=3, building on the Larsen-Larsen resolution of problem #868; erdosproblems.com still lists the problem open",
+    "aiContribution": "ai-discovered",
+    "significance": 10,
+    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "links": [
+      {
+        "label": "Write-up",
+        "url": "https://www.overleaf.com/read/gknkvvxrymfv#956531"
+      }
+    ]
+  },
+  {
     "slug": "erdos-871",
     "name": "Erdős Problem #871",
     "shortName": "Erdős #871",
@@ -4576,6 +4956,51 @@
     "aiContribution": "ai-discovered",
     "significance": 10,
     "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+  },
+  {
+    "slug": "erdos-906",
+    "name": "Erdős Problem #906",
+    "shortName": "Erdős #906",
+    "problemNumber": 906,
+    "field": "Analysis, Entire Functions",
+    "fieldGroup": "Analysis",
+    "resolution": "candidate",
+    "statement": "Is there an entire non-zero function $f:\\mathbb{C}\\to \\mathbb{C}$ such that, for any infinite sequence $n_1<n_2<\\cdots$, the set $\\{ z: f^{(n_k)}(z)=0 \\textrm{ for some }k\\geq 1\\}$ is everywhere dense? The literal question is trivial for polynomials, so the claims address the transcendental entire case, in the affirmative.",
+    "posedBy": "Paul Erdős",
+    "yearPosed": 1956,
+    "solveType": "proved",
+    "solveDate": "2026-04-25",
+    "model": "GPT-5.5 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Przemysław Chojecki"
+    ],
+    "aiRole": "The probabilistic argument via the cofinite reformulation, using Sodin's Edelman-Kostlan and Offord-type estimates for Gaussian analytic functions, was developed with GPT-5.5 Pro; an independent solution by another contributor was posted first the same day.",
+    "verification": "unreviewed",
+    "verificationNote": "AI screenings reported one minor issue on each claim; no formalization (the required tools are not in mathlib) and no independent expert review; erdosproblems.com still lists the problem open.",
+    "publication": "announcement",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://www.erdosproblems.com/906",
+    "sourceName": "erdosproblems.com/906",
+    "resultNote": "Two independent affirmative claims (Adriano's, posted first, and a GPT-5.5 Pro note); Erdős himself wrote in 1982 that the problem had been solved affirmatively long before, without a locatable reference",
+    "aiContribution": "ai-co-developed",
+    "significance": 10,
+    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "links": [
+      {
+        "label": "GPT-5.5 Pro note",
+        "url": "https://www.ulam.ai/research/erdos906.pdf"
+      },
+      {
+        "label": "Independent proposed solution",
+        "url": "https://github.com/Drill23/erdos-problem-906-proposed-solution"
+      }
+    ]
   },
   {
     "slug": "erdos-942",
@@ -4869,6 +5294,47 @@
     "aiContribution": "ai-discovered",
     "significance": 10,
     "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+  },
+  {
+    "slug": "erdos-996",
+    "name": "Erdős Problem #996",
+    "shortName": "Erdős #996",
+    "problemNumber": 996,
+    "field": "Analysis, Fourier Series",
+    "fieldGroup": "Analysis",
+    "resolution": "candidate",
+    "statement": "Let $n_1<n_2<\\cdots$ be a lacunary sequence of integers and $f\\in L^2([0,1])$ with $n$th Fourier partial sum $f_n$. Is there an absolute constant $C>0$ such that if $\\| f-f_n\\|_2 \\ll (\\log\\log\\log n)^{-C}$ then $\\frac{1}{N}\\sum_{k\\leq N}f(\\{\\alpha n_k\\})\\to\\int_0^1 f$ for almost every $\\alpha$? A preprint answers this negatively via a dyadic spike-block counterexample.",
+    "posedBy": "Paul Erdős",
+    "yearPosed": 1964,
+    "solveType": "disproved",
+    "solveDate": "2026-04-21",
+    "model": "GPT-5.4 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Boon Suan Ho"
+    ],
+    "aiRole": "Per the paper's acknowledgements, GPT-5.4 Pro was used during development to explore proof strategies, test intermediate formulations and assist with exposition; all arguments were independently verified by the author, who takes full responsibility.",
+    "verification": "unreviewed",
+    "verificationNote": "An arXiv preprint with no independent review yet; erdosproblems.com still lists the problem open.",
+    "publication": "preprint",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://www.erdosproblems.com/996",
+    "sourceName": "erdosproblems.com/996",
+    "resultNote": "Answered negatively in a preprint that also settles the p=2 case of problem #995; erdosproblems.com still lists the problem open",
+    "aiContribution": "ai-assisted",
+    "significance": 10,
+    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "links": [
+      {
+        "label": "arXiv preprint",
+        "url": "https://arxiv.org/abs/2604.18535"
+      }
+    ]
   },
   {
     "slug": "erdos-997",
