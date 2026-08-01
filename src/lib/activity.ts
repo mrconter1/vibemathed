@@ -30,4 +30,7 @@ export interface ActivityView {
 export interface SiteActivityView extends ActivityView {
   problemName: string;
   problemSlug: string;
+  /// The actor's CURRENT pseudonym for the profile link; null when there is
+  /// no account to link (the snapshot name still renders, unlinked).
+  userPseudonym: string | null;
 }

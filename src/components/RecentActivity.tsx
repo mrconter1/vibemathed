@@ -95,9 +95,18 @@ export function RecentActivity({ activity }: { activity: SiteActivityView[] }) {
                 the first line, so the dates read as a scannable column. */}
             {/* break-words: a quoted new value can be an unbreakable URL */}
             <span className="min-w-0 flex-1 break-words">
-              <span className="font-medium text-[var(--ink-secondary)]">
-                {a.userName}
-              </span>{" "}
+              {a.userPseudonym ? (
+                <Link
+                  href={`/user/${encodeURIComponent(a.userPseudonym)}`}
+                  className="font-medium text-[var(--ink-secondary)] hover:text-[var(--accent-blue)] hover:underline"
+                >
+                  {a.userName}
+                </Link>
+              ) : (
+                <span className="font-medium text-[var(--ink-secondary)]">
+                  {a.userName}
+                </span>
+              )}{" "}
               <span className="text-[var(--ink-muted)]">{describe(a)}</span>
             </span>
             <span className="shrink-0 font-mono text-[11px] text-[var(--ink-muted)]">

@@ -305,12 +305,14 @@ export async function getRecentActivity(limit = 8): Promise<SiteActivityView[]> 
       newValue: true,
       createdAt: true,
       problem: { select: { name: true, slug: true } },
+      user: { select: { pseudonym: true } },
     },
   });
 
   return rows.map((a) => ({
     id: a.id,
     userName: resolveSnapshot(a.userName, a.userId !== null),
+    userPseudonym: a.user?.pseudonym ?? null,
     type: a.type,
     field: a.field,
     oldValue: a.oldValue,
