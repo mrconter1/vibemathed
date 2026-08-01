@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { MathProblem } from "@/lib/problems";
-import { bucketKey, bucketLabel, bucketRange, type Granularity } from "@/lib/time-buckets";
-import { GranularityToggle } from "@/components/GranularityToggle";
+import { bucketKey, bucketRange, bucketTooltipLabel } from "@/lib/time-buckets";
+import { GranularityToggle, TimeAxis } from "@/components/GranularityToggle";
+import { useChartSettings } from "@/lib/chart-settings";
 
 const VIEW_W = 640;
 // Matches the notability chart's aspect ratio so the two wide charts render at
@@ -21,8 +22,8 @@ export function CumulativeChart({ problems }: { problems: MathProblem[] }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hover, setHover] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
-  // Calendar-aligned time buckets, month by default (see time-buckets.ts).
-  const [gran, setGran] = useState<Granularity>("month");
+  // Granularity survives reloads (see useChartSettings).
+  const { gran, setGran } = useChartSettings("cumulative");
 
   // Only wire up hover on devices with a real (mouse) pointer.
   useEffect(() => {
@@ -51,7 +52,6 @@ export function CumulativeChart({ problems }: { problems: MathProblem[] }) {
   const linePts = cumulative.map((v, i) => `${x(i)},${yScale(v)}`).join(" ");
   const areaPts = `${x(0)},${yScale(0)} ${linePts} ${x(range.length - 1)},${yScale(0)}`;
 
-  const xEvery = Math.ceil(range.length / 7);
   const yTicks = Array.from({ length: 5 }, (_, i) => Math.round(i * yStep));
 
   function handleMove(e: React.MouseEvent<SVGRectElement>) {
@@ -68,16 +68,19 @@ export function CumulativeChart({ problems }: { problems: MathProblem[] }) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-start justify-between gap-3">
-        <h2 className="font-serif text-lg text-[var(--ink)]">Problems solved over time</h2>
-        <GranularityToggle value={gran} onChange={setGran} />
-      </div>
+      <h2 className="font-serif text-lg text-[var(--ink)]">Problems solved over time</h2>
       <p className="mt-1 text-xs text-[var(--ink-muted)]">
         Cumulative count of tracked resolutions, {total} to date.
       </p>
 
       <div className="mt-3 flex flex-1 flex-col justify-center">
-        <div className="relative" style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}` }}>
+        {/* Capped and centered: the card spans two grid cells, but the plot
+            stays about as tall as its sibling charts instead of ballooning
+            with the full row width. */}
+        <div
+          className="relative mx-auto w-full max-w-2xl"
+          style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}` }}
+        >
         <svg
           ref={svgRef}
           viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
@@ -118,20 +121,7 @@ export function CumulativeChart({ problems }: { problems: MathProblem[] }) {
             strokeLinecap="round"
           />
 
-          {range.map((mk, i) =>
-            i % xEvery === 0 || i === range.length - 1 ? (
-              <text
-                key={mk}
-                x={x(i)}
-                y={VIEW_H - MARGIN.bottom + 18}
-                textAnchor="middle"
-                className="font-mono"
-                style={{ fontSize: 13, fill: "var(--ink-muted)" }}
-              >
-                {bucketLabel(mk, gran)}
-              </text>
-            ) : null,
-          )}
+          <TimeAxis range={range} gran={gran} x={x} y={VIEW_H - MARGIN.bottom + 18} />
 
           {active !== null && (
             <g pointerEvents="none">
@@ -177,13 +167,19 @@ export function CumulativeChart({ problems }: { problems: MathProblem[] }) {
               transform: "translate(-50%, calc(-100% - 10px))",
             }}
           >
-            <span className="font-serif text-[var(--ink)]">{bucketLabel(range[active], gran)}</span>
+            <span className="font-serif text-[var(--ink)]">{bucketTooltipLabel(range[active], gran)}</span>
             <span className="ml-2 font-mono tabular-nums text-[var(--ink-secondary)]">
               {cumulative[active]} solved
             </span>
           </div>
         )}
         </div>
+      </div>
+
+      {/* Bucket picker, centered below the plot on every time chart;
+          persisted per chart (see useChartSettings). */}
+      <div className="mt-2.5 flex justify-center">
+        <GranularityToggle value={gran} onChange={setGran} />
       </div>
     </div>
   );

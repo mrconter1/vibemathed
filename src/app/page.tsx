@@ -130,7 +130,12 @@ export default async function Home() {
       </section>
 
       <section className="mt-8">
-        <h2 className="mb-3 font-serif text-xl text-[var(--ink)]">All entries</h2>
+        {/* A labeled rule separates the overview from the list. */}
+        <div className="mb-4 flex items-center gap-3" role="presentation">
+          <span aria-hidden className="h-px flex-1 bg-[var(--hairline)]" />
+          <h2 className="font-serif text-xl text-[var(--ink)]">All entries</h2>
+          <span aria-hidden className="h-px flex-1 bg-[var(--hairline)]" />
+        </div>
         <ProblemCards problems={cards} />
       </section>
     </main>

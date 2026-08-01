@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getPublishedProblems } from "@/lib/data";
 import { SIGNIFICANCE_HELP } from "@/lib/display";
 import { ContributionGrowthChart } from "@/components/ContributionGrowthChart";
@@ -52,20 +51,10 @@ export default async function StatsPage() {
   ];
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 pb-4 pt-8 sm:px-8 sm:pt-10">
-      <header>
-        <h1 className="font-serif text-3xl tracking-tight text-[var(--ink)]">Stats</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--ink-secondary)]">
-          Everything here is derived from the {problems.length} tracked entries.
-          Browse them all on the{" "}
-          <Link href="/" className="text-[var(--accent-blue)] hover:underline">
-            entries page
-          </Link>
-          .
-        </p>
-      </header>
+    <main className="mx-auto w-full max-w-6xl px-4 pb-4 pt-5 sm:px-8 sm:pt-6">
+      <h1 className="sr-only">Stats</h1>
 
-      <dl className="mt-6 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
         {tiles.map((t) => (
           <div
             key={t.label}

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { SubmitForm } from "@/components/SubmitForm";
 
 export const metadata: Metadata = {
@@ -12,11 +11,7 @@ export const metadata: Metadata = {
 export default function SubmitPage() {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 pb-4 pt-8 sm:px-8 sm:pt-10">
-      <Link href="/" className="text-xs text-[var(--accent-blue)] hover:underline">
-        ← All entries
-      </Link>
-
-      <h1 className="mt-4 font-serif text-3xl tracking-tight text-[var(--ink)]">
+      <h1 className="font-serif text-3xl tracking-tight text-[var(--ink)]">
         Submit an entry
       </h1>
       <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--ink-secondary)]">

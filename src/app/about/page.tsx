@@ -21,12 +21,12 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 pb-4 pt-8 sm:px-8 sm:pt-10">
-      <h1 className="font-serif text-3xl tracking-tight text-[var(--ink)]">About</h1>
+    <main className="mx-auto w-full max-w-3xl px-4 pb-4 pt-5 sm:px-8 sm:pt-6">
+      <h1 className="sr-only">About</h1>
 
       {/* Same raised sheet as the entry pages, so the site's prose surfaces
           all read as one family. */}
-      <article className="mt-4 max-w-2xl space-y-4 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-5 text-sm leading-relaxed text-[var(--ink-secondary)] sm:px-6 sm:py-6">
+      <article className="max-w-2xl space-y-4 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-5 text-sm leading-relaxed text-[var(--ink-secondary)] sm:px-6 sm:py-6">
         <p>
           VibeMathed is a community of mathematicians and enthusiasts tracking,
           curating and cataloguing the mathematical problems that have been
