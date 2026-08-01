@@ -345,12 +345,14 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
             {/* AI-estimated problem weight; the Wikipedia count moved to the
                 entry page as a supporting fact (it was almost always 0 here). */}
             {p.significance !== null && p.significance !== undefined && (
-              <span
-                className="relative z-10 font-mono text-[var(--ink-muted)]"
-                title={SIGNIFICANCE_HELP}
-              >
-                Significance{" "}
-                <span className="text-[var(--ink-secondary)]">{p.significance}</span>
+              <span className="relative z-10 font-mono text-[var(--ink-muted)]">
+                {/* The metric explanation belongs to the label+value only; the
+                    star carries the per-entry justification. Nesting the star
+                    under the same title showed BOTH bubbles when hovering it. */}
+                <span title={SIGNIFICANCE_HELP}>
+                  Significance{" "}
+                  <span className="text-[var(--ink-secondary)]">{p.significance}</span>
+                </span>
                 {p.significanceNote && <StarNote text={p.significanceNote} />}
               </span>
             )}
