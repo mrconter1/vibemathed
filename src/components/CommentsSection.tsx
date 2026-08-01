@@ -137,7 +137,16 @@ function Comment({
   return (
     <article className="border-t border-[var(--hairline)] py-4 first:border-t-0 first:pt-0">
       <div className="flex flex-wrap items-baseline gap-x-2 text-xs">
-        <span className="font-medium text-[var(--ink)]">{comment.authorName}</span>
+        {comment.authorPseudonym ? (
+          <Link
+            href={`/user/${encodeURIComponent(comment.authorPseudonym)}`}
+            className="font-medium text-[var(--ink)] hover:text-[var(--accent-blue)] hover:underline"
+          >
+            {comment.authorName}
+          </Link>
+        ) : (
+          <span className="font-medium text-[var(--ink)]">{comment.authorName}</span>
+        )}
         <span className="text-[var(--ink-muted)]">{comment.createdAt}</span>
         {comment.edited && <span className="text-[var(--ink-muted)]">· edited</span>}
         {mine && !editing && (

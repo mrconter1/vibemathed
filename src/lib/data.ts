@@ -229,6 +229,7 @@ export async function getComments(slug: string): Promise<CommentView[]> {
       body: true,
       createdAt: true,
       editedAt: true,
+      user: { select: { pseudonym: true } },
     },
   });
 
@@ -236,6 +237,7 @@ export async function getComments(slug: string): Promise<CommentView[]> {
     id: c.id,
     authorId: c.userId,
     authorName: resolveSnapshot(c.userName, c.userId !== null),
+    authorPseudonym: c.user?.pseudonym ?? null,
     html: renderCommentHtml(c.body),
     source: c.body,
     createdAt: formatCommentDate(c.createdAt),
@@ -317,6 +319,128 @@ export async function getRecentActivity(limit = 8): Promise<SiteActivityView[]> 
     problemName: a.problem.name,
     problemSlug: a.problem.slug,
   }));
+}
+
+/// A member's public profile: their published contributions and nothing else.
+/// Pending/rejected submissions, email, OAuth identity and the banned flag
+/// never leave the server.
+export interface UserProfile {
+  pseudonym: string;
+  /// Formatted join date. Accounts created before 2026-07-29 carry that date
+  /// (when the column was added), not their true sign-up date.
+  joined: string;
+  entries: {
+    slug: string;
+    name: string;
+    solveDate: string;
+    solveType: string;
+    resolution: string;
+    score: number;
+  }[];
+  /// Net votes across all their published entries.
+  entryScore: number;
+  comments: {
+    id: string;
+    html: string;
+    createdAt: string;
+    problemName: string;
+    problemSlug: string;
+  }[];
+  commentCount: number;
+  editCount: number;
+  edits: {
+    id: string;
+    field: string | null;
+    createdAt: string;
+    problemName: string;
+    problemSlug: string;
+  }[];
+}
+
+/// Public profile by CURRENT pseudonym, or null when no such member exists.
+export async function getUserProfile(pseudonym: string): Promise<UserProfile | null> {
+  "use cache";
+  cacheTag("users");
+  cacheLife("minutes");
+
+  const user = await prisma.user.findUnique({
+    where: { pseudonym },
+    select: { id: true, pseudonym: true, createdAt: true },
+  });
+  if (!user?.pseudonym) return null;
+
+  const publishedOnly = { problem: { status: "published" as const } };
+  const [entries, comments, commentCount, edits, editCount] = await Promise.all([
+    prisma.problem.findMany({
+      where: { submittedById: user.id, status: "published" },
+      orderBy: { createdAt: "desc" },
+      select: {
+        slug: true,
+        name: true,
+        solveDate: true,
+        solveType: true,
+        resolution: true,
+        upvotes: true,
+        downvotes: true,
+      },
+    }),
+    prisma.comment.findMany({
+      where: { userId: user.id, ...publishedOnly },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+      select: {
+        id: true,
+        body: true,
+        createdAt: true,
+        problem: { select: { name: true, slug: true } },
+      },
+    }),
+    prisma.comment.count({ where: { userId: user.id, ...publishedOnly } }),
+    prisma.problemActivity.findMany({
+      where: { userId: user.id, type: "updated", ...publishedOnly },
+      orderBy: { createdAt: "desc" },
+      take: 15,
+      select: {
+        id: true,
+        field: true,
+        createdAt: true,
+        problem: { select: { name: true, slug: true } },
+      },
+    }),
+    prisma.problemActivity.count({
+      where: { userId: user.id, type: "updated", ...publishedOnly },
+    }),
+  ]);
+
+  return {
+    pseudonym: user.pseudonym,
+    joined: formatCommentDate(user.createdAt),
+    entries: entries.map((e) => ({
+      slug: e.slug,
+      name: e.name,
+      solveDate: e.solveDate,
+      solveType: e.solveType,
+      resolution: e.resolution,
+      score: e.upvotes - e.downvotes,
+    })),
+    entryScore: entries.reduce((sum, e) => sum + e.upvotes - e.downvotes, 0),
+    comments: comments.map((c) => ({
+      id: c.id,
+      html: renderCommentHtml(c.body),
+      createdAt: formatCommentDate(c.createdAt),
+      problemName: c.problem.name,
+      problemSlug: c.problem.slug,
+    })),
+    commentCount,
+    editCount,
+    edits: edits.map((a) => ({
+      id: a.id,
+      field: a.field,
+      createdAt: formatCommentDate(a.createdAt),
+      problemName: a.problem.name,
+      problemSlug: a.problem.slug,
+    })),
+  };
 }
 
 /// Total registered accounts, for the community tile on the home page.

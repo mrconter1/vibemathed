@@ -353,11 +353,17 @@ function ProblemCard({ p }: { p: ProblemCardData }) {
             </span>
 
             {/* Credit where an entry came from a reader - contributors should
-                see their name on the front page, not only on the entry page. */}
+                see their name on the front page, not only on the entry page.
+                Links to their profile; z-10 lifts it above the card overlay. */}
             {p.submittedBy && (
-              <span className="font-mono text-[var(--ink-muted)]">
+              <span className="relative z-10 font-mono text-[var(--ink-muted)]">
                 Submitted by{" "}
-                <span className="text-[var(--ink-secondary)]">{p.submittedBy}</span>
+                <Link
+                  href={`/user/${encodeURIComponent(p.submittedBy)}`}
+                  className="text-[var(--ink-secondary)] hover:text-[var(--accent-blue)] hover:underline"
+                >
+                  {p.submittedBy}
+                </Link>
               </span>
             )}
 

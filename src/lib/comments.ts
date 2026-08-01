@@ -9,6 +9,9 @@ export interface CommentView {
   authorId: string | null;
   /// Pseudonym snapshot from when the comment was posted.
   authorName: string;
+  /// The author's CURRENT pseudonym, for linking to their profile page - null
+  /// when the account is gone (the snapshot name still renders, unlinked).
+  authorPseudonym: string | null;
   /// Server-rendered HTML (escaped text + KaTeX math). See `comment-render.ts`.
   html: string;
   /// The original plain text, so the author edits what they actually wrote.

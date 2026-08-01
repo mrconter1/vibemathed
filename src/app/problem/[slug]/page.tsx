@@ -251,7 +251,12 @@ export default async function ProblemPage({
         {p.submittedBy && (
           <p className="mt-6 text-sm text-[var(--ink-secondary)]">
             Submitted by{" "}
-            <span className="font-medium text-[var(--ink)]">{p.submittedBy}</span>
+            <Link
+              href={`/user/${encodeURIComponent(p.submittedBy)}`}
+              className="font-medium text-[var(--ink)] hover:text-[var(--accent-blue)] hover:underline"
+            >
+              {p.submittedBy}
+            </Link>
           </p>
         )}
 
