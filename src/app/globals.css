@@ -117,6 +117,18 @@ html {
   display: none;
 }
 
+/*
+ * Thin, paper-toned scrollbar for scrollable dialog bodies (the edit form).
+ * The UA default reads as a heavy grey slab against the popup; this is the
+ * standards path (scrollbar-width/-color), which modern Chrome, Firefox and
+ * Safari all honor - no ::-webkit-scrollbar fork needed.
+ */
+.dialog-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--ink) 28%, transparent) transparent;
+}
+
 body {
   background: var(--paper);
   color: var(--ink);

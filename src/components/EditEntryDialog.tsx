@@ -121,7 +121,7 @@ export function EditEntryDialog({
               </p>
             </header>
 
-            <div className="flex-1 overflow-y-auto px-5 py-4">
+            <div className="dialog-scroll flex-1 px-5 py-4">
               <EntryFields
                 fields={EDITABLE_FIELDS}
                 values={values}
