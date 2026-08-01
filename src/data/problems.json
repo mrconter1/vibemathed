@@ -24,7 +24,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2604.07055",
-    "sourceName": "arXiv:2604.07055 - AdaBoost does not always cycle"
+    "sourceName": "arXiv:2604.07055 - AdaBoost does not always cycle",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "anchored-gda-last-iterate",
@@ -51,7 +52,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2604.03782",
-    "sourceName": "arXiv:2604.03782 - An improved last-iterate convergence rate for anchored gradient descent ascent"
+    "sourceName": "arXiv:2604.03782 - An improved last-iterate convergence rate for anchored gradient descent ascent",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "anderson-quasi-completeness",
@@ -78,7 +80,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2604.03789",
-    "sourceName": "arXiv:2604.03789 - Automated conjecture resolution with formal verification"
+    "sourceName": "arXiv:2604.03789 - Automated conjecture resolution with formal verification",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "avidor-zwick-max-cut-sdp",
@@ -105,7 +108,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2604.13971",
-    "sourceName": "arXiv:2604.13971 - Max Cut with small-dimensional SDP solutions"
+    "sourceName": "arXiv:2604.13971 - Max Cut with small-dimensional SDP solutions",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "batyrev-stringy-hodge-numbers",
@@ -296,7 +300,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2605.05192",
     "sourceName": "arXiv:2605.05192 - Almost-orthogonality in Lp spaces: a case study with Grok",
-    "resultNote": "exponent 2 fails for every p > 2; the sharp exponent p' form is proved for integer p ≥ 2"
+    "resultNote": "exponent 2 fails for every p > 2; the sharp exponent p' form is proved for integer p ≥ 2",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "carlson-depth-conjecture",
@@ -417,7 +422,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2602.03722",
-    "sourceName": "arXiv:2602.03722 - Parity of k-differentials in genus zero and one"
+    "sourceName": "arXiv:2602.03722 - Parity of k-differentials in genus zero and one",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "chernoff-density-strong-log-concavity",
@@ -570,7 +576,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2603.24708",
-    "sourceName": "arXiv:2603.24708 - Hamilton decompositions of the directed 3-torus"
+    "sourceName": "arXiv:2603.24708 - Hamilton decompositions of the directed 3-torus",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "elizalde-luo-pattern-avoidance",
@@ -625,7 +632,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1014",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1026-monotonic-subsequence-sums",
@@ -657,7 +665,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://terrytao.wordpress.com/2025/12/08/the-story-of-erdos-problem-126/",
-    "sourceName": "Terence Tao's blog"
+    "sourceName": "Terence Tao's blog",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "erdos-1032",
@@ -685,7 +694,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1032",
     "sourceName": "erdosproblems.com/1032",
-    "resultNote": "a new density-degree inequality gives δ(G) ≤ (3/10 + o(1))|V(G)|, improving 0.328; existence of a linear construction remains open"
+    "resultNote": "a new density-degree inequality gives δ(G) ≤ (3/10 + o(1))|V(G)|, improving 0.328; existence of a linear construction remains open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1038",
@@ -741,7 +751,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1039",
     "sourceName": "erdosproblems.com/1039",
-    "resultNote": "order of magnitude determined; the exact asymptotic constant remains open"
+    "resultNote": "order of magnitude determined; the exact asymptotic constant remains open",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "erdos-1040",
@@ -769,7 +780,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://math.berkeley.edu/~fengt/Aletheia.pdf",
     "sourceName": "Aletheia project report (Feng et al.)",
-    "resultNote": "capacity alone does not determine the invariant; the zero-measure clause is a separate open question"
+    "resultNote": "capacity alone does not determine the invariant; the zero-measure clause is a separate open question",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1051",
@@ -796,7 +808,8 @@
     "citationsUrl": "https://openalex.org/W1489006728",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1051",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-106",
@@ -858,7 +871,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1061",
-    "sourceName": "erdosproblems.com/1061"
+    "sourceName": "erdosproblems.com/1061",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1089",
@@ -885,7 +899,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1089",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1091",
@@ -912,7 +927,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1091",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1092",
@@ -941,7 +957,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1092",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1101",
@@ -969,7 +986,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1101",
     "sourceName": "erdosproblems.com/1101",
-    "resultNote": "a subexponential good sequence is constructed; the polynomial-growth question remains open"
+    "resultNote": "a subexponential good sequence is constructed; the polynomial-growth question remains open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1133",
@@ -996,7 +1014,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1133",
-    "sourceName": "erdosproblems.com/1133"
+    "sourceName": "erdosproblems.com/1133",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1138",
@@ -1027,7 +1046,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1138",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1141",
@@ -1054,7 +1074,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1141",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1148",
@@ -1085,7 +1106,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1148",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1153",
@@ -1116,7 +1138,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1153",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1177",
@@ -1289,7 +1312,8 @@
     "citationsUrl": "https://openalex.org/W1663749032",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1190",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1195",
@@ -1318,7 +1342,8 @@
     "citationsUrl": "https://openalex.org/W1663749032",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1195",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1196-primitive-sets",
@@ -1354,7 +1379,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1196",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1197",
@@ -1381,7 +1407,8 @@
     "citationsUrl": "https://openalex.org/W1663749032",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1197",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-12",
@@ -1409,7 +1436,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/12",
     "sourceName": "erdosproblems.com/12",
-    "resultNote": "parts (i) and (ii) resolved - a near-linear-density construction exists, refuting the N^{1-c} decay; the reciprocal-sum part remains open"
+    "resultNote": "parts (i) and (ii) resolved - a near-linear-density construction exists, refuting the N^{1-c} decay; the reciprocal-sum part remains open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1202",
@@ -1436,7 +1464,8 @@
     "citationsUrl": "https://openalex.org/W1663749032",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1202",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-1217",
@@ -1463,7 +1492,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/1217",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-123",
@@ -1520,7 +1550,8 @@
     "citationsUrl": "https://openalex.org/W813673045",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/125",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-130",
@@ -1577,7 +1608,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/138",
     "sourceName": "erdosproblems.com/138",
-    "resultNote": "the stronger question $W(k)^{1/k} \\to \\infty$ remains open"
+    "resultNote": "the stronger question $W(k)^{1/k} \\to \\infty$ remains open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-152",
@@ -1604,7 +1636,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/152",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-176",
@@ -1632,7 +1665,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/176",
     "sourceName": "erdosproblems.com/176",
-    "resultNote": "a polynomial bound for N(k,2), stronger than the exponential bound asked for; the two-parameter problem remains open"
+    "resultNote": "a polynomial bound for N(k,2), stronger than the exponential bound asked for; the two-parameter problem remains open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-202",
@@ -1661,7 +1695,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/202",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-205",
@@ -1688,7 +1723,8 @@
     "citationsUrl": "https://openalex.org/W1663749032",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/205",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-254",
@@ -1743,7 +1779,8 @@
     "citationsUrl": "https://openalex.org/W1489006728",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/258",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-267",
@@ -1798,7 +1835,8 @@
     "citationsUrl": "https://openalex.org/W1489006728",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/281",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-283",
@@ -1828,7 +1866,8 @@
     "citationsUrl": "https://openalex.org/W1489006728",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/283",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-306",
@@ -1855,7 +1894,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/306",
-    "sourceName": "erdosproblems.com/306"
+    "sourceName": "erdosproblems.com/306",
+    "aiContribution": "ai-assisted"
   },
   {
     "slug": "erdos-320",
@@ -1948,7 +1988,8 @@
     "citationsUrl": "https://openalex.org/W1663749032",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/330",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-333",
@@ -1975,7 +2016,8 @@
     "citationsUrl": "https://openalex.org/W1489006728",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/333",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-336",
@@ -2036,7 +2078,8 @@
     "citationsUrl": "https://openalex.org/W1489006728",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/347",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-351",
@@ -2066,7 +2109,8 @@
     "citationsUrl": "https://openalex.org/W1489006728",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/351",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-369",
@@ -2095,7 +2139,8 @@
     "citationsUrl": "https://openalex.org/W1489006728",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/369",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-38",
@@ -2122,7 +2167,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/38",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-380",
@@ -2151,7 +2197,8 @@
     "citationsUrl": "https://openalex.org/W1489006728",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/380",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-394",
@@ -2206,7 +2253,8 @@
     "citationsUrl": "https://openalex.org/W1489006728",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/397",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-401",
@@ -2238,7 +2286,8 @@
     "citationsUrl": "https://openalex.org/W1489006728",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/401",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-42",
@@ -2267,7 +2316,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/42",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-43",
@@ -2295,7 +2345,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/43",
     "sourceName": "erdosproblems.com/43",
-    "resultNote": "both proposed bounds fail"
+    "resultNote": "both proposed bounds fail",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-450",
@@ -2351,7 +2402,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/451",
     "sourceName": "erdosproblems.com/451",
-    "resultNote": "the conjectured superpolynomial growth is established; the sharper order remains open"
+    "resultNote": "the conjectured superpolynomial growth is established; the sharper order remains open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-457",
@@ -2378,7 +2430,8 @@
     "citationsUrl": "https://openalex.org/W3173535233",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/457",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-469",
@@ -2435,7 +2488,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/477",
-    "sourceName": "erdosproblems.com/477"
+    "sourceName": "erdosproblems.com/477",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-489",
@@ -2491,7 +2545,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/514",
     "sourceName": "erdosproblems.com/514",
-    "resultNote": "an escape path dominating every power of |z| with bounded initial length is constructed, and universal positive-power lower bounds are ruled out; the broader variant remains open"
+    "resultNote": "an escape path dominating every power of |z| with bounded initial length is constructed, and universal positive-power lower bounds are ruled out; the broader variant remains open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-522",
@@ -2518,7 +2573,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/522",
-    "sourceName": "erdosproblems.com/522"
+    "sourceName": "erdosproblems.com/522",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-538",
@@ -2574,7 +2630,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/539",
     "sourceName": "erdosproblems.com/539",
-    "resultNote": "main exponent determined; sharper subpolynomial factors remain open"
+    "resultNote": "main exponent determined; sharper subpolynomial factors remain open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-543",
@@ -2601,7 +2658,8 @@
     "citationsUrl": "https://openalex.org/W4212884688",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/543",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-584",
@@ -2687,7 +2745,8 @@
     "citationsUrl": "https://openalex.org/W4249085394",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/603",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-610",
@@ -2716,7 +2775,8 @@
     "citationsUrl": "https://openalex.org/W2086357278",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/610",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-619",
@@ -2743,7 +2803,8 @@
     "citationsUrl": "https://openalex.org/W2063190536",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/619",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-650",
@@ -2770,7 +2831,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/650",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-654",
@@ -2798,7 +2860,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://math.berkeley.edu/~fengt/Aletheia.pdf",
     "sourceName": "Aletheia project report (Feng et al.)",
-    "resultNote": "the strongest form is disproved via configurations where every point sees at most about 3n/4 distinct distances; the weaker improvement remains open"
+    "resultNote": "the strongest form is disproved via configurations where every point sees at most about 3n/4 distinct distances; the weaker improvement remains open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-659",
@@ -2827,7 +2890,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/659",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-662",
@@ -2914,7 +2978,8 @@
     "citationsUrl": "https://openalex.org/W3173535233",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/690",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-694",
@@ -2941,7 +3006,8 @@
     "citationsUrl": "https://openalex.org/W3173535233",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/694",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-696",
@@ -2971,7 +3037,8 @@
     "citationsUrl": "https://openalex.org/W3173535233",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/696",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-7",
@@ -3060,7 +3127,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/728",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-729",
@@ -3087,7 +3155,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/729",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-741",
@@ -3114,7 +3183,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/741",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-750",
@@ -3143,7 +3213,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/750",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-768",
@@ -3287,7 +3358,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/846",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-851",
@@ -3314,7 +3386,8 @@
     "citationsUrl": "https://openalex.org/W759014763",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/851",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-858",
@@ -3343,7 +3416,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/858",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-863",
@@ -3372,7 +3446,8 @@
     "citationsUrl": "https://openalex.org/W2611456884",
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/863",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "erdos-865",
@@ -3401,7 +3476,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/865",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-866",
@@ -3457,7 +3533,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/871",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-888",
@@ -3486,7 +3563,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/888",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-896",
@@ -3515,7 +3593,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/896",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-897",
@@ -3542,7 +3621,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/897",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-942",
@@ -3570,7 +3650,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/942",
     "sourceName": "erdosproblems.com/942",
-    "resultNote": "lower bound improved to ≫ log n/(log log n · log log log n) infinitely often; the extremal order remains open"
+    "resultNote": "lower bound improved to ≫ log n/(log log n · log log log n) infinitely often; the extremal order remains open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-948",
@@ -3597,7 +3678,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/948",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-953",
@@ -3624,7 +3706,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/953",
-    "sourceName": "erdosproblems.com/953"
+    "sourceName": "erdosproblems.com/953",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-959",
@@ -3680,7 +3763,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/960",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-986",
@@ -3709,7 +3793,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/986",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-987",
@@ -3736,7 +3821,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/987",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-990",
@@ -3763,7 +3849,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/990",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-997",
@@ -3790,7 +3877,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/997",
-    "sourceName": "erdosproblems.com"
+    "sourceName": "erdosproblems.com",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "erdos-borwein-binary-blocks",
@@ -3819,7 +3907,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2605.24160",
-    "sourceName": "arXiv:2605.24160 - On the binary digits of the Erdős-Borwein constant"
+    "sourceName": "arXiv:2605.24160 - On the binary digits of the Erdős-Borwein constant",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "erdos-planar-unit-distance",
@@ -3854,7 +3943,8 @@
     "citationsUrl": "https://openalex.org/W4211205179",
     "renownLangs": 10,
     "sourceUrl": "https://asiliconvalleyinsider.com/2026/05/27/how-openai-models-helped-solve-erdos-problem-1196-and-disprove-erdoss-planar-unit-distance-conjecture/",
-    "sourceName": "A Silicon Valley Insider"
+    "sourceName": "A Silicon Valley Insider",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "exact-two-scenario-ssuf-bound-on-the-four-terminal-planar-gadget",
@@ -4005,7 +4095,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2602.03716",
-    "sourceName": "arXiv:2602.03716 - Fel's conjecture on syzygies of numerical semigroups"
+    "sourceName": "arXiv:2602.03716 - Fel's conjecture on syzygies of numerical semigroups",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "fgg-qaoa-ring-of-disagrees",
@@ -4033,6 +4124,7 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2606.29687",
     "sourceName": "arXiv:2606.29687 - A machine-verified proof of a quantum-optimization conjecture",
+    "aiContribution": "ai-discovered",
     "links": [
       {
         "label": "Independent simultaneous proof via quantum signal processing (arXiv:2606.29562)",
@@ -4065,7 +4157,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2605.18081",
-    "sourceName": "arXiv:2605.18081 - A hexagonal counterexample to log-convexity of Fisher information"
+    "sourceName": "arXiv:2605.18081 - A hexagonal counterexample to log-convexity of Fisher information",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "fq-non-covering-congruence-systems",
@@ -4126,7 +4219,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2606.03300",
-    "sourceName": "arXiv:2606.03300 - A proof of an identity for the critical exponents of jamming"
+    "sourceName": "arXiv:2606.03300 - A proof of an identity for the critical exponents of jamming",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "gaussian-completely-monotone-conjecture",
@@ -4157,7 +4251,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2605.11656",
     "sourceName": "arXiv:2605.11656 - A counterexample to the Gaussian completely monotone conjecture",
-    "resultNote": "also refutes the McKean and Toscani conjectures"
+    "resultNote": "also refutes the McKean and Toscani conjectures",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "gaussian-kinetic-trace-question",
@@ -4249,7 +4344,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2606.01633",
-    "sourceName": "arXiv:2606.01633 - On a problem on a generalization of Euler's totient function"
+    "sourceName": "arXiv:2606.01633 - On a problem on a generalization of Euler's totient function",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "graffiti-conjecture-143",
@@ -4276,7 +4372,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://github.com/demonstrandum-research/artifacts",
-    "sourceName": "Demonstrandum artifacts repository (RESULTS.md)"
+    "sourceName": "Demonstrandum artifacts repository (RESULTS.md)",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "graffiti-conjecture-154",
@@ -4304,7 +4401,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://github.com/demonstrandum-research/artifacts",
     "sourceName": "Demonstrandum artifacts repository (RESULTS.md)",
-    "resultNote": "refuted under the standard-deviation reading; the statement is reading-sensitive and other readings remain open"
+    "resultNote": "refuted under the standard-deviation reading; the statement is reading-sensitive and other readings remain open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "graffiti-conjecture-284",
@@ -4392,7 +4490,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2605.22763",
     "sourceName": "arXiv:2605.22763 - AlphaProof Nexus report",
-    "resultNote": "intended complex form disproved, with a certified strict support-function gap"
+    "resultNote": "intended complex form disproved, with a certified strict support-function gap",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "grothendieck-finite-flat-group-schemes",
@@ -4452,7 +4551,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2603.19052",
-    "sourceName": "arXiv:2603.19052 - The simplicity of the Hodge bundle (PNAS 2026)"
+    "sourceName": "arXiv:2603.19052 - The simplicity of the Hodge bundle (PNAS 2026)",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "integral-invariant-cycles-degree-one",
@@ -4479,7 +4579,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2604.24021",
-    "sourceName": "arXiv:2604.24021 - QED: an open-source multi-agent system for mathematical proofs"
+    "sourceName": "arXiv:2604.24021 - QED: an open-source multi-agent system for mathematical proofs",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "iris-conjecture-6-1",
@@ -4506,7 +4607,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://github.com/demonstrandum-research/artifacts",
-    "sourceName": "Demonstrandum artifacts repository (RESULTS.md)"
+    "sourceName": "Demonstrandum artifacts repository (RESULTS.md)",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "jacobian-conjecture",
@@ -4655,7 +4757,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2605.08122",
     "sourceName": "arXiv:2605.08122 - Undecidability problems for semifree DG algebras",
-    "resultNote": "resolves the noncommutative half of the Kirby-list problem"
+    "resultNote": "resolves the noncommutative half of the Kirby-list problem",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "kls-quadratic-forms",
@@ -4713,7 +4816,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://github.com/demonstrandum-research/artifacts",
-    "sourceName": "Demonstrandum artifacts repository (RESULTS.md)"
+    "sourceName": "Demonstrandum artifacts repository (RESULTS.md)",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "kourovka-18-50-permuted-products",
@@ -5057,7 +5161,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2605.21744",
-    "sourceName": "arXiv:2605.21744 - Return probability for the switch-walk-switch lamplighter walk"
+    "sourceName": "arXiv:2605.21744 - Return probability for the switch-walk-switch lamplighter walk",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "lamplighter-total-variation",
@@ -5084,7 +5189,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2604.24021",
-    "sourceName": "arXiv:2604.24021 - QED: an open-source multi-agent system for mathematical proofs"
+    "sourceName": "arXiv:2604.24021 - QED: an open-source multi-agent system for mathematical proofs",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "levit-mandrescu-unimodality-conjecture",
@@ -5328,7 +5434,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2605.22763",
     "sourceName": "arXiv:2605.22763 - AlphaProof Nexus report",
-    "resultNote": "the diagonal family is ruled out; the broader two-parameter problem remains open"
+    "resultNote": "the diagonal family is ruled out; the broader two-parameter problem remains open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "monochromatic-quantum-graphs-four-particles",
@@ -5356,7 +5463,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2605.22763",
     "sourceName": "arXiv:2605.22763 - AlphaProof Nexus report",
-    "resultNote": "the N = 4, D ≥ 4 family is fully ruled out; the general two-parameter problem remains open"
+    "resultNote": "the N = 4, D ≥ 4 family is fully ruled out; the general two-parameter problem remains open",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "online-discrepancy-linear-time",
@@ -5474,7 +5582,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://github.com/demonstrandum-research/artifacts",
-    "sourceName": "Demonstrandum artifacts repository (RESULTS.md)"
+    "sourceName": "Demonstrandum artifacts repository (RESULTS.md)",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "planar-four-terminal-dgg",
@@ -5551,7 +5660,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2605.22763",
-    "sourceName": "arXiv:2605.22763 - AlphaProof Nexus report"
+    "sourceName": "arXiv:2605.22763 - AlphaProof Nexus report",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "quantum-conditional-entropy-continuity",
@@ -5636,7 +5746,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://epoch.ai/frontiermath/open-problems/ramsey-hypergraphs",
-    "sourceName": "Epoch AI open problem: a Ramsey-style problem on hypergraphs"
+    "sourceName": "Epoch AI open problem: a Ramsey-style problem on hypergraphs",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "ran-teng-conjecture-20",
@@ -5663,7 +5774,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2602.18918",
-    "sourceName": "arXiv:2602.18918 - Vibe-proving case study: spectral region characterization"
+    "sourceName": "arXiv:2602.18918 - Vibe-proving case study: spectral region characterization",
+    "aiContribution": "ai-co-developed"
   },
   {
     "slug": "rota-matroid-flat-unimodality",
@@ -5845,7 +5957,8 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2602.12176",
     "sourceName": "arXiv:2602.12176 - Single-minus gluon tree amplitudes are nonzero",
-    "resultNote": "nonzero on half-collinear complex kinematics, with a closed formula"
+    "resultNote": "nonzero on half-collinear complex kinematics, with a closed formula",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "sombor-energy-conjecture",
@@ -6016,7 +6129,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://github.com/demonstrandum-research/artifacts",
-    "sourceName": "Demonstrandum artifacts repository (RESULTS.md)"
+    "sourceName": "Demonstrandum artifacts repository (RESULTS.md)",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "two-adic-absolute-galois-presentation",
@@ -6081,7 +6195,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://github.com/demonstrandum-research/artifacts",
-    "sourceName": "Demonstrandum artifacts repository (RESULTS.md)"
+    "sourceName": "Demonstrandum artifacts repository (RESULTS.md)",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "type-d-asep-tracy-widom",
@@ -6211,7 +6326,8 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2603.15929",
-    "sourceName": "arXiv:2603.15929 - Semi-autonomous formalization of the Vlasov-Maxwell-Landau equilibrium"
+    "sourceName": "arXiv:2603.15929 - Semi-autonomous formalization of the Vlasov-Maxwell-Landau equilibrium",
+    "aiContribution": "ai-discovered"
   },
   {
     "slug": "werner-two-copy-distillability",
@@ -6365,40 +6481,15 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2605.22763",
-    "sourceName": "arXiv:2605.22763 - AlphaProof Nexus report"
-  },
-  {
-    "slug": "wowii-graph-conjecture-2",
-    "name": "Written on the Wall II, Graph Conjecture 2",
-    "shortName": "WOWII 2",
-    "problemNumber": null,
-    "field": "Graph theory (automated conjecture)",
-    "fieldGroup": "Combinatorics",
-    "resolution": "candidate",
-    "statement": null,
-    "posedBy": "Written on the Wall II (automated conjecturing)",
-    "yearPosed": null,
-    "solveType": "proved",
-    "solveDate": "2026-07-27",
-    "model": "ChatGPT 5.6 Sol, Codex (GPT-5.6 Sol)",
-    "modelMaker": "OpenAI",
-    "humanCollaborators": [
-      "Kenta Kitamura"
-    ],
-    "aiRole": "The Lean 4 proof was developed with ChatGPT 5.6 Sol and Codex at high reasoning effort, per the submitter's disclosure. A parallel submission by another contributor may prove the same result by a different argument.",
-    "verification": "lean-verified",
-    "verificationNote": "Standalone Lean 4 proof with a clean axiom check (propext, Classical.choice, Quot.sound - no sorry, no native_decide). Acceptance into the formal-conjectures repository is still pending, hence candidate status.",
-    "citations": null,
-    "citationsPaper": null,
-    "citationsSource": null,
-    "citationsUrl": null,
-    "renownLangs": 0,
-    "sourceUrl": "https://github.com/google-deepmind/formal-conjectures/pull/4654",
-    "sourceName": "formal-conjectures PR #4654 - WOWII Graph Conjecture 2 marked solved",
+    "sourceName": "arXiv:2605.22763 - AlphaProof Nexus report",
     "aiContribution": "ai-discovered",
     "links": [
       {
-        "label": "Lean proof repository (Kenta Kitamura)",
+        "label": "Independent second Lean proof by Kenta Kitamura (formal-conjectures PR #4654)",
+        "url": "https://github.com/google-deepmind/formal-conjectures/pull/4654"
+      },
+      {
+        "label": "Kitamura Lean proof repository",
         "url": "https://github.com/KitaKen1/wowii-graph-conjecture-2-lean"
       }
     ]
@@ -6495,6 +6586,7 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2606.31640",
-    "sourceName": "arXiv:2606.31640"
+    "sourceName": "arXiv:2606.31640",
+    "aiContribution": "ai-discovered"
   }
 ]
