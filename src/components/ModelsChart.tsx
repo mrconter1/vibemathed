@@ -32,13 +32,16 @@ export function ModelsChart({ problems }: { problems: MathProblem[] }) {
   const max = Math.max(1, ...rows.map((r) => r.count));
 
   return (
-    <div>
+    // Full-height column so the bar list centers in whatever height the grid
+    // row gives the card (its row-mate line chart is usually taller) - same
+    // pattern as the SVG charts.
+    <div className="flex h-full flex-col">
       <h2 className="font-serif text-lg text-[var(--ink)]">Problems solved, by AI system</h2>
       <p className="mt-1 text-xs text-[var(--ink-muted)]">
         Each result credits every system named on it, so the bars can total more than the{" "}
         {problems.length} tracked problems.
       </p>
-      <ul className="mt-4 flex flex-col gap-2.5">
+      <ul className="my-auto flex flex-col gap-2.5 py-4">
         {rows.map((r) => (
           <li key={r.label} className="flex items-center gap-3 text-sm">
             <span className="w-32 shrink-0 text-right text-[var(--ink-secondary)] sm:w-40">
