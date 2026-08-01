@@ -16,6 +16,8 @@ import {
   type EditableValues,
 } from "@/lib/editable";
 import { EntryFields } from "@/components/EntryFields";
+import { Icon } from "@/components/Icons";
+import { CORNER_ICON_BUTTON } from "@/components/ReportEntryDialog";
 import { useViewer } from "@/components/ViewerProvider";
 
 export function EditEntryDialog({
@@ -69,17 +71,18 @@ export function EditEntryDialog({
   }
 
   if (!loaded) {
-    return <span className="inline-block h-8 w-20 rounded bg-[var(--hairline)]/40" aria-hidden />;
+    return <span className="inline-block h-8 w-8 rounded bg-[var(--hairline)]/40" aria-hidden />;
   }
 
   if (!signedIn) {
     return (
       <Link
         href="/sign-in"
-        className="text-xs text-[var(--accent-blue)] hover:underline"
+        className={CORNER_ICON_BUTTON}
         title="Sign in to edit this entry"
+        aria-label="Sign in to edit this entry"
       >
-        Sign in to edit
+        <Icon name="pencil" size={14} />
       </Link>
     );
   }
@@ -89,9 +92,11 @@ export function EditEntryDialog({
       <button
         type="button"
         onClick={openDialog}
-        className="inline-flex h-8 items-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)]"
+        className={CORNER_ICON_BUTTON}
+        title="Edit entry"
+        aria-label="Edit this entry"
       >
-        Edit entry
+        <Icon name="pencil" size={14} />
       </button>
 
       {open && (

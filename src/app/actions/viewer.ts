@@ -19,7 +19,7 @@ export async function getViewerState(): Promise<ViewerState> {
 
   const admin = isAdmin(session.user.email);
 
-  const [votes, pendingReviews] = await Promise.all([
+  const [votes, pendingReviews, openReports] = await Promise.all([
     prisma.problemVote.findMany({
       where: { userId: session.user.id },
       select: { vote: true, problem: { select: { slug: true } } },
@@ -27,6 +27,9 @@ export async function getViewerState(): Promise<ViewerState> {
     // Only counted for admins - nobody else can act on it, and the size of the
     // unpublished queue is not public information.
     admin ? prisma.problem.count({ where: { status: "pending" } }) : Promise.resolve(0),
+    admin
+      ? prisma.problemReport.count({ where: { status: "open" } })
+      : Promise.resolve(0),
   ]);
 
   return {
@@ -35,6 +38,7 @@ export async function getViewerState(): Promise<ViewerState> {
     pseudonym: session.user.pseudonym ?? null,
     isAdmin: admin,
     pendingReviews,
+    openReports,
     votes: Object.fromEntries(votes.map((v) => [v.problem.slug, v.vote])),
   };
 }

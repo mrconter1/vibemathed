@@ -51,6 +51,13 @@ enum ActivityType {
   commented
 }
 
+enum ReportStatus {
+  /// Waiting for a curator to look at it.
+  open
+  /// A curator has seen it and acted (or decided no action was needed).
+  handled
+}
+
 model Problem {
   id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   slug String @unique
@@ -143,6 +150,7 @@ model Problem {
   comments   Comment[]
   activities ProblemActivity[]
   links      ProblemLink[]
+  reports    ProblemReport[]
 
   @@index([status])
   @@index([solveDate])
@@ -203,6 +211,30 @@ model Comment {
   @@index([createdAt])
 }
 
+/// A reader flagging an entry for curator attention. Deliberately NOT public
+/// (no activity row, never rendered on the entry): a report is a message to
+/// the curators, not a comment, and keeping it private avoids pile-ons.
+model ProblemReport {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  problemId String  @db.Uuid
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  /// Pseudonym snapshot, same convention as Comment.userName.
+  userName  String?
+  /// PLAIN TEXT explanation of the issue, straight from the report form.
+  body      String
+  status    ReportStatus @default(open)
+  createdAt DateTime  @default(now())
+  handledAt DateTime?
+
+  /// The admin badge count and queue read.
+  @@index([status])
+  @@index([problemId])
+  /// The per-user daily rate limit read.
+  @@index([userId, createdAt])
+}
+
 /// Replaces git history as the record of who changed what.
 model ProblemActivity {
   id        String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -255,6 +287,7 @@ model User {
   comments          Comment[]
   activities        ProblemActivity[]
   submittedProblems Problem[]         @relation("ProblemSubmitter")
+  reports           ProblemReport[]
 }
 
 model Account {

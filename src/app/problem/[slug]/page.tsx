@@ -17,6 +17,7 @@ import { SITE_URL } from "@/lib/site";
 import { Changelog } from "@/components/Changelog";
 import { CommentsSection } from "@/components/CommentsSection";
 import { EditEntryDialog } from "@/components/EditEntryDialog";
+import { ReportEntryDialog } from "@/components/ReportEntryDialog";
 import { StatusIcon } from "@/components/StatusIcon";
 import { TeX, deTeX } from "@/components/TeX";
 import { StarNote } from "@/components/Tooltip";
@@ -188,13 +189,17 @@ export default async function ProblemPage({
       <article className="mt-4 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-5 sm:px-6 sm:py-6">
         <div className="flex items-start justify-between gap-4">
           <h1 className="font-serif text-2xl text-[var(--ink)] sm:text-3xl">{p.name}</h1>
-          <div className="shrink-0 pt-1">
+          {/* One control corner: votes, then the two quiet icon affordances
+              (report, edit) in the same 32px bordered idiom. */}
+          <div className="flex shrink-0 items-start gap-1.5 pt-1">
             <VoteButtons
               slug={p.slug}
               upvotes={p.upvotes}
               downvotes={p.downvotes}
               size="lg"
             />
+            <ReportEntryDialog slug={p.slug} />
+            <EditEntryDialog slug={p.slug} initial={editable} />
           </div>
         </div>
 
@@ -313,12 +318,6 @@ export default async function ProblemPage({
           </p>
         )}
 
-        <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-[var(--hairline)] pt-4">
-          <EditEntryDialog slug={p.slug} initial={editable} />
-          <span className="text-[11px] text-[var(--ink-muted)]">
-            Spotted something wrong? Corrections are welcome and recorded.
-          </span>
-        </div>
       </article>
 
       <Changelog activity={activity} />

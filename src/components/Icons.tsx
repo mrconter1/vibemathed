@@ -16,7 +16,9 @@ export type IconName =
   | "globe" // Wikipedia notability
   | "votes" // votes cast
   | "alert" // contested results
-  | "funnel"; // list filters
+  | "funnel" // list filters
+  | "flag" // report an entry
+  | "pencil"; // edit an entry
 
 const PATHS: Record<IconName, React.ReactNode> = {
   layers: (
@@ -103,6 +105,21 @@ const PATHS: Record<IconName, React.ReactNode> = {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </>
+  ),
+  flag: (
+    <>
+      <path d="M4 14V2.4" strokeLinecap="round" />
+      <path d="M4 3h7.6L9.8 5.8l1.8 2.8H4" strokeLinecap="round" strokeLinejoin="round" />
+    </>
+  ),
+  pencil: (
+    <>
+      <path
+        d="M11.2 2.6a1.55 1.55 0 012.2 2.2L6 12.2l-3 .8.8-3 7.4-7.4z"
+        strokeLinejoin="round"
+      />
+      <path d="M9.8 4l2.2 2.2" />
     </>
   ),
 };

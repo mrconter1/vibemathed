@@ -20,6 +20,8 @@ export interface ViewerState {
   /// Submissions awaiting review. Always 0 for non-admins, so the count is
   /// never disclosed to anyone who could not act on it.
   pendingReviews: number;
+  /// Entry reports awaiting a curator. Same admin-only rule as pendingReviews.
+  openReports: number;
   /// The viewer's own votes, keyed by problem slug.
   votes: Record<string, VoteKind>;
 }
@@ -30,5 +32,6 @@ export const SIGNED_OUT: ViewerState = {
   pseudonym: null,
   isAdmin: false,
   pendingReviews: 0,
+  openReports: 0,
   votes: {},
 };

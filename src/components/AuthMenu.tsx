@@ -8,9 +8,18 @@ import { PSEUDONYM_MAX } from "@/lib/pseudonym";
 import { useViewer } from "@/components/ViewerProvider";
 
 export function AuthMenu() {
-  const { loaded, signedIn, pseudonym, isAdmin, pendingReviews, setPseudonym } =
-    useViewer();
-  const hasPending = isAdmin && pendingReviews > 0;
+  const {
+    loaded,
+    signedIn,
+    pseudonym,
+    isAdmin,
+    pendingReviews,
+    openReports,
+    setPseudonym,
+  } = useViewer();
+  // Anything a curator should act on: submissions waiting plus open reports.
+  const actionable = isAdmin ? pendingReviews + openReports : 0;
+  const hasPending = actionable > 0;
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -94,16 +103,16 @@ export function AuthMenu() {
         />
         <span className="truncate">{pseudonym ?? "Anonymous"}</span>
 
-        {/* Only an admin ever sees this, and only when the queue is non-empty. */}
+        {/* Only an admin ever sees this, and only when something waits. */}
         {hasPending && (
           <span
             className="ml-0.5 inline-flex h-4 min-w-4 shrink-0 items-center justify-center rounded-full px-1 text-[10px] font-semibold tabular-nums text-[var(--paper-raised)]"
             style={{ backgroundColor: "var(--accent-orange)" }}
-            aria-label={`${pendingReviews} ${
-              pendingReviews === 1 ? "submission" : "submissions"
+            aria-label={`${actionable} ${
+              actionable === 1 ? "item" : "items"
             } awaiting review`}
           >
-            {pendingReviews}
+            {actionable}
           </span>
         )}
       </button>
@@ -154,14 +163,14 @@ export function AuthMenu() {
           )}
 
           {isAdmin && (
-            <div className="mt-3 border-t border-[var(--hairline)] pt-3">
+            <div className="mt-3 space-y-1.5 border-t border-[var(--hairline)] pt-3">
               <Link
                 href="/admin/submissions"
                 onClick={() => setOpen(false)}
-                className="inline-flex items-center gap-1.5 text-xs text-[var(--accent-blue)] hover:underline"
+                className="flex items-center gap-1.5 text-xs text-[var(--accent-blue)] hover:underline"
               >
                 Review submissions
-                {hasPending && (
+                {pendingReviews > 0 && (
                   <span
                     className="inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-semibold tabular-nums text-[var(--paper-raised)]"
                     style={{ backgroundColor: "var(--accent-orange)" }}
@@ -170,9 +179,24 @@ export function AuthMenu() {
                   </span>
                 )}
               </Link>
+              <Link
+                href="/admin/reports"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-1.5 text-xs text-[var(--accent-blue)] hover:underline"
+              >
+                Review reports
+                {openReports > 0 && (
+                  <span
+                    className="inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-semibold tabular-nums text-[var(--paper-raised)]"
+                    style={{ backgroundColor: "var(--accent-orange)" }}
+                  >
+                    {openReports}
+                  </span>
+                )}
+              </Link>
               {!hasPending && (
-                <p className="mt-1 text-[11px] text-[var(--ink-muted)]">
-                  Queue is empty.
+                <p className="text-[11px] text-[var(--ink-muted)]">
+                  Both queues are empty.
                 </p>
               )}
             </div>
