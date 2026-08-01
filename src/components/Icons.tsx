@@ -18,7 +18,8 @@ export type IconName =
   | "alert" // contested results
   | "funnel" // list filters
   | "flag" // report an entry
-  | "pencil"; // edit an entry
+  | "pencil" // edit an entry
+  | "bell"; // notifications
 
 const PATHS: Record<IconName, React.ReactNode> = {
   layers: (
@@ -120,6 +121,15 @@ const PATHS: Record<IconName, React.ReactNode> = {
         strokeLinejoin="round"
       />
       <path d="M9.8 4l2.2 2.2" />
+    </>
+  ),
+  bell: (
+    <>
+      <path
+        d="M8 2.2a3.9 3.9 0 00-3.9 3.9c0 2.9-.9 4.1-1.5 4.8h10.8c-.6-.7-1.5-1.9-1.5-4.8A3.9 3.9 0 008 2.2z"
+        strokeLinejoin="round"
+      />
+      <path d="M6.6 13.3a1.5 1.5 0 002.8 0" strokeLinecap="round" />
     </>
   ),
 };

@@ -19,9 +19,11 @@ export async function getViewerState(): Promise<ViewerState> {
 
   const admin = isAdmin(session.user.email);
 
-  const [votes, pendingReviews, openReports] = await Promise.all([
+  const userId = session.user.id;
+
+  const [votes, pendingReviews, openReports, me] = await Promise.all([
     prisma.problemVote.findMany({
-      where: { userId: session.user.id },
+      where: { userId },
       select: { vote: true, problem: { select: { slug: true } } },
     }),
     // Only counted for admins - nobody else can act on it, and the size of the
@@ -30,15 +32,38 @@ export async function getViewerState(): Promise<ViewerState> {
     admin
       ? prisma.problemReport.count({ where: { status: "open" } })
       : Promise.resolve(0),
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { notificationsSeenAt: true },
+    }),
   ]);
+
+  // Unread = comments by OTHERS, newer than the viewer's watermark, on
+  // published entries the viewer submitted or has commented on.
+  const notifications = me
+    ? await prisma.comment.count({
+        where: {
+          createdAt: { gt: me.notificationsSeenAt },
+          NOT: { userId },
+          problem: {
+            status: "published",
+            OR: [
+              { submittedById: userId },
+              { comments: { some: { userId } } },
+            ],
+          },
+        },
+      })
+    : 0;
 
   return {
     signedIn: true,
-    userId: session.user.id,
+    userId,
     pseudonym: session.user.pseudonym ?? null,
     isAdmin: admin,
     pendingReviews,
     openReports,
+    notifications,
     votes: Object.fromEntries(votes.map((v) => [v.problem.slug, v.vote])),
   };
 }

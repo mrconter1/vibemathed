@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AuthMenu } from "@/components/AuthMenu";
 import { NavLinks } from "@/components/NavLinks";
+import { NotificationsMenu } from "@/components/NotificationsMenu";
 
 /// Persistent site chrome. Sticky and translucent on the same paper surface as
 /// the page - the site is one continuous sheet, not a bar floating above a card.
@@ -30,7 +31,9 @@ export function SiteHeader() {
 
         <NavLinks />
 
-        <div className="order-2 ml-auto sm:order-3">
+        <div className="order-2 ml-auto flex items-center gap-2 sm:order-3">
+          {/* Renders nothing for signed-out visitors. */}
+          <NotificationsMenu />
           <AuthMenu />
         </div>
       </div>

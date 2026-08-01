@@ -281,6 +281,11 @@ model User {
   /// authenticated abilities at once. Curator-set; no UI.
   banned Boolean @default(false)
 
+  /// Notification watermark: comments relevant to this user (on entries they
+  /// submitted or commented on) newer than this are "unread". Computed on
+  /// read against this timestamp - no notification rows, no fan-out writes.
+  notificationsSeenAt DateTime @default(now())
+
   accounts          Account[]
   sessions          Session[]
   votes             ProblemVote[]
