@@ -45,17 +45,27 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const router = useRouter();
 
-  // Needs both a posed year (for age) and a significance score to plot.
-  const enriched = problems.map((p) => ({
-    problem: p,
-    age: ageAtSolve(p),
-    significance: p.significance ?? null,
-  }));
+  // Resolved entries plot as filled dots; CANDIDATE entries (a full solution
+  // claimed and vetted, community review pending) plot as hollow rings so a
+  // day-old announcement never masquerades as a landed result. Partials stay
+  // out - a bound improvement has no "age at resolution". Each point also
+  // needs a posed year (for age) and a significance score.
+  const enriched = problems
+    .filter((p) => p.resolution === "resolved" || p.resolution === "candidate")
+    .map((p) => ({
+      problem: p,
+      age: ageAtSolve(p),
+      significance: p.significance ?? null,
+      claimed: p.resolution === "candidate",
+    }));
   const plottable = enriched.filter(
-    (d): d is { problem: MathProblem; age: number; significance: number } =>
+    (
+      d,
+    ): d is { problem: MathProblem; age: number; significance: number; claimed: boolean } =>
       d.age !== null && d.significance !== null,
   );
   const pending = enriched.length - plottable.length;
+  const anyClaimed = plottable.some((d) => d.claimed);
 
   const xMax = niceMax(Math.max(1, ...plottable.map((d) => d.age)), 20);
   const yStep = 10;
@@ -108,7 +118,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
         <h2 className="font-serif text-lg text-[var(--ink)]">
           Significance vs. age at resolution
         </h2>
-        <ul className="flex gap-4 text-sm text-[var(--ink-secondary)]">
+        <ul className="flex flex-wrap gap-4 text-sm text-[var(--ink-secondary)]">
           {seriesPresent.map((type) => (
             <li key={type} className="flex items-center gap-1.5">
               <span
@@ -119,12 +129,22 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
               {SOLVE_TYPE_LABEL[type] ?? type}
             </li>
           ))}
+          {anyClaimed && (
+            <li className="flex items-center gap-1.5">
+              <span
+                aria-hidden
+                className="inline-block h-2.5 w-2.5 rounded-full border-2 border-[var(--ink-secondary)]"
+              />
+              Under review
+            </li>
+          )}
         </ul>
       </div>
 
       <p className="mt-1 text-xs text-[var(--ink-muted)]">
         AI-estimated problem weight before the solve, 0-100 (Riemann = 100).
-        Click a point to open it.
+        Hollow points are claimed solutions still under review. Click a point
+        to open it.
       </p>
 
       <div className="relative mt-3" style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}` }}>
@@ -212,7 +232,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
           </text>
 
           {/* points */}
-          {drawOrder.map(({ problem, age, significance }) => {
+          {drawOrder.map(({ problem, age, significance, claimed }) => {
             const cx = x(age);
             const cy = y(significance);
             const color = SOLVE_TYPE_COLOR[problem.solveType] ?? "var(--ink)";
@@ -242,15 +262,27 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
               >
                 {/* larger transparent hit target */}
                 <circle cx={cx} cy={cy} r={14} fill="transparent" />
-                <circle
-                  cx={cx}
-                  cy={cy}
-                  r={isActive ? 7 : isOutlier ? 6 : 4}
-                  fill={color}
-                  fillOpacity={isOutlier || isActive ? 1 : 0.55}
-                  stroke="var(--paper)"
-                  strokeWidth={isOutlier ? 2 : 1}
-                />
+                {claimed ? (
+                  // Hollow ring: claimed, still under review.
+                  <circle
+                    cx={cx}
+                    cy={cy}
+                    r={isActive ? 7 : isOutlier ? 6 : 4}
+                    fill="var(--paper-raised)"
+                    stroke={color}
+                    strokeWidth={2}
+                  />
+                ) : (
+                  <circle
+                    cx={cx}
+                    cy={cy}
+                    r={isActive ? 7 : isOutlier ? 6 : 4}
+                    fill={color}
+                    fillOpacity={isOutlier || isActive ? 1 : 0.55}
+                    stroke="var(--paper)"
+                    strokeWidth={isOutlier ? 2 : 1}
+                  />
+                )}
                 {isOutlier && (
                   <text
                     x={cx}
@@ -284,6 +316,12 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
               <dd>{active.age}y</dd>
               <dt className="text-[var(--ink-muted)]">Significance</dt>
               <dd>{active.significance} / 100</dd>
+              {active.claimed && (
+                <>
+                  <dt className="text-[var(--ink-muted)]">Status</dt>
+                  <dd>under review</dd>
+                </>
+              )}
             </dl>
           </div>
         )}

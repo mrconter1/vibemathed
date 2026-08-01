@@ -88,8 +88,10 @@ export default async function StatsPage() {
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <CumulativeChart problems={resolved} />
         </div>
+        {/* Whole record: the chart itself splits resolved (filled) from
+            candidate (hollow) and excludes partial/variant/retracted. */}
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
-          <ReferencesChart problems={resolved} />
+          <ReferencesChart problems={problems} />
         </div>
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <SolveRatioChart problems={resolved} />
