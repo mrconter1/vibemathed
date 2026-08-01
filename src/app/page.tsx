@@ -109,28 +109,10 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Hero: short and confident - the stat band right below carries the
-          numbers, so the prose no longer has to. */}
-      <header>
-        <h1 className="font-serif text-3xl tracking-tight text-[var(--ink)] sm:text-4xl">
-          Math problems solved by AI
-        </h1>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--ink-secondary)]">
-          A community-curated record of math problems that no human had solved
-          before - from famous conjectures to the numbered Erdős problems from{" "}
-          <a
-            href="https://www.erdosproblems.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[var(--accent-blue)] hover:underline"
-          >
-            erdosproblems.com
-          </a>{" "}
-          - proved or disproved with AI in the loop. Every entry cites a
-          checkable source, carries a verification label, and is open for
-          votes, comments and new submissions.
-        </p>
-      </header>
+      {/* No hero prose: the header tagline carries the one-line definition,
+          the About page carries the paragraph, and the overview grid opens
+          the page. The h1 stays for structure and search, invisibly. */}
+      <h1 className="sr-only">Math problems solved by AI</h1>
 
       {/* Overview grid. On desktop: four stat tiles across the top, two larger
           highlight cards below them, and the activity feed occupying the right
