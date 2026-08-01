@@ -1,28 +1,13 @@
+import { MODEL_FAMILIES } from "@/lib/display";
 import type { MathProblem } from "@/lib/problems";
 
-// Model strings are free-form and often credit several systems on one entry
-// (e.g. "Aristotle, GPT-5.2 Pro"). So we bucket into AI-system families by
-// keyword and count co-occurrences: an entry contributes to every family named
-// on it. That means the bars can sum to more than the number of problems, which
-// the caption states plainly.
-const FAMILIES: { label: string; test: RegExp }[] = [
-  { label: "OpenAI (GPT, Codex)", test: /gpt|codex|openai|\bo[0-9]\b/i },
-  { label: "Google DeepMind", test: /gemini|deepmind|alphaevolve|alphaproof/i },
-  { label: "Anthropic (Claude)", test: /claude/i },
-  { label: "Harmonic (Aristotle)", test: /aristotle|harmonic/i },
-  { label: "xAI (Grok)", test: /grok/i },
-  { label: "Open-weights (DeepSeek, GLM)", test: /deepseek|glm/i },
-  {
-    // Agent harnesses and systems that do not name (or do not disclose) a
-    // frontier base model. Harness entries that DO name one (e.g. "Rethlas
-    // (GPT-5.6 Sol)") also count toward that vendor, by design.
-    label: "Agent systems / other",
-    test: /aletheia|archivara|multiscalar|seed prover|axiomprover|demonstrandum|qed|tars|rethlas|archon|proofcouncil|hy3|hyra|capy/i,
-  },
-];
+// Counts per AI-system family (shared with the list's model filter - see
+// MODEL_FAMILIES). An entry contributes to every family named on it, so the
+// bars can sum to more than the number of problems, which the caption states
+// plainly.
 
 export function ModelsChart({ problems }: { problems: MathProblem[] }) {
-  const rows = FAMILIES.map((f) => ({
+  const rows = MODEL_FAMILIES.map((f) => ({
     label: f.label,
     count: problems.filter((p) => f.test.test(p.model)).length,
   }))

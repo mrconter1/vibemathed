@@ -91,6 +91,27 @@ export const VERIFICATION: Record<
 export const NOTABILITY_HELP =
   "Wikipedia language editions with an article about this specific problem. Generic concept articles don't count, and an article that exists only because the problem was solved does not count either. 0 means no such article.";
 
+/// AI-system families, shared by the stats chart and the list's model filter
+/// so the two can never drift apart. Model strings are free-form and often
+/// credit several systems on one entry, so matching is by keyword: an entry
+/// counts toward every family named on it.
+export const MODEL_FAMILIES: { key: string; label: string; test: RegExp }[] = [
+  { key: "openai", label: "OpenAI (GPT, Codex)", test: /gpt|codex|openai|\bo[0-9]\b/i },
+  { key: "google", label: "Google DeepMind", test: /gemini|deepmind|alphaevolve|alphaproof/i },
+  { key: "anthropic", label: "Anthropic (Claude)", test: /claude/i },
+  { key: "harmonic", label: "Harmonic (Aristotle)", test: /aristotle|harmonic/i },
+  { key: "xai", label: "xAI (Grok)", test: /grok/i },
+  { key: "open-weights", label: "Open-weights (DeepSeek, GLM)", test: /deepseek|glm/i },
+  {
+    // Agent harnesses and systems that do not name (or do not disclose) a
+    // frontier base model. Harness entries that DO name one (e.g. "Rethlas
+    // (GPT-5.6 Sol)") also count toward that vendor, by design.
+    key: "agents",
+    label: "Agent systems / other",
+    test: /aletheia|archivara|multiscalar|seed prover|axiomprover|demonstrandum|qed|tars|rethlas|archon|proofcouncil|hy3|hyra|capy/i,
+  },
+];
+
 /// Explanation of the significance score, shown wherever the number appears.
 export const SIGNIFICANCE_HELP =
   "AI-estimated weight of the problem BEFORE it was solved, 0-100 in steps of 5 against an anchored ladder (Riemann hypothesis 100, Collatz ~80, a field-famous workhorse ~30, a typical numbered Erdős problem ~10). Assigned at review with a published prompt; full rubric in the methodology.";

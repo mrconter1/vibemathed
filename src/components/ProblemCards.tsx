@@ -29,6 +29,7 @@ import {
 import {
   AI_CONTRIBUTION,
   DASH,
+  MODEL_FAMILIES,
   RESOLUTION,
   SIGNIFICANCE_HELP,
   SOLVE_TYPE,
@@ -40,16 +41,17 @@ import { StatusIcon } from "@/components/StatusIcon";
 import { InfoTip, StarNote } from "@/components/Tooltip";
 import { VoteButtons } from "@/components/VoteButtons";
 
+// Only genuinely ordinal keys (plus alphabetical Name) belong here. Result,
+// field and model are CATEGORIES - they live in the filters, where "sorting"
+// by them was really just grouping. Labels name the key, never a direction:
+// the direction toggle is its own control, so "Top voted" would lie when
+// flipped ascending.
 type SortKey =
   | "solveDate"
   | "added"
   | "score"
   | "discussion"
   | "name"
-  | "field"
-  | "solveType"
-  | "posedBy"
-  | "model"
   | "age"
   | "significance";
 type SortDir = "asc" | "desc";
@@ -57,15 +59,11 @@ type SortDir = "asc" | "desc";
 const SORTS: { key: SortKey; label: string }[] = [
   { key: "solveDate", label: "Date solved" },
   { key: "added", label: "Date added" },
-  { key: "score", label: "Top voted" },
-  { key: "discussion", label: "Most discussed" },
-  { key: "name", label: "Name" },
-  { key: "field", label: "Type" },
-  { key: "solveType", label: "Result" },
-  { key: "posedBy", label: "Posed by" },
-  { key: "model", label: "Model" },
+  { key: "score", label: "Votes" },
+  { key: "discussion", label: "Comments" },
   { key: "age", label: "Years open" },
   { key: "significance", label: "Significance" },
+  { key: "name", label: "Name" },
 ];
 
 // Sorts that can be scoped to a time window. Everything else ignores the period.
@@ -94,6 +92,7 @@ interface StoredSettings {
   resultFilter: string;
   statusFilter: string;
   contributionFilter: string;
+  modelFilter: string;
   verificationFilter: string;
   sortKey: SortKey;
   sortDir: SortDir;
@@ -120,14 +119,6 @@ function sortValue(p: ProblemCardData, key: SortKey, period: Period): string | n
           : p.commentCount;
     case "name":
       return p.name.toLowerCase();
-    case "field":
-      return (p.field ?? "").toLowerCase();
-    case "solveType":
-      return p.solveType;
-    case "posedBy":
-      return (p.posedBy ?? "").toLowerCase();
-    case "model":
-      return p.model.toLowerCase();
     case "age":
       return ageAtSolve(p) ?? -1;
     case "significance":
@@ -396,6 +387,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
   const [resultFilter, setResultFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [contributionFilter, setContributionFilter] = useState("all");
+  const [modelFilter, setModelFilter] = useState("all");
   const [verificationFilter, setVerificationFilter] = useState("all");
   const [sortKey, setSortKey] = useState<SortKey>("solveDate");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
@@ -472,6 +464,12 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
           setContributionFilter(s.contributionFilter as string);
         }
         if (
+          s.modelFilter === "all" ||
+          MODEL_FAMILIES.some((f) => f.key === s.modelFilter)
+        ) {
+          setModelFilter(s.modelFilter as string);
+        }
+        if (
           s.verificationFilter === "all" ||
           (s.verificationFilter ?? "") in VERIFICATION
         ) {
@@ -502,6 +500,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
         resultFilter,
         statusFilter,
         contributionFilter,
+        modelFilter,
         verificationFilter,
         sortKey,
         sortDir,
@@ -512,7 +511,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
     } catch {
       // Storage full or blocked - the list still works, it just won't persist.
     }
-  }, [restored, fieldFilter, resultFilter, statusFilter, contributionFilter, verificationFilter, sortKey, sortDir, period, perPage]);
+  }, [restored, fieldFilter, resultFilter, statusFilter, contributionFilter, modelFilter, verificationFilter, sortKey, sortDir, period, perPage]);
 
   // Only offer verification statuses that actually occur, in ladder order, so
   // the panel never lists an empty category.
@@ -555,6 +554,15 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
         ]
       : []),
     {
+      // Same family buckets as the stats chart; a multi-system entry matches
+      // every family named on it.
+      key: "model",
+      label: "AI system",
+      options: MODEL_FAMILIES.filter((f) =>
+        problems.some((p) => f.test.test(p.model)),
+      ).map((f) => ({ value: f.key, label: f.label })),
+    },
+    {
       key: "verification",
       label: "Verification",
       options: verifications.map((v) => ({ value: v, label: VERIFICATION[v].label })),
@@ -565,6 +573,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
     result: resultFilter,
     status: statusFilter,
     contribution: contributionFilter,
+    model: modelFilter,
     verification: verificationFilter,
   };
 
@@ -572,6 +581,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
     if (key === "result") setResultFilter(value);
     else if (key === "status") setStatusFilter(value);
     else if (key === "contribution") setContributionFilter(value);
+    else if (key === "model") setModelFilter(value);
     else if (key === "verification") setVerificationFilter(value);
   }
 
@@ -582,6 +592,10 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
       if (resultFilter !== "all" && p.solveType !== resultFilter) return false;
       if (statusFilter !== "all" && p.resolution !== statusFilter) return false;
       if (contributionFilter !== "all" && p.aiContribution !== contributionFilter) return false;
+      if (modelFilter !== "all") {
+        const fam = MODEL_FAMILIES.find((f) => f.key === modelFilter);
+        if (fam && !fam.test.test(p.model)) return false;
+      }
       if (verificationFilter !== "all" && p.verification !== verificationFilter) return false;
       if (!q) return true;
       const haystack = [
@@ -598,7 +612,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [problems, query, fieldFilter, resultFilter, statusFilter, contributionFilter, verificationFilter]);
+  }, [problems, query, fieldFilter, resultFilter, statusFilter, contributionFilter, modelFilter, verificationFilter]);
 
   const sorted = useMemo(() => {
     const arr = [...filtered];
@@ -629,6 +643,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
     resultFilter,
     statusFilter,
     contributionFilter,
+    modelFilter,
     verificationFilter,
     perPage,
     sortKey,
@@ -662,6 +677,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
     resultFilter !== "all" ||
     statusFilter !== "all" ||
     contributionFilter !== "all" ||
+    modelFilter !== "all" ||
     verificationFilter !== "all";
 
   // `grow justify-center sm:grow-0`: on a phone the wrapped chip rows
@@ -743,6 +759,7 @@ export function ProblemCards({ problems }: { problems: ProblemCardData[] }) {
               setResultFilter("all");
               setStatusFilter("all");
               setContributionFilter("all");
+              setModelFilter("all");
               setVerificationFilter("all");
             }}
             className="ml-1 text-xs text-[var(--accent-blue)] hover:underline"
