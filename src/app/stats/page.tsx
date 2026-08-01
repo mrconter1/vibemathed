@@ -4,6 +4,7 @@ import { getPublishedProblems } from "@/lib/data";
 import { SIGNIFICANCE_HELP } from "@/lib/display";
 import { ContributionGrowthChart } from "@/components/ContributionGrowthChart";
 import { CumulativeChart } from "@/components/CumulativeChart";
+import { MethodGrowthChart } from "@/components/MethodGrowthChart";
 import { Icon, type IconName } from "@/components/Icons";
 import { ModelsChart } from "@/components/ModelsChart";
 import { OpenSourceChart } from "@/components/OpenSourceChart";
@@ -93,10 +94,15 @@ export default async function StatsPage() {
           <ModelsChart problems={resolved} />
         </div>
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
-          <CumulativeChart problems={resolved} />
-        </div>
-        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <ContributionGrowthChart problems={resolved} />
+        </div>
+        {/* The "is AI doing theory yet?" chart. */}
+        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
+          <MethodGrowthChart problems={resolved} />
+        </div>
+        {/* The hero curve carries a full-width row on its own. */}
+        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5 lg:col-span-2">
+          <CumulativeChart problems={resolved} />
         </div>
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <SolveRatioChart problems={resolved} />
