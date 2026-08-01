@@ -20,6 +20,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/sign-in",
   },
   callbacks: {
+    // Banned accounts cannot start a session; they land on the /banned
+    // notice instead. Existing sessions are deleted at ban time, so with
+    // database sessions this one gate covers submitting, editing, voting
+    // and commenting alike.
+    signIn({ user }) {
+      if ((user as { banned?: boolean }).banned) return "/banned";
+      return true;
+    },
     session({ session, user }) {
       session.user.id = user.id;
       // `user` is the full adapter record, so the pseudonym rides along and no

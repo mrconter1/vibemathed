@@ -226,6 +226,11 @@ model User {
   /// before then carry that date, not their real sign-up date.
   createdAt DateTime @default(now())
 
+  /// Banned accounts cannot sign in (denied in the signIn callback), and
+  /// banning deletes their sessions - so with database sessions they lose all
+  /// authenticated abilities at once. Curator-set; no UI.
+  banned Boolean @default(false)
+
   accounts          Account[]
   sessions          Session[]
   votes             ProblemVote[]
