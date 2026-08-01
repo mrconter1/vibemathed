@@ -1,11 +1,12 @@
 # Significance scoring prompt (v1, August 2026)
 
 This is the verbatim prompt used to assign the `significance` score on
-VibeMathed entries, linked from the methodology page. Scores are assigned by
-an AI model (currently Claude Fable 5) applying this prompt during entry
-review, followed by a consistency sweep across the whole catalog. Changing
-this prompt is a versioned event: the git history of this file is the record,
-and a wholesale rescore is documented on the methodology page.
+VibeMathed entries, served at vibemathed.com/significance-prompt.md and
+linked from the methodology page. Scores are assigned by an AI model
+(currently Claude Fable 5) applying this prompt during entry review, followed
+by a consistency sweep across the whole catalog. Changing this prompt is a
+versioned event: the git history of this file (public/significance-prompt.md)
+is the record, and a wholesale rescore is documented on the methodology page.
 
 ---
 

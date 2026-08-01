@@ -213,7 +213,7 @@ export default function MethodologyPage() {
           stable to within a band - challenge one in the entry&apos;s
           discussion thread. The verbatim scoring prompt is public:{" "}
           <a
-            href="https://github.com/mrconter1/vibemathed/blob/main/scripts/significance-prompt.md"
+            href="/significance-prompt.md"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[var(--accent-blue)] hover:underline"

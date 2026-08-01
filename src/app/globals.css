@@ -102,6 +102,21 @@ html {
   border-color: var(--accent-blue);
 }
 
+/*
+ * A bounded scroll region that advertises "there's more" with a bottom fade
+ * instead of a scrollbar: content scrolls by wheel/touch, the scrollbar is
+ * hidden, and the mask fades the last ~28px so the cutoff never looks like
+ * the end of the list. Used by the Latest activity card.
+ */
+.fade-scroll {
+  overflow-y: auto;
+  scrollbar-width: none;
+  mask-image: linear-gradient(to bottom, black calc(100% - 28px), transparent);
+}
+.fade-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   background: var(--paper);
   color: var(--ink);

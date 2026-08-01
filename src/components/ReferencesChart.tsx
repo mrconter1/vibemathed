@@ -76,6 +76,32 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
   // Draw the dense low band first so the labeled strikes sit on top of it.
   const drawOrder = [...plottable].sort((a, b) => a.significance - b.significance);
 
+  // Label de-collision: several labeled points share a score band (four sit
+  // at 35), so neighbouring labels would overprint. Greedy level stacking:
+  // walk labeled points left to right and lift a label one 14px row for each
+  // already-placed label it would collide with (close in x AND in y).
+  const labelYBySlug = new Map<string, number>();
+  {
+    const placed: { cx: number; labelY: number }[] = [];
+    const labeled = plottable
+      .filter((d) => d.significance >= LABEL_THRESHOLD)
+      .sort((a, b) => x(a.age) - x(b.age));
+    for (const d of labeled) {
+      const cx = x(d.age);
+      let labelY = y(d.significance) - 12;
+      // Lift until no placed label is within a label's width and line height.
+      for (let guard = 0; guard < 6; guard++) {
+        const hit = placed.some(
+          (p) => Math.abs(p.cx - cx) < 110 && Math.abs(p.labelY - labelY) < 14,
+        );
+        if (!hit) break;
+        labelY -= 14;
+      }
+      placed.push({ cx, labelY });
+      labelYBySlug.set(d.problem.slug, labelY);
+    }
+  }
+
   return (
     <div>
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
@@ -229,7 +255,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
                 {isOutlier && (
                   <text
                     x={cx}
-                    y={cy - 12}
+                    y={labelYBySlug.get(problem.slug) ?? cy - 12}
                     textAnchor={labelAnchor}
                     style={{ fontSize: 14, fill: "var(--ink-secondary)" }}
                   >

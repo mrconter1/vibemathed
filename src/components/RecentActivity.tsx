@@ -85,7 +85,9 @@ export function RecentActivity({ activity }: { activity: SiteActivityView[] }) {
         </p>
       </div>
 
-      <ul className="mt-2.5 min-h-0 flex-1 overflow-y-auto">
+      {/* Capped on small screens (the grid bounds it on lg), scrolling under
+          a bottom fade with the scrollbar hidden - see .fade-scroll. */}
+      <ul className="fade-scroll mt-2.5 max-h-72 min-h-0 flex-1 pb-6 lg:max-h-none">
         {activity.map((a) => (
           <li
             key={a.id}
