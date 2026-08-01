@@ -19,6 +19,8 @@ export interface PendingEntry {
   sourceUrl: string;
   sourceName: string;
   submittedBy: string;
+  /// Current pseudonym for the profile link, or null when unlinkable.
+  submittedByPseudonym: string | null;
   submittedAt: string;
 }
 
@@ -65,7 +67,20 @@ export function ReviewQueue({ pending }: { pending: PendingEntry[] }) {
           <div className="flex flex-wrap items-baseline gap-x-2.5">
             <h2 className="font-serif text-base text-[var(--ink)]">{p.name}</h2>
             <span className="text-xs text-[var(--ink-muted)]">
-              by {p.submittedBy} · {p.submittedAt}
+              by{" "}
+              {p.submittedByPseudonym ? (
+                <a
+                  href={`/user/${encodeURIComponent(p.submittedByPseudonym)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[var(--ink-secondary)] hover:text-[var(--accent-blue)] hover:underline"
+                >
+                  {p.submittedBy}
+                </a>
+              ) : (
+                p.submittedBy
+              )}{" "}
+              · {p.submittedAt}
             </span>
           </div>
 
