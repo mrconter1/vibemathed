@@ -18,8 +18,19 @@
      (literature search, formalizing human proofs) only a count.
   4. Zenodo: recent records that look like a resolution and mention a model
      (some authors publish there instead of arXiv - the SSUF papers did).
-  5. News feeds: OpenAI and DeepMind announcement RSS plus the Kourovka
-     Notebook blog, filtered to math-resolution keywords.
+  5. News feeds: OpenAI and DeepMind announcement RSS, the Kourovka Notebook
+     blog and the Xena project blog, filtered to math-resolution keywords.
+  6. An external aggregate claim index (URL supplied locally via the
+     FINDER_INDEX_URL env var or scripts/.finder_index_url, deliberately
+     not named in the repo). Claims whose links match nothing in our
+     catalog (arXiv id, Erdős number, GitHub repo, Zenodo id, vibemathed
+     slug) surface for triage - it aggregates far more than any single
+     upstream, so this is the broadest net.
+  7. Watched artifact repositories (plby/lean-proofs, Demonstrandum,
+     AlphaProof results, ten-proofs, ...): new commits in the window.
+  8. Trackers: Star Fleet Math's proposed-solution list (Erdős numbers),
+     Epoch AI's FrontierMath open-problems pages, and 1stproof.org's
+     batch/announcement links - new items only.
 
 Zero dependencies (stdlib only). A state file remembers everything already
 reported, so repeated runs only surface NEW finds. Every source fails soft:
@@ -90,11 +101,32 @@ PR_REPOS = [
 ]
 
 # Announcement feeds worth watching, filtered by RESOLUTION_RE. The Kourovka
-# blog posts solution announcements for the notebook's problems.
+# blog posts solution announcements for the notebook's problems; Buzzard's
+# Xena blog covers formalization-adjacent AI mathematics.
 FEEDS = [
     ("OpenAI news", "https://openai.com/news/rss.xml"),
     ("DeepMind blog", "https://deepmind.google/blog/rss.xml"),
     ("Kourovka Notebook", "https://kourovkanotebookorg.wordpress.com/feed/"),
+    ("Xena project", "https://xenaproject.wordpress.com/feed/"),
+]
+
+# Result-artifact repositories where labs and individuals drop proofs. A new
+# commit is a triage signal; the commit message usually names the problem.
+WATCHED_REPOS = [
+    "plby/lean-proofs",
+    "demonstrandum-research/artifacts",
+    "google-deepmind/alphaproof-nexus-results",
+    "google-deepmind/superhuman",
+    "openai/ten-proofs",
+    "pitmonticone/kourovka",
+    "octonion/mathematics",
+]
+
+STARFLEET_URL = "https://www.starfleetmath.com/"
+EPOCH_URL = "https://epoch.ai/frontiermath/open-problems"
+FIRSTPROOF_URLS = [
+    "https://1stproof.org/",
+    "https://1stproof.org/second-batch.html",
 ]
 
 ERDOS_WIKI_URL = (
@@ -109,6 +141,8 @@ FC_PR_RE = re.compile(r"github\.com/google-deepmind/formal-conjectures/pull/(\d+
 MATHLIB_PR_RE = re.compile(r"github\.com/leanprover-community/mathlib4/pull/(\d+)", re.IGNORECASE)
 ZENODO_ID_RE = re.compile(r"zenodo\.org/records?/(\d+)", re.IGNORECASE)
 ERDOS_NUM_RE = re.compile(r"erdosproblems\.com/(\d+)", re.IGNORECASE)
+GH_REPO_RE = re.compile(r"github\.com/([\w.-]+/[\w.-]+)", re.IGNORECASE)
+VIBEMATHED_RE = re.compile(r"vibemathed\.com/problem/([\w-]+)", re.IGNORECASE)
 
 
 def fetch(url: str, timeout: int = 30) -> str:
@@ -126,6 +160,9 @@ def load_state() -> dict:
     state.setdefault("seen_erdos_rows", [])
     state.setdefault("seen_zenodo", [])
     state.setdefault("seen_feed_items", [])
+    state.setdefault("seen_index", [])
+    state.setdefault("seen_repo_commits", [])
+    state.setdefault("seen_tracker_items", [])
     return state
 
 
@@ -164,13 +201,14 @@ def catalog_index() -> dict:
     unreachable, nothing gets marked and the report still prints.
     """
     known = {"arxiv": set(), "fc_prs": set(), "mathlib_prs": set(),
-             "zenodo": set(), "erdos": set()}
+             "zenodo": set(), "erdos": set(), "gh": set(), "slugs": set()}
     try:
         data = json.loads(fetch(DATASET_URL))
     except Exception as e:
         print(f"_(catalog check skipped: {e})_\n", file=sys.stderr)
         return known
     for p in data.get("problems", []):
+        known["slugs"].add(p.get("slug") or "")
         # The problemNumber FIELD, not the slug: famous Erdős problems live
         # under named slugs (erdos-planar-unit-distance is #90), so slug
         # parsing alone under-counts what the catalog already tracks.
@@ -187,6 +225,8 @@ def catalog_index() -> dict:
                 known["mathlib_prs"].add(int(m.group(1)))
             for m in ZENODO_ID_RE.finditer(u):
                 known["zenodo"].add(int(m.group(1)))
+            for m in GH_REPO_RE.finditer(u):
+                known["gh"].add(m.group(1).lower())
     return known
 
 
@@ -418,6 +458,103 @@ def feed_items(name: str, url: str, days: int) -> list[dict]:
     return out
 
 
+# ----------------------------------------------------- external claim index ----
+
+def index_url() -> str:
+    """The external index's URL, from env or a gitignored side file."""
+    from os import environ
+    url = environ.get("FINDER_INDEX_URL", "").strip()
+    if url:
+        return url
+    side = Path(__file__).parent / ".finder_index_url"
+    return side.read_text(encoding="utf-8").strip() if side.exists() else ""
+
+
+def index_claims(known: dict) -> list[dict]:
+    """Claims on the external index whose links match nothing we track.
+
+    The index aggregates from more upstreams than any single source, so an
+    unmatched claim is the strongest 'we are missing something' signal. A
+    claim matches if ANY of its links resolves to a known arXiv id, Erdős
+    number, GitHub repo, Zenodo record or vibemathed slug.
+    """
+    url = index_url()
+    if not url:
+        raise RuntimeError("no index URL configured (FINDER_INDEX_URL)")
+    html = fetch(url, timeout=90)
+    out = []
+    for cid, body in re.findall(r'<article class="claim"[^>]*id="([^"]+)"(.*?)</article>', html, re.S):
+        links = re.findall(r'href="(https?://[^"]+)"', body)
+        hit = False
+        for u in links:
+            if (any(m.group(1) in known["arxiv"] for m in ARXIV_ID_RE.finditer(u))
+                    or any(int(m.group(1)) in known["erdos"] for m in ERDOS_NUM_RE.finditer(u))
+                    or any(m.group(1).lower() in known["gh"] for m in GH_REPO_RE.finditer(u))
+                    or any(int(m.group(1)) in known["zenodo"] for m in ZENODO_ID_RE.finditer(u))
+                    or any(m.group(1) in known["slugs"] for m in VIBEMATHED_RE.finditer(u))):
+                hit = True
+                break
+        if hit:
+            continue
+        title = re.search(r"<h3><span>(.*?)</span></h3>", body, re.S)
+        date = re.search(r'claim-date">([^<]+)<', body)
+        out.append({
+            "id": cid,
+            "title": strip_tags(title.group(1)).strip() if title else cid,
+            "date": date.group(1) if date else "?",
+            "links": [u for u in links if not u.startswith(url)][:4],
+        })
+    return out
+
+
+# ----------------------------------------------------------- watched repos ----
+
+def repo_commits(repo: str, days: int) -> list[dict]:
+    """Commits pushed to a watched artifact repo within the window."""
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    rows = json.loads(fetch(
+        f"https://api.github.com/repos/{repo}/commits?since={cutoff}&per_page=30"
+    ))
+    out = []
+    for c in rows:
+        msg = (c.get("commit", {}).get("message") or "").splitlines()[0]
+        out.append({
+            "sha": c.get("sha", "")[:12],
+            "key": f"{repo}@{c.get('sha', '')[:12]}",
+            "repo": repo,
+            "msg": msg[:110],
+            "url": c.get("html_url", ""),
+            "date": (c.get("commit", {}).get("committer", {}).get("date") or "")[:10],
+        })
+    return out
+
+
+# --------------------------------------------------------------- trackers ----
+
+def starfleet_numbers() -> list[int]:
+    """Erdős numbers on Star Fleet Math's proposed-solutions list."""
+    html = fetch(STARFLEET_URL)
+    return sorted({int(m.group(1)) for m in ERDOS_NUM_RE.finditer(html)})
+
+
+def epoch_problem_slugs() -> list[str]:
+    """Problem pages on Epoch AI's FrontierMath open-problems index."""
+    html = fetch(EPOCH_URL)
+    slugs = {m.group(1) for m in re.finditer(r'href="/frontiermath/open-problems/([\w-]+)"', html)}
+    return sorted(s for s in slugs if s not in ("about",) and not s.startswith("about"))
+
+
+def firstproof_items() -> list[str]:
+    """Document/batch links on the First Proof project pages."""
+    out: set[str] = set()
+    for url in FIRSTPROOF_URLS:
+        html = fetch(url)
+        for u in re.findall(r'href="([^"]+)"', html):
+            if re.search(r"\.pdf$|batch|arxiv\.org|cmsa\.fas", u, re.I):
+                out.add(u if u.startswith("http") else f"https://1stproof.org/{u.lstrip('/')}")
+    return sorted(out)
+
+
 # --------------------------------------------------------------- report ----
 
 def main() -> int:
@@ -425,8 +562,8 @@ def main() -> int:
     ap.add_argument("--days", type=int, default=3)
     ap.add_argument("--reset", action="store_true", help="forget previously seen items")
     ap.add_argument(
-        "--sources", default="arxiv,github,erdos,zenodo,feeds",
-        help="comma list: arxiv, github, erdos, zenodo, feeds",
+        "--sources", default="arxiv,github,erdos,zenodo,feeds,index,repos,trackers",
+        help="comma list: arxiv, github, erdos, zenodo, feeds, index, repos, trackers",
     )
     args = ap.parse_args()
     wanted = {s.strip() for s in args.sources.split(",") if s.strip()}
@@ -560,6 +697,83 @@ def main() -> int:
             print()
         print(f"_({len(records)} matching records in window, {len(new_records)} new)_\n")
         state["seen_zenodo"] = sorted(seen)
+
+    if "index" in wanted:
+        print("## External claim index (claims matching nothing in our catalog)\n")
+        seen = set(state["seen_index"])
+        try:
+            claims = index_claims(known)
+        except Exception as e:
+            claims = []
+            print(f"_(index scan failed: {e})_")
+        fresh = [c for c in claims if c["id"] not in seen]
+        seen.update(c["id"] for c in fresh)
+        for c in fresh:
+            print(f"- [{c['date']}] **{c['title']}**")
+            for u in c["links"]:
+                print(f"  - <{u}>")
+        print(f"\n_({len(claims)} unmatched claims on the index, {len(fresh)} new "
+              f"since last run. Unmatched is a triage signal, not a verdict - the "
+              f"index also lists partials, re-proofs and things we excluded on purpose.)_\n")
+        state["seen_index"] = sorted(seen)
+
+    if "repos" in wanted:
+        print("## Watched artifact repositories (new commits)\n")
+        seen = set(state["seen_repo_commits"])
+        shown = 0
+        for repo in WATCHED_REPOS:
+            try:
+                commits = repo_commits(repo, args.days)
+            except Exception as e:
+                print(f"_({repo}: {e})_")
+                continue
+            for c in commits:
+                if c["key"] in seen:
+                    continue
+                seen.add(c["key"])
+                shown += 1
+                print(f"- **{c['repo']}** [{c['msg']}]({c['url']}) - {c['date']}")
+            time.sleep(1)  # unauthenticated API budget
+        print(f"\n_({shown} new commits across {len(WATCHED_REPOS)} watched repos)_\n")
+        state["seen_repo_commits"] = sorted(seen)
+
+    if "trackers" in wanted:
+        print("## Trackers (Star Fleet Math, Epoch AI, First Proof)\n")
+        seen = set(state["seen_tracker_items"])
+        shown = 0
+        try:
+            for n in starfleet_numbers():
+                key = f"starfleet:{n}"
+                if key in seen:
+                    continue
+                seen.add(key)
+                shown += 1
+                tracked = " **[already in catalog]**" if n in known["erdos"] else ""
+                print(f"- **Star Fleet Math** proposes [Erdős #{n}](https://www.erdosproblems.com/{n}){tracked}")
+        except Exception as e:
+            print(f"_(Star Fleet scan failed: {e})_")
+        try:
+            for s in epoch_problem_slugs():
+                key = f"epoch:{s}"
+                if key in seen:
+                    continue
+                seen.add(key)
+                shown += 1
+                print(f"- **Epoch AI** open problem [{s}](https://epoch.ai/frontiermath/open-problems/{s})")
+        except Exception as e:
+            print(f"_(Epoch scan failed: {e})_")
+        try:
+            for u in firstproof_items():
+                key = f"1stproof:{u}"
+                if key in seen:
+                    continue
+                seen.add(key)
+                shown += 1
+                print(f"- **First Proof** <{u}>")
+        except Exception as e:
+            print(f"_(First Proof scan failed: {e})_")
+        print(f"\n_({shown} new tracker items)_\n")
+        state["seen_tracker_items"] = sorted(seen)
 
     if "feeds" in wanted:
         print("## Announcement feeds\n")

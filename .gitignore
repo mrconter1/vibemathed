@@ -50,3 +50,4 @@ __pycache__/
 
 # local seen-state for scripts/find_ai_solves.py
 scripts/.find_ai_solves_state.json
+scripts/.finder_index_url
