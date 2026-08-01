@@ -5874,7 +5874,7 @@
     "resolution": "resolved",
     "statement": "The Gaussian Moments Conjecture asks whether, for complex polynomials $P,Q$ in $n$ independent standard real Gaussian variables, $\\mathbb{E}(P^m)=0$ for all $m\\geq 1$ forces $\\mathbb{E}(QP^m)=0$ for all large $m$. Explicit counterexamples with $\\mathbb{E}(P^m)=0$ and $\\mathbb{E}(QP^m)=m!\\neq 0$ exist in three variables (a five-term quartic $P$) and four variables, so the conjecture is false in every dimension $n\\geq 3$.",
     "posedBy": "Harm Derksen, Arno van den Essen, Wenhua Zhao",
-    "yearPosed": 2014,
+    "yearPosed": 2017,
     "solveType": "disproved",
     "solveDate": "2026-07-20",
     "model": "GPT-5.6 Sol Pro, Claude Fable 5",
@@ -5883,8 +5883,8 @@
       "Christopher D. Long"
     ],
     "aiRole": "Per the paper's AI-provenance section, the four-variable construction was produced by ChatGPT 5.6 Sol Pro without human intervention after the initial prompt, which told it the Jacobian conjecture had been disproved and asked whether a small Gaussian-moments counterexample might follow; shown that example, Claude Fable 5 found the three-variable construction and supplied independent algebraic checks. The author bears responsibility for the mathematics and exposition.",
-    "verification": "unreviewed",
-    "verificationNote": "A nine-page arXiv preprint. The counterexamples are explicit polynomials whose defining identity can be checked directly, but no independent review or formalization is on record.",
+    "verification": "site-confirmed",
+    "verificationNote": "Re-derived by the site on 2026-08-02: both counterexamples were rebuilt from the paper's stated polynomials and evaluated in exact rational arithmetic against the standard Gaussian moment rules (E(W^a Z^b) = a! when a = b, else 0; E(T^c) the double factorial), independently of the paper's own algebra. For m = 1 through 10 both give E(P^m) = 0 and E(QP^m) = m! exactly, and the term counts and degrees match the paper (five terms of degree four in three variables, six of degree three in four). The surrounding exposition has had no independent review.",
     "publication": "preprint",
     "resolutionMethod": "construction",
     "citations": null,
@@ -5894,11 +5894,17 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.18186",
     "sourceName": "arXiv:2607.18186",
-    "resultNote": "Explicit counterexamples in dimensions 3 and 4, so GMC(n) fails for every n >= 3; the two-variable case is not settled here",
-    "ageNote": "From the Derksen-van den Essen-Zhao circle of Jacobian-conjecture-equivalent moment problems; the search here was prompted by Alpöge's announced counterexample to the Jacobian conjecture.",
+    "resultNote": "Explicit counterexamples in dimensions 3 and 4, so GMC(n) fails for every n >= 3; GMC(1) was already known, and a separate human-authored preprint claims the remaining n = 2 case affirmatively",
+    "ageNote": "Conjectured by Derksen, van den Essen and Zhao (Israel J. Math 219, 2017) as part of the Jacobian-conjecture circle; the search here was prompted by Alpöge's announced counterexample to the Jacobian conjecture.",
     "aiContribution": "ai-discovered",
     "significance": 25,
-    "significanceNote": "A named conjecture in the Jacobian-conjecture circle, equivalent in part to the Image Conjecture: a real if specialist target, and its failure follows the Jacobian disproof it was prompted by."
+    "significanceNote": "A named conjecture in the Jacobian-conjecture circle, equivalent in part to the Image Conjecture: a real if specialist target, and its failure follows the Jacobian disproof it was prompted by.",
+    "links": [
+      {
+        "label": "Wilson, proof of the two-variable case (no AI involved)",
+        "url": "https://arxiv.org/abs/2607.23887"
+      }
+    ]
   },
   {
     "slug": "gaussian-product-inequality-conjecture",
