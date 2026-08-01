@@ -11,7 +11,7 @@
 //
 // Cards have no column headers, so sorting moved into an explicit control.
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ageAtSolve,
@@ -436,6 +436,8 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
   // entry falls back silently.
   /* eslint-disable react-hooks/set-state-in-effect */
   const [restored, setRestored] = useState(false);
+  // Gates URL mirroring until the first post-restore persist has passed.
+  const urlSyncArmed = useRef(false);
   useEffect(() => {
     // Two sources, URL first: a shared link's query params beat this
     // browser's remembered settings, key by key. Every value is validated
@@ -517,7 +519,13 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
       // Storage full or blocked - the list still works, it just won't persist.
     }
     // Mirror non-default settings into the URL so a filtered view is
-    // shareable; defaults keep the address bare.
+    // shareable - but only once the VISITOR changes something. The first run
+    // after restore reflects remembered settings, and loading vibemathed.com
+    // must stay vibemathed.com (and a shared link must keep its params).
+    if (!urlSyncArmed.current) {
+      urlSyncArmed.current = true;
+      return;
+    }
     const q = new URLSearchParams();
     if (fieldFilter !== "all") q.set("field", fieldFilter);
     if (resultFilter !== "all") q.set("result", resultFilter);
