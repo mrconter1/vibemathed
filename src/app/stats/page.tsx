@@ -28,9 +28,10 @@ export const metadata: Metadata = {
 export default async function StatsPage() {
   const problems = await getPublishedProblems();
 
-  // The charts describe SOLVES, so they only see fully resolved entries - a
+  // Most charts describe SOLVES, so they only see fully resolved entries - a
   // candidate under review, a partial advance or a retracted claim is tracked
-  // but has not resolved anything. The tiles describe the whole record.
+  // but has not resolved anything. The tiles and the hero curve describe the
+  // whole record.
   const resolved = problems.filter((p) => p.resolution === "resolved");
 
   const totalVotes = problems.reduce((sum, p) => sum + p.upvotes + p.downvotes, 0);
@@ -58,14 +59,15 @@ export default async function StatsPage() {
         {tiles.map((t) => (
           <div
             key={t.label}
-            className="rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3"
+            className="flex flex-col rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3"
           >
             <dt className="flex items-center gap-1.5 text-xs text-[var(--ink-muted)]">
               <Icon name={t.icon} />
               {t.label}
               {t.help && <InfoTip content={t.help} label={t.label} />}
             </dt>
-            <dd className="mt-1 text-2xl font-semibold text-[var(--ink)]">{t.value}</dd>
+            {/* Same label-top/figure-bottom tile as the home StatBand. */}
+            <dd className="mt-auto pt-1 text-2xl font-semibold text-[var(--ink)]">{t.value}</dd>
           </div>
         ))}
       </dl>
@@ -89,9 +91,10 @@ export default async function StatsPage() {
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <MethodGrowthChart problems={resolved} />
         </div>
-        {/* The hero curve carries a full-width row on its own. */}
+        {/* The hero curve carries a full-width row on its own, and unlike the
+            solve charts it counts EVERY tracked entry. */}
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5 lg:col-span-2">
-          <CumulativeChart problems={resolved} />
+          <CumulativeChart problems={problems} />
         </div>
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <SolveRatioChart problems={resolved} />

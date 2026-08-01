@@ -21,20 +21,23 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 pb-4 pt-5 sm:px-8 sm:pt-6">
+    // flex-1 + my-auto float the sheet in the middle of the leftover viewport
+    // height (the layout's content wrapper is a flex column for exactly this).
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 py-6 sm:px-8">
       <h1 className="sr-only">About</h1>
 
       {/* Same raised sheet as the entry pages, so the site's prose surfaces
-          all read as one family. */}
-      <article className="max-w-2xl space-y-4 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-5 text-sm leading-relaxed text-[var(--ink-secondary)] sm:px-6 sm:py-6">
-        <p>
+          all read as one family. The opening paragraph is the lede: serif and
+          full ink, one size up from the supporting prose. */}
+      <article className="my-auto w-full max-w-2xl space-y-5 self-center rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-5 py-6 leading-relaxed text-[var(--ink-secondary)] sm:px-8 sm:py-8">
+        <p className="font-serif text-base text-[var(--ink)]">
           VibeMathed is a community of mathematicians and enthusiasts tracking,
           curating and cataloguing the mathematical problems that have been
           solved, fully or partially, by AI models. The record spans famous
           conjectures as well as the long tail of specialist questions and the
           numbered Erdős problems.
         </p>
-        <p>
+        <p className="text-sm">
           Entries are submitted, reviewed and curated in the open by people who
           care about getting the mathematics right. Every entry cites a
           checkable primary source, carries honest status and verification
@@ -49,7 +52,7 @@ export default function AboutPage() {
           explains what qualifies, how significance and verification are
           measured, and how submissions work.
         </p>
-        <p>
+        <p className="text-sm">
           The record is fully open. The complete dataset is free to reuse under{" "}
           <a
             href="https://creativecommons.org/licenses/by/4.0/"

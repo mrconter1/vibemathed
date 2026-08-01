@@ -109,7 +109,9 @@ export default function RootLayout({
             from it. */}
         <ViewerProvider>
           <SiteHeader />
-          <div className="flex-1">{children}</div>
+          {/* A flex column so a page's <main> can flex-1 itself and center its
+              content in the leftover viewport height (the About page does). */}
+          <div className="flex flex-1 flex-col">{children}</div>
           <SiteFooter />
         </ViewerProvider>
         <Analytics />

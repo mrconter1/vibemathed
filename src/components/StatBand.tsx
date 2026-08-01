@@ -68,15 +68,19 @@ export function StatBand({
       {computeTiles(problems, users).map((t) => (
         <div
           key={t.label}
-          className="rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3"
+          className="flex flex-col rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3"
         >
           <dt className="flex items-center gap-1.5 text-xs text-[var(--ink-muted)]">
             <Icon name={t.icon} />
             {t.label}
           </dt>
           {/* Proportional figures on purpose - tabular-nums looks loose at
-              display sizes; reserve it for columns that must align. */}
-          <dd className="mt-1 text-2xl font-semibold text-[var(--ink)]">{t.value}</dd>
+              display sizes; reserve it for columns that must align. The figure
+              anchors to the bottom (mt-auto): on desktop the activity feed
+              spans both overview rows and stretches the tiles, and a
+              label-top/figure-bottom split reads as intent where a top-packed
+              tile reads as dead space. */}
+          <dd className="mt-auto pt-1 text-2xl font-semibold text-[var(--ink)]">{t.value}</dd>
           {t.sub && (
             <dd className="mt-0.5 truncate text-[11px] text-[var(--ink-muted)]" title={t.sub}>
               {t.sub}

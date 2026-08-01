@@ -14,13 +14,17 @@ export function TimeAxis({
   gran,
   x,
   y,
+  scale = 1,
 }: {
   range: string[];
   gran: Granularity;
   x: (i: number) => number;
   y: number;
+  /// viewBox width relative to the standard 640: a plot drawn twice as wide
+  /// fits proportionally more ticks at the same rendered spacing.
+  scale?: number;
 }) {
-  const target = gran === "month" ? 7 : gran === "week" ? 9 : 10;
+  const target = Math.round((gran === "month" ? 7 : gran === "week" ? 9 : 10) * scale);
   const every = Math.ceil(range.length / target);
   const idx = range.map((_, i) => i).filter((i) => i % every === 0 || i === range.length - 1);
   if (idx.length >= 2 && x(idx[idx.length - 1]) - x(idx[idx.length - 2]) < 44) {
