@@ -8760,6 +8760,49 @@
     ]
   },
   {
+    "slug": "wowii-graph-conjecture-322",
+    "name": "Written on the Wall II, Graph Conjecture 322",
+    "shortName": "WOWII 322",
+    "problemNumber": null,
+    "field": "Graph theory (automated conjecture)",
+    "fieldGroup": "Combinatorics",
+    "resolution": "candidate",
+    "statement": "Let $G$ be a simple connected graph on $n\\geq 5$ vertices. If the maximum over all vertices $v$ of $\\ell(v)$ - the independence number of the subgraph induced by the open neighborhood $N(v)$ - is at most $1$, must $G$ be well totally dominated? Answered affirmatively; the Lean proof in fact needs only $n\\geq 2$, and retains the conjecture's $n\\geq 5$ to state the source faithfully.",
+    "posedBy": "Written on the Wall II (automated conjecturing)",
+    "yearPosed": null,
+    "solveType": "proved",
+    "solveDate": "2026-08-02",
+    "model": "Aristotle",
+    "modelMaker": "Harmonic",
+    "humanCollaborators": [],
+    "aiRole": "The pull request marking the conjecture solved credits the proof to Aristotle, Harmonic's prover; a human contributor prepared and filed the formalization.",
+    "verification": "lean-verified",
+    "verificationNote": "Sorry-free Lean 4 proof filed against google-deepmind/formal-conjectures, which flips the conjecture's attribute from `research open` to `research solved` and links the proof. Unlike the site's WOWII 217 entry it needs no native_decide: the argument is conceptual, showing every neighborhood is a clique and deducing well-total-domination. Not independently reviewed, and the pull request is still open.",
+    "publication": "announcement",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://github.com/google-deepmind/formal-conjectures/pull/4686",
+    "sourceName": "formal-conjectures PR #4686 - prove Conjecture 322",
+    "resultNote": "The formalization proves the statement under the weaker hypothesis n >= 2; the pull request marking the conjecture solved is open, not merged",
+    "aiContribution": "ai-discovered",
+    "significance": 5,
+    "significanceNote": "Machine-generated (Written on the Wall II); real but unfamous by construction.",
+    "links": [
+      {
+        "label": "Lean proof",
+        "url": "https://github.com/MrBrain295/formal-conjectures/blob/322/FormalConjectures/WrittenOnTheWallII/GraphConjecture322.lean"
+      },
+      {
+        "label": "Written on the Wall II conjecture list",
+        "url": "http://cms.dt.uh.edu/faculty/delavinae/research/wowII/"
+      }
+    ]
+  },
+  {
     "slug": "zero-forcing-versus-independence",
     "name": "Zero Forcing versus Independence in Subcubic Graphs",
     "shortName": "Zero forcing vs independence",
