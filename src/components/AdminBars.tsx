@@ -19,22 +19,38 @@ export function AdminBars({
   const W = 640;
   const H = 120;
   const gap = 2;
-  // Left gutter for the y labels. The day-tick row below is plain HTML, so
-  // it gets the same offset as a percentage to stay aligned with the bars.
-  const padL = 26;
+  // A "nice" y step: 5 where counts are small, stepping up through the 1-2-5
+  // sequence so a busy day never produces twenty gridlines. The ladder runs
+  // well past any plausible traffic - a spike of 17k page views in a day is
+  // real, and it has to land on sane gridlines rather than fall off the end.
+  const step =
+    [5, 10, 20, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000].find(
+      (c) => peak / c <= 4,
+    ) ?? 100000;
+  const top = Math.ceil(peak / step) * step;
+  const ticks = Array.from({ length: top / step + 1 }, (_, i) => i * step);
+  const yOf = (v: number) => H - (v / top) * H;
+
+  /// Thousands get a k, so five-digit counts stay two or three characters
+  /// wide. Written out in full they overflowed the gutter and were clipped
+  /// mid-number, which read as a smaller value than it was.
+  const fmtTick = (v: number) => {
+    if (v < 1000) return String(v);
+    const k = v / 1000;
+    return `${Number.isInteger(k) ? k : k.toFixed(1)}k`;
+  };
+  const tickLabels = ticks.map(fmtTick);
+
+  // Left gutter sized to the widest label at the label's own font size, so
+  // nothing is ever cut off. The day-tick row below is plain HTML, so it
+  // gets the same offset as a percentage to stay aligned with the bars.
+  const yFont = 12;
+  const widest = Math.max(...tickLabels.map((l) => l.length));
+  const padL = 8 + widest * yFont * 0.62;
   const plotW = W - padL;
   const barW = Math.max(1, plotW / Math.max(1, points.length) - gap);
   // Roughly 16 labels fit across the card before they collide.
   const labelEvery = Math.max(1, Math.ceil(points.length / 16));
-
-  // A "nice" y step: 5 where counts are small, stepping up through the 1-2-5
-  // sequence so a busy day never produces twenty gridlines.
-  const step = [5, 10, 20, 50, 100, 250, 500, 1000, 2500, 5000].find(
-    (c) => peak / c <= 4,
-  ) ?? 10000;
-  const top = Math.ceil(peak / step) * step;
-  const ticks = Array.from({ length: top / step + 1 }, (_, i) => i * step);
-  const yOf = (v: number) => H - (v / top) * H;
   return (
     <div>
       <div className="flex items-baseline justify-between gap-3">
@@ -50,7 +66,7 @@ export function AdminBars({
         aria-label={`${label}: ${total} over ${points.length} days`}
       >
         {/* Gridlines first so bars sit on top of them. */}
-        {ticks.map((t) => (
+        {ticks.map((t, i) => (
           <g key={t}>
             <line
               x1={padL}
@@ -61,14 +77,14 @@ export function AdminBars({
               strokeWidth={1}
             />
             <text
-              x={padL - 5}
+              x={padL - 6}
               y={yOf(t)}
               textAnchor="end"
               dominantBaseline="middle"
-              style={{ fontSize: 9, fill: "var(--ink-muted)" }}
+              style={{ fontSize: yFont, fill: "var(--ink-muted)" }}
               className="font-mono"
             >
-              {t}
+              {tickLabels[i]}
             </text>
           </g>
         ))}
