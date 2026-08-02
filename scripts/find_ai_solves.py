@@ -93,6 +93,10 @@ GENERIC_RE = re.compile("|".join(re.escape(t) for t in GENERIC_TERMS), re.IGNORE
 # -polishing declaration is not a candidate at all.
 NOISE_RE = re.compile(
     r"improve the English|language editing|writing process|proofread|grammar"
+    # Found by triage 2026-08-03: an isoperimetric paper's only model mention
+    # was "used to help eliminate typos, mistakes and inconsistencies from the
+    # text", which is the same class as English-polishing.
+    r"|eliminate typos|inconsistencies from the text|copy-?edit"
     r"|Conference on Artificial|Journal of Artificial|Cited by",
     re.IGNORECASE,
 )
