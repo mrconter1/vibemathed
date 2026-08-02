@@ -19,10 +19,22 @@ export function AdminBars({
   const W = 640;
   const H = 120;
   const gap = 2;
-  const barW = Math.max(1, W / Math.max(1, points.length) - gap);
+  // Left gutter for the y labels. The day-tick row below is plain HTML, so
+  // it gets the same offset as a percentage to stay aligned with the bars.
+  const padL = 26;
+  const plotW = W - padL;
+  const barW = Math.max(1, plotW / Math.max(1, points.length) - gap);
   // Roughly 16 labels fit across the card before they collide.
   const labelEvery = Math.max(1, Math.ceil(points.length / 16));
 
+  // A "nice" y step: 5 where counts are small, stepping up through the 1-2-5
+  // sequence so a busy day never produces twenty gridlines.
+  const step = [5, 10, 20, 50, 100, 250, 500, 1000, 2500, 5000].find(
+    (c) => peak / c <= 4,
+  ) ?? 10000;
+  const top = Math.ceil(peak / step) * step;
+  const ticks = Array.from({ length: top / step + 1 }, (_, i) => i * step);
+  const yOf = (v: number) => H - (v / top) * H;
   return (
     <div>
       <div className="flex items-baseline justify-between gap-3">
@@ -37,12 +49,35 @@ export function AdminBars({
         role="img"
         aria-label={`${label}: ${total} over ${points.length} days`}
       >
+        {/* Gridlines first so bars sit on top of them. */}
+        {ticks.map((t) => (
+          <g key={t}>
+            <line
+              x1={padL}
+              x2={W}
+              y1={yOf(t)}
+              y2={yOf(t)}
+              stroke="var(--hairline)"
+              strokeWidth={1}
+            />
+            <text
+              x={padL - 5}
+              y={yOf(t)}
+              textAnchor="end"
+              dominantBaseline="middle"
+              style={{ fontSize: 9, fill: "var(--ink-muted)" }}
+              className="font-mono"
+            >
+              {t}
+            </text>
+          </g>
+        ))}
         {points.map((p, i) => {
-          const h = (p.count / peak) * (H - 4);
+          const h = (p.count / top) * H;
           return (
             <rect
               key={p.day}
-              x={i * (barW + gap)}
+              x={padL + i * (barW + gap)}
               y={H - h}
               width={barW}
               height={h}
@@ -59,7 +94,11 @@ export function AdminBars({
           to the exact day. Only every nth label is printed - enough to stay
           legible at this width - but each bar still carries its own count in
           the SVG title on hover. */}
-      <div className="mt-1 flex" aria-hidden>
+      <div
+        className="mt-1 flex"
+        style={{ paddingLeft: `${(padL / W) * 100}%` }}
+        aria-hidden
+      >
         {points.map((p, i) => {
           const dayNum = p.day.slice(8);
           const first = i === 0;
