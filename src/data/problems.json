@@ -18,7 +18,7 @@
       "Sergey Nikolenko"
     ],
     "aiRole": "GPT-5.6 Sol, Claude Fable 5 and Claude Opus 5 carried out the search for constructions, symbolic envelope derivations, proofs, and the exact-verifier development; the human author framed the program, directed the search, set the claim scope, and verified all results independently by hand.",
-    "verification": "site-confirmed",
+    "verification": "unreviewed",
     "verificationNote": "The k=17 lower bound is a finite certificate: the verifier rebuilds the 67-arc instance from raw interval data, rediscovers all paths by DFS, and enumerates all 2^17 routings in exact rational arithmetic. Re-run by the site from a clean clone on 2026-08-01; the exact constant, 15 minimizers, and 18-atom hull certificate reproduce. The deletion-star ceiling theorems are conventional proofs in an unreviewed preprint, checked by the author only — no independent expert review, no formalization. Tier reflects the site's confirmation of the certificate; the structural results remain unreviewed.",
     "publication": "preprint",
     "resolutionMethod": "construction",
@@ -2112,6 +2112,49 @@
     "aiContribution": "ai-discovered",
     "significance": 10,
     "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+  },
+  {
+    "slug": "erdos-131-non-dividing-sets",
+    "name": "Erdős Problem #131",
+    "shortName": "Erdős #131",
+    "problemNumber": 131,
+    "field": "Number Theory, Additive Combinatorics",
+    "fieldGroup": "Number theory",
+    "resolution": "candidate",
+    "statement": "Let $F(N)$ be the maximal size of $A\\subseteq\\{1,\\ldots,N\\}$ such that no $a\\in A$ divides the sum of any nonempty subset of $A\\setminus\\{a\\}$. Estimate $F(N)$. The lower bound $F(N)\\gg N^{1/5}$ is classical, from constructions of Erdős and Csaba, and every non-dividing set is non-averaging, which gave $F(N)\\leq N^{1/4+o(1)}$. The claimed new result is the matching upper bound $F(N)\\leq N^{1/5+o(1)}$, obtained by running the Pham-Zakharov density-increment argument one dimension lower through a projective normalization, hence $F(N)=N^{1/5+o(1)}$.",
+    "posedBy": "Paul Erdős",
+    "yearPosed": 1975,
+    "solveType": "proved",
+    "solveDate": "2026-07-24",
+    "model": "GPT-5.6 Sol, Claude",
+    "modelMaker": "OpenAI, Anthropic",
+    "humanCollaborators": [],
+    "aiRole": "The paper states that the novel idea - the projective normalization that survives the divisibility constraints and drops the associated convex geometry by one dimension, moving the exponent from 1/4 to 1/5 - was found by GPT-5.6 Sol. The Lean formalization was then completed by a Claude agent loop working autonomously against a human-written route document until the development compiled with no sorry and a clean axiom audit.",
+    "verification": "lean-verified",
+    "verificationNote": "Built and audited by the site on 2026-08-02. A clean clone of the author's Lean 4 development (50 files, 17,408 lines) compiles against the pinned mathlib revision on Lean 4.32.0 with no sorry, admit or native_decide. `#print axioms Nondividing.main_log_limit` returns exactly the eleven whitelisted axioms - propext, Classical.choice, Quot.sound and the eight declared external interfaces - and notably no sorryAx, so no placeholder is load-bearing. Statement fidelity checked against the trusted Challenge.lean: the definitions of non-dividing and F, and the theorem type log F(N)/log N -> 1/5, match. NOT verified: the eight external axioms are assumed rather than proved. Each cites a published result (Schneider, Rogers-Shephard, Betke-Henk-Wills, Pham-Zakharov Lemmas 1, 7 and 13, Conlon-Fox-Pham) but none was checked line by line against its source, and the density-increment exponent in convex_density_set is where the 1/4 to 1/5 improvement lives. erdosproblems.com still lists the problem open with no comments.",
+    "publication": "announcement",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://theofilxeff.github.io/Erdos_131.pdf",
+    "sourceName": "A projective approach to non-dividing sets",
+    "resultNote": "The new content is the upper bound; the matching N^(1/5) construction is prior work of Erdős and Csaba. erdosproblems.com has not accepted the claim",
+    "aiContribution": "ai-discovered",
+    "significance": 10,
+    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "links": [
+      {
+        "label": "Lean 4 formalization",
+        "url": "https://github.com/theofilxeff/erdos_131"
+      },
+      {
+        "label": "erdosproblems.com/131",
+        "url": "https://www.erdosproblems.com/131"
+      }
+    ]
   },
   {
     "slug": "erdos-138",
@@ -5883,7 +5926,7 @@
       "Christopher D. Long"
     ],
     "aiRole": "Per the paper's AI-provenance section, the four-variable construction was produced by ChatGPT 5.6 Sol Pro without human intervention after the initial prompt, which told it the Jacobian conjecture had been disproved and asked whether a small Gaussian-moments counterexample might follow; shown that example, Claude Fable 5 found the three-variable construction and supplied independent algebraic checks. The author bears responsibility for the mathematics and exposition.",
-    "verification": "site-confirmed",
+    "verification": "unreviewed",
     "verificationNote": "Re-derived by the site on 2026-08-02: both counterexamples were rebuilt from the paper's stated polynomials and evaluated in exact rational arithmetic against the standard Gaussian moment rules (E(W^a Z^b) = a! when a = b, else 0; E(T^c) the double factorial), independently of the paper's own algebra. For m = 1 through 10 both give E(P^m) = 0 and E(QP^m) = m! exactly, and the term counts and degrees match the paper (five terms of degree four in three variables, six of degree three in four). The surrounding exposition has had no independent review.",
     "publication": "preprint",
     "resolutionMethod": "construction",
@@ -7129,7 +7172,7 @@
     "resolution": "resolved",
     "statement": "Do $n$ point charges whose electrostatic potential has only non-degenerate critical points always have at most $(n-1)^2$ of them? A configuration of five charges - three at the vertices of an equilateral triangle plus two small central charges pulled apart into a shallow bipyramid - has at least $24 > 16$ non-degenerate critical points, so the conjecture is false.",
     "posedBy": "James Clerk Maxwell",
-    "yearPosed": 1873,
+    "yearPosed": 2004,
     "solveType": "disproved",
     "solveDate": "2026-07-29",
     "model": "GPT-5.6 Sol",
@@ -7154,7 +7197,13 @@
     "ageNote": "The bound traces to Maxwell's 1873 Treatise; the precise non-degenerate form was formulated by Gabrielov, Novikov and Shapiro in 2007.",
     "aiContribution": "ai-co-developed",
     "significance": 30,
-    "significanceNote": "Traces to Maxwell's 1873 Treatise; the modern form drove work in potential theory and real algebraic geometry."
+    "significanceNote": "Traces to Maxwell's 1873 Treatise; the modern form drove work in potential theory and real algebraic geometry.",
+    "links": [
+      {
+        "label": "Original conjecture formalization",
+        "url": "https://ui.adsabs.harvard.edu/abs/2004math.ph...9009G/abstract"
+      }
+    ]
   },
   {
     "slug": "minimum-edge-outerplanarity",
@@ -7436,6 +7485,44 @@
     "aiContribution": "ai-discovered",
     "significance": 20,
     "significanceNote": "A classic Ruzsa-lineage question of additive combinatorics."
+  },
+  {
+    "slug": "optimal-strategies-in-the-all-heads-coin-game",
+    "name": "Optimal Strategies in the All-Heads Coin Game",
+    "shortName": "All-heads coin game",
+    "problemNumber": null,
+    "field": "Markov decision processes",
+    "fieldGroup": "Probability & statistics",
+    "resolution": "partial",
+    "statement": "In the all-heads coin game a player starts with $n$ coins, each showing heads with\nprobability $p$; each round all remaining coins are flipped, the player must set aside at\nleast one head (losing if none shows), and wins once all coins are set aside. Determine\noptimal strategies and the winning probability $w_{n,p}$. Resolved: for $p=\\tfrac12$ every\nstrategy achieves $w_{n,1/2}=\\tfrac12$; for $p>\\tfrac12$ the single-head strategy One is\noptimal, $n\\mapsto w_{n,p}$ is strictly increasing, and $W(p)=\\lim_n w_{n,p}$ has an explicit\nseries representation. In the regime $p<\\tfrac12$, explicitly left open by van Doorn, a\nfirst-order perturbation in $\\delta=\\tfrac12-p$ gives a closed-form description: the deficit\nsatisfies $\\tfrac12-w_{n,1/2-\\delta}\\approx\\delta c_n$, where $c_n$ obeys a linear recursion\nfor $n\\ge7$ with limit $L\\approx1.7035$, and to first order the optimal-value sequence has a\nstrict local minimum at $n=5$ and no local maximum.",
+    "posedBy": "W. van Doorn (small-$p$ regime left open; game builds on a question of J. Breitner)",
+    "yearPosed": 2024,
+    "solveType": "proved",
+    "solveDate": "2026-04-24",
+    "model": "Claude Opus 4.6 / 4.7 / 4.8",
+    "modelMaker": "Anthropic",
+    "humanCollaborators": [
+      "Peter Pfaffelhuber"
+    ],
+    "aiRole": "Per the paper's authorship disclosure: Claude (Anthropic; versions Opus 4.6, 4.7, 4.8), used\ninteractively, produced the mathematical text, the numerical code, and the complete Lean\n4/Mathlib formalization. The underlying ideas, choice of research question, the structuring\nof the joint induction, and the decision to formally verify are the author's; Claude's role\nwas execution — drafting exposition, proposing and debugging Lean proof tactics, selecting\nMathlib lemmas, producing numerical scripts — with every edit reviewed by the author.",
+    "verification": "lean-verified",
+    "verificationNote": "Every numbered result, including the perturbation analysis, is formally verified in Lean 4 with Mathlib: no `sorry`, no custom axioms (only propext, Classical.choice, Quot.sound), no `native_decide`/`unsafe`. Trust surface is two files (`CoinsLean/Challenge.lean`, `CoinsLean/CoinsLean/Defs.lean`), independently checkable via the Lean comparator on the public repository; manuscript↔Lean map in Appendix A. arXiv preprint (v2, June 2026), not peer-reviewed.\n\nStatus set to partially resolved (2026-08-02): p = 1/2 and p > 1/2 are fully resolved, but for p < 1/2 the paper gives only a first-order expansion in δ = 1/2 − p near 1/2, leaving the range of validity δ₀(n) open and the numerically observed local maxima outside its reach. Verification tier unchanged: the Lean checks what the paper claims, and the paper does not claim the full small-p regime.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2604.22991",
+    "sourceName": "arXiv:2604.22991 [math.PR]",
+    "aiContribution": "ai-co-developed",
+    "links": [
+      {
+        "label": "Lean formalization + full transcript:",
+        "url": "https://github.com/pfaffelh/coins"
+      }
+    ]
   },
   {
     "slug": "pandey-parity-petersen",

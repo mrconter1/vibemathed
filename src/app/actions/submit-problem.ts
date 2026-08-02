@@ -109,6 +109,28 @@ export async function submitProblem(values: SubmissionValues): Promise<SubmitRes
     }
   }
 
+  // Claiming a top verification tier requires evidence in the submission
+  // itself. The edit path already refuses to MOVE an entry up the ladder
+  // without a note; before this, creation had no such rule, so a submission
+  // could assert "Lean-verified" with no artifact and no explanation and land
+  // in the review queue looking authoritative. Reviewers need something to
+  // check, so ask for the note or a link (the primary source alone does not
+  // count - a paper claiming a Lean proof is not the Lean proof).
+  const claimedTier = String(data.verification ?? "");
+  if (claimedTier === "lean-verified" || claimedTier === "expert-verified") {
+    const note = String(data.verificationNote ?? "").trim();
+    const linkRows = Array.isArray((data.links as { create?: unknown[] })?.create)
+      ? ((data.links as { create: unknown[] }).create.length as number)
+      : 0;
+    if (!note && linkRows === 0) {
+      return {
+        ok: false,
+        error:
+          "A Lean-verified or independently expert-verified claim needs evidence: add a verification note saying who or what checked it, or link the formalization or review.",
+      };
+    }
+  }
+
   // Derive a unique slug from the name.
   const base = slugify(String(data.name ?? ""));
   if (!base) {

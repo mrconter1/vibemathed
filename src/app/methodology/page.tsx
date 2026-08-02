@@ -49,7 +49,7 @@ const VERIFICATION_DETAIL: Record<VerificationStatus, string> = {
   "expert-verified":
     "Checked and endorsed by named domain experts with no stake in the claim. Slower and much rarer than formalization, and it catches what a kernel cannot: a formal statement that drifted from the informal problem, a result already sitting in the literature, a proof that answers the neighbouring question. The authors checking their own work does not count, however expert they are, and that stays Unreviewed.",
   "site-confirmed":
-    "For Erdős problems: erdosproblems.com officially marks the problem solved, without a formal proof artifact.",
+    "The canonical community tracker for the problem accepted the claim - for Erdős problems, erdosproblems.com marks it solved - without a formal proof artifact. This is other people's judgement, not ours: what THIS site checked itself is recorded separately, below.",
   unreviewed:
     "Nobody independent has checked the mathematics yet, whatever venue the claim lives in.",
   contested:
@@ -228,6 +228,18 @@ export default function MethodologyPage() {
             </div>
           ))}
         </dl>
+        <p>
+          Separately from all of that, some entries carry a{" "}
+          <strong className="text-[var(--ink)]">Reproduced here</strong> badge.
+          That means this site ran the artifact itself: re-executed a finite
+          certificate, re-derived a counterexample in exact arithmetic, or
+          rebuilt a Lean development and audited which axioms its theorem
+          actually depends on. It is deliberately orthogonal to the ladder
+          above, because it answers a different question - not how the outside
+          world checked the claim, but what we checked ourselves. An entry can
+          be Lean-verified and reproduced here, either one alone, or neither,
+          and each entry says exactly what was run.
+        </p>
         <p>
           Peer review is deliberately not a rung on this ladder. It answers a
           different question, where the claim sits in the scholarly pipeline,

@@ -82,7 +82,11 @@ export const VERIFICATION: Record<
     color: "var(--status-good)",
     icon: "check",
   },
-  "site-confirmed": { label: "Site-confirmed", color: "var(--accent-blue)", icon: "check" },
+  // Renamed from "Site-confirmed": that label was doing two jobs, and the
+  // stronger one (the site reproducing an artifact itself) is now its own
+  // orthogonal field. This tier means only that the canonical community
+  // tracker accepted the claim. Stored value unchanged.
+  "site-confirmed": { label: "Tracker-confirmed", color: "var(--accent-blue)", icon: "check" },
   unreviewed: { label: "Unreviewed", color: "var(--ink-muted)", icon: "info" },
   contested: { label: "Contested", color: "var(--status-critical)", icon: "alert" },
 };

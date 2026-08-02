@@ -96,6 +96,14 @@ model Problem {
   /// How the resolution was achieved: "construction" | "computation" |
   /// "argument". Null = not yet classified.
   resolutionMethod String?
+  /// When this site independently reproduced the claim's artifact: re-ran a
+  /// finite certificate, re-derived a counterexample, rebuilt and
+  /// axiom-audited a Lean development. Orthogonal to `verification`, which
+  /// records how the OUTSIDE world checked the mathematics - an entry can be
+  /// both Lean-verified and site-reproduced, or neither.
+  reproducedAt   DateTime?
+  /// What exactly was reproduced, and how. Rendered beside the badge.
+  reproducedNote String?
   /// What happened to the PROBLEM, as opposed to how trustworthy the claim is
   /// (`verification`): "resolved" | "partial" | "variant" | "candidate" |
   /// "retracted". Same string-not-enum convention as `solveType`.

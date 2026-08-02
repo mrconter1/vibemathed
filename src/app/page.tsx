@@ -51,6 +51,8 @@ export default async function Home() {
     resolutionMethod: p.resolutionMethod ?? null,
     significance: p.significance ?? null,
     significanceNote: p.significanceNote ?? null,
+    reproducedAt: p.reproducedAt ?? null,
+    reproducedNote: p.reproducedNote ?? null,
     resultNote: p.resultNote ?? null,
     ageNote: p.ageNote ?? null,
     upvotes: p.upvotes,

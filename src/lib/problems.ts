@@ -207,6 +207,14 @@ export interface MathProblem {
   /** One-line justification for the significance score. */
   significanceNote?: string | null;
   /**
+   * ISO timestamp of the site independently reproducing this claim's
+   * artifact. Orthogonal to `verification`: that records how the outside
+   * world checked the mathematics, this records what we ran ourselves.
+   */
+  reproducedAt?: string | null;
+  /** What was reproduced and how; shown beside the badge. */
+  reproducedNote?: string | null;
+  /**
    * Optional short qualifier appended to the visible result, for results that
    * aren't cleanly "proved"/"disproved" - e.g. disproved in some dimensions but
    * still open in others. Present only on entries that need it.
@@ -299,6 +307,8 @@ export interface CardEntry {
   resolutionMethod?: ResolutionMethod | null;
   significance: number | null;
   significanceNote: string | null;
+  reproducedAt: string | null;
+  reproducedNote: string | null;
   resultNote: string | null;
   ageNote: string | null;
   upvotes: number;

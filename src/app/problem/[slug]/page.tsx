@@ -158,6 +158,13 @@ export default async function ProblemPage({
     ],
     // The AI-estimated problem weight (see methodology); dash until assessed.
     ["Significance", p.significance !== null && p.significance !== undefined ? `${p.significance} / 100` : DASH],
+    // What this site ran itself, if anything. Orthogonal to Verification.
+    [
+      "Reproduced here",
+      p.reproducedAt
+        ? new Date(p.reproducedAt).toISOString().slice(0, 10)
+        : DASH,
+    ],
     [
       "Wikipedia",
       p.renownLangs > 0
@@ -238,6 +245,9 @@ export default async function ProblemPage({
                 {/* The stored one-line justification for the score. */}
                 {k === "Significance" && p.significanceNote && (
                   <StarNote text={p.significanceNote} />
+                )}
+                {k === "Reproduced here" && p.reproducedNote && (
+                  <StarNote text={p.reproducedNote} />
                 )}
               </dd>
             </div>
