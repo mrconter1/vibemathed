@@ -46,6 +46,7 @@ import { Icon } from "@/components/Icons";
 import { StatusIcon } from "@/components/StatusIcon";
 import { InfoTip, StarNote } from "@/components/Tooltip";
 import { VoteButtons } from "@/components/VoteButtons";
+import { TeX, deTeX } from "@/components/TeX";
 
 // Only genuinely ordinal keys (plus alphabetical Name) belong here. Result,
 // field and model are CATEGORIES - they live in the filters, where "sorting"
@@ -275,7 +276,7 @@ function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string
                 href={`/problem/${p.slug}`}
                 className="after:absolute after:inset-0 after:content-['']"
               >
-                {p.name}
+                <TeX>{p.name}</TeX>
               </Link>
             </h3>
             {/* Desktop placement: beside the title, as one group. */}
@@ -735,7 +736,10 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
       if (methodFilter !== "all" && p.resolutionMethod !== methodFilter) return false;
       if (!q) return true;
       const haystack = [
+        // Both forms: a name carrying math is displayed rendered, so someone
+        // searching types what they see ("Lp(L1)"), not the source ("$L_p(L_1)$").
         p.name,
+        deTeX(p.name),
         p.field,
         p.fieldGroup,
         p.posedBy,

@@ -14,6 +14,7 @@
 import Link from "next/link";
 import { ageAtSolve, type ProblemWithVotes } from "@/lib/problems";
 import { Icon, type IconName } from "@/components/Icons";
+import { TeX } from "@/components/TeX";
 
 const MONTHS = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -125,7 +126,7 @@ export function Highlights({
                   className="group flex items-baseline justify-between gap-3"
                 >
                   <span className="min-w-0 truncate text-sm text-[var(--ink-secondary)] transition-colors group-hover:text-[var(--accent-blue)]">
-                    {row.name}
+                    <TeX>{row.name}</TeX>
                   </span>
                   <span className="shrink-0 font-mono text-[11px] text-[var(--ink-muted)]">
                     {row.detail}

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { approveSubmission, rejectSubmission } from "@/app/actions/submit-problem";
 import { REVIEW_MESSAGE_MAX } from "@/lib/submission";
 import { useViewer } from "@/components/ViewerProvider";
+import { TeX } from "@/components/TeX";
 
 export interface PendingEntry {
   slug: string;
@@ -72,7 +73,7 @@ export function ReviewQueue({ pending }: { pending: PendingEntry[] }) {
           className="rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3.5"
         >
           <div className="flex flex-wrap items-baseline gap-x-2.5">
-            <h2 className="font-serif text-base text-[var(--ink)]">{p.name}</h2>
+            <h2 className="font-serif text-base text-[var(--ink)]"><TeX>{p.name}</TeX></h2>
             <span className="text-xs text-[var(--ink-muted)]">
               by{" "}
               {p.submittedByPseudonym ? (

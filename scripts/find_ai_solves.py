@@ -71,9 +71,31 @@ STATE_FILE = Path(__file__).parent / ".find_ai_solves_state.json"
 # The models whose mention in a paper marks it as AI-assisted work.
 MODEL_TERMS = [
     "Claude", "GPT", "ChatGPT", "Codex", "Gemini", "Grok",
-    "Aristotle", "AlphaProof", "AlphaEvolve", "large language model",
-    "LLM-assisted", "generative AI",
+    "Aristotle", "AlphaProof", "AlphaEvolve", "LLM-assisted",
+    # Agents seen in the wild that are not model brands.
+    "Danus", "Rethlas", "AxiomProver",
 ]
+
+# Generic phrasings, matched ONLY against a paper's own title and abstract.
+# In full text they are worthless: "Conference on Artificial Intelligence and
+# Statistics" is a venue, "large language models (LLMs)" is usually a citation,
+# and a 14-day sweep matching these anywhere returned 224 hits from 630 papers.
+# In an abstract, the same words are the authors describing their own method.
+GENERIC_TERMS = [
+    "generative AI", "language model", "AI system", "AI-assisted",
+    "AI-generated", "AI-guided", "artificial intelligence",
+    "automated theorem prov",
+]
+GENERIC_RE = re.compile("|".join(re.escape(t) for t in GENERIC_TERMS), re.IGNORECASE)
+
+# Contexts where a model mention means the opposite of a contribution. Writing
+# help is below our bottom tier, so a paper whose only AI mention is a language
+# -polishing declaration is not a candidate at all.
+NOISE_RE = re.compile(
+    r"improve the English|language editing|writing process|proofread|grammar"
+    r"|Conference on Artificial|Journal of Artificial|Cited by",
+    re.IGNORECASE,
+)
 MODEL_RE = re.compile("|".join(re.escape(t) for t in MODEL_TERMS), re.IGNORECASE)
 # "Claude" and "GPT" style terms inside ordinary words ("claudication") are not
 # a risk worth engineering around at this volume; the context line shown in
@@ -82,7 +104,11 @@ MODEL_RE = re.compile("|".join(re.escape(t) for t in MODEL_TERMS), re.IGNORECASE
 # What a resolution smells like, in a title or abstract.
 RESOLUTION_RE = re.compile(
     r"conjecture|counterexample|disproo?f|disprov|open problem|open question"
-    r"|long-?standing|resolv|settles?|refut|first proof",
+    r"|long-?standing|resolv|settles?|refut|first proof"
+    # "answers a question of X" is the commonest way a paper says it closed
+    # something, and its absence hid both Danus results in July 2026.
+    r"|answers? (?:a|the|this) question|answering (?:a|the) question"
+    r"|affirmative answer|negative answer|remained open|left open",
     re.IGNORECASE,
 )
 
@@ -282,7 +308,7 @@ def arxiv_ai_mentions(paper: dict) -> list[str]:
         except Exception:
             html = paper["abstract"]
     text = re.sub(r"<[^>]+>", " ", html)
-    return context_lines(text, MODEL_RE)
+    return [c for c in context_lines(text, MODEL_RE) if not NOISE_RE.search(c)]
 
 
 # --------------------------------------------------------------- GitHub ----
@@ -603,8 +629,18 @@ def main() -> int:
         hits = 0
         for p, snippets in zip(new_papers, all_snippets):
             seen.add(p["id"])
-            if not snippets:
+            # A product name anywhere in the full text, OR a generic phrasing in
+            # the paper's own abstract. The second arm exists for papers that
+            # describe their method without naming a product ("AI systems
+            # generated key ideas and proofs"), which the product list alone
+            # cannot see; restricting it to the abstract keeps venue names and
+            # citation lists out.
+            abstract = p["title"] + " " + p["abstract"]
+            generic = GENERIC_RE.search(abstract) and not NOISE_RE.search(abstract)
+            if not snippets and not generic:
                 continue
+            if not snippets:
+                snippets = [f"(abstract) …{abstract[:220]}…"]
             hits += 1
             # Marked rather than hidden: one paper can hold a second, untracked
             # result, so "already in catalog" is a triage hint, not a filter.

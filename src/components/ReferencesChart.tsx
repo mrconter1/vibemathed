@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ageAtSolve, type MathProblem } from "@/lib/problems";
 import { useChartSettings } from "@/lib/chart-settings";
+import { TeX, deTeX } from "@/components/TeX";
 
 // This chart plots SIGNIFICANCE (the AI-estimated problem weight) against how
 // long the problem stood open. The dense band at 10 is the point: almost every
@@ -285,7 +286,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
                 key={problem.slug}
                 tabIndex={0}
                 role="link"
-                aria-label={`Open ${problem.name}`}
+                aria-label={`Open ${deTeX(problem.name)}`}
                 onMouseEnter={() => setActiveSlug(problem.slug)}
                 onMouseLeave={() => setActiveSlug(null)}
                 onFocus={() => setActiveSlug(problem.slug)}
@@ -326,7 +327,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
                     textAnchor={labelAnchor}
                     style={{ fontSize: 14, fill: "var(--ink-secondary)" }}
                   >
-                    {problem.shortName}
+                    {deTeX(problem.shortName)}
                   </text>
                 )}
               </g>
@@ -343,7 +344,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
               transform: "translate(-50%, calc(-100% - 16px))",
             }}
           >
-            <p className="font-serif text-sm text-[var(--ink)]">{active.problem.name}</p>
+            <p className="font-serif text-sm text-[var(--ink)]"><TeX>{active.problem.name}</TeX></p>
             <p className="mt-1 text-[var(--ink-secondary)]">
               {active.problem.field ?? SOLVE_TYPE_LABEL[active.problem.solveType] ?? active.problem.solveType}
             </p>

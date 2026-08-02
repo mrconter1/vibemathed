@@ -27,7 +27,7 @@ function describe(p: ProblemWithVotes): string {
   if (p.statement) return p.statement;
   const verb = SOLVE_TYPE[p.solveType]?.label.toLowerCase() ?? "resolved";
   const maker = p.modelMaker ? ` (${p.modelMaker})` : "";
-  return `${p.name} was ${verb} with ${p.model}${maker} in the loop, ${p.solveDate}.`;
+  return `${deTeX(p.name)} was ${verb} with ${p.model}${maker} in the loop, ${p.solveDate}.`;
 }
 
 // Prerender only the pages people actually land on cold - the newest 30 and
@@ -62,12 +62,12 @@ export async function generateMetadata({
   if (!p) return { title: "Problem not found" };
   const description = deTeX(describe(p)).slice(0, 200);
   return {
-    title: p.name,
+    title: deTeX(p.name),
     description,
     alternates: { canonical: `/problem/${p.slug}` },
     openGraph: {
       type: "article",
-      title: `${p.name} · VibeMathed`,
+      title: `${deTeX(p.name)} · VibeMathed`,
       description,
       url: `/problem/${p.slug}`,
     },
@@ -97,7 +97,7 @@ export default async function ProblemPage({
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      headline: p.name,
+      headline: deTeX(p.name),
       description: deTeX(describe(p)),
       datePublished: p.solveDate,
       url: `${SITE_URL}/problem/${p.slug}`,
@@ -112,7 +112,7 @@ export default async function ProblemPage({
         {
           "@type": "ListItem",
           position: 2,
-          name: p.name,
+          name: deTeX(p.name),
           item: `${SITE_URL}/problem/${p.slug}`,
         },
       ],
@@ -196,7 +196,9 @@ export default async function ProblemPage({
           surfaces below. */}
       <article className="mt-4 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-5 sm:px-6 sm:py-6">
         <div className="flex items-start justify-between gap-4">
-          <h1 className="font-serif text-2xl text-[var(--ink)] sm:text-3xl">{p.name}</h1>
+          <h1 className="math-prose font-serif text-2xl text-[var(--ink)] sm:text-3xl">
+            <TeX>{p.name}</TeX>
+          </h1>
           {/* One control corner: votes, then the two quiet icon affordances
               (report, edit) in the same bordered idiom. Four controls in a
               row is ~200px, which crushes long titles on phones - below sm
