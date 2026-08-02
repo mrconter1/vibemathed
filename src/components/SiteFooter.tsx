@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { SocialLinks } from "@/components/SocialLinks";
 
 /// One footer for the whole site: a single-sentence definition and the link
-/// row. The longer prose moved to the About page.
+/// row. The longer prose moved to the About page. Nothing here points at a
+/// person: the GitHub link is the repository, and Contact is the on-site
+/// inbox, so no private address is published.
 export function SiteFooter() {
   const link = "text-[var(--accent-blue)] hover:underline";
   return (
@@ -38,16 +39,10 @@ export function SiteFooter() {
             Submit
           </Link>
           <span aria-hidden>·</span>
-          <a
-            href="mailto:rasmus.lindahl1996@gmail.com?subject=VibeMathed"
-            className={link}
-          >
+          <Link href="/contact" className={link}>
             Contact
-          </a>
+          </Link>
         </p>
-        <div className="mt-4">
-          <SocialLinks />
-        </div>
       </div>
     </footer>
   );

@@ -94,10 +94,7 @@ export default async function Home() {
       creator: {
         "@type": "Person",
         name: "Rasmus Lindahl",
-        sameAs: [
-          "https://github.com/mrconter1",
-          "https://www.linkedin.com/in/rasmus-lindahl-6501371ba/",
-        ],
+        sameAs: ["https://github.com/mrconter1/vibemathed"],
       },
       isAccessibleForFree: true,
       license: "https://creativecommons.org/licenses/by/4.0/",

@@ -12,6 +12,7 @@
 // the result is visible: you change your bio next to the bio.
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   updateBio,
   updateLinks,
@@ -125,16 +126,12 @@ export function ProfileEditor({
           Edit profile
         </button>
         {!viewer.verified && (
-          <a
-            href={`mailto:rasmus.lindahl1996@gmail.com?subject=${encodeURIComponent(
-              "VibeMathed: profile verification request",
-            )}&body=${encodeURIComponent(
-              `My VibeMathed profile is ${pseudonym}.\n\nI would like the verified badge. Here is something that ties this account to me (a university page, an arXiv author page, a personal site linking back, or a message from an institutional address):\n\n`,
-            )}`}
+          <Link
+            href="/contact?topic=verification"
             className="text-xs text-[var(--accent-blue)] hover:underline"
           >
             Request verification
-          </a>
+          </Link>
         )}
       </div>
     );
