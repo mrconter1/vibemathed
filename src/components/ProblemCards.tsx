@@ -230,20 +230,6 @@ function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string
           {res.pill}
         </span>
       )}
-      {/* The site reproducing an artifact is orthogonal to every other
-          axis and is the strongest thing this record can say on its own
-          authority, so it gets its own pill in the site's accent. */}
-      {p.reproducedAt && (
-        <span
-          className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2 py-px text-[11px] font-medium"
-          style={{
-            color: "var(--accent-blue)",
-            borderColor: "color-mix(in srgb, var(--accent-blue) 40%, transparent)",
-          }}
-        >
-          Reproduced here
-        </span>
-      )}
       {/* Same convention for the AI-contribution axis; unclassified entries
           show nothing. */}
       {p.aiContribution && AI_CONTRIBUTION[p.aiContribution]?.pill && (

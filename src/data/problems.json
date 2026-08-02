@@ -18,7 +18,7 @@
       "Sergey Nikolenko"
     ],
     "aiRole": "GPT-5.6 Sol, Claude Fable 5 and Claude Opus 5 carried out the search for constructions, symbolic envelope derivations, proofs, and the exact-verifier development; the human author framed the program, directed the search, set the claim scope, and verified all results independently by hand.",
-    "verification": "unreviewed",
+    "verification": "site-confirmed",
     "verificationNote": "The k=17 lower bound is a finite certificate: the verifier rebuilds the 67-arc instance from raw interval data, rediscovers all paths by DFS, and enumerates all 2^17 routings in exact rational arithmetic. Re-run by the site from a clean clone on 2026-08-01; the exact constant, 15 minimizers, and 18-atom hull certificate reproduce. The deletion-star ceiling theorems are conventional proofs in an unreviewed preprint, checked by the author only — no independent expert review, no formalization. Tier reflects the site's confirmation of the certificate; the structural results remain unreviewed.",
     "publication": "preprint",
     "resolutionMethod": "construction",
@@ -5926,7 +5926,7 @@
       "Christopher D. Long"
     ],
     "aiRole": "Per the paper's AI-provenance section, the four-variable construction was produced by ChatGPT 5.6 Sol Pro without human intervention after the initial prompt, which told it the Jacobian conjecture had been disproved and asked whether a small Gaussian-moments counterexample might follow; shown that example, Claude Fable 5 found the three-variable construction and supplied independent algebraic checks. The author bears responsibility for the mathematics and exposition.",
-    "verification": "unreviewed",
+    "verification": "site-confirmed",
     "verificationNote": "Re-derived by the site on 2026-08-02: both counterexamples were rebuilt from the paper's stated polynomials and evaluated in exact rational arithmetic against the standard Gaussian moment rules (E(W^a Z^b) = a! when a = b, else 0; E(T^c) the double factorial), independently of the paper's own algebra. For m = 1 through 10 both give E(P^m) = 0 and E(QP^m) = m! exactly, and the term counts and degrees match the paper (five terms of degree four in three variables, six of degree three in four). The surrounding exposition has had no independent review.",
     "publication": "preprint",
     "resolutionMethod": "construction",
