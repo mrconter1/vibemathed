@@ -250,12 +250,28 @@ export default async function ProblemPage({
                 what was actually proved, as formalized
               </span>
             </summary>
-            <div className="border-t border-[var(--hairline)] px-3.5 py-3">
+            <div className="border-t border-[var(--hairline)] py-3">
+              {/* Numbered lines, so a reader can say "line 6 is where i≠j
+                  became a≠b" instead of describing where they mean. The gutter
+                  is sticky, so it survives scrolling a long line sideways, and
+                  select-none keeps the numbers out of a copied selection. */}
               <pre className="overflow-x-auto font-mono text-[11px] leading-relaxed text-[var(--ink-secondary)]">
-                <code>{p.formalStatement}</code>
+                <code className="inline-block min-w-full">
+                  {p.formalStatement.split("\n").map((line, i) => (
+                    <span key={i} className="grid grid-cols-[2.5rem_1fr]">
+                      <span
+                        aria-hidden
+                        className="sticky left-0 select-none border-r border-[var(--hairline)] bg-[var(--paper)] pr-2 text-right tabular-nums text-[var(--ink-muted)]"
+                      >
+                        {i + 1}
+                      </span>
+                      <span className="whitespace-pre pl-3">{line || " "}</span>
+                    </span>
+                  ))}
+                </code>
               </pre>
               {p.formalStatementSourceUrl && (
-                <p className="mt-2.5 border-t border-[var(--hairline)] pt-2 text-[11px] text-[var(--ink-muted)]">
+                <p className="mx-3.5 mt-2.5 border-t border-[var(--hairline)] pt-2 text-[11px] text-[var(--ink-muted)]">
                   A machine checks that the proof entails this statement. Whether this
                   statement is the problem is for you to judge.{" "}
                   <a
