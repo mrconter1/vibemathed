@@ -57,7 +57,8 @@ async function Dashboard() {
   }
 
   const DAYS = await availableDays(MAX_DAYS);
-  const [s, traffic] = await Promise.all([getAdminStats(DAYS), getTraffic(DAYS)]);
+  const [s, outcome] = await Promise.all([getAdminStats(DAYS), getTraffic(DAYS)]);
+  const traffic = outcome.status === "ok" ? outcome.report : null;
 
   const approvalRate =
     s.review.decided > 0
@@ -137,6 +138,23 @@ async function Dashboard() {
         </>
       ) : (
         <div className="mt-3 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 text-sm leading-relaxed text-[var(--ink-secondary)] sm:p-5">
+          {outcome.status === "error" ? (
+            <>
+              <p>
+                The token is configured, but Vercel refused the query. This is
+                the API&apos;s own words:
+              </p>
+              <pre className="mt-2 overflow-x-auto rounded border border-[var(--hairline)] bg-[var(--paper)] px-2 py-1.5 font-mono text-[11px] text-[var(--ink-secondary)]">
+                {outcome.detail}
+              </pre>
+              <p className="mt-2 text-[13px] text-[var(--ink-muted)]">
+                Usually the token lacks access to this project&apos;s team, or
+                it has expired. Nothing here is cached, so a corrected token
+                shows up on the next reload.
+              </p>
+            </>
+          ) : (
+            <>
           <p>
             Traffic is not wired up yet. Vercel Web Analytics has a public
             query API, and this page is already written against it - it just
@@ -166,6 +184,8 @@ async function Dashboard() {
             bounces, so this page shows pages per visitor and says that is
             what it is.
           </p>
+            </>
+          )}
         </div>
       )}
 

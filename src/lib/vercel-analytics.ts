@@ -33,6 +33,14 @@ export interface TrafficRow {
   visitors: number;
 }
 
+export type TrafficOutcome =
+  | { status: "ok"; report: TrafficReport }
+  /// No VERCEL_ANALYTICS_TOKEN visible to the running server.
+  | { status: "unconfigured" }
+  /// Token present, but the API refused or the call failed. `detail` is safe
+  /// to render: it never contains the token.
+  | { status: "error"; detail: string };
+
 export interface TrafficReport {
   daily: TrafficPoint[];
   routes: TrafficRow[];
@@ -47,11 +55,20 @@ function isoDay(offsetDays: number): string {
   return d.toISOString().slice(0, 10);
 }
 
+/// Bracket access, deliberately: a bare `process.env.NAME` can be replaced
+/// with a literal at build time, which would freeze whatever the value was
+/// when the bundle was made. This reads the running process every time.
+function analyticsToken(): string | undefined {
+  return process.env["VERCEL_ANALYTICS_TOKEN"];
+}
+
+let lastError = "";
+
 async function query(
   dataset: "visits/aggregate",
   params: Record<string, string>,
 ): Promise<Record<string, unknown>[] | null> {
-  const token = process.env.VERCEL_ANALYTICS_TOKEN;
+  const token = analyticsToken();
   if (!token) return null;
 
   const search = new URLSearchParams({
@@ -68,12 +85,15 @@ async function query(
       next: { revalidate: 300 },
     });
     if (!res.ok) {
-      console.error("vercel analytics", dataset, res.status, await res.text());
+      const body = (await res.text()).slice(0, 200);
+      lastError = `HTTP ${res.status} from ${dataset}: ${body}`;
+      console.error("vercel analytics", lastError);
       return null;
     }
     const body = (await res.json()) as { data?: Record<string, unknown>[] };
     return Array.isArray(body.data) ? body.data : [];
   } catch (error) {
+    lastError = error instanceof Error ? error.message : String(error);
     console.error("vercel analytics fetch failed", error);
     return null;
   }
@@ -94,8 +114,9 @@ function rows(
 
 /// Everything the admin page needs, in one fan-out. Null means "not
 /// configured or unreachable" - the caller renders a setup note instead.
-export async function getTraffic(days = 30): Promise<TrafficReport | null> {
-  if (!process.env.VERCEL_ANALYTICS_TOKEN) return null;
+export async function getTraffic(days = 30): Promise<TrafficOutcome> {
+  if (!analyticsToken()) return { status: "unconfigured" };
+  lastError = "";
 
   const since = isoDay(days);
   const until = isoDay(0);
@@ -108,7 +129,9 @@ export async function getTraffic(days = 30): Promise<TrafficReport | null> {
     query("visits/aggregate", { ...window, by: "country", limit: "8" }),
   ]);
 
-  if (!daily) return null;
+  if (!daily) {
+    return { status: "error", detail: lastError || "No data returned." };
+  }
 
   const all: TrafficPoint[] = daily.map((r) => ({
     day: String(r.timestamp ?? "").slice(0, 10),
@@ -121,13 +144,16 @@ export async function getTraffic(days = 30): Promise<TrafficReport | null> {
   const points = firstReal <= 0 ? all : all.slice(firstReal);
 
   return {
-    daily: points,
-    routes: rows(routes, "route", "(unknown route)"),
-    referrers: rows(referrers, "referrerHostname", "Direct"),
-    countries: rows(countries, "country"),
-    totalPageviews: points.reduce((s, p) => s + p.pageviews, 0),
-    totalVisitors: points.reduce((s, p) => s + p.visitors, 0),
+    status: "ok",
+    report: {
+      daily: points,
+      routes: rows(routes, "route", "(unknown route)"),
+      referrers: rows(referrers, "referrerHostname", "Direct"),
+      countries: rows(countries, "country"),
+      totalPageviews: points.reduce((s, p) => s + p.pageviews, 0),
+      totalVisitors: points.reduce((s, p) => s + p.visitors, 0),
+    },
   };
 }
 
-export const ANALYTICS_CONFIGURED = () => Boolean(process.env.VERCEL_ANALYTICS_TOKEN);
+export const ANALYTICS_CONFIGURED = () => Boolean(analyticsToken());

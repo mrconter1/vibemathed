@@ -120,20 +120,9 @@ export async function getAdminStats(days = 30): Promise<AdminStats> {
     ? Math.round(waits[Math.floor(waits.length / 2)] * 10) / 10
     : null;
 
-  const submitterIds = submitterGroups
-    .map((g) => g.submittedById)
-    .filter((id): id is string => id !== null);
-  const submitterNames = submitterIds.length
-    ? await prisma.user.findMany({
-        where: { id: { in: submitterIds } },
-        select: { id: true, pseudonym: true },
-      })
-    : [];
-  const nameOf = new Map(submitterNames.map((u) => [u.id, u.pseudonym ?? "Anonymous"]));
-
   // One pass over the three things a member can do. Small tables, so this
   // is cheaper than three grouped queries plus a join.
-  const [entryRows, editRows, commentRows, allNames] = await Promise.all([
+  const [entryRows, editRows, commentRows, allNames, totalUsers] = await Promise.all([
     prisma.problem.findMany({
       where: { status: "published", submittedById: { not: null } },
       select: { submittedById: true },
@@ -147,6 +136,7 @@ export async function getAdminStats(days = 30): Promise<AdminStats> {
       select: { userId: true },
     }),
     prisma.user.findMany({ select: { id: true, pseudonym: true } }),
+    prisma.user.count(),
   ]);
 
   const tally = new Map<string, { entries: number; edits: number; comments: number }>();
@@ -160,7 +150,9 @@ export async function getAdminStats(days = 30): Promise<AdminStats> {
   for (const r of editRows) bump(r.userId, "edits");
   for (const r of commentRows) bump(r.userId, "comments");
 
+  // One name map serves both leaderboards; no second round trip for it.
   const displayName = new Map(allNames.map((u) => [u.id, u.pseudonym ?? "Anonymous"]));
+  const nameOf = displayName;
   const topContributors = [...tally.entries()]
     .map(([id, c]) => ({
       name: displayName.get(id) ?? "Anonymous",
@@ -173,7 +165,7 @@ export async function getAdminStats(days = 30): Promise<AdminStats> {
   return {
     topContributors,
     users: {
-      total: await prisma.user.count(),
+      total: totalUsers,
       withEntries: usersWithEntries,
       withComments: usersWithComments,
       banned,
