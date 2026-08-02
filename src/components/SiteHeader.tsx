@@ -14,7 +14,11 @@ import { NotificationsMenu } from "@/components/NotificationsMenu";
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--hairline)] bg-[color-mix(in_srgb,var(--paper-raised)_88%,transparent)] backdrop-blur-sm">
-      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-5 gap-y-0.5 px-4 py-2.5 sm:flex-nowrap sm:px-8">
+      {/* gap-y separates the wordmark block from the nav row when this
+          wraps to two lines on a phone; gap-x keeps the nav clear of the
+          tagline on one line. Both were tight enough that the subtitle and
+          the buttons read as one block. */}
+      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-7 gap-y-2 px-4 py-2.5 sm:flex-nowrap sm:gap-x-8 sm:px-8">
         <Link
           href="/"
           className="order-1 block transition-opacity hover:opacity-75"

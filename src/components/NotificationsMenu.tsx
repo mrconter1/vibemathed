@@ -14,6 +14,29 @@ import {
   type NotificationItem,
 } from "@/app/actions/notifications";
 import { Icon } from "@/components/Icons";
+
+/// Last feed this tab saw. The panel renders from it instantly on open while
+/// the live fetch refreshes underneath, so navigating between pages never
+/// shows the loading skeleton twice.
+const FEED_CACHE = "vibemathed:notifications";
+
+function readCache(): NotificationItem[] | null {
+  try {
+    const raw = sessionStorage.getItem(FEED_CACHE);
+    const parsed = raw ? (JSON.parse(raw) as NotificationItem[]) : null;
+    return Array.isArray(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(items: NotificationItem[]) {
+  try {
+    sessionStorage.setItem(FEED_CACHE, JSON.stringify(items));
+  } catch {
+    // Storage full or blocked; the in-memory copy still works.
+  }
+}
 import { useViewer } from "@/components/ViewerProvider";
 
 export function NotificationsMenu() {
@@ -37,17 +60,24 @@ export function NotificationsMenu() {
   const panelRef = useRef<HTMLDivElement>(null);
   const prefetched = useRef(false);
 
-  // When the badge shows a count, fetch the feed ahead of the click so the
-  // panel opens populated. Deliberately does NOT touch the watermark - only
-  // opening the panel marks things seen.
+  // Warm the feed as soon as we know who the viewer is, whatever the badge
+  // says: an empty badge still opens a panel, and waiting for the click meant
+  // a visible server round trip. Deliberately does NOT touch the watermark -
+  // only opening the panel marks things seen.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!loaded || !signedIn || prefetched.current) return;
-    if (notifications === 0 && queued === 0) return;
     prefetched.current = true;
+    const cached = readCache();
+    if (cached) setItems(cached);
     getNotifications().then((result) => {
-      if (result.ok) setItems(result.items);
+      if (result.ok) {
+        setItems(result.items);
+        writeCache(result.items);
+      }
     });
-  }, [loaded, signedIn, notifications, queued]);
+  }, [loaded, signedIn]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Close on outside click or Escape, same idiom as the account menu.
   useEffect(() => {
@@ -73,18 +103,18 @@ export function NotificationsMenu() {
   async function openPanel() {
     setOpen(true);
     setError(null);
-    // A prefetched feed opens instantly; otherwise fetch now.
-    if (items === null) {
-      const result = await getNotifications();
-      if (!result.ok) {
-        setError(result.error);
-        return;
-      }
-      setItems(result.items);
-    }
     // Everything shown is now seen: move the server watermark, zero the badge.
     void markNotificationsSeen();
     clearNotifications();
+    // The panel is already painted from the prefetch or the cache; this only
+    // corrects it if something landed since.
+    const result = await getNotifications();
+    if (!result.ok) {
+      if (items === null) setError(result.error);
+      return;
+    }
+    setItems(result.items);
+    writeCache(result.items);
   }
 
   return (
