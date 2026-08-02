@@ -865,7 +865,7 @@
     "citationsPaper": null,
     "citationsSource": null,
     "citationsUrl": null,
-    "renownLangs": 0,
+    "renownLangs": 1,
     "sourceUrl": "https://openai.com/index/ten-advances-in-mathematics/",
     "sourceName": "OpenAI: Ten advances in mathematics and theoretical computer science",
     "aiContribution": "ai-discovered",
