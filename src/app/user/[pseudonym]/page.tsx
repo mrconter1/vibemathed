@@ -9,6 +9,7 @@ import { Icon, type IconName } from "@/components/Icons";
 import { MEMBER_ROLE, VERIFIED_HELP, type MemberRole } from "@/lib/roles";
 import { InfoTip } from "@/components/Tooltip";
 import { ProfileEditor } from "@/components/ProfileEditor";
+import { LINK_KEYS, LINK_SPECS, linkDisplay } from "@/lib/profile-links";
 
 // A member's public page: pseudonym, join date, published entries, comments
 // and edit history. Read-only by design - nothing here is editable, and
@@ -76,9 +77,12 @@ export default async function UserPage({
   if (!profile) notFound();
 
   const tiles: { icon: IconName; label: string; value: string }[] = [
+    // Contributions first: it is the one number that says how much of this
+    // record a member actually built, rather than how it was received.
+    { icon: "pulse", label: "Contributions", value: String(profile.contributions) },
     { icon: "layers", label: "Entries", value: String(profile.entries.length) },
     { icon: "bubble", label: "Comments", value: String(profile.commentCount) },
-    { icon: "pulse", label: "Edits", value: String(profile.editCount) },
+    { icon: "pencil", label: "Edits", value: String(profile.editCount) },
     {
       icon: "votes",
       label: "Entry score",
@@ -147,12 +151,37 @@ export default async function UserPage({
         <p className="mt-1.5 text-sm text-[var(--ink-muted)]">
           Member since {profile.joined}
         </p>
+        {/* rel="me" is the point of these: a link back from the member's own
+            site is what turns a claim into evidence. nofollow keeps a public
+            profile from being worth farming for SEO. */}
+        {LINK_KEYS.some((k) => profile.links[k]) && (
+          <ul className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+            {LINK_KEYS.map((k) => {
+              const href = profile.links[k];
+              if (!href) return null;
+              return (
+                <li key={k} className="text-xs">
+                  <span className="text-[var(--ink-muted)]">{LINK_SPECS[k].label}</span>{" "}
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="me nofollow noopener noreferrer"
+                    className="text-[var(--accent-blue)] hover:underline"
+                  >
+                    {linkDisplay(k, href)}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+
         {/* Renders only for the member whose page this is; see the note in
             ProfileEditor about why the check is client-side. */}
-        <ProfileEditor pseudonym={profile.pseudonym} />
+        <ProfileEditor pseudonym={profile.pseudonym} links={profile.links} />
       </header>
 
-      <dl className="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+      <dl className="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-5">
         {tiles.map((t) => (
           <div
             key={t.label}

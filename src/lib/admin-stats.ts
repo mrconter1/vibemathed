@@ -20,6 +20,9 @@ export interface AdminStats {
   submissions: DayPoint[];
   activity: DayPoint[];
   topSubmitters: { name: string; entries: number }[];
+  /// Entries + edits + comments per member: who is actually building the
+  /// record, which top-submitters alone does not show.
+  topContributors: { name: string; total: number; detail: string }[];
 }
 
 /// Buckets timestamps into a continuous run of days ending today, so a chart
@@ -128,7 +131,47 @@ export async function getAdminStats(days = 30): Promise<AdminStats> {
     : [];
   const nameOf = new Map(submitterNames.map((u) => [u.id, u.pseudonym ?? "Anonymous"]));
 
+  // One pass over the three things a member can do. Small tables, so this
+  // is cheaper than three grouped queries plus a join.
+  const [entryRows, editRows, commentRows, allNames] = await Promise.all([
+    prisma.problem.findMany({
+      where: { status: "published", submittedById: { not: null } },
+      select: { submittedById: true },
+    }),
+    prisma.problemActivity.findMany({
+      where: { userId: { not: null }, type: "updated" },
+      select: { userId: true },
+    }),
+    prisma.comment.findMany({
+      where: { userId: { not: null } },
+      select: { userId: true },
+    }),
+    prisma.user.findMany({ select: { id: true, pseudonym: true } }),
+  ]);
+
+  const tally = new Map<string, { entries: number; edits: number; comments: number }>();
+  const bump = (id: string | null, key: "entries" | "edits" | "comments") => {
+    if (!id) return;
+    const row = tally.get(id) ?? { entries: 0, edits: 0, comments: 0 };
+    row[key] += 1;
+    tally.set(id, row);
+  };
+  for (const r of entryRows) bump(r.submittedById, "entries");
+  for (const r of editRows) bump(r.userId, "edits");
+  for (const r of commentRows) bump(r.userId, "comments");
+
+  const displayName = new Map(allNames.map((u) => [u.id, u.pseudonym ?? "Anonymous"]));
+  const topContributors = [...tally.entries()]
+    .map(([id, c]) => ({
+      name: displayName.get(id) ?? "Anonymous",
+      total: c.entries + c.edits + c.comments,
+      detail: `${c.entries}e · ${c.edits}ed · ${c.comments}c`,
+    }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 8);
+
   return {
+    topContributors,
     users: {
       total: await prisma.user.count(),
       withEntries: usersWithEntries,

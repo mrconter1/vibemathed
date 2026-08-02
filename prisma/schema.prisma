@@ -300,6 +300,15 @@ model User {
   /// flag rather than a stronger wording of this one.
   role String?
 
+  /// Profile links, a fixed named set rather than a free list (see
+  /// src/lib/profile-links.ts): validated per kind, no open surface for link
+  /// spam, and they double as the evidence the verification flow asks for.
+  linkWebsite  String?
+  linkArxiv    String?
+  linkOrcid    String?
+  linkGithub   String?
+  linkLinkedin String?
+
   /// Curator-set: identity or affiliation was actually checked. Never
   /// self-serve. `verifiedNote` records what was checked, shown on hover.
   verified     Boolean @default(false)

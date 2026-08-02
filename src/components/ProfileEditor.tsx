@@ -12,16 +12,35 @@
 // the result is visible: you change your bio next to the bio.
 
 import { useState } from "react";
-import { updateBio, updatePseudonym, updateRole } from "@/app/actions/profile";
+import {
+  updateBio,
+  updateLinks,
+  updatePseudonym,
+  updateRole,
+} from "@/app/actions/profile";
 import { BIO_MAX, PSEUDONYM_MAX } from "@/lib/pseudonym";
 import { ROLE_OPTIONS } from "@/lib/roles";
+import {
+  LINK_KEYS,
+  LINK_SPECS,
+  type LinkKey,
+  type ProfileLinks,
+} from "@/lib/profile-links";
 import { useViewer } from "@/components/ViewerProvider";
 
-export function ProfileEditor({ pseudonym }: { pseudonym: string }) {
+export function ProfileEditor({
+  pseudonym,
+  links,
+}: {
+  pseudonym: string;
+  /// Current values, straight from the server render of this page.
+  links: ProfileLinks;
+}) {
   const viewer = useViewer();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [bioDraft, setBioDraft] = useState("");
+  const [linkDraft, setLinkDraft] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +53,9 @@ export function ProfileEditor({ pseudonym }: { pseudonym: string }) {
   function start() {
     setName(viewer.pseudonym ?? "");
     setBioDraft(viewer.bio ?? "");
+    setLinkDraft(
+      Object.fromEntries(LINK_KEYS.map((k) => [k, links[k] ?? ""])),
+    );
     setError(null);
     setSaved(false);
     setOpen(true);
@@ -63,6 +85,13 @@ export function ProfileEditor({ pseudonym }: { pseudonym: string }) {
         return;
       }
       viewer.setBio(r.bio);
+    }
+
+    const linkResult = await updateLinks(linkDraft);
+    if (!linkResult.ok) {
+      setSaving(false);
+      setError(linkResult.error);
+      return;
     }
 
     setSaving(false);
@@ -172,6 +201,31 @@ export function ProfileEditor({ pseudonym }: { pseudonym: string }) {
       <p className="mt-1 text-[11px] text-[var(--ink-muted)]">
         Saves immediately. Shown as self-declared, because nobody checks it.
       </p>
+
+      <fieldset className="mt-3">
+        <legend className="text-[11px] font-medium text-[var(--ink-secondary)]">
+          Links
+        </legend>
+        <p className="mt-0.5 text-[11px] leading-snug text-[var(--ink-muted)]">
+          Optional, and each one is checked against its own site. These are
+          also the simplest evidence for a verification request.
+        </p>
+        <div className="mt-1.5 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+          {LINK_KEYS.map((k: LinkKey) => (
+            <label key={k} className="block">
+              <span className="sr-only">{LINK_SPECS[k].label}</span>
+              <input
+                value={linkDraft[k] ?? ""}
+                placeholder={`${LINK_SPECS[k].label}: ${LINK_SPECS[k].placeholder}`}
+                onChange={(e) =>
+                  setLinkDraft((d) => ({ ...d, [k]: e.target.value }))
+                }
+                className="w-full rounded border border-[var(--hairline)] bg-[var(--paper)] px-2 py-1.5 text-xs text-[var(--ink)] transition-colors hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
+              />
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[var(--hairline)] pt-3">
         <button

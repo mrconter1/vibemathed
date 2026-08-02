@@ -5,6 +5,21 @@ import { updateTag } from "next/cache";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { isMemberRole } from "@/lib/roles";
+import {
+  LINK_KEYS,
+  normalizeLink,
+  type ProfileLinks,
+} from "@/lib/profile-links";
+
+/// Link key to database column. Kept here rather than in the shared lib so
+/// the client bundle never carries column names.
+const LINK_COLUMN: Record<string, string> = {
+  website: "linkWebsite",
+  arxiv: "linkArxiv",
+  orcid: "linkOrcid",
+  github: "linkGithub",
+  linkedin: "linkLinkedin",
+};
 import { validatePseudonym, BIO_MAX } from "@/lib/pseudonym";
 
 export type PseudonymResult =
@@ -106,4 +121,35 @@ export async function updateRole(raw: string): Promise<RoleResult> {
 
   updateTag("users");
   return { ok: true, role: role === "" ? null : role };
+}
+
+export type LinksResult =
+  | { ok: true; links: ProfileLinks }
+  | { ok: false; error: string };
+
+/// Replaces the viewer's profile links. Every field is validated for its own
+/// kind, so a LinkedIn URL cannot land in the arXiv slot; an empty string
+/// clears that link.
+export async function updateLinks(raw: Record<string, string>): Promise<LinksResult> {
+  const session = await auth();
+  if (!session?.user?.id) return { ok: false, error: "Sign in first." };
+
+  const data: Record<string, string | null> = {};
+  const links: ProfileLinks = {};
+  for (const key of LINK_KEYS) {
+    const checked = normalizeLink(key, raw[key] ?? "");
+    if (!checked.ok) return { ok: false, error: checked.error };
+    data[LINK_COLUMN[key]] = checked.value;
+    links[key] = checked.value;
+  }
+
+  try {
+    await prisma.user.update({ where: { id: session.user.id }, data });
+  } catch (error) {
+    console.error("updateLinks failed", error);
+    return { ok: false, error: "Could not save your links. Please try again." };
+  }
+
+  updateTag("users");
+  return { ok: true, links };
 }

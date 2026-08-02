@@ -217,6 +217,17 @@ async function Dashboard() {
         </Card>
         <Card>
           <AdminRanked
+            label="Top contributors"
+            unit="actions"
+            rows={s.topContributors.map((t) => ({
+              label: t.name,
+              value: t.total,
+              sub: t.detail,
+            }))}
+          />
+        </Card>
+        <Card>
+          <AdminRanked
             label="Top submitters"
             unit="entries"
             rows={s.topSubmitters.map((t) => ({ label: t.name, value: t.entries }))}

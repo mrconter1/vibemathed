@@ -20,6 +20,8 @@ export function AdminBars({
   const H = 120;
   const gap = 2;
   const barW = Math.max(1, W / Math.max(1, points.length) - gap);
+  // Roughly 16 labels fit across the card before they collide.
+  const labelEvery = Math.max(1, Math.ceil(points.length / 16));
 
   return (
     <div>
@@ -53,9 +55,26 @@ export function AdminBars({
           );
         })}
       </svg>
-      <div className="mt-1 flex justify-between font-mono text-[10px] text-[var(--ink-muted)]">
-        <span>{points[0]?.day}</span>
-        <span>{points[points.length - 1]?.day}</span>
+      {/* A tick under every bar, aligned to it, so a spike can be read off
+          to the exact day. Only every nth label is printed - enough to stay
+          legible at this width - but each bar still carries its own count in
+          the SVG title on hover. */}
+      <div className="mt-1 flex" aria-hidden>
+        {points.map((p, i) => {
+          const dayNum = p.day.slice(8);
+          const first = i === 0;
+          const monthChanges = i > 0 && p.day.slice(5, 7) !== points[i - 1].day.slice(5, 7);
+          const show = first || monthChanges || i % labelEvery === 0;
+          return (
+            <span
+              key={p.day}
+              className="min-w-0 flex-1 text-center font-mono text-[9px] leading-none text-[var(--ink-muted)]"
+              title={p.day}
+            >
+              {show ? (monthChanges || first ? `${p.day.slice(5, 7)}/${dayNum}` : dayNum) : ""}
+            </span>
+          );
+        })}
       </div>
     </div>
   );
