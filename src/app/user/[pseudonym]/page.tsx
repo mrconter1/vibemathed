@@ -6,6 +6,8 @@ import { RESOLUTION, SOLVE_TYPE } from "@/lib/display";
 import type { ResolutionStatus, SolveType } from "@/lib/problems";
 import { SITE_URL } from "@/lib/site";
 import { Icon, type IconName } from "@/components/Icons";
+import { MEMBER_ROLE, VERIFIED_HELP, type MemberRole } from "@/lib/roles";
+import { InfoTip } from "@/components/Tooltip";
 
 // A member's public page: pseudonym, join date, published entries, comments
 // and edit history. Read-only by design - nothing here is editable, and
@@ -108,9 +110,33 @@ export default async function UserPage({
       </Link>
 
       <header className="mt-4">
-        <h1 className="font-serif text-3xl tracking-tight text-[var(--ink)]">
-          {profile.pseudonym}
-        </h1>
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+          <h1 className="font-serif text-3xl tracking-tight text-[var(--ink)]">
+            {profile.pseudonym}
+          </h1>
+          {/* Curator-checked identity. Deliberately separate from the role
+              chip below it: one is claimed, this one is confirmed. */}
+          {profile.verified && (
+            <span
+              className="inline-flex items-center gap-1 rounded-full border px-2 py-px text-[11px] font-medium"
+              style={{
+                color: "var(--status-good)",
+                borderColor: "color-mix(in srgb, var(--status-good) 40%, transparent)",
+              }}
+              title={profile.verifiedNote ?? undefined}
+            >
+              Verified
+              <InfoTip content={profile.verifiedNote ?? VERIFIED_HELP} label="Verified" />
+            </span>
+          )}
+        </div>
+        {/* Self-declared, unverifiable, and labelled plainly for that reason. */}
+        {profile.role && MEMBER_ROLE[profile.role as MemberRole] && (
+          <p className="mt-1.5 text-sm text-[var(--ink-secondary)]">
+            {MEMBER_ROLE[profile.role as MemberRole].label}
+            <span className="text-[var(--ink-muted)]"> (self-declared)</span>
+          </p>
+        )}
         {/* Self-written, plain text, capped short - see BIO_MAX. */}
         {profile.bio && (
           <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-[var(--ink-secondary)]">

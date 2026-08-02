@@ -181,7 +181,10 @@ async function requireAdmin() {
 }
 
 /// Publishes a pending submission.
-export async function approveSubmission(slug: string): Promise<ReviewResult> {
+export async function approveSubmission(
+  slug: string,
+  message = "",
+): Promise<ReviewResult> {
   const session = await requireAdmin();
   if (!session) return { ok: false, error: "Not authorised." };
 
@@ -196,7 +199,14 @@ export async function approveSubmission(slug: string): Promise<ReviewResult> {
 
   try {
     await prisma.$transaction([
-      prisma.problem.update({ where: { id: problem.id }, data: { status: "published" } }),
+      prisma.problem.update({
+        where: { id: problem.id },
+        data: {
+          status: "published",
+          reviewedAt: new Date(),
+          reviewMessage: message.trim() || null,
+        },
+      }),
       prisma.problemActivity.create({
         data: {
           problemId: problem.id,
@@ -222,7 +232,10 @@ export async function approveSubmission(slug: string): Promise<ReviewResult> {
 
 /// Turns down a pending submission. Kept in the database so the submitter can
 /// see the outcome rather than having their work vanish.
-export async function rejectSubmission(slug: string): Promise<ReviewResult> {
+export async function rejectSubmission(
+  slug: string,
+  message = "",
+): Promise<ReviewResult> {
   const session = await requireAdmin();
   if (!session) return { ok: false, error: "Not authorised." };
 
@@ -237,7 +250,14 @@ export async function rejectSubmission(slug: string): Promise<ReviewResult> {
 
   try {
     await prisma.$transaction([
-      prisma.problem.update({ where: { id: problem.id }, data: { status: "rejected" } }),
+      prisma.problem.update({
+        where: { id: problem.id },
+        data: {
+          status: "rejected",
+          reviewedAt: new Date(),
+          reviewMessage: message.trim() || null,
+        },
+      }),
       prisma.problemActivity.create({
         data: {
           problemId: problem.id,

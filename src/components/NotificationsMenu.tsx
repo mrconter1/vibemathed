@@ -211,18 +211,42 @@ export function NotificationsMenu() {
 
           {items !== null && items.length > 0 && (
             <ul className="max-h-96 overflow-y-auto py-1 dialog-scroll">
-              {items.map((n) => (
+              {items.map((n) =>
+                n.kind === "decision" && !n.entrySlug ? (
+                  // A rejected submission has no public page to link to.
+                  <li
+                    key={n.id}
+                    className={`block border-l-2 px-3.5 py-2 ${
+                      n.isNew ? "border-[var(--accent-orange)]" : "border-transparent"
+                    }`}
+                  >
+                    <span className="block text-xs leading-snug text-[var(--ink-secondary)]">
+                      <span className="font-medium text-[var(--ink)]">{n.author}</span>:{" "}
+                      <span className="font-medium text-[var(--ink)]">{n.entryName}</span>
+                    </span>
+                    <span className="mt-0.5 block text-[11px] leading-snug text-[var(--ink-muted)]">
+                      {n.snippet}
+                    </span>
+                    <span className="mt-0.5 block font-mono text-[10px] text-[var(--ink-muted)]">
+                      {n.when}
+                    </span>
+                  </li>
+                ) : (
                 <li key={n.id}>
                   <Link
-                    href={`/problem/${n.entrySlug}#discussion`}
+                    href={
+                      n.kind === "decision"
+                        ? `/problem/${n.entrySlug}`
+                        : `/problem/${n.entrySlug}#discussion`
+                    }
                     onClick={() => setOpen(false)}
                     className={`block border-l-2 px-3.5 py-2 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] ${
                       n.isNew ? "border-[var(--accent-orange)]" : "border-transparent"
                     }`}
                   >
                     <span className="block text-xs leading-snug text-[var(--ink-secondary)]">
-                      <span className="font-medium text-[var(--ink)]">{n.author}</span>{" "}
-                      commented on{" "}
+                      <span className="font-medium text-[var(--ink)]">{n.author}</span>
+                      {n.kind === "decision" ? ": " : " commented on "}
                       <span className="font-medium text-[var(--ink)]">{n.entryName}</span>
                     </span>
                     <span className="mt-0.5 block truncate text-[11px] text-[var(--ink-muted)]">
@@ -233,7 +257,8 @@ export function NotificationsMenu() {
                     </span>
                   </Link>
                 </li>
-              ))}
+                ),
+              )}
             </ul>
           )}
         </div>

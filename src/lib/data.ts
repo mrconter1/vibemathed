@@ -39,7 +39,9 @@ import type {
 
 export type { ProblemWithTrends, ProblemWithVotes };
 
-const PROBLEM_SELECT = {
+/// Exported so the reviewer preview route can read unpublished rows with
+/// exactly the shape the public reader uses.
+export const PROBLEM_SELECT = {
   slug: true,
   name: true,
   shortName: true,
@@ -90,7 +92,7 @@ type ProblemRow = Prisma.ProblemGetPayload<{ select: typeof PROBLEM_SELECT }>;
 // prisma/schema.prisma). Every writer validates them first - the seed runs them
 // through `assertProblem` - so the casts here restore the union types the rest
 // of the app is written against rather than re-validating on every read.
-function toProblem(r: ProblemRow): ProblemWithVotes {
+export function toProblem(r: ProblemRow): ProblemWithVotes {
   return {
     slug: r.slug,
     name: r.name,
@@ -347,6 +349,11 @@ export interface UserProfile {
   pseudonym: string;
   /// Short self-description, or null. Plain text; rendered as text.
   bio: string | null;
+  /// Self-declared role (see MEMBER_ROLES), or null.
+  role: string | null;
+  /// Curator-set identity check, and what was checked.
+  verified: boolean;
+  verifiedNote: string | null;
   /// Formatted join date. Accounts created before 2026-07-29 carry that date
   /// (when the column was added), not their true sign-up date.
   joined: string;
@@ -386,7 +393,10 @@ export async function getUserProfile(pseudonym: string): Promise<UserProfile | n
 
   const user = await prisma.user.findUnique({
     where: { pseudonym },
-    select: { id: true, pseudonym: true, createdAt: true, bio: true },
+    select: {
+      id: true, pseudonym: true, createdAt: true, bio: true,
+      role: true, verified: true, verifiedNote: true,
+    },
   });
   if (!user?.pseudonym) return null;
 
@@ -436,6 +446,9 @@ export async function getUserProfile(pseudonym: string): Promise<UserProfile | n
   return {
     pseudonym: user.pseudonym,
     bio: user.bio,
+    role: user.role,
+    verified: user.verified,
+    verifiedNote: user.verifiedNote,
     joined: formatCommentDate(user.createdAt),
     entries: entries.map((e) => ({
       slug: e.slug,

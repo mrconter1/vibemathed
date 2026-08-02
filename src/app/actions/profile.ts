@@ -4,6 +4,7 @@ import { updateTag } from "next/cache";
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { isMemberRole } from "@/lib/roles";
 import { validatePseudonym, BIO_MAX } from "@/lib/pseudonym";
 
 export type PseudonymResult =
@@ -77,4 +78,32 @@ export async function updateBio(raw: string): Promise<BioResult> {
   // Profiles are cached by pseudonym; the edited one must not serve stale.
   updateTag("users");
   return { ok: true, bio };
+}
+
+export type RoleResult = { ok: true; role: string | null } | { ok: false; error: string };
+
+/// Sets or clears the viewer's self-declared role. Self-serve on purpose:
+/// it is context, not a credential, and `verified` is the flag that requires
+/// a curator.
+export async function updateRole(raw: string): Promise<RoleResult> {
+  const session = await auth();
+  if (!session?.user?.id) return { ok: false, error: "Sign in first." };
+
+  const role = raw.trim();
+  if (role !== "" && !isMemberRole(role)) {
+    return { ok: false, error: "Not a valid role." };
+  }
+
+  try {
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { role: role === "" ? null : role },
+    });
+  } catch (error) {
+    console.error("updateRole failed", error);
+    return { ok: false, error: "Could not save that. Please try again." };
+  }
+
+  updateTag("users");
+  return { ok: true, role: role === "" ? null : role };
 }

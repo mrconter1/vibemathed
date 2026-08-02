@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { approveSubmission, rejectSubmission } from "@/app/actions/submit-problem";
+import { REVIEW_MESSAGE_MAX } from "@/lib/submission";
 import { useViewer } from "@/components/ViewerProvider";
 
 export interface PendingEntry {
@@ -30,12 +32,12 @@ export function ReviewQueue({ pending }: { pending: PendingEntry[] }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  async function act(slug: string, approve: boolean) {
+  async function act(slug: string, approve: boolean, message: string) {
     setBusy(slug);
     setError(null);
     const result = approve
-      ? await approveSubmission(slug)
-      : await rejectSubmission(slug);
+      ? await approveSubmission(slug, message)
+      : await rejectSubmission(slug, message);
     setBusy(null);
     if (!result.ok) {
       setError(result.error);
@@ -45,7 +47,12 @@ export function ReviewQueue({ pending }: { pending: PendingEntry[] }) {
     // client state, so it needs telling separately.
     router.refresh();
     refreshViewer();
+    setDecision(null);
   }
+
+  // The decision being composed: which entry, and whether it is an approval.
+  const [decision, setDecision] = useState<{ slug: string; approve: boolean } | null>(null);
+  const [message, setMessage] = useState("");
 
   if (pending.length === 0) {
     return (
@@ -114,7 +121,10 @@ export function ReviewQueue({ pending }: { pending: PendingEntry[] }) {
             <button
               type="button"
               disabled={busy === p.slug}
-              onClick={() => act(p.slug, true)}
+              onClick={() => {
+                setMessage("");
+                setDecision({ slug: p.slug, approve: true });
+              }}
               className="rounded-md border border-[var(--hairline)] px-3 py-1.5 text-xs text-[var(--ink)] transition-colors hover:border-[var(--status-good)] hover:text-[var(--status-good)] disabled:opacity-40"
             >
               {busy === p.slug ? "…" : "Approve"}
@@ -122,14 +132,95 @@ export function ReviewQueue({ pending }: { pending: PendingEntry[] }) {
             <button
               type="button"
               disabled={busy === p.slug}
-              onClick={() => act(p.slug, false)}
+              onClick={() => {
+                setMessage("");
+                setDecision({ slug: p.slug, approve: false });
+              }}
               className="rounded-md px-2.5 py-1.5 text-xs text-[var(--ink-muted)] transition-colors hover:text-[var(--status-critical)] disabled:opacity-40"
             >
               Reject
             </button>
+            {/* Reviewers need the entry as it will publish, which the public
+                route cannot show while it is still pending. */}
+            <Link
+              href={`/admin/preview?slug=${encodeURIComponent(p.slug)}`}
+              className="ml-auto text-xs text-[var(--accent-blue)] hover:underline"
+            >
+              Open full entry
+            </Link>
           </div>
         </article>
       ))}
+
+      {decision && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+          <div
+            className="absolute inset-0 bg-[rgba(20,18,12,0.45)]"
+            onClick={() => setDecision(null)}
+            aria-hidden
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={decision.approve ? "Approve submission" : "Reject submission"}
+            className="relative w-full rounded-t-lg border border-[var(--hairline)] bg-[var(--paper)] sm:max-w-md sm:rounded-lg"
+          >
+            <header className="border-b border-[var(--hairline)] px-5 py-3.5">
+              <h2 className="font-serif text-lg text-[var(--ink)]">
+                {decision.approve ? "Approve this entry" : "Reject this entry"}
+              </h2>
+              <p className="mt-1 text-[11px] leading-relaxed text-[var(--ink-muted)]">
+                The message reaches the submitter through their notifications.
+                It is not public, so a rejection reason stays between you and
+                them.
+                {decision.approve
+                  ? " Optional on an approval."
+                  : " Worth writing: a turned-down submission with no reason reads as arbitrary."}
+              </p>
+            </header>
+            <div className="px-5 py-4">
+              <textarea
+                value={message}
+                maxLength={REVIEW_MESSAGE_MAX}
+                rows={4}
+                autoFocus
+                placeholder={
+                  decision.approve
+                    ? "Anything you changed, or why it went in as a candidate."
+                    : "What was missing, and what would make it publishable."
+                }
+                onChange={(e) => setMessage(e.target.value)}
+                className="w-full resize-y rounded border border-[var(--hairline)] bg-[var(--paper-raised)] px-2.5 py-2 text-sm text-[var(--ink)] transition-colors hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
+              />
+              <p className="mt-1 text-right text-[11px] text-[var(--ink-muted)]">
+                {message.length}/{REVIEW_MESSAGE_MAX}
+              </p>
+            </div>
+            <footer className="flex flex-wrap items-center gap-2 border-t border-[var(--hairline)] px-5 py-3">
+              <button
+                type="button"
+                disabled={busy !== null}
+                onClick={() => act(decision.slug, decision.approve, message)}
+                className="rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 py-1.5 text-xs text-[var(--ink)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)] disabled:opacity-40"
+              >
+                {busy !== null
+                  ? "Saving…"
+                  : decision.approve
+                    ? "Approve and send"
+                    : "Reject and send"}
+              </button>
+              <button
+                type="button"
+                disabled={busy !== null}
+                onClick={() => setDecision(null)}
+                className="rounded-md px-2 py-1 text-xs text-[var(--ink-muted)] transition-colors hover:text-[var(--ink)] disabled:opacity-40"
+              >
+                Cancel
+              </button>
+            </footer>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

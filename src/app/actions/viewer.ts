@@ -53,16 +53,32 @@ export async function getViewerState(): Promise<ViewerState> {
           )
         )
     `,
-    prisma.user.findUnique({ where: { id: userId }, select: { bio: true } }),
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { bio: true, role: true, verified: true, notificationsSeenAt: true },
+    }),
   ]);
 
-  const notifications = Number(unread[0]?.count ?? 0);
+  // Decisions on your own submissions count as unread too, on the same
+  // watermark as comments.
+  const unreadDecisions = me
+    ? await prisma.problem.count({
+        where: {
+          submittedById: userId,
+          reviewedAt: { gt: me.notificationsSeenAt },
+        },
+      })
+    : 0;
+
+  const notifications = Number(unread[0]?.count ?? 0) + unreadDecisions;
 
   return {
     signedIn: true,
     userId,
     pseudonym: session.user.pseudonym ?? null,
     bio: me?.bio ?? null,
+    role: me?.role ?? null,
+    verified: me?.verified ?? false,
     isAdmin: admin,
     pendingReviews,
     openReports,

@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signOutEverywhere } from "@/app/actions/auth";
-import { updateBio, updatePseudonym } from "@/app/actions/profile";
+import { updateBio, updatePseudonym, updateRole } from "@/app/actions/profile";
 import { BIO_MAX, PSEUDONYM_MAX } from "@/lib/pseudonym";
+import { ROLE_OPTIONS } from "@/lib/roles";
 import { useViewer } from "@/components/ViewerProvider";
 
 /// The colored initial standing in for an avatar - the site never shows the
@@ -31,7 +32,10 @@ export function AuthMenu() {
     pseudonym,
     isAdmin,
     bio,
+    role,
+    verified,
     setBio,
+    setRole,
     setPseudonym,
   } = useViewer();
   const [open, setOpen] = useState(false);
@@ -98,6 +102,17 @@ export function AuthMenu() {
     }
     setBio(result.bio);
     setBioSaved(true);
+  }
+
+  async function saveRole(next: string) {
+    setError(null);
+    const previous = role ?? "";
+    setRole(next === "" ? null : next); // optimistic: it is a single select
+    const result = await updateRole(next);
+    if (!result.ok) {
+      setRole(previous === "" ? null : previous);
+      setError(result.error);
+    }
   }
 
   // Reserve the slot while loading so the header does not jump, and so a
@@ -232,6 +247,54 @@ export function AuthMenu() {
                 <span className="text-[11px] text-[var(--status-good)]">Bio updated.</span>
               )}
             </div>
+
+            <label
+              htmlFor="role"
+              className="mt-3 block text-[11px] font-medium text-[var(--ink-secondary)]"
+            >
+              Role
+            </label>
+            <select
+              id="role"
+              value={role ?? ""}
+              onChange={(e) => saveRole(e.target.value)}
+              className="mt-1 w-full rounded border border-[var(--hairline)] bg-[var(--paper)] px-2 py-1.5 text-xs text-[var(--ink)] transition-colors hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
+            >
+              <option value="">Not saying</option>
+              {ROLE_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1.5 text-[11px] leading-snug text-[var(--ink-muted)]">
+              {verified ? (
+                <>
+                  Shown on your profile as self-declared. Your identity is
+                  verified, which is shown separately.
+                </>
+              ) : (
+                <>
+                  Shown on your profile as self-declared, because nobody checks
+                  it.{" "}
+                  <a
+                    href={`mailto:rasmus.lindahl1996@gmail.com?subject=${encodeURIComponent(
+                      "VibeMathed: profile verification request",
+                    )}&body=${encodeURIComponent(
+                      `My VibeMathed profile is ${name}.
+
+I would like the verified badge. Here is something that ties this account to me (a university page, an arXiv author page, a personal site linking back, or a message from an institutional address):
+
+`,
+                    )}`}
+                    className="text-[var(--accent-blue)] hover:underline"
+                  >
+                    Request verification
+                  </a>{" "}
+                  to have it checked.
+                </>
+              )}
+            </p>
 
             {error && (
               <p className="mt-1.5 text-[11px] text-[var(--status-critical)]">{error}</p>

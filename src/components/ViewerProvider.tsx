@@ -25,6 +25,7 @@ interface ViewerContextValue extends ViewerState {
   setVote: (slug: string, vote: VoteKind | null) => void;
   setPseudonym: (pseudonym: string) => void;
   setBio: (bio: string) => void;
+  setRole: (role: string | null) => void;
   /// Zeroes the unread-notification badge locally, after the server watermark
   /// has been moved (opening the notifications panel does both).
   clearNotifications: () => void;
@@ -129,13 +130,17 @@ export function ViewerProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({ ...prev, bio: bio === "" ? null : bio }));
   }, []);
 
+  const setRole = useCallback((role: string | null) => {
+    setState((prev) => ({ ...prev, role }));
+  }, []);
+
   const clearNotifications = useCallback(() => {
     setState((prev) => ({ ...prev, notifications: 0 }));
   }, []);
 
   const value = useMemo(
-    () => ({ ...state, loaded, setVote, setPseudonym, setBio, clearNotifications, refresh }),
-    [state, loaded, setVote, setPseudonym, setBio, clearNotifications, refresh],
+    () => ({ ...state, loaded, setVote, setPseudonym, setBio, setRole, clearNotifications, refresh }),
+    [state, loaded, setVote, setPseudonym, setBio, setRole, clearNotifications, refresh],
   );
 
   return <ViewerContext.Provider value={value}>{children}</ViewerContext.Provider>;

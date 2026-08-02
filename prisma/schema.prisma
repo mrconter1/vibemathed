@@ -142,6 +142,12 @@ model Problem {
   sourceName String
 
   status        ProblemStatus @default(published)
+  /// When a curator approved or rejected this submission, and the message
+  /// they left for the submitter. The message reaches the submitter through
+  /// their notifications and is not public: a rejection reason is feedback
+  /// for one person, not a changelog entry.
+  reviewedAt     DateTime?
+  reviewMessage  String?
   submittedById String?
   submittedBy   User?         @relation("ProblemSubmitter", fields: [submittedById], references: [id], onDelete: SetNull)
 
@@ -287,6 +293,17 @@ model User {
   /// at BIO_MAX characters (see src/lib/pseudonym.ts) - a line about who you
   /// are, not a homepage.
   bio String?
+
+  /// Self-declared relationship to the mathematics: one of MEMBER_ROLES in
+  /// src/lib/roles.ts. Unverifiable by construction and shown as a plain
+  /// label, which is exactly why `verified` below is a separate, curator-set
+  /// flag rather than a stronger wording of this one.
+  role String?
+
+  /// Curator-set: identity or affiliation was actually checked. Never
+  /// self-serve. `verifiedNote` records what was checked, shown on hover.
+  verified     Boolean @default(false)
+  verifiedNote String?
 
   /// Banned accounts cannot sign in (denied in the signIn callback), and
   /// banning deletes their sessions - so with database sessions they lose all

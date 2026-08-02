@@ -57,6 +57,10 @@ export function emptySubmission(): SubmissionValues {
 /// contributor with several results (it happens), still a cap on spam - and
 /// note that curator-entered rows credited to an account count against its
 /// quota too, since the check is by submitter id.
+/// Cap on the note a curator leaves with a decision. Long enough for a
+/// real reason, short enough that it stays a message and not a review.
+export const REVIEW_MESSAGE_MAX = 600;
+
 export const SUBMISSION_WINDOW_MS = 24 * 60 * 60 * 1000;
 export const SUBMISSIONS_PER_WINDOW = 3;
 
