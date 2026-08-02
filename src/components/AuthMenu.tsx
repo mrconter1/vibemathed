@@ -3,9 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signOutEverywhere } from "@/app/actions/auth";
-import { updateBio, updatePseudonym, updateRole } from "@/app/actions/profile";
-import { BIO_MAX, PSEUDONYM_MAX } from "@/lib/pseudonym";
-import { ROLE_OPTIONS } from "@/lib/roles";
 import { useViewer } from "@/components/ViewerProvider";
 
 /// The colored initial standing in for an avatar - the site never shows the
@@ -31,33 +28,10 @@ export function AuthMenu() {
     signedIn,
     pseudonym,
     isAdmin,
-    bio,
-    role,
-    verified,
-    setBio,
-    setRole,
-    setPseudonym,
   } = useViewer();
   const [open, setOpen] = useState(false);
-  const [draft, setDraft] = useState("");
-  const [bioDraft, setBioDraft] = useState("");
-  const [bioSaved, setBioSaved] = useState(false);
-  const [bioSaving, setBioSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Seed the form when the panel opens. Done here rather than in an effect
-  // keyed on `open` so there is no cascading render on every toggle.
-  function openPanel() {
-    setDraft(pseudonym ?? "");
-    setBioDraft(bio ?? "");
-    setBioSaved(false);
-    setError(null);
-    setSaved(false);
-    setOpen(true);
-  }
 
   // Close on outside click or Escape.
   useEffect(() => {
@@ -78,42 +52,8 @@ export function AuthMenu() {
     };
   }, [open]);
 
-  async function save() {
-    setSaving(true);
-    setError(null);
-    const result = await updatePseudonym(draft);
-    setSaving(false);
-    if (!result.ok) {
-      setError(result.error);
-      return;
-    }
-    setPseudonym(result.pseudonym);
-    setSaved(true);
-  }
 
-  async function saveBio() {
-    setBioSaving(true);
-    setError(null);
-    const result = await updateBio(bioDraft);
-    setBioSaving(false);
-    if (!result.ok) {
-      setError(result.error);
-      return;
-    }
-    setBio(result.bio);
-    setBioSaved(true);
-  }
 
-  async function saveRole(next: string) {
-    setError(null);
-    const previous = role ?? "";
-    setRole(next === "" ? null : next); // optimistic: it is a single select
-    const result = await updateRole(next);
-    if (!result.ok) {
-      setRole(previous === "" ? null : previous);
-      setError(result.error);
-    }
-  }
 
   // Reserve the slot while loading so the header does not jump, and so a
   // signed-in visitor never sees a "Sign in" flash.
@@ -138,7 +78,7 @@ export function AuthMenu() {
     <div className="relative" ref={panelRef}>
       <button
         type="button"
-        onClick={() => (open ? setOpen(false) : openPanel())}
+        onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="dialog"
         // Phones show the avatar alone: the name costs ~90px next to the
@@ -181,127 +121,26 @@ export function AuthMenu() {
             </div>
           </div>
 
+          {/* Editing moved to the profile page, where the result is
+              visible. This stays a signpost, not a second editor. */}
           <div className="px-3.5 py-3">
-            <label
-              htmlFor="pseudonym"
-              className="block text-[11px] font-medium text-[var(--ink-secondary)]"
-            >
-              Display name
-            </label>
-            <div className="mt-1 flex gap-1.5">
-              <input
-                id="pseudonym"
-                value={draft}
-                maxLength={PSEUDONYM_MAX}
-                onChange={(e) => {
-                  setDraft(e.target.value);
-                  setSaved(false);
-                }}
-                className="min-w-0 flex-1 rounded border border-[var(--hairline)] bg-[var(--paper)] px-2 py-1.5 text-xs text-[var(--ink)] transition-colors hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
-              />
-              <button
-                type="button"
-                onClick={save}
-                disabled={saving || draft.trim() === (pseudonym ?? "")}
-                className="rounded border border-[var(--hairline)] px-2.5 py-1.5 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)] disabled:opacity-40"
+            {pseudonym ? (
+              <Link
+                href={`/user/${encodeURIComponent(pseudonym)}`}
+                onClick={() => setOpen(false)}
+                className="inline-flex items-center rounded-md border border-[var(--hairline)] bg-[var(--paper)] px-2.5 py-1.5 text-xs text-[var(--ink)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)]"
               >
-                {saving ? "…" : "Save"}
-              </button>
-            </div>
-            <p className="mt-1.5 text-[11px] leading-snug text-[var(--ink-muted)]">
-              You appear publicly as this name only. Your Google name and
-              picture are never shown on the site.
-            </p>
-
-            <label
-              htmlFor="bio"
-              className="mt-3 block text-[11px] font-medium text-[var(--ink-secondary)]"
-            >
-              Bio{" "}
-              <span className="font-normal text-[var(--ink-muted)]">
-                ({bioDraft.length}/{BIO_MAX})
-              </span>
-            </label>
-            <textarea
-              id="bio"
-              value={bioDraft}
-              maxLength={BIO_MAX}
-              rows={2}
-              placeholder="A line about you, shown on your profile."
-              onChange={(e) => {
-                setBioDraft(e.target.value);
-                setBioSaved(false);
-              }}
-              className="mt-1 w-full resize-none rounded border border-[var(--hairline)] bg-[var(--paper)] px-2 py-1.5 text-xs text-[var(--ink)] transition-colors hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
-            />
-            <div className="mt-1 flex items-center gap-2">
-              <button
-                type="button"
-                onClick={saveBio}
-                disabled={bioSaving || bioDraft.trim() === (bio ?? "")}
-                className="rounded border border-[var(--hairline)] px-2.5 py-1 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)] disabled:opacity-40"
-              >
-                {bioSaving ? "…" : "Save bio"}
-              </button>
-              {bioSaved && (
-                <span className="text-[11px] text-[var(--status-good)]">Bio updated.</span>
-              )}
-            </div>
-
-            <label
-              htmlFor="role"
-              className="mt-3 block text-[11px] font-medium text-[var(--ink-secondary)]"
-            >
-              Role
-            </label>
-            <select
-              id="role"
-              value={role ?? ""}
-              onChange={(e) => saveRole(e.target.value)}
-              className="mt-1 w-full rounded border border-[var(--hairline)] bg-[var(--paper)] px-2 py-1.5 text-xs text-[var(--ink)] transition-colors hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
-            >
-              <option value="">Not saying</option>
-              {ROLE_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-            <p className="mt-1.5 text-[11px] leading-snug text-[var(--ink-muted)]">
-              {verified ? (
-                <>
-                  Shown on your profile as self-declared. Your identity is
-                  verified, which is shown separately.
-                </>
-              ) : (
-                <>
-                  Shown on your profile as self-declared, because nobody checks
-                  it.{" "}
-                  <a
-                    href={`mailto:rasmus.lindahl1996@gmail.com?subject=${encodeURIComponent(
-                      "VibeMathed: profile verification request",
-                    )}&body=${encodeURIComponent(
-                      `My VibeMathed profile is ${name}.
-
-I would like the verified badge. Here is something that ties this account to me (a university page, an arXiv author page, a personal site linking back, or a message from an institutional address):
-
-`,
-                    )}`}
-                    className="text-[var(--accent-blue)] hover:underline"
-                  >
-                    Request verification
-                  </a>{" "}
-                  to have it checked.
-                </>
-              )}
-            </p>
-
-            {error && (
-              <p className="mt-1.5 text-[11px] text-[var(--status-critical)]">{error}</p>
+                Edit name, bio and role
+              </Link>
+            ) : (
+              <p className="text-[11px] text-[var(--ink-muted)]">
+                No public name assigned yet.
+              </p>
             )}
-            {saved && !error && (
-              <p className="mt-1.5 text-[11px] text-[var(--status-good)]">Name updated.</p>
-            )}
+            <p className="mt-1.5 text-[11px] leading-snug text-[var(--ink-muted)]">
+              You appear publicly as your display name only. Your Google name
+              and picture are never shown on the site.
+            </p>
           </div>
 
           {isAdmin && (

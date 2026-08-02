@@ -38,6 +38,23 @@ function byDay(dates: Date[], days: number): DayPoint[] {
   return out;
 }
 
+/// How many days of history actually exist. Charting a fixed 30 days on a
+/// site that launched two weeks ago is mostly empty bars, which reads as a
+/// dead site rather than a young one.
+export async function availableDays(cap = 30): Promise<number> {
+  const [firstUser, firstProblem] = await Promise.all([
+    prisma.user.findFirst({ orderBy: { createdAt: "asc" }, select: { createdAt: true } }),
+    prisma.problem.findFirst({ orderBy: { createdAt: "asc" }, select: { createdAt: true } }),
+  ]);
+  const stamps = [firstUser?.createdAt, firstProblem?.createdAt].filter(
+    (d): d is Date => d instanceof Date,
+  );
+  if (stamps.length === 0) return 1;
+  const earliest = Math.min(...stamps.map((d) => d.getTime()));
+  const spanDays = Math.floor((Date.now() - earliest) / 86400000) + 1;
+  return Math.max(1, Math.min(cap, spanDays));
+}
+
 export async function getAdminStats(days = 30): Promise<AdminStats> {
   const since = new Date(Date.now() - days * 86400000);
 

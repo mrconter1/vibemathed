@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { auth } from "@/auth";
 import { isAdmin } from "@/lib/admin";
-import { getAdminStats } from "@/lib/admin-stats";
+import { availableDays, getAdminStats } from "@/lib/admin-stats";
 import { getTraffic } from "@/lib/vercel-analytics";
 import { AdminBars, AdminRanked } from "@/components/AdminBars";
 
@@ -21,7 +21,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const DAYS = 30;
+/// Upper bound only; the page charts however many days of history exist.
+const MAX_DAYS = 30;
 
 function Tile({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
@@ -55,6 +56,7 @@ async function Dashboard() {
     );
   }
 
+  const DAYS = await availableDays(MAX_DAYS);
   const [s, traffic] = await Promise.all([getAdminStats(DAYS), getTraffic(DAYS)]);
 
   const approvalRate =
@@ -75,12 +77,12 @@ async function Dashboard() {
             <Tile
               label="Page views"
               value={traffic.totalPageviews.toLocaleString("en-US")}
-              sub={`last ${DAYS} days`}
+              sub={DAYS === 1 ? "today" : `last ${DAYS} days`}
             />
             <Tile
               label="Visitors"
               value={traffic.totalVisitors.toLocaleString("en-US")}
-              sub={`last ${DAYS} days`}
+              sub={DAYS === 1 ? "today" : `last ${DAYS} days`}
             />
             <Tile
               label="Pages per visitor"
@@ -223,6 +225,7 @@ async function Dashboard() {
       </div>
 
       <p className="mt-4 text-xs text-[var(--ink-muted)]">
+        Charting {DAYS} day{DAYS === 1 ? "" : "s"} - all the history there is.{" "}
         {s.engagement.reportsOpen} open report
         {s.engagement.reportsOpen === 1 ? "" : "s"} of {s.engagement.reportsTotal} ever
         {s.users.banned > 0 ? ` · ${s.users.banned} banned account${s.users.banned === 1 ? "" : "s"}` : ""}
@@ -247,7 +250,7 @@ export default function AdminStatsPage() {
         Site stats
       </h1>
       <p className="mb-6 text-sm text-[var(--ink-secondary)]">
-        Last {DAYS} days. Private to reviewers.
+        Private to reviewers.
       </p>
 
       <Suspense

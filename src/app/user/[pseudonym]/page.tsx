@@ -8,6 +8,7 @@ import { SITE_URL } from "@/lib/site";
 import { Icon, type IconName } from "@/components/Icons";
 import { MEMBER_ROLE, VERIFIED_HELP, type MemberRole } from "@/lib/roles";
 import { InfoTip } from "@/components/Tooltip";
+import { ProfileEditor } from "@/components/ProfileEditor";
 
 // A member's public page: pseudonym, join date, published entries, comments
 // and edit history. Read-only by design - nothing here is editable, and
@@ -146,6 +147,9 @@ export default async function UserPage({
         <p className="mt-1.5 text-sm text-[var(--ink-muted)]">
           Member since {profile.joined}
         </p>
+        {/* Renders only for the member whose page this is; see the note in
+            ProfileEditor about why the check is client-side. */}
+        <ProfileEditor pseudonym={profile.pseudonym} />
       </header>
 
       <dl className="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-4">

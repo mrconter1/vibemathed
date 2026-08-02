@@ -110,11 +110,15 @@ export async function getTraffic(days = 30): Promise<TrafficReport | null> {
 
   if (!daily) return null;
 
-  const points: TrafficPoint[] = daily.map((r) => ({
+  const all: TrafficPoint[] = daily.map((r) => ({
     day: String(r.timestamp ?? "").slice(0, 10),
     pageviews: Number(r.pageviews ?? 0),
     visitors: Number(r.visitors ?? 0),
   }));
+  // Drop the empty run before the first recorded visit: analytics only
+  // started when the project did, and leading zeroes are not history.
+  const firstReal = all.findIndex((p) => p.pageviews > 0 || p.visitors > 0);
+  const points = firstReal <= 0 ? all : all.slice(firstReal);
 
   return {
     daily: points,
