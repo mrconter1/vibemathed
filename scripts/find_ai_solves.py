@@ -37,7 +37,7 @@ reported, so repeated runs only surface NEW finds. Every source fails soft:
 a dead endpoint prints a note and the rest of the report still runs.
 
 Usage:
-  python scripts/find_ai_solves.py                    # last 3 days, all sources
+  python scripts/find_ai_solves.py                    # last 5 days, all sources
   python scripts/find_ai_solves.py --days 7
   python scripts/find_ai_solves.py --sources github,zenodo   # subset (arxiv,
                                                      # github, erdos, zenodo, feeds)
@@ -559,7 +559,13 @@ def firstproof_items() -> list[str]:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--days", type=int, default=3)
+    # 5, not 3. arXiv's search index advances when papers are ANNOUNCED, and
+    # announcements pause at weekends: on Sunday 2026-08-02 the newest paper
+    # in our categories was 75 hours old, so a 3-day cutoff landed three hours
+    # past it and the source contributed nothing. The window has to exceed the
+    # announcement gap, not the run cadence. Widening is free - the state file
+    # dedupes, so a longer window costs fetch time, never repeated output.
+    ap.add_argument("--days", type=int, default=5)
     ap.add_argument("--reset", action="store_true", help="forget previously seen items")
     ap.add_argument(
         "--sources", default="arxiv,github,erdos,zenodo,feeds,index,repos,trackers",
