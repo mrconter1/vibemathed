@@ -45,9 +45,9 @@ export const metadata: Metadata = {
 /// rather than in display.ts because only this page needs the long form.
 const VERIFICATION_DETAIL: Record<VerificationStatus, string> = {
   "lean-verified":
-    "A formal proof machine-checked end to end by the Lean kernel - the strongest evidence a proof can carry. Entries checked modulo explicitly named literature inputs say so in their verification note.",
+    "A formal proof machine-checked end to end by the Lean kernel: inside the formal statement, the argument has no gaps at all. What the kernel cannot check is the translation, whether that formal statement really is the problem as posed, so a human still has to confirm the two match. Entries checked modulo explicitly named literature inputs, or leaning on native_decide, say so in their verification note.",
   "expert-verified":
-    "Checked and endorsed by named domain experts with no stake in the claim. The authors checking their own work does not count, however expert they are - that stays Unreviewed.",
+    "Checked and endorsed by named domain experts with no stake in the claim. Slower and much rarer than formalization, and it catches what a kernel cannot: a formal statement that drifted from the informal problem, a result already sitting in the literature, a proof that answers the neighbouring question. The authors checking their own work does not count, however expert they are, and that stays Unreviewed.",
   "site-confirmed":
     "For Erdős problems: erdosproblems.com officially marks the problem solved, without a formal proof artifact.",
   unreviewed:
@@ -207,8 +207,12 @@ export default function MethodologyPage() {
 
       <Section title="The verification ladder">
         <p>
-          Status says what happened; verification says how strongly you should
-          trust it. Strongest first:
+          Status says what happened; verification says how the mathematics was
+          checked. The tiers run strongest to weakest with one deliberate
+          exception: the top two are not comparable. A Lean kernel and an
+          independent expert catch different mistakes, so an entry at either
+          tier is well checked, and the rare entry at both is as good as this
+          record gets.
         </p>
         <dl className="space-y-2.5">
           {(Object.keys(VERIFICATION) as VerificationStatus[]).map((v) => (
@@ -225,10 +229,13 @@ export default function MethodologyPage() {
           ))}
         </dl>
         <p>
-          Verification says how checked the mathematics is; separately, every
-          entry records where the claim lives in the scholarly pipeline - the
-          two are independent, and a Lean-verified result can sit in a bare
-          company announcement:
+          Peer review is deliberately not a rung on this ladder. It answers a
+          different question, where the claim sits in the scholarly pipeline,
+          and every entry records that separately. The two axes are
+          independent, and a Lean-verified result can sit in a bare company
+          announcement. Most currently do: journals move far slower than these
+          results arrive, which is exactly why refereeing cannot be the spine
+          of this scale.
         </p>
         <dl className="space-y-2.5">
           {PUBLICATION_STATUSES.map((v) => (
