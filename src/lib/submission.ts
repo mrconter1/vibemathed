@@ -44,6 +44,70 @@ export const SUBMISSION_FIELDS: SubmissionFieldSpec[] = [
   ...EDITABLE_FIELDS.slice(2),
 ];
 
+/// The form in four parts, not one list of 32 fields.
+///
+/// The order is by who can answer, and the split is measured rather than
+/// guessed. Across the first 23 real submissions, everything in the first
+/// three groups was filled 78-100% of the time; every field in the fourth was
+/// filled by 17% or fewer, and four of them by nobody at all. Putting those
+/// nine behind a disclosure takes the form from 32 visible fields to 23
+/// without removing a single capability.
+///
+/// The Erdős number is in that last group deliberately. Only 9% of submitters
+/// have one, but it cannot simply be dropped: 131 entries carry it and the
+/// finder dedupes Erdős problems on this field rather than by parsing slugs.
+/// Its problem was position, not existence - it used to be the third question
+/// on the form, so nine submitters in ten were asked something irrelevant
+/// before being asked what they had found.
+export interface SubmissionGroup {
+  title: string;
+  help: string;
+  keys: SubmissionKey[];
+  /// Collapsed by default, for the group almost nobody needs.
+  collapsed?: boolean;
+}
+
+export const SUBMISSION_GROUPS: SubmissionGroup[] = [
+  {
+    title: "The result",
+    help: "What was solved, and where it is written down. Only you can supply this.",
+    keys: ["name", "shortName", "statement", "solveType", "sourceUrl", "sourceName", "solveDate"],
+  },
+  {
+    title: "The AI's part",
+    help: "Which model, what it actually contributed, and how checked the mathematics is.",
+    keys: ["model", "modelMaker", "aiRole", "aiContribution", "verification", "verificationNote", "publication"],
+  },
+  {
+    title: "Context",
+    help: "Helpful but not essential - a reviewer can fill or correct any of it.",
+    keys: ["fieldGroup", "field", "resolution", "resolutionMethod", "posedBy", "yearPosed", "humanCollaborators", "links", "resultNote"],
+  },
+  {
+    title: "Rarely needed",
+    help: "Skip unless one genuinely applies. Most entries leave every one of these blank.",
+    collapsed: true,
+    keys: ["problemNumber", "ageNote", "claimIssueNote", "solveCostUsd", "solveCostNote", "citations", "citationsPaper", "citationsSource", "citationsUrl"],
+  },
+];
+
+// A field dropped from every group would vanish from the form silently, so
+// the partition is checked rather than trusted.
+const GROUPED = SUBMISSION_GROUPS.flatMap((g) => g.keys);
+const ALL_KEYS = SUBMISSION_FIELDS.map((f) => f.key);
+const missing = ALL_KEYS.filter((k) => !GROUPED.includes(k));
+const dupes = GROUPED.filter((k, i) => GROUPED.indexOf(k) !== i);
+if (missing.length || dupes.length) {
+  throw new Error(
+    `SUBMISSION_GROUPS must partition the fields exactly. Missing: ${missing.join(", ") || "none"}. Duplicated: ${dupes.join(", ") || "none"}.`,
+  );
+}
+
+/// Draft persistence key. A submission is long enough that losing it to an
+/// accidental reload, or to the round trip through sign-in, is the difference
+/// between an entry and an abandoned tab.
+export const SUBMISSION_DRAFT_KEY = "vibemathed:submit-draft";
+
 export type SubmissionValues = Record<SubmissionKey, string>;
 
 export function emptySubmission(): SubmissionValues {

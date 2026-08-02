@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { submitProblem } from "@/app/actions/submit-problem";
 import {
+  SUBMISSION_DRAFT_KEY,
   SUBMISSION_FIELDS,
+  SUBMISSION_GROUPS,
   emptySubmission,
   type SubmissionValues,
 } from "@/lib/submission";
@@ -17,6 +19,58 @@ export function SubmitForm() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const [restored, setRestored] = useState(false);
+  // Nothing is written until a draft has been restored, or the empty initial
+  // state would overwrite a saved draft on first paint.
+  const ready = useRef(false);
+
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(SUBMISSION_DRAFT_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw) as Record<string, unknown>;
+        const clean = emptySubmission();
+        let any = false;
+        // Only known keys, only strings: a stale draft from an older field
+        // set must not inject anything the form cannot render.
+        for (const spec of SUBMISSION_FIELDS) {
+          const v = saved[spec.key];
+          if (typeof v === "string" && v !== "") {
+            clean[spec.key] = v;
+            any = true;
+          }
+        }
+        if (any) {
+          setValues(clean);
+          setRestored(true);
+        }
+      }
+    } catch {
+      // A corrupt draft is not worth failing the page over.
+    }
+    ready.current = true;
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  useEffect(() => {
+    if (!ready.current) return;
+    const filled = Object.values(values).some((v) => v !== "");
+    try {
+      if (filled) localStorage.setItem(SUBMISSION_DRAFT_KEY, JSON.stringify(values));
+      else localStorage.removeItem(SUBMISSION_DRAFT_KEY);
+    } catch {
+      // Private browsing and full quotas both land here; the form still works.
+    }
+  }, [values]);
+
+  function discardDraft() {
+    setValues(emptySubmission());
+    setRestored(false);
+    try {
+      localStorage.removeItem(SUBMISSION_DRAFT_KEY);
+    } catch {}
+  }
 
   async function submit() {
     setSaving(true);
@@ -28,25 +82,16 @@ export function SubmitForm() {
       return;
     }
     setValues(emptySubmission());
+    try {
+      localStorage.removeItem(SUBMISSION_DRAFT_KEY);
+    } catch {}
     setDone(true);
   }
 
-  if (!loaded) {
-    return (
-      <div className="h-40 rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)]" />
-    );
-  }
-
-  if (!signedIn) {
-    return (
-      <p className="rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3 text-sm text-[var(--ink-secondary)]">
-        <Link href="/sign-in" className="text-[var(--accent-blue)] hover:underline">
-          Sign in
-        </Link>{" "}
-        to submit an entry. You submit under a pseudonym.
-      </p>
-    );
-  }
+  // Deliberately NOT gated on `loaded`. The form used to render a blank
+  // placeholder until the viewer fetch resolved, so someone arriving on a slow
+  // connection met an empty box on the one page where the whole point is to
+  // start typing. Nothing above the submit button depends on who you are.
 
   if (done) {
     return (
@@ -92,26 +137,101 @@ export function SubmitForm() {
         </p>
       </div>
 
-      <div className="mt-5">
-        <EntryFields
-          fields={SUBMISSION_FIELDS}
-          values={values}
-          onChange={(key, value) =>
-            setValues((v) => ({ ...v, [key]: value }) as SubmissionValues)
-          }
-          idPrefix="submit"
-        />
-      </div>
+      {restored && (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-md border border-[var(--accent-orange)] bg-[color-mix(in_srgb,var(--accent-orange)_8%,transparent)] px-3.5 py-2.5">
+          <span className="text-xs text-[var(--ink-secondary)]">
+            Restored an unfinished draft from this browser.
+          </span>
+          <button
+            type="button"
+            onClick={discardDraft}
+            className="text-xs text-[var(--accent-blue)] hover:underline"
+          >
+            Start over
+          </button>
+        </div>
+      )}
+
+      {/* Grouped rather than one run of 32 inputs, and the rarely-needed nine
+          sit behind a disclosure. Native <details> so it opens without JS. */}
+      {SUBMISSION_GROUPS.map((group) => {
+        const fields = SUBMISSION_FIELDS.filter((f) => group.keys.includes(f.key));
+        const body = (
+          <EntryFields
+            fields={fields}
+            values={values}
+            onChange={(key, value) =>
+              setValues((v) => ({ ...v, [key]: value }) as SubmissionValues)
+            }
+            idPrefix="submit"
+          />
+        );
+
+        if (group.collapsed) {
+          return (
+            <details
+              key={group.title}
+              className="group mt-5 rounded-md border border-[var(--hairline)] bg-[var(--paper)]"
+            >
+              <summary className="cursor-pointer list-none px-3.5 py-2.5 text-sm text-[var(--ink-secondary)] transition-colors hover:text-[var(--accent-blue)]">
+                <span
+                  aria-hidden
+                  className="mr-1.5 inline-block transition-transform group-open:rotate-90"
+                >
+                  ▶
+                </span>
+                {group.title}
+                <span className="ml-1.5 text-xs text-[var(--ink-muted)]">{group.help}</span>
+              </summary>
+              <div className="border-t border-[var(--hairline)] px-3.5 py-4">{body}</div>
+            </details>
+          );
+        }
+
+        return (
+          <section key={group.title} className="mt-6">
+            <h2 className="font-serif text-base text-[var(--ink)]">{group.title}</h2>
+            <p className="mt-0.5 mb-3 text-xs text-[var(--ink-muted)]">{group.help}</p>
+            {body}
+          </section>
+        );
+      })}
 
       <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-[var(--hairline)] pt-4">
-        <button
-          type="button"
-          onClick={submit}
-          disabled={saving}
-          className="rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-3.5 py-2 text-sm text-[var(--ink)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)] disabled:opacity-40"
-        >
-          {saving ? "Submitting…" : "Submit for review"}
-        </button>
+        {!loaded ? (
+          <button
+            type="button"
+            disabled
+            className="rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-3.5 py-2 text-sm text-[var(--ink-muted)] opacity-60"
+          >
+            Submit for review
+          </button>
+        ) : signedIn ? (
+          <button
+            type="button"
+            onClick={submit}
+            disabled={saving}
+            className="rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-3.5 py-2 text-sm text-[var(--ink)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)] disabled:opacity-40"
+          >
+            {saving ? "Submitting…" : "Submit for review"}
+          </button>
+        ) : (
+          // The wall moved from arrival to submission. Someone who has typed a
+          // submission has a reason to sign in; someone who has just landed
+          // does not, and the draft is in localStorage so the round trip
+          // through sign-in costs them nothing.
+          <Link
+            href="/sign-in"
+            className="rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-3.5 py-2 text-sm text-[var(--ink)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)]"
+          >
+            Sign in to submit
+          </Link>
+        )}
+        {loaded && !signedIn && (
+          <span className="text-xs text-[var(--ink-muted)]">
+            Your draft is kept in this browser. You submit under a pseudonym.
+          </span>
+        )}
         {error && <span className="text-xs text-[var(--status-critical)]">{error}</span>}
       </div>
     </div>
