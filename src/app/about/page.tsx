@@ -35,9 +35,11 @@ export default function AboutPage() {
           have solved, in full or in part, kept by a community of
           mathematicians and enthusiasts. It spans everything from famous
           conjectures to the long tail of specialist questions and the
-          numbered Erdős problems. When it went live on July 20, 2026, it was
-          the first site to track these results across all of mathematics, and
-          it is still the only one curated by a community.
+          numbered Erdős problems. It went live on July 20, 2026, the first
+          site to track these results across all of mathematics. Others have
+          followed since; what stays particular here is that every entry is
+          classified rather than merely listed, tied to a primary source, and
+          open to correction by anyone who spots an error.
         </p>
         <p className="text-sm">
           Entries are submitted, reviewed and curated in the open by people who
