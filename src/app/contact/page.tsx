@@ -22,9 +22,8 @@ export default function ContactPage() {
       <h1 className="font-serif text-3xl tracking-tight text-[var(--ink)]">Contact</h1>
 
       <p className="mt-3 mb-6 text-sm leading-relaxed text-[var(--ink-secondary)]">
-        This reaches the curators directly. Corrections to an entry are the most
-        useful thing you can send - if the mathematics is wrong somewhere, say
-        so and it gets fixed.
+        This reaches the people who keep the record. Messages are private and
+        go straight to a curator.
       </p>
 
       {/* No Suspense: the form reads nothing uncached, so it prerenders into

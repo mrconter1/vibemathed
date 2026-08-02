@@ -79,6 +79,10 @@ export default function AboutPage() {
           >
             GitHub
           </a>
+          . To reach the people who keep it, write to us at{" "}
+          <Link href="/contact" className="text-[var(--accent-blue)] hover:underline">
+            contact
+          </Link>
           .
         </p>
       </article>

@@ -4,7 +4,6 @@
 
 export const CONTACT_TOPICS = [
   { value: "general", label: "Something else" },
-  { value: "correction", label: "Correction to an entry" },
   { value: "verification", label: "Profile verification" },
   { value: "data", label: "Dataset, API or reuse" },
   { value: "press", label: "Press or research" },
@@ -29,11 +28,9 @@ export function topicLabel(value: string): string {
 /// rather than in a reply asking for it. Verification carries the instructions
 /// that used to live in a mailto body.
 const TOPIC_HINTS: Partial<Record<ContactTopic, string>> = {
-  correction:
-    "Name the entry and say what is wrong with it. A source that settles the point is worth more than any argument.",
   verification:
     "Include something that ties this account to you: a university page, an arXiv author page, a personal site that links back here, or a message from an institutional address. Profile links are the easiest evidence, so add them first.",
-  data:"The dataset is CC BY 4.0 and needs no permission - but say what you are building and we can shape the export around it.",
+  data: "The dataset is CC BY 4.0 and needs no permission - but say what you are building and we can shape the export around it.",
 };
 
 export function topicHint(value: string): string | null {
