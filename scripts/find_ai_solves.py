@@ -112,6 +112,13 @@ RESOLUTION_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Categories where model names are the SUBJECT, not a disclosure. A paper in
+# cs.LG about language models mentions "GPT" on every page, so the full-text
+# product arm matches it every time; these supplied all eight junk hits in the
+# measured sweeps. Excluded from the AI-mention test entirely, not from the
+# scan - a genuine resolution posted here would still need a math cross-list.
+ML_CATEGORIES = ("cs.LG", "cs.AI", "cs.CL", "cs.CV", "cs.NE", "cs.IR", "stat.ML")
+
 ARXIV_CATEGORIES = [
     "math.CO", "math.NT", "math.AG", "math.PR", "math.GR", "math.CA",
     "math.MG", "math.AC", "math.GT", "math.LO", "math.OC", "math.SP",
@@ -285,7 +292,11 @@ def arxiv_recent(days: int) -> list[dict]:
             title = re.sub(r"\s+", " ", e.findtext("a:title", "", ns)).strip()
             abstract = re.sub(r"\s+", " ", e.findtext("a:summary", "", ns)).strip()
             if RESOLUTION_RE.search(title + " " + abstract):
-                papers.append({"id": arxiv_id, "title": title, "abstract": abstract})
+                cat = e.find("{http://arxiv.org/schemas/atom}primary_category")
+                papers.append({
+                    "id": arxiv_id, "title": title, "abstract": abstract,
+                    "primary": cat.get("term") if cat is not None else "",
+                })
         if stop:
             break
         start += page
@@ -636,7 +647,17 @@ def main() -> int:
             # cannot see; restricting it to the abstract keeps venue names and
             # citation lists out.
             abstract = p["title"] + " " + p["abstract"]
-            generic = GENERIC_RE.search(abstract) and not NOISE_RE.search(abstract)
+            # Gate the generic arm on the primary category. In cs.LG or cs.CL,
+            # "language model" is the paper's SUBJECT, not a disclosure about
+            # how it was written, and those categories supplied every one of
+            # the eight junk hits in the first measured sweep.
+            primary = p.get("primary", "")
+            if primary in ML_CATEGORIES:
+                continue
+            mathy = primary.startswith(("math", "quant-ph"))
+            generic = (
+                mathy and GENERIC_RE.search(abstract) and not NOISE_RE.search(abstract)
+            )
             if not snippets and not generic:
                 continue
             if not snippets:
