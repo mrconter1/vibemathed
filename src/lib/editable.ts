@@ -38,8 +38,6 @@ export type EditableKey =
   | "aiContribution"
   | "claimIssueNote"
   | "statement"
-  | "formalStatement"
-  | "formalStatementSourceUrl"
   | "posedBy"
   | "yearPosed"
   | "solveDate"
@@ -188,19 +186,6 @@ export const EDITABLE_FIELDS: FieldSpec[] = [
     kind: "textarea",
     maxLength: 1200,
     help: "Plain-language statement. Math works: $inline$ or $$display$$.",
-  },
-  {
-    key: "formalStatement",
-    label: "Formal statement",
-    kind: "textarea",
-    maxLength: 6000,
-    help: "The problem as formalized, verbatim - usually the Lean statement, not the proof. Paste only the definitions and the theorem, so a reader can check it says what the problem says.",
-  },
-  {
-    key: "formalStatementSourceUrl",
-    label: "Formal statement source",
-    kind: "url",
-    help: "Where it was copied from. Required if a formal statement is given.",
   },
   { key: "posedBy", label: "Posed by", kind: "text", maxLength: 200 },
   { key: "yearPosed", label: "Year posed", kind: "number", help: "Four-digit year, or blank if unknown." },

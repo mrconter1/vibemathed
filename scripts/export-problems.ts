@@ -36,8 +36,6 @@ async function main() {
       fieldGroup: p.fieldGroup,
       resolution: p.resolution,
       statement: p.statement,
-    formalStatement: p.formalStatement,
-    formalStatementSourceUrl: p.formalStatementSourceUrl,
       posedBy: p.posedBy,
       yearPosed: p.yearPosed,
       solveType: p.solveType,

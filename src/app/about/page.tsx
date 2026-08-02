@@ -31,9 +31,7 @@ export default function AboutPage() {
           full ink, one size up from the supporting prose. */}
       <article className="my-auto w-full max-w-2xl space-y-5 self-center rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-5 py-6 leading-relaxed text-[var(--ink-secondary)] sm:px-8 sm:py-8">
         <p className="font-serif text-base text-[var(--ink)]">
-          {/* Same split as the header wordmark, so the name reads as the name. */}
-          Vibe<span className="text-[var(--accent-blue)]">Mathed</span> is a
-          record of the mathematical problems that AI models
+          VibeMathed is a record of the mathematical problems that AI models
           have solved, in full or in part, kept by a community of
           mathematicians and enthusiasts. It spans everything from famous
           conjectures to the long tail of specialist questions and the

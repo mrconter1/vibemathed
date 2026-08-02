@@ -23,8 +23,6 @@ function contentOf(p: MathProblem) {
     field: p.field,
     fieldGroup: p.fieldGroup,
     statement: p.statement,
-    formalStatement: p.formalStatement,
-    formalStatementSourceUrl: p.formalStatementSourceUrl,
     posedBy: p.posedBy,
     yearPosed: p.yearPosed,
     solveType: p.solveType,

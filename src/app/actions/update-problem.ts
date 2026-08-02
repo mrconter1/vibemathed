@@ -113,8 +113,6 @@ export async function updateProblem(
       aiContribution: true,
       claimIssueNote: true,
       statement: true,
-      formalStatement: true,
-      formalStatementSourceUrl: true,
       posedBy: true,
       yearPosed: true,
       solveDate: true,
@@ -184,22 +182,6 @@ export async function updateProblem(
       ok: false,
       error:
         "Changing the verification tier or status also requires updating the verification note, so the reason is on record.",
-    };
-  }
-
-  // A formal statement is only worth showing if a reader can go and check that
-  // it is really what the cited artifact says. Unsourced, it is just more text
-  // asserting the same thing the entry already asserts.
-  const nextFormal =
-    "formalStatement" in data ? (data.formalStatement as string | null) : current.formalStatement;
-  const nextFormalSource =
-    "formalStatementSourceUrl" in data
-      ? (data.formalStatementSourceUrl as string | null)
-      : current.formalStatementSourceUrl;
-  if (nextFormal && !nextFormalSource) {
-    return {
-      ok: false,
-      error: "A formal statement needs a source URL, so a reader can check it against the original.",
     };
   }
 

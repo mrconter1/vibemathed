@@ -16,8 +16,6 @@ export async function GET() {
     field: p.field,
     fieldGroup: p.fieldGroup,
     statement: p.statement,
-    formalStatement: p.formalStatement,
-    formalStatementSourceUrl: p.formalStatementSourceUrl,
     posedBy: p.posedBy,
     yearPosed: p.yearPosed,
     ageNote: p.ageNote ?? null,

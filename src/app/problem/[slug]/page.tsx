@@ -236,58 +236,6 @@ export default async function ProblemPage({
           </p>
         )}
 
-        {/* Native <details>: collapsed by default, and it opens without
-            JavaScript, which matters because this is the one thing on the page
-            a sceptical reader most needs to be able to reach. */}
-        {p.formalStatement && (
-          <details className="group mt-4 rounded-md border border-[var(--hairline)] bg-[var(--paper)]">
-            <summary className="cursor-pointer list-none px-3.5 py-2 text-xs text-[var(--ink-secondary)] transition-colors hover:text-[var(--accent-blue)]">
-              <span aria-hidden className="mr-1.5 inline-block transition-transform group-open:rotate-90">
-                ▶
-              </span>
-              Formal statement
-              <span className="ml-1.5 text-[var(--ink-muted)]">
-                what was actually proved, as formalized
-              </span>
-            </summary>
-            <div className="border-t border-[var(--hairline)] py-3">
-              {/* Numbered lines, so a reader can say "line 6 is where i≠j
-                  became a≠b" instead of describing where they mean. The gutter
-                  is sticky, so it survives scrolling a long line sideways, and
-                  select-none keeps the numbers out of a copied selection. */}
-              <pre className="overflow-x-auto font-mono text-[11px] leading-relaxed text-[var(--ink-secondary)]">
-                <code className="inline-block min-w-full">
-                  {p.formalStatement.split("\n").map((line, i) => (
-                    <span key={i} className="grid grid-cols-[2.5rem_1fr]">
-                      <span
-                        aria-hidden
-                        className="sticky left-0 select-none border-r border-[var(--hairline)] bg-[var(--paper)] pr-2 text-right tabular-nums text-[var(--ink-muted)]"
-                      >
-                        {i + 1}
-                      </span>
-                      <span className="whitespace-pre pl-3">{line || " "}</span>
-                    </span>
-                  ))}
-                </code>
-              </pre>
-              {p.formalStatementSourceUrl && (
-                <p className="mx-3.5 mt-2.5 border-t border-[var(--hairline)] pt-2 text-[11px] text-[var(--ink-muted)]">
-                  A machine checks that the proof entails this statement. Whether this
-                  statement is the problem is for you to judge.{" "}
-                  <a
-                    href={p.formalStatementSourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[var(--accent-blue)] hover:underline"
-                  >
-                    Source
-                  </a>
-                </p>
-              )}
-            </div>
-          </details>
-        )}
-
         <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-3 border-y border-[var(--hairline)] py-5 text-sm sm:grid-cols-3">
           {facts.map(([k, value]) => (
             <div key={k}>
