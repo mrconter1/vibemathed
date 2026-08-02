@@ -28,6 +28,8 @@ export interface ViewerState {
   pendingReviews: number;
   /// Entry reports awaiting a curator. Same admin-only rule as pendingReviews.
   openReports: number;
+  /// Unread messages sent through /contact. Same admin-only rule again.
+  openMessages: number;
   /// Unread notifications for THIS viewer: comments by others, newer than
   /// their seen-watermark, on entries they submitted or commented on.
   notifications: number;
@@ -45,6 +47,7 @@ export const SIGNED_OUT: ViewerState = {
   isAdmin: false,
   pendingReviews: 0,
   openReports: 0,
+  openMessages: 0,
   notifications: 0,
   votes: {},
 };

@@ -47,12 +47,13 @@ export function NotificationsMenu() {
     isAdmin,
     pendingReviews,
     openReports,
+    openMessages,
     clearNotifications,
   } = useViewer();
   // Curator queues are notifications too, so they belong on the bell rather
   // than on the account button. They are NOT cleared by opening the panel -
   // a queue stops counting when it is actually emptied, not when it is seen.
-  const queued = isAdmin ? pendingReviews + openReports : 0;
+  const queued = isAdmin ? pendingReviews + openReports + openMessages : 0;
   const badge = notifications + queued;
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<NotificationItem[] | null>(null);
@@ -182,6 +183,20 @@ export function NotificationsMenu() {
                   >
                     <span className="text-[var(--ink)]">
                       {openReports} open {openReports === 1 ? "report" : "reports"}
+                    </span>
+                    <span aria-hidden className="text-[var(--ink-muted)]">→</span>
+                  </Link>
+                </li>
+              )}
+              {openMessages > 0 && (
+                <li>
+                  <Link
+                    href="/admin/messages"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center justify-between gap-2 border-l-2 border-[var(--accent-orange)] px-3.5 py-2 text-xs transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)]"
+                  >
+                    <span className="text-[var(--ink)]">
+                      {openMessages} unread {openMessages === 1 ? "message" : "messages"}
                     </span>
                     <span aria-hidden className="text-[var(--ink-muted)]">→</span>
                   </Link>

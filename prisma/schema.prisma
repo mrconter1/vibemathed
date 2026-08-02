@@ -227,6 +227,43 @@ model Comment {
 /// A reader flagging an entry for curator attention. Deliberately NOT public
 /// (no activity row, never rendered on the entry): a report is a message to
 /// the curators, not a comment, and keeping it private avoids pile-ons.
+/// The site's inbox. Anyone can write to the curators through /contact, which
+/// is why no personal address is published anywhere on the site. Private by
+/// construction - never rendered publicly, no activity row - and it reuses the
+/// reports queue shape (open/handled, badge, mark-handled) rather than
+/// inventing a second one.
+model SiteMessage {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  /// Set when the sender was signed in. Anonymous messages are deliberately
+  /// allowed: the people most likely to write - a mathematician who spotted a
+  /// wrong entry, a journalist - should not have to make an account first.
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  /// Pseudonym snapshot, same convention as Comment.userName.
+  userName String?
+
+  /// Whatever reply address the sender chose to type. Optional on purpose;
+  /// a message with no way to answer is still worth receiving.
+  replyTo String?
+  /// One of CONTACT_TOPICS in src/lib/contact.ts. Sorts the queue, nothing more.
+  topic String
+  /// PLAIN TEXT, straight from the form.
+  body String
+
+  status    ReportStatus @default(open)
+  createdAt DateTime     @default(now())
+  handledAt DateTime?
+
+  /// The badge count and the queue read.
+  @@index([status])
+  /// The per-account rate limit read.
+  @@index([userId, createdAt])
+  /// The site-wide flood cap reads by time alone, since anonymous senders
+  /// have no id to count against.
+  @@index([createdAt])
+}
+
 model ProblemReport {
   id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   problemId String  @db.Uuid
@@ -331,6 +368,7 @@ model User {
   activities        ProblemActivity[]
   submittedProblems Problem[]         @relation("ProblemSubmitter")
   reports           ProblemReport[]
+  messages          SiteMessage[]
 }
 
 model Account {

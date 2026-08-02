@@ -21,7 +21,7 @@ export async function getViewerState(): Promise<ViewerState> {
 
   const userId = session.user.id;
 
-  const [votes, pendingReviews, openReports, unread, me] = await Promise.all([
+  const [votes, pendingReviews, openReports, openMessages, unread, me] = await Promise.all([
     prisma.problemVote.findMany({
       where: { userId },
       select: { vote: true, problem: { select: { slug: true } } },
@@ -31,6 +31,9 @@ export async function getViewerState(): Promise<ViewerState> {
     admin ? prisma.problem.count({ where: { status: "pending" } }) : Promise.resolve(0),
     admin
       ? prisma.problemReport.count({ where: { status: "open" } })
+      : Promise.resolve(0),
+    admin
+      ? prisma.siteMessage.count({ where: { status: "open" } })
       : Promise.resolve(0),
     // Unread = comments by OTHERS, newer than the viewer's watermark, on
     // published entries the viewer submitted or has commented on. Raw SQL so
@@ -82,6 +85,7 @@ export async function getViewerState(): Promise<ViewerState> {
     isAdmin: admin,
     pendingReviews,
     openReports,
+    openMessages,
     notifications,
     votes: Object.fromEntries(votes.map((v) => [v.problem.slug, v.vote])),
   };
