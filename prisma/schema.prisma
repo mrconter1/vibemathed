@@ -75,6 +75,22 @@ model Problem {
   /// Plain-language statement. Only ~1 in 5 entries has one; the card layout
   /// must not reserve space for it.
   statement     String?
+  /// The problem as a formal statement, verbatim - in practice Lean. Shown
+  /// collapsed on the entry, next to the informal statement.
+  ///
+  /// This exists because it is the only part of a machine-checked claim a
+  /// human can actually audit. A kernel guarantees that the proof entails the
+  /// statement; it can say nothing about whether the statement is the problem.
+  /// That gap is where the real errors live (a `≠` on indices quietly becoming
+  /// a `≠` on values, ℕ subtraction truncating at zero, lower density standing
+  /// in for density), and it is checkable in a dozen lines when the proof it
+  /// guards runs to thousands. Putting it on the page is what lets a reader
+  /// make that check instead of trusting a badge.
+  formalStatement String?
+  /// Where the formal statement was copied from, verbatim. Required whenever
+  /// `formalStatement` is set: an unsourced formal statement is a claim about
+  /// a file nobody can find, which is worse than no statement at all.
+  formalStatementSourceUrl String?
   posedBy       String?
   yearPosed     Int?
   /// "proved" | "disproved" - see the naming note at the top of this file.

@@ -139,6 +139,15 @@ export interface MathProblem {
   fieldGroup: FieldGroup | null;
   /** Plain-language statement. Null for lean entries. */
   statement: string | null;
+  /**
+   * The problem as formalized, verbatim. Shown collapsed on the entry: it is
+   * the only part of a machine-checked claim a reader can audit, since a
+   * kernel certifies that the proof entails the statement and never that the
+   * statement is the problem.
+   */
+  formalStatement: string | null;
+  /** Where the formal statement was copied from. Required alongside it. */
+  formalStatementSourceUrl: string | null;
   /** Who posed it. Null for lean entries. */
   posedBy: string | null;
   /** Year posed. Null when not reliably known (most lean entries). */
@@ -375,10 +384,24 @@ export function assertProblem(value: unknown, index: number): MathProblem {
   );
   ["problemNumber", "yearPosed", "citations"].forEach(requireNullableNumber);
   requireNumber("renownLangs");
-  for (const key of ["renownNote", "resultNote", "ageNote", "claimIssueNote", "significanceNote"]) {
+  for (const key of [
+    "renownNote",
+    "resultNote",
+    "ageNote",
+    "claimIssueNote",
+    "significanceNote",
+    "formalStatement",
+    "formalStatementSourceUrl",
+  ]) {
     if (p[key] !== undefined && p[key] !== null && typeof p[key] !== "string") {
       throw new Error(`${where}: "${key}" must be a string or null when present`);
     }
+  }
+  // The pairing is the whole point: an unsourced formal statement is a claim
+  // about a file nobody can find. Enforced here too, not only in the editor,
+  // so a seeded or imported entry cannot slip past it.
+  if (p.formalStatement && !p.formalStatementSourceUrl) {
+    throw new Error(`${where}: "formalStatement" requires "formalStatementSourceUrl"`);
   }
   if (p.significance !== undefined && p.significance !== null) {
     const s = p.significance;

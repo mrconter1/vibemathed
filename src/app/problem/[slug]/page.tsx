@@ -120,11 +120,11 @@ export default async function ProblemPage({
   ];
 
   const facts: [string, string][] = [
-    [
-      "Result",
-      (SOLVE_TYPE[p.solveType]?.label ?? p.solveType) +
-        (p.resultNote ? ` (${p.resultNote})` : ""),
-    ],
+    // The qualifier does NOT go in the cell. A grid cell is half the viewport
+    // on mobile, so even a note at the 200-character field cap runs to eight
+    // lines there and drags the whole row down while the cell beside it sits
+    // empty. The cell links to the prose block below instead.
+    ["Result", SOLVE_TYPE[p.solveType]?.label ?? p.solveType],
     ["Status", RESOLUTION[p.resolution]?.label ?? p.resolution],
     // DASH, not a default tier: most of the catalog predates this axis and an
     // unclassified entry must not claim a degree of involvement.
@@ -236,6 +236,42 @@ export default async function ProblemPage({
           </p>
         )}
 
+        {/* Native <details>: collapsed by default, and it opens without
+            JavaScript, which matters because this is the one thing on the page
+            a sceptical reader most needs to be able to reach. */}
+        {p.formalStatement && (
+          <details className="group mt-4 rounded-md border border-[var(--hairline)] bg-[var(--paper)]">
+            <summary className="cursor-pointer list-none px-3.5 py-2 text-xs text-[var(--ink-secondary)] transition-colors hover:text-[var(--accent-blue)]">
+              <span aria-hidden className="mr-1.5 inline-block transition-transform group-open:rotate-90">
+                ▶
+              </span>
+              Formal statement
+              <span className="ml-1.5 text-[var(--ink-muted)]">
+                what was actually proved, as formalized
+              </span>
+            </summary>
+            <div className="border-t border-[var(--hairline)] px-3.5 py-3">
+              <pre className="overflow-x-auto font-mono text-[11px] leading-relaxed text-[var(--ink-secondary)]">
+                <code>{p.formalStatement}</code>
+              </pre>
+              {p.formalStatementSourceUrl && (
+                <p className="mt-2.5 border-t border-[var(--hairline)] pt-2 text-[11px] text-[var(--ink-muted)]">
+                  A machine checks that the proof entails this statement. Whether this
+                  statement is the problem is for you to judge.{" "}
+                  <a
+                    href={p.formalStatementSourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[var(--accent-blue)] hover:underline"
+                  >
+                    Source
+                  </a>
+                </p>
+              )}
+            </div>
+          </details>
+        )}
+
         <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-3 border-y border-[var(--hairline)] py-5 text-sm sm:grid-cols-3">
           {facts.map(([k, value]) => (
             <div key={k}>
@@ -243,6 +279,16 @@ export default async function ProblemPage({
               <dd className="mt-0.5 flex items-center gap-1.5 text-[var(--ink)]">
                 {k === "Verification" && v && <StatusIcon kind={v.icon} color={v.color} />}
                 {value}
+                {/* A word rather than an asterisk: a reader who never taps it
+                    still learns that the headline claim is qualified. */}
+                {k === "Result" && p.resultNote && (
+                  <a
+                    href="#result-note"
+                    className="text-xs text-[var(--accent-blue)] hover:underline"
+                  >
+                    (see note)
+                  </a>
+                )}
                 {/* The stored one-line justification for the score. */}
                 {k === "Significance" && p.significanceNote && (
                   <StarNote text={p.significanceNote} />
@@ -254,6 +300,17 @@ export default async function ProblemPage({
             </div>
           ))}
         </dl>
+
+        {/* First of the prose sections, because it qualifies the headline
+            claim rather than elaborating on it. */}
+        {p.resultNote && (
+          <section id="result-note" className="mt-6 scroll-mt-24">
+            <h2 className="font-serif text-lg text-[var(--ink)]">What was actually shown</h2>
+            <p className="math-prose mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
+              <TeX>{p.resultNote}</TeX>
+            </p>
+          </section>
+        )}
 
         {p.aiRole && (
           <section className="mt-6">

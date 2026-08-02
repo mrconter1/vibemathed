@@ -302,7 +302,10 @@ function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string
             the header row where it wraps at the FULL card width instead of
             squeezing beside the vote buttons. */}
         {p.resultNote && (
-          <p className="mt-0.5 text-xs text-[var(--ink-muted)]">({p.resultNote})</p>
+          // Clamped: at the 200-character cap this is five lines on a phone,
+          // which on a card buries the identity line under a caveat. The entry
+          // page carries it in full.
+          <p className="mt-0.5 line-clamp-2 text-xs text-[var(--ink-muted)]">({p.resultNote})</p>
         )}
         {/* Identity line */}
         <p className="mt-1 font-mono text-[11px] text-[var(--ink-muted)]">
