@@ -1,4 +1,5 @@
 import type { ActivityView } from "@/lib/activity";
+import { RelativeTime } from "@/components/RelativeTime";
 
 // Entry changelog. A server component using a native <details>, so it collapses
 // without JavaScript and its contents are still in the HTML for crawlers.
@@ -75,7 +76,7 @@ export function Changelog({ activity }: { activity: ActivityView[] }) {
             {/* break-words: quoted old/new values can be unbreakable URLs */}
             <span className="min-w-0 flex-1 break-words text-[var(--ink-secondary)]">{describe(a)}</span>
             <span className="shrink-0 font-mono text-[11px] text-[var(--ink-muted)]">
-              {a.createdAt}
+              <RelativeTime iso={a.createdAtIso} fallback={a.createdAt} />
             </span>
           </li>
         ))}

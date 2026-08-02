@@ -6,6 +6,7 @@
 import Link from "next/link";
 import type { SiteActivityView } from "@/lib/activity";
 import { Icon } from "@/components/Icons";
+import { RelativeTime } from "@/components/RelativeTime";
 
 function truncate(value: string | null, max = 60): string {
   if (!value) return "";
@@ -119,7 +120,7 @@ export function RecentActivity({ activity }: { activity: SiteActivityView[] }) {
               <span className="text-[var(--ink-muted)]">{describe(a)}</span>
             </span>
             <span className="shrink-0 font-mono text-[11px] text-[var(--ink-muted)]">
-              {a.createdAt}
+              <RelativeTime iso={a.createdAtIso} fallback={a.createdAt} />
             </span>
           </li>
         ))}

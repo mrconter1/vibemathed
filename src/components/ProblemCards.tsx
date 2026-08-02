@@ -59,7 +59,8 @@ type SortKey =
   | "discussion"
   | "name"
   | "age"
-  | "significance";
+  | "significance"
+  | "cost";
 type SortDir = "asc" | "desc";
 
 const SORTS: { key: SortKey; label: string }[] = [
@@ -69,6 +70,7 @@ const SORTS: { key: SortKey; label: string }[] = [
   { key: "discussion", label: "Comments" },
   { key: "age", label: "Years open" },
   { key: "significance", label: "Significance" },
+  { key: "cost", label: "Disclosed cost" },
   { key: "name", label: "Name" },
 ];
 
@@ -92,7 +94,7 @@ const LOADED_AT = Date.now();
 // These default to descending on first pick (highest / most recent first, so
 // entries with no value - stored as -1 - sink instead of leading). "added" is
 // an ISO string, but "most recent first" is equally the right default.
-const NUMERIC_KEYS: SortKey[] = ["solveDate", "added", "age", "significance", "score", "discussion"];
+const NUMERIC_KEYS: SortKey[] = ["solveDate", "added", "age", "significance", "score", "discussion", "cost"];
 
 const PAGE_SIZES = [10, 25, 50, 100];
 
@@ -140,6 +142,10 @@ function sortValue(p: CardEntry, key: SortKey, period: Period): string | number 
     case "significance":
       // Unassessed entries sink rather than lead.
       return p.significance ?? -1;
+    case "cost":
+      // Almost nothing has a disclosed cost, so undisclosed sinks; the
+      // handful that published a figure rise to the top.
+      return p.solveCostUsd ?? -1;
   }
 }
 

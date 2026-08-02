@@ -13,11 +13,12 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  // 5 activity rows, not more: on mobile the feed renders at full height in
-  // its own grid row, so its length directly sets how tall that card gets.
+  // Ten activity rows. The feed scrolls inside a capped height on both
+  // layouts (max-h-36 on mobile, the absolute fill on lg), so a longer list
+  // adds history without changing how tall the card is.
   const [problems, activity, users] = await Promise.all([
     getPublishedProblems(),
-    getRecentActivity(5),
+    getRecentActivity(10),
     getUserCount(),
   ]);
 
@@ -51,6 +52,7 @@ export default async function Home() {
     resolutionMethod: p.resolutionMethod ?? null,
     significance: p.significance ?? null,
     significanceNote: p.significanceNote ?? null,
+    solveCostUsd: p.solveCostUsd ?? null,
     resultNote: p.resultNote ?? null,
     ageNote: p.ageNote ?? null,
     upvotes: p.upvotes,

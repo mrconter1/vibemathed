@@ -307,6 +307,7 @@ export interface CardEntry {
   resolutionMethod?: ResolutionMethod | null;
   significance: number | null;
   significanceNote: string | null;
+  solveCostUsd: number | null;
   resultNote: string | null;
   ageNote: string | null;
   upvotes: number;

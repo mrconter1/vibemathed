@@ -285,6 +285,7 @@ export async function getActivity(slug: string): Promise<ActivityView[]> {
   return rows.map((a) => ({
     id: a.id,
     userName: resolveSnapshot(a.userName, a.userId !== null),
+    createdAtIso: a.createdAt.toISOString(),
     type: a.type,
     field: a.field,
     oldValue: a.oldValue,
@@ -333,6 +334,7 @@ export async function getRecentActivity(limit = 8): Promise<SiteActivityView[]> 
     oldValue: a.oldValue,
     newValue: a.newValue,
     createdAt: formatCommentDate(a.createdAt),
+    createdAtIso: a.createdAt.toISOString(),
     problemName: a.problem.name,
     problemSlug: a.problem.slug,
   }));

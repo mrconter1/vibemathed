@@ -24,6 +24,8 @@ export interface ActivityView {
   oldValue: string | null;
   newValue: string | null;
   createdAt: string;
+  /// Raw ISO timestamp, for relative rendering on the client.
+  createdAtIso: string;
 }
 
 /// Site-wide activity also needs to say WHICH entry it happened on.
