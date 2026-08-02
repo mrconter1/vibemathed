@@ -768,6 +768,47 @@
     "significanceNote": "A 30-year oracle-complexity gap in zeroth-order optimization."
   },
   {
+    "slug": "dfjp-interpolation-schauder-basis",
+    "name": "Weakly Compact Factorization Through a Space With a Basis",
+    "shortName": "DFJP basis factorization",
+    "problemNumber": null,
+    "field": "Banach Space Factorization",
+    "fieldGroup": "Analysis",
+    "resolution": "resolved",
+    "statement": "Davis, Figiel, Johnson and Pełczyński showed their interpolation space admits a Schauder basis when the range space has a shrinking one. Can the DFJP space always be chosen with a basis whenever the range space has a basis? The paper proves it can.",
+    "posedBy": "Davis, Figiel, Johnson and Pełczyński; raised again by Kevin Beanland",
+    "yearPosed": 1974,
+    "solveType": "proved",
+    "solveDate": "2026-07-19",
+    "model": "ChatGPT 5.5 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Antonio Acuaviva",
+      "Pablo Acuaviva"
+    ],
+    "aiRole": "ChatGPT 5.5 Pro, driven directly and through Codex agents over a filesystem, generated the key ideas and the proof; the authors verified and refined it. The paper reports that the model sometimes misattributed a theorem, cited a result imprecisely, or presented steps as immediate when they still needed checking, so the human verification was load-bearing. The authors state none of these results came from the newer generation of models.",
+    "verification": "unreviewed",
+    "verificationNote": "No independent check. The proof stands on verification by the paper's authors, who describe correcting misattributions and filling in steps the model presented as immediate. Preprint, not refereed.",
+    "publication": "preprint",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.17388",
+    "sourceName": "arXiv",
+    "aiContribution": "ai-co-developed",
+    "significance": 20,
+    "significanceNote": "The oldest of the batch: a question about the DFJP interpolation construction that the paper states remained open until this proof.",
+    "links": [
+      {
+        "label": "MathOverflow 240472 (the question)",
+        "url": "https://mathoverflow.net/questions/240472"
+      }
+    ]
+  },
+  {
     "slug": "dinitz-garg-goemans-unsplittable-flow",
     "name": "Dinitz-Garg-Goemans Conjecture",
     "shortName": "Dinitz-Garg-Goemans",
@@ -839,6 +880,41 @@
     "aiContribution": "ai-co-developed",
     "significance": 5,
     "significanceNote": "A recent concrete decomposition question with a one-paper audience."
+  },
+  {
+    "slug": "dm-stack-positivity-without-torsion-free",
+    "name": "Positivity on Deligne–Mumford Stacks Without the Torsion-Free Hypothesis",
+    "shortName": "DM positivity",
+    "problemNumber": null,
+    "field": "Algebraic Geometry, Stacks",
+    "fieldGroup": "Geometry & topology",
+    "resolution": "resolved",
+    "statement": "Casalaina-Martin and Zhjeqi proved that the first Chern class of every torsion-free coherent quotient of a tensor power of the logarithmic cotangent sheaf is pseudo-effective, noting in Remark 4.5 that torsion-freeness was imposed only for technical reasons. Can it be dropped? Yes.",
+    "posedBy": "Casalaina-Martin and Zhjeqi",
+    "yearPosed": 2026,
+    "solveType": "proved",
+    "solveDate": "2026-07-29",
+    "model": "ChatGPT 5.5 Pro + Danus",
+    "modelMaker": null,
+    "humanCollaborators": [
+      "Shengyu Hou",
+      "Jihao Liu"
+    ],
+    "aiRole": "The main result was obtained with ChatGPT 5.5 Pro and the Danus system, an agent built on Rethlas; human verification and polishing came afterwards. The authors caution that AI limitations mean related literature may have been missed.",
+    "verification": "unreviewed",
+    "verificationNote": "No independent check. The authors verified and polished the AI-produced argument themselves and explicitly flag that relevant references may have been missed. Preprint, not refereed.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.26989",
+    "sourceName": "arXiv",
+    "aiContribution": "ai-co-developed",
+    "significance": 5,
+    "significanceNote": "Removes a hypothesis its own authors described as technical. A real but modest closure of a gap noted in a remark."
   },
   {
     "slug": "ehrhart-volume-conjecture",
@@ -7620,6 +7696,41 @@
     "significanceNote": "A recent conjecture on one graph family."
   },
   {
+    "slug": "pencil-cubics-twelve-common-flex-lines",
+    "name": "Twelve Common Flex Lines in a General Pencil of Cubics",
+    "shortName": "12 flex lines",
+    "problemNumber": null,
+    "field": "Algebraic Geometry, Plane Curves",
+    "fieldGroup": "Geometry & topology",
+    "resolution": "resolved",
+    "statement": "Does a general pencil of plane cubics over $\\mathbb{C}$ have exactly $12$ common flex lines? Ciliberto, Miranda and Roé asked this in Remark 5.3 of their paper; the answer is yes.",
+    "posedBy": "Ciro Ciliberto, Rick Miranda, Joaquim Roé",
+    "yearPosed": 2026,
+    "solveType": "proved",
+    "solveDate": "2026-07-29",
+    "model": "ChatGPT 5.5 Pro + Danus",
+    "modelMaker": null,
+    "humanCollaborators": [
+      "Jihao Liu",
+      "Yanze Wang"
+    ],
+    "aiRole": "The main result was obtained with ChatGPT 5.5 Pro and the Danus system, an agent built on Rethlas; human verification and polishing came afterwards. The authors caution that AI limitations mean related literature may have been missed.",
+    "verification": "unreviewed",
+    "verificationNote": "No independent check. The authors verified and polished the AI-produced argument themselves and explicitly flag that relevant references may have been missed. Preprint, not refereed.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.26396",
+    "sourceName": "arXiv",
+    "aiContribution": "ai-co-developed",
+    "significance": 10,
+    "significanceNote": "A specialist question in classical projective geometry, posed in a 2026 remark and answered within months."
+  },
+  {
     "slug": "permanent-formula-lower-bounds",
     "name": "Lower Bounds for the Permanent in Arithmetic Circuits",
     "shortName": "Permanent lower bounds",
@@ -7719,6 +7830,41 @@
         "url": "https://vibemathed.com/problem/dinitz-garg-goemans-unsplittable-flow"
       }
     ]
+  },
+  {
+    "slug": "primariness-lp-l1",
+    "name": "Primariness of the Mixed-Norm Space $L_p(L_1)$",
+    "shortName": "Primariness of $L_p(L_1)$",
+    "problemNumber": null,
+    "field": "Banach Space Decomposition Theory",
+    "fieldGroup": "Analysis",
+    "resolution": "resolved",
+    "statement": "A Banach space is primary if in every decomposition into two complemented subspaces one summand is isomorphic to the whole. Lechner, Motakis, Müller and Schlumprecht identified the primariness of $L_p(L_1)$ as a prominent remaining open case; the paper proves it is primary for $1<p<\\infty$.",
+    "posedBy": "Lechner, Motakis, Müller and Schlumprecht",
+    "yearPosed": null,
+    "solveType": "proved",
+    "solveDate": "2026-07-19",
+    "model": "ChatGPT 5.5 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Antonio Acuaviva",
+      "Pablo Acuaviva"
+    ],
+    "aiRole": "ChatGPT 5.5 Pro, driven directly and through Codex agents over a filesystem, generated the key ideas and the proof; the authors verified and refined it. The paper reports that the model sometimes misattributed a theorem, cited a result imprecisely, or presented steps as immediate when they still needed checking, so the human verification was load-bearing. The authors state none of these results came from the newer generation of models.",
+    "verification": "unreviewed",
+    "verificationNote": "No independent check. The proof stands on verification by the paper's authors, who describe correcting misattributions and filling in steps the model presented as immediate. Preprint, not refereed.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.17388",
+    "sourceName": "arXiv",
+    "aiContribution": "ai-co-developed",
+    "significance": 20,
+    "significanceNote": "Named by the authors of the preceding work as one of the prominent remaining open cases in the primariness programme."
   },
   {
     "slug": "pure-o-sequences-log-concavity",
@@ -8348,6 +8494,47 @@
     "significanceNote": "From Stanley's 1988 differential-posets paper, a recognized source of problems."
   },
   {
+    "slug": "strict-cosingularity-adjoints-separable-range",
+    "name": "Strict Cosingularity and Adjoints for Separable Range",
+    "shortName": "Strict cosingularity",
+    "problemNumber": null,
+    "field": "Banach Space Operator Ideals",
+    "fieldGroup": "Analysis",
+    "resolution": "resolved",
+    "statement": "Pełczyński's duality between strictly singular and strictly cosingular operators fails without weak compactness. Beanland asked, in work with Androulakis and later on MathOverflow, for the separable-range case: the paper answers it affirmatively and shows that for separable $X$, $T$ is strictly cosingular exactly when $T^{*}$ is strictly singular.",
+    "posedBy": "Kevin Beanland",
+    "yearPosed": 2008,
+    "solveType": "proved",
+    "solveDate": "2026-07-19",
+    "model": "ChatGPT 5.5 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Antonio Acuaviva",
+      "Pablo Acuaviva"
+    ],
+    "aiRole": "ChatGPT 5.5 Pro, driven directly and through Codex agents over a filesystem, generated the key ideas and the proof; the authors verified and refined it. The paper reports that the model sometimes misattributed a theorem, cited a result imprecisely, or presented steps as immediate when they still needed checking, so the human verification was load-bearing. The authors state none of these results came from the newer generation of models.",
+    "verification": "unreviewed",
+    "verificationNote": "No independent check. The proof stands on verification by the paper's authors, who describe correcting misattributions and filling in steps the model presented as immediate. Preprint, not refereed.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.17388",
+    "sourceName": "arXiv",
+    "aiContribution": "ai-co-developed",
+    "significance": 10,
+    "significanceNote": "A duality question left open in a 2008 paper and later posted publicly on MathOverflow, now settled in the form asked.",
+    "links": [
+      {
+        "label": "MathOverflow 98449 (the question)",
+        "url": "https://mathoverflow.net/questions/98449"
+      }
+    ]
+  },
+  {
     "slug": "sun-trigonometric-permanents",
     "name": "Sun's Conjecture 4.6(ii) on Trigonometric Permanents",
     "shortName": "Sun permanents",
@@ -8378,6 +8565,41 @@
     "aiContribution": "ai-discovered",
     "significance": 5,
     "significanceNote": "One of Zhi-Wei Sun's many posted conjectures; one-paper audience."
+  },
+  {
+    "slug": "toroidal-elton-odell",
+    "name": "The Toroidal Elton–Odell Theorem",
+    "shortName": "Toroidal Elton–Odell",
+    "problemNumber": null,
+    "field": "Banach Space Geometry",
+    "fieldGroup": "Analysis",
+    "resolution": "resolved",
+    "statement": "The Elton–Odell theorem gives, in every infinite-dimensional normed space, a unit-sphere sequence with mutual distances at least $1+\\varepsilon$. Over $\\mathbb{C}$, identifying vectors differing by a unimodular scalar gives a toroidal distance. Does every infinite-dimensional complex normed space admit such a uniformly separated sequence for that distance? Yes.",
+    "posedBy": "Tomasz Kania",
+    "yearPosed": null,
+    "solveType": "proved",
+    "solveDate": "2026-07-19",
+    "model": "ChatGPT 5.5 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Antonio Acuaviva",
+      "Pablo Acuaviva"
+    ],
+    "aiRole": "ChatGPT 5.5 Pro, driven directly and through Codex agents over a filesystem, generated the key ideas and the proof; the authors verified and refined it. The paper reports that the model sometimes misattributed a theorem, cited a result imprecisely, or presented steps as immediate when they still needed checking, so the human verification was load-bearing. The authors state none of these results came from the newer generation of models.",
+    "verification": "unreviewed",
+    "verificationNote": "No independent check. The proof stands on verification by the paper's authors, who describe correcting misattributions and filling in steps the model presented as immediate. Preprint, not refereed.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.17388",
+    "sourceName": "arXiv",
+    "aiContribution": "ai-co-developed",
+    "significance": 15,
+    "significanceNote": "The complex projective analogue of a named classical theorem, raised explicitly in the literature and solved in full."
   },
   {
     "slug": "two-adic-absolute-galois-presentation",
@@ -8526,6 +8748,41 @@
         "url": "https://eprint.iacr.org/2026/1509"
       }
     ]
+  },
+  {
+    "slug": "unital-banach-algebra-not-a-calkin-algebra",
+    "name": "A Unital Banach Algebra That Is Not a Calkin Algebra",
+    "shortName": "Non-Calkin algebra",
+    "problemNumber": null,
+    "field": "Banach Algebras, Operator Theory",
+    "fieldGroup": "Analysis",
+    "resolution": "resolved",
+    "statement": "The realisation problem asks which unital Banach algebras arise as the Calkin algebra $\\mathcal{B}(X)/\\mathcal{K}(X)$ of some Banach space. Recorded in Tarbard's thesis and studied by Horváth and Kania. The paper exhibits a unital Banach algebra that cannot be one.",
+    "posedBy": "Tomasz Kania",
+    "yearPosed": null,
+    "solveType": "proved",
+    "solveDate": "2026-07-19",
+    "model": "ChatGPT 5.5 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Antonio Acuaviva",
+      "Pablo Acuaviva"
+    ],
+    "aiRole": "ChatGPT 5.5 Pro, driven directly and through Codex agents over a filesystem, generated the key ideas and the proof; the authors verified and refined it. The paper reports that the model sometimes misattributed a theorem, cited a result imprecisely, or presented steps as immediate when they still needed checking, so the human verification was load-bearing. The authors state none of these results came from the newer generation of models.",
+    "verification": "unreviewed",
+    "verificationNote": "No independent check. The proof stands on verification by the paper's authors, who describe correcting misattributions and filling in steps the model presented as immediate. Preprint, not refereed.",
+    "publication": "preprint",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.17388",
+    "sourceName": "arXiv",
+    "aiContribution": "ai-co-developed",
+    "significance": 15,
+    "significanceNote": "Answers a recorded realisation question for Calkin algebras by explicit construction; the surrounding programme includes the Argyros–Haydon theorem."
   },
   {
     "slug": "vandermonde-powers-non-snp",
