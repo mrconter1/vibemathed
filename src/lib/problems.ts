@@ -207,6 +207,14 @@ export interface MathProblem {
   /** One-line justification for the significance score. */
   significanceNote?: string | null;
   /**
+   * Disclosed cost of producing the result in whole US dollars, or null -
+   * which is the overwhelming majority, because almost nobody publishes it.
+   * Never estimated from model pricing; only recorded when a source says it.
+   */
+  solveCostUsd?: number | null;
+  /** What the figure covers and where it came from. */
+  solveCostNote?: string | null;
+  /**
    * Optional short qualifier appended to the visible result, for results that
    * aren't cleanly "proved"/"disproved" - e.g. disproved in some dimensions but
    * still open in others. Present only on entries that need it.

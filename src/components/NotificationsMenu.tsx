@@ -17,7 +17,20 @@ import { Icon } from "@/components/Icons";
 import { useViewer } from "@/components/ViewerProvider";
 
 export function NotificationsMenu() {
-  const { loaded, signedIn, notifications, clearNotifications } = useViewer();
+  const {
+    loaded,
+    signedIn,
+    notifications,
+    isAdmin,
+    pendingReviews,
+    openReports,
+    clearNotifications,
+  } = useViewer();
+  // Curator queues are notifications too, so they belong on the bell rather
+  // than on the account button. They are NOT cleared by opening the panel -
+  // a queue stops counting when it is actually emptied, not when it is seen.
+  const queued = isAdmin ? pendingReviews + openReports : 0;
+  const badge = notifications + queued;
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<NotificationItem[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -28,12 +41,13 @@ export function NotificationsMenu() {
   // panel opens populated. Deliberately does NOT touch the watermark - only
   // opening the panel marks things seen.
   useEffect(() => {
-    if (!loaded || !signedIn || notifications === 0 || prefetched.current) return;
+    if (!loaded || !signedIn || prefetched.current) return;
+    if (notifications === 0 && queued === 0) return;
     prefetched.current = true;
     getNotifications().then((result) => {
       if (result.ok) setItems(result.items);
     });
-  }, [loaded, signedIn, notifications]);
+  }, [loaded, signedIn, notifications, queued]);
 
   // Close on outside click or Escape, same idiom as the account menu.
   useEffect(() => {
@@ -81,20 +95,18 @@ export function NotificationsMenu() {
         aria-expanded={open}
         aria-haspopup="dialog"
         aria-label={
-          notifications > 0
-            ? `Notifications (${notifications} unread)`
-            : "Notifications"
+          badge > 0 ? `Notifications (${badge} unread)` : "Notifications"
         }
         title="Notifications"
         className="relative inline-flex h-8 w-8 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)]"
       >
         <Icon name="bell" size={15} />
-        {notifications > 0 && (
+        {badge > 0 && (
           <span
             className="absolute -right-1.5 -top-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-semibold tabular-nums text-[var(--paper-raised)]"
             style={{ backgroundColor: "var(--accent-orange)" }}
           >
-            {notifications > 99 ? "99+" : notifications}
+            {badge > 99 ? "99+" : badge}
           </span>
         )}
       </button>
@@ -114,6 +126,40 @@ export function NotificationsMenu() {
             Notifications
           </p>
 
+          {/* Curator work first: these are actionable, the feed below is not. */}
+          {queued > 0 && (
+            <ul className="border-b border-[var(--hairline)] py-1">
+              {pendingReviews > 0 && (
+                <li>
+                  <Link
+                    href="/admin/submissions"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center justify-between gap-2 border-l-2 border-[var(--accent-orange)] px-3.5 py-2 text-xs transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)]"
+                  >
+                    <span className="text-[var(--ink)]">
+                      {pendingReviews} {pendingReviews === 1 ? "submission" : "submissions"} awaiting review
+                    </span>
+                    <span aria-hidden className="text-[var(--ink-muted)]">→</span>
+                  </Link>
+                </li>
+              )}
+              {openReports > 0 && (
+                <li>
+                  <Link
+                    href="/admin/reports"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center justify-between gap-2 border-l-2 border-[var(--accent-orange)] px-3.5 py-2 text-xs transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)]"
+                  >
+                    <span className="text-[var(--ink)]">
+                      {openReports} open {openReports === 1 ? "report" : "reports"}
+                    </span>
+                    <span aria-hidden className="text-[var(--ink-muted)]">→</span>
+                  </Link>
+                </li>
+              )}
+            </ul>
+          )}
+
           {error && (
             <p className="px-3.5 py-3 text-xs text-[var(--status-critical)]">{error}</p>
           )}
@@ -127,8 +173,9 @@ export function NotificationsMenu() {
 
           {items !== null && items.length === 0 && (
             <p className="px-3.5 py-3 text-xs leading-relaxed text-[var(--ink-muted)]">
-              Nothing yet. Comments on entries you submitted or joined the
-              discussion on will show up here.
+              {queued > 0
+                ? "No new comments. Comments on entries you submitted or joined the discussion on show up here."
+                : "Nothing yet. Comments on entries you submitted or joined the discussion on will show up here."}
             </p>
           )}
 

@@ -111,7 +111,13 @@ export default async function UserPage({
         <h1 className="font-serif text-3xl tracking-tight text-[var(--ink)]">
           {profile.pseudonym}
         </h1>
-        <p className="mt-1.5 text-sm text-[var(--ink-secondary)]">
+        {/* Self-written, plain text, capped short - see BIO_MAX. */}
+        {profile.bio && (
+          <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-[var(--ink-secondary)]">
+            {profile.bio}
+          </p>
+        )}
+        <p className="mt-1.5 text-sm text-[var(--ink-muted)]">
           Member since {profile.joined}
         </p>
       </header>

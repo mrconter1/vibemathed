@@ -21,7 +21,7 @@ export async function getViewerState(): Promise<ViewerState> {
 
   const userId = session.user.id;
 
-  const [votes, pendingReviews, openReports, unread] = await Promise.all([
+  const [votes, pendingReviews, openReports, unread, me] = await Promise.all([
     prisma.problemVote.findMany({
       where: { userId },
       select: { vote: true, problem: { select: { slug: true } } },
@@ -53,6 +53,7 @@ export async function getViewerState(): Promise<ViewerState> {
           )
         )
     `,
+    prisma.user.findUnique({ where: { id: userId }, select: { bio: true } }),
   ]);
 
   const notifications = Number(unread[0]?.count ?? 0);
@@ -61,6 +62,7 @@ export async function getViewerState(): Promise<ViewerState> {
     signedIn: true,
     userId,
     pseudonym: session.user.pseudonym ?? null,
+    bio: me?.bio ?? null,
     isAdmin: admin,
     pendingReviews,
     openReports,

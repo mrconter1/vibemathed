@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signOutEverywhere } from "@/app/actions/auth";
-import { updatePseudonym } from "@/app/actions/profile";
-import { PSEUDONYM_MAX } from "@/lib/pseudonym";
+import { updateBio, updatePseudonym } from "@/app/actions/profile";
+import { BIO_MAX, PSEUDONYM_MAX } from "@/lib/pseudonym";
 import { useViewer } from "@/components/ViewerProvider";
 
 /// The colored initial standing in for an avatar - the site never shows the
@@ -30,15 +30,15 @@ export function AuthMenu() {
     signedIn,
     pseudonym,
     isAdmin,
-    pendingReviews,
-    openReports,
+    bio,
+    setBio,
     setPseudonym,
   } = useViewer();
-  // Anything a curator should act on: submissions waiting plus open reports.
-  const actionable = isAdmin ? pendingReviews + openReports : 0;
-  const hasPending = actionable > 0;
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState("");
+  const [bioDraft, setBioDraft] = useState("");
+  const [bioSaved, setBioSaved] = useState(false);
+  const [bioSaving, setBioSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -48,6 +48,8 @@ export function AuthMenu() {
   // keyed on `open` so there is no cascading render on every toggle.
   function openPanel() {
     setDraft(pseudonym ?? "");
+    setBioDraft(bio ?? "");
+    setBioSaved(false);
     setError(null);
     setSaved(false);
     setOpen(true);
@@ -85,6 +87,19 @@ export function AuthMenu() {
     setSaved(true);
   }
 
+  async function saveBio() {
+    setBioSaving(true);
+    setError(null);
+    const result = await updateBio(bioDraft);
+    setBioSaving(false);
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
+    setBio(result.bio);
+    setBioSaved(true);
+  }
+
   // Reserve the slot while loading so the header does not jump, and so a
   // signed-in visitor never sees a "Sign in" flash.
   if (!loaded) {
@@ -111,23 +126,14 @@ export function AuthMenu() {
         onClick={() => (open ? setOpen(false) : openPanel())}
         aria-expanded={open}
         aria-haspopup="dialog"
-        className={`inline-flex h-8 max-w-[14rem] items-center gap-2 truncate rounded-md border bg-[var(--paper-raised)] pl-1.5 pr-3 text-xs text-[var(--ink)] transition-colors hover:border-[var(--accent-blue)] ${
-          hasPending ? "border-[var(--accent-orange)]" : "border-[var(--hairline)]"
-        }`}
+        // Phones show the avatar alone: the name costs ~90px next to the
+        // bell and the wordmark, and the initial already identifies you.
+        // Queue counts live on the bell now, so this button carries none.
+        className="inline-flex h-8 max-w-[14rem] items-center gap-2 truncate rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] pl-1.5 pr-1.5 text-xs text-[var(--ink)] transition-colors hover:border-[var(--accent-blue)] sm:pr-3"
+        aria-label={`Account: ${name}`}
       >
         <AvatarInitial name={name} size="sm" />
-        <span className="truncate">{name}</span>
-
-        {/* Only an admin ever sees this, and only when something waits. */}
-        {hasPending && (
-          <span
-            className="ml-0.5 inline-flex h-4 min-w-4 shrink-0 items-center justify-center rounded-full px-1 text-[10px] font-semibold tabular-nums text-[var(--paper-raised)]"
-            style={{ backgroundColor: "var(--accent-orange)" }}
-            aria-label={`${actionable} ${actionable === 1 ? "item" : "items"} awaiting review`}
-          >
-            {actionable}
-          </span>
-        )}
+        <span className="hidden truncate sm:inline">{name}</span>
       </button>
 
       {open && (
@@ -192,6 +198,41 @@ export function AuthMenu() {
               picture are never shown on the site.
             </p>
 
+            <label
+              htmlFor="bio"
+              className="mt-3 block text-[11px] font-medium text-[var(--ink-secondary)]"
+            >
+              Bio{" "}
+              <span className="font-normal text-[var(--ink-muted)]">
+                ({bioDraft.length}/{BIO_MAX})
+              </span>
+            </label>
+            <textarea
+              id="bio"
+              value={bioDraft}
+              maxLength={BIO_MAX}
+              rows={2}
+              placeholder="A line about you, shown on your profile."
+              onChange={(e) => {
+                setBioDraft(e.target.value);
+                setBioSaved(false);
+              }}
+              className="mt-1 w-full resize-none rounded border border-[var(--hairline)] bg-[var(--paper)] px-2 py-1.5 text-xs text-[var(--ink)] transition-colors hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
+            />
+            <div className="mt-1 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={saveBio}
+                disabled={bioSaving || bioDraft.trim() === (bio ?? "")}
+                className="rounded border border-[var(--hairline)] px-2.5 py-1 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)] disabled:opacity-40"
+              >
+                {bioSaving ? "…" : "Save bio"}
+              </button>
+              {bioSaved && (
+                <span className="text-[11px] text-[var(--status-good)]">Bio updated.</span>
+              )}
+            </div>
+
             {error && (
               <p className="mt-1.5 text-[11px] text-[var(--status-critical)]">{error}</p>
             )}
@@ -202,41 +243,22 @@ export function AuthMenu() {
 
           {isAdmin && (
             <div className="space-y-1.5 border-t border-[var(--hairline)] px-3.5 py-3">
+              {/* Plain links: what needs acting on is counted on the bell,
+                  so repeating the numbers here just competed with it. */}
               <Link
                 href="/admin/submissions"
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-1.5 text-xs text-[var(--accent-blue)] hover:underline"
+                className="block text-xs text-[var(--accent-blue)] hover:underline"
               >
                 Review submissions
-                {pendingReviews > 0 && (
-                  <span
-                    className="inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-semibold tabular-nums text-[var(--paper-raised)]"
-                    style={{ backgroundColor: "var(--accent-orange)" }}
-                  >
-                    {pendingReviews}
-                  </span>
-                )}
               </Link>
               <Link
                 href="/admin/reports"
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-1.5 text-xs text-[var(--accent-blue)] hover:underline"
+                className="block text-xs text-[var(--accent-blue)] hover:underline"
               >
                 Review reports
-                {openReports > 0 && (
-                  <span
-                    className="inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-semibold tabular-nums text-[var(--paper-raised)]"
-                    style={{ backgroundColor: "var(--accent-orange)" }}
-                  >
-                    {openReports}
-                  </span>
-                )}
               </Link>
-              {!hasPending && (
-                <p className="text-[11px] text-[var(--ink-muted)]">
-                  Both queues are empty.
-                </p>
-              )}
             </div>
           )}
 

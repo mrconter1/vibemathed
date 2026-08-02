@@ -26,6 +26,10 @@ const NOUNS = [
 // Display constraints for user-chosen pseudonyms.
 export const PSEUDONYM_MIN = 3;
 export const PSEUDONYM_MAX = 24;
+
+/// Profile bio cap. Deliberately short: a line about who you are, not a
+/// homepage, and it has to sit under a name without reflowing the page.
+export const BIO_MAX = 150;
 // Letters, numbers, and single separators (space, _, -) between characters.
 const PSEUDONYM_PATTERN = /^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/;
 

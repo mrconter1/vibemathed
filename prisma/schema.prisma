@@ -128,6 +128,13 @@ model Problem {
   significance     Int?
   /// One-line justification for the score, shown on the entry page.
   significanceNote String?
+  /// Disclosed cost of producing the result, in whole US dollars. Almost
+  /// always null: labs and authors rarely publish what a solve cost, and an
+  /// undisclosed cost must never be guessed. Where a source gives only an
+  /// aggregate over several results, the note says so.
+  solveCostUsd  Int?
+  /// What the figure covers and where it came from; shown beside the number.
+  solveCostNote String?
   resultNote  String?
   ageNote     String?
 
@@ -275,6 +282,11 @@ model User {
   /// When the account was created. Added 2026-07-29; accounts that existed
   /// before then carry that date, not their real sign-up date.
   createdAt DateTime @default(now())
+
+  /// Short self-description shown on the public profile. Plain text, capped
+  /// at BIO_MAX characters (see src/lib/pseudonym.ts) - a line about who you
+  /// are, not a homepage.
+  bio String?
 
   /// Banned accounts cannot sign in (denied in the signIn callback), and
   /// banning deletes their sessions - so with database sessions they lose all

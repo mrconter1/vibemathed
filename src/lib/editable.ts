@@ -49,6 +49,8 @@ export type EditableKey =
   | "publication"
   | "resolutionMethod"
   | "verificationNote"
+  | "solveCostUsd"
+  | "solveCostNote"
   | "resultNote"
   | "ageNote"
   | "citations"
@@ -237,6 +239,19 @@ export const EDITABLE_FIELDS: FieldSpec[] = [
     kind: "textarea",
     maxLength: 1500,
     help: "The prose explaining how strongly this result is checked.",
+  },
+  {
+    key: "solveCostUsd",
+    label: "Disclosed cost (USD)",
+    kind: "number",
+    help: "Whole dollars, only when a source actually states what the result cost. Never estimate it from model pricing - leave blank if undisclosed.",
+  },
+  {
+    key: "solveCostNote",
+    label: "Cost note",
+    kind: "text",
+    maxLength: 300,
+    help: "What the figure covers and where it came from, e.g. an aggregate across several results.",
   },
   {
     key: "resultNote",

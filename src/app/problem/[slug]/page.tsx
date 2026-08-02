@@ -158,6 +158,14 @@ export default async function ProblemPage({
     ],
     // The AI-estimated problem weight (see methodology); dash until assessed.
     ["Significance", p.significance !== null && p.significance !== undefined ? `${p.significance} / 100` : DASH],
+    // Disclosed compute spend. Almost always a dash: it is recorded only
+    // when a source states it, never inferred from model pricing.
+    [
+      "Disclosed cost",
+      p.solveCostUsd !== null && p.solveCostUsd !== undefined
+        ? `$${p.solveCostUsd.toLocaleString("en-US")}`
+        : DASH,
+    ],
     [
       "Wikipedia",
       p.renownLangs > 0
@@ -238,6 +246,9 @@ export default async function ProblemPage({
                 {/* The stored one-line justification for the score. */}
                 {k === "Significance" && p.significanceNote && (
                   <StarNote text={p.significanceNote} />
+                )}
+                {k === "Disclosed cost" && p.solveCostNote && (
+                  <StarNote text={p.solveCostNote} />
                 )}
               </dd>
             </div>

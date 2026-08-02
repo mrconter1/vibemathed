@@ -41,6 +41,8 @@ export async function GET() {
     renownNote: p.renownNote ?? null,
     significance: p.significance ?? null,
     significanceNote: p.significanceNote ?? null,
+    solveCostUsd: p.solveCostUsd ?? null,
+    solveCostNote: p.solveCostNote ?? null,
     sourceUrl: p.sourceUrl,
     sourceName: p.sourceName,
     links: p.links ?? [],

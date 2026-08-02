@@ -70,6 +70,8 @@ const PROBLEM_SELECT = {
   renownNote: true,
   significance: true,
   significanceNote: true,
+  solveCostUsd: true,
+  solveCostNote: true,
   resultNote: true,
   ageNote: true,
   sourceUrl: true,
@@ -120,6 +122,8 @@ function toProblem(r: ProblemRow): ProblemWithVotes {
     renownNote: r.renownNote,
     significance: r.significance,
     significanceNote: r.significanceNote,
+    solveCostUsd: r.solveCostUsd,
+    solveCostNote: r.solveCostNote,
     resultNote: r.resultNote,
     ageNote: r.ageNote,
     sourceUrl: r.sourceUrl,
@@ -339,6 +343,8 @@ export async function getRecentActivity(limit = 8): Promise<SiteActivityView[]> 
 /// never leave the server.
 export interface UserProfile {
   pseudonym: string;
+  /// Short self-description, or null. Plain text; rendered as text.
+  bio: string | null;
   /// Formatted join date. Accounts created before 2026-07-29 carry that date
   /// (when the column was added), not their true sign-up date.
   joined: string;
@@ -378,7 +384,7 @@ export async function getUserProfile(pseudonym: string): Promise<UserProfile | n
 
   const user = await prisma.user.findUnique({
     where: { pseudonym },
-    select: { id: true, pseudonym: true, createdAt: true },
+    select: { id: true, pseudonym: true, createdAt: true, bio: true },
   });
   if (!user?.pseudonym) return null;
 
@@ -427,6 +433,7 @@ export async function getUserProfile(pseudonym: string): Promise<UserProfile | n
 
   return {
     pseudonym: user.pseudonym,
+    bio: user.bio,
     joined: formatCommentDate(user.createdAt),
     entries: entries.map((e) => ({
       slug: e.slug,
