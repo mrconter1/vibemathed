@@ -322,6 +322,13 @@ I would like the verified badge. Here is something that ties this account to me 
               >
                 Review reports
               </Link>
+              <Link
+                href="/admin/stats"
+                onClick={() => setOpen(false)}
+                className="block text-xs text-[var(--accent-blue)] hover:underline"
+              >
+                Site stats
+              </Link>
             </div>
           )}
 

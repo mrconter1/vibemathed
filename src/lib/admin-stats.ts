@@ -1,0 +1,136 @@
+// Everything the admin page knows from our own database.
+//
+// Deliberately no caching: this is a single admin looking at a private page,
+// and stale numbers on a dashboard you opened to check something are worse
+// than a few hundred milliseconds of query.
+
+import { prisma } from "@/lib/prisma";
+
+export interface DayPoint {
+  day: string;
+  count: number;
+}
+
+export interface AdminStats {
+  users: { total: number; withEntries: number; withComments: number; banned: number };
+  entries: { published: number; pending: number; rejected: number };
+  engagement: { votes: number; comments: number; reportsOpen: number; reportsTotal: number };
+  review: { decided: number; approved: number; medianHours: number | null };
+  registrations: DayPoint[];
+  submissions: DayPoint[];
+  activity: DayPoint[];
+  topSubmitters: { name: string; entries: number }[];
+}
+
+/// Buckets timestamps into a continuous run of days ending today, so a chart
+/// shows the zero days instead of silently closing the gap.
+function byDay(dates: Date[], days: number): DayPoint[] {
+  const counts = new Map<string, number>();
+  for (const d of dates) {
+    const key = d.toISOString().slice(0, 10);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  const out: DayPoint[] = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const key = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+    out.push({ day: key, count: counts.get(key) ?? 0 });
+  }
+  return out;
+}
+
+export async function getAdminStats(days = 30): Promise<AdminStats> {
+  const since = new Date(Date.now() - days * 86400000);
+
+  const [
+    userRows,
+    banned,
+    usersWithEntries,
+    usersWithComments,
+    published,
+    pending,
+    rejected,
+    votes,
+    comments,
+    reportsOpen,
+    reportsTotal,
+    submissionRows,
+    activityRows,
+    reviewed,
+    submitterGroups,
+  ] = await Promise.all([
+    prisma.user.findMany({ where: { createdAt: { gte: since } }, select: { createdAt: true } }),
+    prisma.user.count({ where: { banned: true } }),
+    prisma.user.count({ where: { submittedProblems: { some: {} } } }),
+    prisma.user.count({ where: { comments: { some: {} } } }),
+    prisma.problem.count({ where: { status: "published" } }),
+    prisma.problem.count({ where: { status: "pending" } }),
+    prisma.problem.count({ where: { status: "rejected" } }),
+    prisma.problemVote.count(),
+    prisma.comment.count(),
+    prisma.problemReport.count({ where: { status: "open" } }),
+    prisma.problemReport.count(),
+    prisma.problem.findMany({
+      where: { createdAt: { gte: since }, submittedById: { not: null } },
+      select: { createdAt: true },
+    }),
+    prisma.problemActivity.findMany({
+      where: { createdAt: { gte: since } },
+      select: { createdAt: true },
+    }),
+    prisma.problem.findMany({
+      where: { reviewedAt: { not: null }, submittedById: { not: null } },
+      select: { createdAt: true, reviewedAt: true, status: true },
+    }),
+    prisma.problem.groupBy({
+      by: ["submittedById"],
+      where: { submittedById: { not: null }, status: "published" },
+      _count: { _all: true },
+      orderBy: { _count: { submittedById: "desc" } },
+      take: 5,
+    }),
+  ]);
+
+  // How long submitters wait for an answer. Median, not mean: one entry left
+  // for a week would drag an average into fiction.
+  const waits = reviewed
+    .map((r) => ((r.reviewedAt as Date).getTime() - r.createdAt.getTime()) / 3600000)
+    .filter((h) => h >= 0)
+    .sort((a, b) => a - b);
+  const medianHours = waits.length
+    ? Math.round(waits[Math.floor(waits.length / 2)] * 10) / 10
+    : null;
+
+  const submitterIds = submitterGroups
+    .map((g) => g.submittedById)
+    .filter((id): id is string => id !== null);
+  const submitterNames = submitterIds.length
+    ? await prisma.user.findMany({
+        where: { id: { in: submitterIds } },
+        select: { id: true, pseudonym: true },
+      })
+    : [];
+  const nameOf = new Map(submitterNames.map((u) => [u.id, u.pseudonym ?? "Anonymous"]));
+
+  return {
+    users: {
+      total: await prisma.user.count(),
+      withEntries: usersWithEntries,
+      withComments: usersWithComments,
+      banned,
+    },
+    entries: { published, pending, rejected },
+    engagement: { votes, comments, reportsOpen, reportsTotal },
+    review: {
+      decided: reviewed.length,
+      approved: reviewed.filter((r) => r.status === "published").length,
+      medianHours,
+    },
+    registrations: byDay(userRows.map((u) => u.createdAt), days),
+    submissions: byDay(submissionRows.map((p) => p.createdAt), days),
+    activity: byDay(activityRows.map((a) => a.createdAt), days),
+    topSubmitters: submitterGroups.map((g) => ({
+      name: nameOf.get(g.submittedById as string) ?? "Anonymous",
+      entries: g._count._all,
+    })),
+  };
+}
