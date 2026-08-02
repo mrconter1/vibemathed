@@ -1731,7 +1731,7 @@
     "renownLangs": 0,
     "sourceUrl": "https://www.erdosproblems.com/119",
     "sourceName": "erdosproblems.com",
-    "aiContribution": "ai-discovered",
+    "aiContribution": "ai-assisted",
     "significance": 10,
     "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
   },
@@ -3268,6 +3268,59 @@
     "aiContribution": "ai-discovered",
     "significance": 10,
     "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+  },
+  {
+    "slug": "erdos-424",
+    "name": "Erdős Problem #424",
+    "shortName": "Erdős #424",
+    "problemNumber": 424,
+    "field": "Number Theory, Integer Sequences",
+    "fieldGroup": "Number theory",
+    "resolution": "candidate",
+    "statement": "Let $a_1 = 2$ and $a_2 = 3$ and continue the sequence by appending to $a_1, \\dots, a_n$ all possible values of $a_ia_j - 1$ with $i \\ne j$. Is it true that the set of integers which eventually appear has positive density?",
+    "posedBy": "Douglas Hofstadter",
+    "yearPosed": 1977,
+    "solveType": "proved",
+    "solveDate": "2026-07-20",
+    "model": "GPT-5.6 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Samuel Korsky"
+    ],
+    "aiRole": "GPT-5.6 Pro developed the argument together with Samuel Korsky, in particular searching for the transition matrices the interval-partition argument needs. The Lean formalization was produced separately, with Codex, by Boris Alexeev.",
+    "verification": "lean-verified",
+    "verificationNote": "Lean 4.32.0 and Mathlib v4.32.0 formalization by Boris Alexeev, produced with Codex, from the informal argument of Samuel Korsky and GPT-5.6 Pro. Rebuilt independently on 2026-08-02 against Lean 4.32.0 and Mathlib v4.32.0 (the file as published, sha256 ca4a2371918b1a7c66dccfe324305298): all 6,394 lines compile in 1,215 s with no sorry and no admit, and #print axioms reports the top theorem depending on exactly [propext, Classical.choice, Quot.sound], the three standard Lean axioms, with no sorryAx and nothing assumed. The formalized conclusion is positive lower density, stated against the same nextGeneration, sequenceSet and generatedSet definitions the Formal Conjectures statement of #424 uses.",
+    "publication": "announcement",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://www.erdosproblems.com/forum/thread/424",
+    "sourceName": "erdosproblems.com",
+    "resultNote": "Two qualifications. erdosproblems.com still lists #424 as open, and states that a filed proof claim there is no guarantee of correctness and does not mean anyone associated with that site examined it, which is why this sits at candidate rather than resolved. Separately, the Formal Conjectures encoding of #424 asks for Set.HasPosDensity, a natural density that exists and is positive, whereas what is proved is positive lower density. erdosproblems.com notes that by \"positive density\" Erdos most likely meant positive lower density, so the proof answers the intended question rather than the literal formalization.",
+    "aiContribution": "ai-co-developed",
+    "significance": 10,
+    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "links": [
+      {
+        "label": "Lean proof (Erdos424.lean)",
+        "url": "https://github.com/plby/lean-proofs/blob/main/src/latest/ErdosProblems/Erdos424.lean"
+      },
+      {
+        "label": "Proof claim on erdosproblems.com",
+        "url": "https://www.erdosproblems.com/forum/thread/424/proof-claims#proof-claim-91"
+      },
+      {
+        "label": "Manuscript (PDF)",
+        "url": "https://drive.google.com/file/d/1SGSUQhNB8KL75VPqdfAq9yzFNEYL6Mwn/view"
+      },
+      {
+        "label": "Formal Conjectures statement of #424",
+        "url": "https://github.com/google-deepmind/formal-conjectures/blob/main/FormalConjectures/ErdosProblems/424.lean"
+      }
+    ]
   },
   {
     "slug": "erdos-43",
@@ -8133,9 +8186,9 @@
     "humanCollaborators": [
       "Craig Huneke"
     ],
-    "aiRole": "Came up with the counterexample:",
+    "aiRole": "Came up with the counterexample on shot. GPT-share chat for proof:\n\nhttps://chatgpt.com/c/6a6529a6-fb04-83ea-a397-a64ffed0b3d6",
     "verification": "expert-verified",
-    "verificationNote": "The proposed data are:\n\nΓ = ⟨56,57,58,63,64,70,71,72,73,74,75,76,77,78,79,80,81,82,83, 87,89,90,93,95,96,97⟩,\nR = ℚ[t^Γ]_𝔪\nI = (t^56,t^70)R\n\nFull link: https://github.com/sonpham-org/huneke-wiegand-candidate-verification",
+    "verificationNote": "The proposed data are:\n\nΓ = ⟨56,57,58,63,64,70,71,72,73,74,75,76,77,78,79,80,81,82,83, 87,89,90,93,95,96,97⟩,\n\nR = ℚ[t^Γ]_𝔪\n\nI = (t^56,t^70)R\n\nFull link: https://github.com/sonpham-org/huneke-wiegand-candidate-verification\nContains my own counter example proof and an independent verification by the conjecture author",
     "publication": "announcement",
     "resolutionMethod": "construction",
     "citations": null,
