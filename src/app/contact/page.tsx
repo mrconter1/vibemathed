@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { ContactForm } from "@/components/ContactForm";
 
 const DESCRIPTION =
@@ -25,11 +24,7 @@ export default function ContactPage() {
       <p className="mt-3 mb-6 text-sm leading-relaxed text-[var(--ink-secondary)]">
         This reaches the curators directly. Corrections to an entry are the most
         useful thing you can send - if the mathematics is wrong somewhere, say
-        so and it gets fixed. For a result you think belongs in the record, the{" "}
-        <Link href="/submit" className="text-[var(--accent-blue)] hover:underline">
-          submission form
-        </Link>{" "}
-        is faster, and small fixes can be made directly on an entry page.
+        so and it gets fixed.
       </p>
 
       {/* No Suspense: the form reads nothing uncached, so it prerenders into

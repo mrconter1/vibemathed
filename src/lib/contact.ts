@@ -5,7 +5,6 @@
 export const CONTACT_TOPICS = [
   { value: "general", label: "Something else" },
   { value: "correction", label: "Correction to an entry" },
-  { value: "submission", label: "A result you think belongs here" },
   { value: "verification", label: "Profile verification" },
   { value: "data", label: "Dataset, API or reuse" },
   { value: "press", label: "Press or research" },
@@ -34,9 +33,7 @@ const TOPIC_HINTS: Partial<Record<ContactTopic, string>> = {
     "Name the entry and say what is wrong with it. A source that settles the point is worth more than any argument.",
   verification:
     "Include something that ties this account to you: a university page, an arXiv author page, a personal site that links back here, or a message from an institutional address. Profile links are the easiest evidence, so add them first.",
-  submission:
-    "A link to the paper, preprint or thread is enough to start. Which model, and what it actually contributed, is the part that usually needs a human.",
-  data: "The dataset is CC BY 4.0 and needs no permission - but say what you are building and we can shape the export around it.",
+  data:"The dataset is CC BY 4.0 and needs no permission - but say what you are building and we can shape the export around it.",
 };
 
 export function topicHint(value: string): string | null {
