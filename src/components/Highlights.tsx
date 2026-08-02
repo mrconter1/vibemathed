@@ -20,12 +20,20 @@ const MONTHS = [
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
 
-/// "2026-06-12" / "2026-06" → "Jun 2026"; bare "2026" stays as is.
-function formatSolveDate(d: string): string {
-  const [year, month] = d.split("-");
-  if (!month) return year;
-  const m = MONTHS[Number(month) - 1];
-  return m ? `${m} ${year}` : year;
+/// Day and month for recent solves: "12 Jun". The catalog now fills up fast
+/// enough that every row in this column shares a year, so printing it on all
+/// five was noise. The year returns the moment a row disagrees with the
+/// newest one - `refYear` is that newest year, so an older straggler still
+/// reads unambiguously.
+///
+/// Handles the three shapes solveDate takes: "2026-06-12", "2026-06" (no day
+/// to show) and bare "2026" (nothing but the year).
+function formatSolveDate(d: string, refYear: string): string {
+  const [year, month, day] = d.split("-");
+  const m = month ? MONTHS[Number(month) - 1] : undefined;
+  if (!m) return year;
+  const stamp = day ? `${Number(day)} ${m}` : m;
+  return year === refYear ? stamp : `${stamp} ${year}`;
 }
 
 interface Row {
@@ -48,14 +56,16 @@ function buildColumns(all: ProblemWithVotes[], rows: number): Column[] {
   // solved" or count as having fallen.
   const problems = all.filter((p) => p.resolution === "resolved");
 
-  const justSolved = [...problems]
+  const recent = [...problems]
     .sort((a, b) => b.solveDate.localeCompare(a.solveDate))
-    .slice(0, rows)
-    .map((p) => ({
-      slug: p.slug,
-      name: p.shortName,
-      detail: formatSolveDate(p.solveDate),
-    }));
+    .slice(0, rows);
+  // The newest solve sets the reference year for the whole column.
+  const refYear = recent[0]?.solveDate.slice(0, 4) ?? "";
+  const justSolved = recent.map((p) => ({
+    slug: p.slug,
+    name: p.shortName,
+    detail: formatSolveDate(p.solveDate, refYear),
+  }));
 
   const longestStanding = problems
     .map((p) => ({ p, age: ageAtSolve(p) }))
