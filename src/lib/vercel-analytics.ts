@@ -59,7 +59,14 @@ function isoDay(offsetDays: number): string {
 /// with a literal at build time, which would freeze whatever the value was
 /// when the bundle was made. This reads the running process every time.
 function analyticsToken(): string | undefined {
-  return process.env["VERCEL_ANALYTICS_TOKEN"];
+  const raw = process.env["VERCEL_ANALYTICS_TOKEN"];
+  if (!raw) return undefined;
+  // Strip a byte-order mark and surrounding whitespace. Shells and editors
+  // add both when a secret is piped or pasted, and the result is a header
+  // value that fetch cannot even encode - the failure looks like a rejected
+  // token rather than a malformed one.
+  const clean = raw.replace(/^\u{FEFF}/u, "").trim();
+  return clean === "" ? undefined : clean;
 }
 
 let lastError = "";
