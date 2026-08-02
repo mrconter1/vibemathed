@@ -4,8 +4,7 @@
 // worth hearing from (a mathematician who spotted a wrong entry, a journalist)
 // should not have to make an account to say so.
 
-import { useState, useTransition } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
 import { sendSiteMessage } from "@/app/actions/contact";
 import {
   BODY_MAX,
@@ -22,21 +21,30 @@ const FIELD =
 const LABEL = "block text-[11px] font-medium text-[var(--ink-secondary)]";
 
 export function ContactForm() {
-  // `?topic=verification` lets other pages deep-link into the right subject.
-  const params = useSearchParams();
-  const initialTopic = params.get("topic");
-
   const viewer = useViewer();
 
-  const [topic, setTopic] = useState(
-    initialTopic && isContactTopic(initialTopic) ? initialTopic : DEFAULT_TOPIC,
-  );
+  const [topic, setTopic] = useState<string>(DEFAULT_TOPIC);
   const [body, setBody] = useState("");
   const [replyTo, setReplyTo] = useState("");
   const [company, setCompany] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const [pending, startTransition] = useTransition();
+
+  // `?topic=verification` lets other pages deep-link into the right subject.
+  // Read after mount rather than with useSearchParams: that hook makes the
+  // whole form uncached, and Cache Components then serves the Suspense
+  // fallback as the page's static HTML - so a reader without JS got an empty
+  // box instead of a contact form. This way the form itself prerenders and
+  // only the preselected topic waits for hydration.
+  // One-shot read on mount; there is no render-time equivalent that does not
+  // reintroduce the prerender bail above.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    const wanted = new URLSearchParams(window.location.search).get("topic");
+    if (wanted && isContactTopic(wanted)) setTopic(wanted);
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const hint = topicHint(topic);
 
@@ -87,7 +95,7 @@ export function ContactForm() {
         <select
           id="c-topic"
           value={topic}
-          onChange={(e) => setTopic(e.target.value as typeof topic)}
+          onChange={(e) => setTopic(e.target.value)}
           className={FIELD}
         >
           {CONTACT_TOPICS.map((t) => (

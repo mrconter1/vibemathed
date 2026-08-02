@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import Link from "next/link";
 import { ContactForm } from "@/components/ContactForm";
 
@@ -33,15 +32,9 @@ export default function ContactPage() {
         is faster, and small fixes can be made directly on an entry page.
       </p>
 
-      {/* The form reads ?topic= from the URL, which is uncached data, so it
-          needs its own boundary for this route to prerender. */}
-      <Suspense
-        fallback={
-          <div className="h-96 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)]" />
-        }
-      >
-        <ContactForm />
-      </Suspense>
+      {/* No Suspense: the form reads nothing uncached, so it prerenders into
+          the static HTML and works before hydration. */}
+      <ContactForm />
     </main>
   );
 }
