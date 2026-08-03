@@ -10607,17 +10607,26 @@
     "field": "Zero-error information theory",
     "fieldGroup": "Combinatorics",
     "resolution": "partial",
-    "statement": "Determine the Shannon capacities of odd cycles beyond $C_5$, or improve the best explicit bounds. New independent sets in strong graph powers give $\\Theta(C_7) > 3.258020$, $\\Theta(C_{11}) > 5.289773$, $\\Theta(C_{13}) > 6.300109$ and $\\Theta(C_{15}) > 7.301399$.",
+    "statement": "Determine the Shannon capacities of odd cycles beyond $C_5$, or improve the best explicit bounds. Lovasz's theta function settled $C_5$ in 1979 and every longer odd cycle has stayed open since. The current records, all obtained with model assistance and formally verified, are $\\Theta(C_7) \\ge 3.258805369885$, $\\Theta(C_{11}) \\ge 5.294502522149$, $\\Theta(C_{13}) \\ge 6.302455083464$, $\\Theta(C_{15}) \\ge 7.301600534487$, $\\Theta(C_{19}) \\ge 9.357192705918$, $\\Theta(C_{21}) \\ge 10.342455853338$ and $\\Theta(C_{23}) \\ge 11.328224257774$.",
     "posedBy": "Claude Shannon",
     "yearPosed": 1956,
     "solveType": "proved",
-    "solveDate": "2026-07-30",
-    "model": "ChatGPT-5.6 Sol Pro",
-    "modelMaker": "OpenAI",
-    "humanCollaborators": [],
-    "aiRole": "The model generated and executed search programs across repeated prompts and returned the explicit independent-set constructions; the four authors checked that every reported set is independent.",
-    "verification": "unreviewed",
-    "verificationNote": "Author-checked constructions with public data, prompts and checking code; arXiv preprint (the C15 record was added in the 30 July revision). Not yet peer-reviewed.",
+    "solveDate": "2026-07-31",
+    "model": "ChatGPT 5.6 Sol Pro, ChatGPT 5.6 Sol, Claude Opus 5",
+    "modelMaker": "OpenAI / Anthropic",
+    "humanCollaborators": [
+      "Pjotr Buys",
+      "Sven Polak",
+      "Jeroen Zuiddam",
+      "Yu Gao",
+      "Nathaniel Itty",
+      "Christopher D. Rosin",
+      "Chase Carstensen",
+      "Daniel Reichman"
+    ],
+    "aiRole": "Three model-assisted papers in eleven days, each beating the last. Itty, Rosin, Carstensen and Reichman had ChatGPT-5.6 Sol Pro generate and run search programs across repeated prompts, returning explicit independent sets in strong graph powers that the authors checked. Gao then improved $C_7$ with a recursive construction and states that ChatGPT 5.6 Sol implemented all the code and expanded the proofs. Buys, Polak and Zuiddam followed both methods using ChatGPT 5.6 Sol Pro and Claude Opus 5, beat every previous bound, added three more cycles, and formalised the lot in Lean.",
+    "verification": "lean-verified",
+    "verificationNote": "The current records are formalised in Lean 4 at the linked repository, one base tuple per bound, so the seven stated inequalities are machine-checked rather than author-checked. We have not compiled it. Gao's intermediate record ships exact-integer verification code pinned to a fixed commit, and the earlier Itty-Rosin-Carstensen-Reichman constructions came with public data, prompts and checking code. All three are arXiv preprints; none is peer-reviewed.",
     "publication": "preprint",
     "resolutionMethod": "construction",
     "citations": null,
@@ -10627,10 +10636,24 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2607.21517",
     "sourceName": "arXiv:2607.21517 - Improved lower bounds for the Shannon capacity of odd cycles",
-    "resultNote": "four record lower bounds; the exact capacities remain open for every odd cycle beyond C5",
+    "resultNote": "record lower bounds for seven odd cycles; the exact capacities remain open for every odd cycle beyond C5",
     "aiContribution": "ai-discovered",
     "significance": 35,
-    "significanceNote": "Shannon capacity of odd cycles, the classic post-Lovász-theta question since 1956."
+    "significanceNote": "Shannon capacity of odd cycles, the classic post-Lovász-theta question since 1956.",
+    "links": [
+      {
+        "label": "Current record, Lean-verified (Buys, Polak, Zuiddam), arXiv:2607.29681",
+        "url": "https://arxiv.org/abs/2607.29681"
+      },
+      {
+        "label": "Lean 4 formalization of all seven bounds",
+        "url": "https://github.com/spectra-research/shannon-capacity-lean"
+      },
+      {
+        "label": "Intermediate C7 record by recursive construction (Gao), arXiv:2607.27869",
+        "url": "https://arxiv.org/abs/2607.27869"
+      }
+    ]
   },
   {
     "slug": "signed-bar-conjecture",

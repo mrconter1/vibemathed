@@ -121,7 +121,14 @@ RESOLUTION_RE = re.compile(
     # "answers a question of X" is the commonest way a paper says it closed
     # something, and its absence hid both Danus results in July 2026.
     r"|answers? (?:a|the|this) question|answering (?:a|the) question"
-    r"|affirmative answer|negative answer|remained open|left open",
+    r"|affirmative answer|negative answer|remained open|left open"
+    # Record ladders on a famous open problem never say "conjecture" or
+    # "resolve" - they say "improved lower bound". That gap hid the whole
+    # Shannon capacity chain (Gao 2607.27869, Buys-Polak-Zuiddam 2607.29681),
+    # even though the catalog already had an entry for the same ladder.
+    r"|improved? (?:lower|upper) bounds?|new (?:lower|upper) bounds?"
+    r"|better (?:lower|upper) bounds?|sharpens?|strengthens?"
+    r"|best (?:known|possible) bound|record",
     re.IGNORECASE,
 )
 
