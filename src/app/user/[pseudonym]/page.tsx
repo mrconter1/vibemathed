@@ -8,6 +8,7 @@ import { SITE_URL } from "@/lib/site";
 import { Icon, type IconName } from "@/components/Icons";
 import { MEMBER_ROLE, VERIFIED_HELP, type MemberRole } from "@/lib/roles";
 import { InfoTip } from "@/components/Tooltip";
+import { TeX } from "@/components/TeX";
 import { ProfileEditor } from "@/components/ProfileEditor";
 import { LINK_KEYS, LINK_SPECS, linkDisplay } from "@/lib/profile-links";
 
@@ -214,7 +215,10 @@ export default async function UserPage({
                     href={`/problem/${e.slug}`}
                     className="font-serif text-base text-[var(--ink)] hover:text-[var(--accent-blue)] hover:underline"
                   >
-                    {e.name}
+                    {/* Titles carry TeX ("$t$-edge-balanced graphs"), which
+                        rendered here as literal dollar signs. This is a server
+                        component, so KaTeX runs at build time and no JS ships. */}
+                    <TeX>{e.name}</TeX>
                   </Link>
                   <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] text-[var(--ink-muted)]">
                     {st && (

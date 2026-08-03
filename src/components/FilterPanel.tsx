@@ -126,7 +126,10 @@ export function FilterPanel({
           role="dialog"
           aria-label="Filter entries"
           style={shift !== null ? { left: shift } : undefined}
-          className="fixed inset-x-0 bottom-0 z-50 max-h-[75vh] overflow-y-auto rounded-t-xl border-t border-[var(--hairline)] bg-[var(--paper-raised)] px-5 pb-6 pt-4 shadow-lg sm:absolute sm:inset-x-auto sm:bottom-auto sm:left-0 sm:top-full sm:mt-2 sm:w-[22rem] sm:rounded-lg sm:border sm:px-4 sm:pb-4"
+          // dialog-scroll (globals.css) replaces the UA scrollbar, which read
+          // as a heavy grey slab down the side of the panel, with a thin
+          // rounded thumb on a transparent track.
+          className="dialog-scroll fixed inset-x-0 bottom-0 z-50 max-h-[75vh] rounded-t-xl border-t border-[var(--hairline)] bg-[var(--paper-raised)] px-5 pb-6 pt-4 shadow-lg sm:absolute sm:inset-x-auto sm:bottom-auto sm:left-0 sm:top-full sm:mt-2 sm:w-[22rem] sm:rounded-lg sm:border sm:px-4 sm:pb-4"
         >
           <div className="flex items-center justify-between">
             <span className="font-serif text-base text-[var(--ink)]">Filters</span>

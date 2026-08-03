@@ -19,7 +19,8 @@ export type IconName =
   | "funnel" // list filters
   | "flag" // report an entry
   | "pencil" // edit an entry
-  | "bell"; // notifications
+  | "bell" // notifications
+  | "info"; // explanatory tooltips
 
 const PATHS: Record<IconName, React.ReactNode> = {
   layers: (
@@ -130,6 +131,18 @@ const PATHS: Record<IconName, React.ReactNode> = {
         strokeLinejoin="round"
       />
       <path d="M6.6 13.3a1.5 1.5 0 002.8 0" strokeLinecap="round" />
+    </>
+  ),
+  // Replaces the "ⓘ" glyph, which the browser rasterised from a font at 11px
+  // and rendered visibly chunky. Drawn on the same 16-grid as the rest so it
+  // scales cleanly and takes the surrounding text colour. The stem is a
+  // stroked line and the dot a filled circle, which stays legible at 12-13px
+  // where a stroked ring around a glyph would not.
+  info: (
+    <>
+      <circle cx="8" cy="8" r="6.2" />
+      <path d="M8 7.2v4" strokeLinecap="round" />
+      <circle cx="8" cy="4.9" r="0.75" fill="currentColor" stroke="none" />
     </>
   ),
 };

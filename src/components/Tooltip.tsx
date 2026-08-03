@@ -12,6 +12,7 @@
 
 import { useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { Icon } from "@/components/Icons";
 
 // White, not paper-raised: the bubble usually floats over a card of exactly
 // that color, where it looked transparent. White plus a stronger shadow makes
@@ -50,7 +51,12 @@ function useBubble() {
   return { open, pos, ref, show, hide: () => setOpen(false) };
 }
 
-/// An "ⓘ" affordance that reveals an explanation on hover or focus.
+/// An info affordance that reveals an explanation on hover or focus.
+///
+/// Draws an SVG rather than the "ⓘ" character: at the 11px this sits at, the
+/// glyph was rasterised from the font and read as visibly pixelated, and its
+/// weight and alignment varied by platform. The icon is vector at any size and
+/// matches the stroke weight of every other icon on the site.
 export function InfoTip({ content, label }: { content: ReactNode; label: string }) {
   const { open, pos, ref, show, hide } = useBubble();
   return (
@@ -65,9 +71,9 @@ export function InfoTip({ content, label }: { content: ReactNode; label: string 
         onMouseLeave={hide}
         onFocus={show}
         onBlur={hide}
-        className="cursor-help text-[11px] leading-none text-[var(--ink-muted)] hover:text-[var(--ink-secondary)]"
+        className="inline-flex cursor-help items-center leading-none text-[var(--ink-muted)] transition-colors hover:text-[var(--accent-blue)]"
       >
-        ⓘ
+        <Icon name="info" size={13} />
       </button>
       {open &&
         createPortal(
