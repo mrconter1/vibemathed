@@ -10865,9 +10865,9 @@
     "humanCollaborators": [
       "Charalampos Papamanthou"
     ],
-    "aiRole": "The disclosure is unusually blunt: the counterexample was developed in an interactive session with Claude Sonnet 4.6, and no code was written by a human. The model also helped with the writing. The author is one of the two who posed the conjecture, so this is someone refuting their own with a model.",
+    "aiRole": "The paper devotes a section to this and it is worth reading in full, because the headline line is the least of it. Claude Sonnet 4.6 read the earlier paper and wrote the Python st-orientation code quickly, and the authors say no code was written by a human. But the loop mattered: the authors caught and fed back three specific bugs, cut vertices being treated as eligible, the sink block not being excluded, and the timestamp overwrite rule implemented incorrectly. The model ran exhaustive tests for $n \\le 6$, declined $n = 9$ as computationally infeasible, then later suggested a resource that would have made it possible. It also produced counterexamples that external validation confirmed were wrong, and drew conclusions the authors state they did not verify, including an exhaustive-search claim over the biconnected graphs on five and six vertices. The counterexample that survived is the model's; so is a quantity of discarded work. The author is one of the two who posed the conjecture, so this is someone refuting their own with a model.",
     "verification": "site-confirmed",
-    "verificationNote": "The refutation is an explicit graph, so it reduces to running the two named algorithms on it. arXiv note, not peer-reviewed.",
+    "verificationNote": "The refutation is an explicit graph, so it reduces to running the two named algorithms on it, and that part stands on its own. The surrounding computational claims deserve less weight: in the same section the authors record that the model produced counterexamples later confirmed wrong, and that they did not verify its claim to have exhaustively searched the biconnected graphs on five and six vertices. arXiv note, not peer-reviewed.",
     "publication": "preprint",
     "resolutionMethod": "construction",
     "citations": null,
