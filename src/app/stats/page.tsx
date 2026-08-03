@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { getPublishedProblems } from "@/lib/data";
-import { SIGNIFICANCE_HELP } from "@/lib/display";
 import { ContributionGrowthChart } from "@/components/ContributionGrowthChart";
 import { CumulativeChart } from "@/components/CumulativeChart";
 import { MethodGrowthChart } from "@/components/MethodGrowthChart";
@@ -34,21 +33,95 @@ export default async function StatsPage() {
   // whole record.
   const resolved = problems.filter((p) => p.resolution === "resolved");
 
-  const totalVotes = problems.reduce((sum, p) => sum + p.upvotes + p.downvotes, 0);
-  // The count of entries whose problem carried real weight beyond its own
-  // subfield - the tail-vs-peaks story in one number.
-  const major = problems.filter((p) => (p.significance ?? 0) >= 50).length;
+  // Month-over-month on the last COMPLETE month, deliberately not a rolling
+  // window. Two reasons. A month-to-date comparison shows a fake collapse for
+  // the first three weeks of every month - on 3 August, August-so-far against
+  // July reads -89%. And on a series this bursty a rolling ratio is an
+  // artefact of the window: the same data gives +44% over 7 days, +386% over
+  // 30 and +478% over 120. A completed month is the one comparison a reader
+  // cannot recompute into a different headline.
+  const monthly = new Map<string, number>();
+  for (const p of problems) {
+    // Month-precision entries ("2026-07") already carry the month; day
+    // precision is truncated to it.
+    const month = p.solveDate.slice(0, 7);
+    if (month.length === 7) monthly.set(month, (monthly.get(month) ?? 0) + 1);
+  }
+  const months = [...monthly.keys()].sort();
+  // "Complete" is derived from the data, not the clock. Reading `new Date()`
+  // in a prerendered server component is a Cache Components build error, and
+  // the newest month present is in practice the one still filling, so the
+  // month before it is the newest complete one. If a month has not yet
+  // produced an entry the report simply lags a month, which is the safe
+  // direction to be wrong in.
+  const lastMonth = months.at(-2);
+  const prevMonth = months.at(-3);
+  const lastCount = lastMonth ? (monthly.get(lastMonth) ?? 0) : 0;
+  const prevCount = prevMonth ? (monthly.get(prevMonth) ?? 0) : 0;
+  const monthChange =
+    prevCount > 0 ? Math.round(((lastCount - prevCount) / prevCount) * 100) : null;
+  const monthName = lastMonth
+    ? new Date(`${lastMonth}-02`).toLocaleString("en-GB", { month: "long" })
+    : "";
+  const prevName = prevMonth
+    ? new Date(`${prevMonth}-02`).toLocaleString("en-GB", { month: "long" })
+    : "";
 
-  const tiles: { icon: IconName; label: string; value: string; help?: string }[] = [
-    { icon: "layers", label: "Tracked problems", value: String(problems.length) },
-    { icon: "shield", label: "Fully resolved", value: String(resolved.length) },
+  // A share, not a count: how much of the record is machine-checked.
+  const leanShare = problems.length
+    ? Math.round(
+        (problems.filter((p) => p.verification === "lean-verified").length /
+          problems.length) *
+          100,
+      )
+    : 0;
+
+  // The stakes, in one number. Only entries with a known posed year count;
+  // most of the catalog has one.
+  const posedYears = problems
+    .map((p) => p.yearPosed)
+    .filter((y): y is number => typeof y === "number");
+  const oldest = posedYears.length ? Math.min(...posedYears) : null;
+
+  const tiles: {
+    icon: IconName;
+    label: string;
+    value: string;
+    change?: string;
+    sub?: string;
+    help?: string;
+  }[] = [
+    {
+      icon: "layers",
+      label: "Tracked problems",
+      value: String(problems.length),
+      // No delta: the change in a running total is the flow, which the next
+      // tile already reports.
+      sub: `${resolved.length} fully resolved`,
+    },
     {
       icon: "spark",
-      label: "Significance 50+",
-      value: String(major),
-      help: SIGNIFICANCE_HELP,
+      label: `Solved in ${monthName}`,
+      value: String(lastCount),
+      change:
+        monthChange === null
+          ? undefined
+          : `${monthChange >= 0 ? "▲" : "▼"} ${Math.abs(monthChange)}% on ${prevName}`,
+      help: "Counted by the date the problem was solved, not the date we added it, and always the last complete month - a month still in progress would show a decline that is only the calendar.",
     },
-    { icon: "votes", label: "Votes cast", value: String(totalVotes) },
+    {
+      icon: "shield",
+      label: "Lean-verified",
+      value: `${leanShare}%`,
+      sub: "machine-checked proof",
+      help: "Share of the whole record carrying a formal proof checked by Lean, the strongest rung of our verification ladder.",
+    },
+    {
+      icon: "votes",
+      label: "Oldest problem cracked",
+      value: oldest ? String(oldest) : "—",
+      sub: "year it was posed",
+    },
   ];
 
   return (
@@ -66,8 +139,17 @@ export default async function StatsPage() {
               {t.label}
               {t.help && <InfoTip content={t.help} label={t.label} />}
             </dt>
-            {/* Same centered tile as the home StatBand. */}
+            {/* Same centered tile as the home StatBand, plus the comparison
+                line a bare total lacks. */}
             <dd className="mt-1 text-2xl font-semibold text-[var(--ink)]">{t.value}</dd>
+            {t.change && (
+              <p className="mt-0.5 text-[11px] font-medium text-[var(--status-good)]">
+                {t.change}
+              </p>
+            )}
+            {t.sub && !t.change && (
+              <p className="mt-0.5 text-[11px] text-[var(--ink-muted)]">{t.sub}</p>
+            )}
           </div>
         ))}
       </dl>
