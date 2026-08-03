@@ -380,7 +380,14 @@ function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string
             {/* AI-estimated problem weight; the Wikipedia count moved to the
                 entry page as a supporting fact (it was almost always 0 here). */}
             {p.significance !== null && p.significance !== undefined && (
-              <span className="relative z-10 font-mono text-[var(--ink-muted)]">
+              // inline-flex, not a plain span. Its neighbours in this row -
+              // the verification badge and the comment link - are inline-flex
+              // boxes because they carry icons, and a plain inline span sits
+              // 1.83px lower than they do under `items-center`, which centres
+              // boxes rather than text. Measured: matching the box type takes
+              // the skew to exactly 0. It is not a font-metric problem;
+              // forcing both spans to the same font family changes nothing.
+              <span className="relative z-10 inline-flex items-center font-mono text-[var(--ink-muted)]">
                 {/* The metric explanation belongs to the label+value only; the
                     star carries the per-entry justification. Nesting the star
                     under the same title showed BOTH bubbles when hovering it. */}
@@ -396,7 +403,7 @@ function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string
                 see their name on the front page, not only on the entry page.
                 Links to their profile; z-10 lifts it above the card overlay. */}
             {p.submittedBy && (
-              <span className="relative z-10 font-mono text-[var(--ink-muted)]">
+              <span className="relative z-10 inline-flex items-center font-mono text-[var(--ink-muted)]">
                 Submitted by{" "}
                 <Link
                   href={`/user/${encodeURIComponent(p.submittedBy)}`}
