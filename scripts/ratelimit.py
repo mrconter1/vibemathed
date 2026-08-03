@@ -73,11 +73,16 @@ class AdaptiveLimiter:
         except Exception:
             pass  # a missing or corrupt pacing file is not worth failing over
 
-    def save(self) -> None:
+    def _write(self) -> None:
+        """Caller holds the lock (or is single-threaded at shutdown)."""
         try:
             STATE_PATH.write_text(json.dumps({"delay": self._delay}, indent=1))
         except Exception:
-            pass
+            pass  # pacing is an optimisation; never fail a scan over it
+
+    def save(self) -> None:
+        with self._lock:
+            self._write()
 
     # ------------------------------------------------------------- controls
     def _wait_turn(self, host: str) -> None:
@@ -105,6 +110,11 @@ class AdaptiveLimiter:
             self._delay[host] = d
             # Nobody touches this host again until the new delay has passed.
             self._next_ok[host] = time.monotonic() + d
+            # Persist on the way up, not only at the end of a run. A long scan
+            # that gets killed mid-throttle is exactly when the learned delay
+            # is most valuable, and saving only on exit threw it away - which
+            # is what happened to the June top-up.
+            self._write()
             return d
 
     @staticmethod
