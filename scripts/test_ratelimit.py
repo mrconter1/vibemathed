@@ -65,7 +65,12 @@ def run():
 
     # 1. Success path leaves pacing at or below where it started, and the
     #    additive decrease actually moves it down.
-    lim = AdaptiveLimiter(floor=0.0, start=1.0, decrease=0.25, multiplier=3.0)
+    #    half_life=inf disables time decay: these first two checks are about
+    #    the control law, and real elapsed time would otherwise shave
+    #    microseconds off the arithmetic they assert exactly. Decay gets its
+    #    own checks below.
+    lim = AdaptiveLimiter(floor=0.0, start=1.0, decrease=0.25, multiplier=3.0,
+                          half_life=float("inf"))
     opener, _ = make_opener([b"ok"])
     ratelimit.urllib.request.urlopen = opener
     for _ in range(3):
@@ -74,7 +79,8 @@ def run():
     check("additive decrease on success", abs(d - 0.25) < 1e-9, f"delay={d:.2f}s")
 
     # 2. A 429 multiplies the steady-state delay, and the body still arrives.
-    lim = AdaptiveLimiter(floor=0.0, start=1.0, multiplier=3.0, ceiling=100.0)
+    lim = AdaptiveLimiter(floor=0.0, start=1.0, multiplier=3.0, ceiling=100.0,
+                          half_life=float("inf"))
     opener, calls = make_opener([(429, {"Retry-After": "0"}), b"recovered"])
     ratelimit.urllib.request.urlopen = opener
     body = lim.fetch("http://h/x", UA)
@@ -131,6 +137,38 @@ def run():
     reborn = AdaptiveLimiter(floor=0.0)
     check("pacing persists across runs", abs(reborn._delay.get("slow", 0) - 7.5) < 1e-9,
           f"reloaded {reborn._delay.get('slow')}s")
+
+    # 8. A stored delay ages out. This is the fix for the failure that started
+    #    it: a 119.5s arXiv backoff persisted to disk and every later run
+    #    inherited it at full strength, because ~480 successes are needed to
+    #    walk back from the ceiling additively.
+    lim = AdaptiveLimiter(floor=0.5, half_life=600.0)
+    lim._delay["h"] = 120.0
+    lim._stamp["h"] = time.time() - 3600  # an hour ago: six half-lives
+    aged = lim._current_delay("h")
+    check("stored delay decays with time", aged < 2.5,
+          f"120.00s an hour ago reads as {aged:.2f}s")
+
+    # 9. Decay bottoms out at the floor rather than running to zero.
+    lim._stamp["h"] = time.time() - 86400
+    check("decay stops at the floor", abs(lim._current_delay("h") - 0.5) < 1e-9)
+
+    # 10. A fresh backoff is NOT discounted. Decay must not become a way to
+    #     ignore a host that is throttling us right now.
+    lim._delay["h"], lim._stamp["h"] = 60.0, time.time()
+    check("fresh backoff is respected", lim._current_delay("h") > 59.0,
+          f"{lim._current_delay('h'):.2f}s")
+
+    # 11. Age survives the file: state written by an older version has no
+    #     stamps, so the file's mtime supplies one. Reading those as "now"
+    #     would resurrect exactly the stale ceiling this is meant to kill.
+    ratelimit.STATE_PATH.write_text('{"delay": {"h": 120.0}}')
+    import os
+    old = time.time() - 7200
+    os.utime(ratelimit.STATE_PATH, (old, old))
+    reborn = AdaptiveLimiter(floor=0.5, half_life=600.0)
+    check("stampless state ages from file mtime", reborn._current_delay("h") < 1.0,
+          f"reads as {reborn._current_delay('h'):.2f}s")
 
     ratelimit.urllib.request.urlopen = real_open
     if ratelimit.STATE_PATH.exists():
