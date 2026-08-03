@@ -67,6 +67,8 @@ from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 
+from ratelimit import LIMITER
+
 # Windows consoles default to cp1252, which cannot print the math papers'
 # own characters. The report is UTF-8, unconditionally.
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -203,10 +205,18 @@ GH_REPO_RE = re.compile(r"github\.com/([\w.-]+/[\w.-]+)", re.IGNORECASE)
 VIBEMATHED_RE = re.compile(r"vibemathed\.com/problem/([\w-]+)", re.IGNORECASE)
 
 
+def _pacing_note(host: str, code: int, wait: float, attempt: int, why: str) -> None:
+    """Backoffs go to stderr, so the Markdown report on stdout stays clean."""
+    label = f"HTTP {code}" if code else why
+    print(f"  [pace] {host}: {label}, waiting {wait:.1f}s ({why}, attempt {attempt + 1})",
+          file=sys.stderr, flush=True)
+
+
 def fetch(url: str, timeout: int = 30) -> str:
-    req = urllib.request.Request(url, headers=UA)
-    with urllib.request.urlopen(req, timeout=timeout) as res:
-        return res.read().decode("utf-8", errors="replace")
+    """Rate-limit-aware GET. Pacing is adaptive and shared per host - see
+    scripts/ratelimit.py for why a fixed sleep was the wrong shape."""
+    return LIMITER.fetch(url, UA, timeout=timeout, on_wait=_pacing_note).decode(
+        "utf-8", errors="replace")
 
 
 def load_state() -> dict:
@@ -325,18 +335,15 @@ def arxiv_recent(days: int, since: str | None = None, until: str | None = None) 
         # arXiv 500s intermittently on deep pagination. Letting that propagate
         # discarded the entire scan and printed "0 papers scanned", which reads
         # as "nothing to find" rather than "the search broke" - the worst
-        # possible failure mode for a recall tool. Retry once, then keep what
-        # we already have and say so.
+        # possible failure mode for a recall tool. fetch() now retries with
+        # adaptive backoff, so reaching this handler means it gave up; keep
+        # what we have and say where paging stopped.
         try:
             root = ET.fromstring(fetch(url))
-        except Exception:
-            time.sleep(5)
-            try:
-                root = ET.fromstring(fetch(url))
-            except Exception as exc:
-                print(f"_(arXiv paging stopped at start={start}: {exc}; "
-                      f"{len(papers)} papers kept)_\n")
-                break
+        except Exception as exc:
+            print(f"_(arXiv paging stopped at start={start}: {exc}; "
+                  f"{len(papers)} papers kept)_\n")
+            break
         entries = root.findall("a:entry", ns)
         if not entries:
             break
@@ -358,7 +365,6 @@ def arxiv_recent(days: int, since: str | None = None, until: str | None = None) 
         if stop:
             break
         start += page
-        time.sleep(3)  # arXiv API etiquette
     return papers
 
 
@@ -923,6 +929,10 @@ def main() -> int:
         state["seen_feed_items"] = sorted(seen)
 
     save_state(state)
+    # Persist what this run learned about each host's tolerance, so the next
+    # invocation starts at the right pace instead of rediscovering the limit.
+    LIMITER.save()
+    print(f"  [pace] learned: {LIMITER.status()}", file=sys.stderr)
     return 0
 
 
