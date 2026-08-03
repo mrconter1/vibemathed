@@ -101,6 +101,15 @@ NOISE_RE = re.compile(
     re.IGNORECASE,
 )
 MODEL_RE = re.compile("|".join(re.escape(t) for t in MODEL_TERMS), re.IGNORECASE)
+
+# Found by triage 2026-08-03: "Aristotle" matched "Aristotle University of
+# Thessaloniki" in an author affiliation, flagging an ergodic theory paper with
+# no AI in it at all. Model names that are also ordinary proper nouns need the
+# obvious exclusions.
+MODEL_FALSE_POSITIVE_RE = re.compile(
+    r"Aristotle University|Aristotle'?s|Codex (?:Sinaiticus|Vaticanus)",
+    re.IGNORECASE,
+)
 # "Claude" and "GPT" style terms inside ordinary words ("claudication") are not
 # a risk worth engineering around at this volume; the context line shown in
 # the report makes false positives obvious.
@@ -323,7 +332,10 @@ def arxiv_ai_mentions(paper: dict) -> list[str]:
         except Exception:
             html = paper["abstract"]
     text = re.sub(r"<[^>]+>", " ", html)
-    return [c for c in context_lines(text, MODEL_RE) if not NOISE_RE.search(c)]
+    return [
+        c for c in context_lines(text, MODEL_RE)
+        if not NOISE_RE.search(c) and not MODEL_FALSE_POSITIVE_RE.search(c)
+    ]
 
 
 # --------------------------------------------------------------- GitHub ----
