@@ -20,7 +20,8 @@ export type IconName =
   | "flag" // report an entry
   | "pencil" // edit an entry
   | "bell" // notifications
-  | "info"; // explanatory tooltips
+  | "info" // explanatory tooltips
+  | "arrowDown"; // sort direction (rotate 180 for ascending)
 
 const PATHS: Record<IconName, React.ReactNode> = {
   layers: (
@@ -143,6 +144,15 @@ const PATHS: Record<IconName, React.ReactNode> = {
       <circle cx="8" cy="8" r="6.2" />
       <path d="M8 7.2v4" strokeLinecap="round" />
       <circle cx="8" cy="4.9" r="0.75" fill="currentColor" stroke="none" />
+    </>
+  ),
+  // A real arrow, not the "▼" glyph the direction toggle used to draw: that is
+  // the shape browsers put inside a <select>, so the toggle read as a third
+  // dropdown. One icon serves both directions, rotated 180 for ascending.
+  arrowDown: (
+    <>
+      <path d="M8 2.8v10.4" strokeLinecap="round" />
+      <path d="M4.2 9.4L8 13.2l3.8-3.8" strokeLinecap="round" strokeLinejoin="round" />
     </>
   ),
 };

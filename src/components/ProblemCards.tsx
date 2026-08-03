@@ -856,8 +856,14 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
   // both rows is h-9 so the search box, the filters and the sort controls line
   // up as one system - their differing font sizes used to give them differing
   // heights.
-  const selectClass =
-    "h-9 min-w-0 max-w-[45vw] sm:max-w-[12rem] rounded border border-[var(--hairline)] bg-[var(--paper-raised)] px-2 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]";
+  // Rounding is NOT in the base, so the one select that bonds to a neighbour
+  // can square that edge by choosing its own corners. Overriding `rounded`
+  // with `rounded-r-none` would work only as long as Tailwind keeps emitting
+  // the corner utilities after the shorthand, which is not a guarantee worth
+  // depending on for a visible seam.
+  const selectBase =
+    "h-9 min-w-0 max-w-[45vw] sm:max-w-[12rem] border border-[var(--hairline)] bg-[var(--paper-raised)] px-2 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]";
+  const selectClass = `${selectBase} rounded`;
   const pageBtn =
     "inline-flex h-9 min-w-9 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-2.5 text-sm text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] hover:text-[var(--ink)] disabled:pointer-events-none disabled:opacity-40";
 
@@ -964,39 +970,66 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
         </div>
       )}
 
-      {/* Sort - explicit, because cards have no column headers to click */}
-      <div className="mb-3 flex flex-wrap items-center gap-2 border-t border-[var(--hairline)] pt-2.5">
-        <label htmlFor="sort" className="text-xs text-[var(--ink-muted)]">
-          Sort by
-        </label>
-        <select
-          id="sort"
-          value={sortKey}
-          onChange={(e) => {
-            touch();
-            const key = e.target.value as SortKey;
-            setSortKey(key);
-            setSortDir(NUMERIC_KEYS.includes(key) ? "desc" : "asc");
-          }}
-          className={selectClass}
-        >
-          {SORTS.map((s) => (
-            <option key={s.key} value={s.key}>
-              {s.label}
-            </option>
-          ))}
-        </select>
-        <button
-          type="button"
-          onClick={() => { touch(); setSortDir((d) => (d === "asc" ? "desc" : "asc")); }}
-          aria-label={sortDir === "asc" ? "Sort ascending" : "Sort descending"}
-          className="inline-flex h-9 items-center gap-1 rounded border border-[var(--hairline)] bg-[var(--paper-raised)] px-2.5 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] hover:text-[var(--ink)]"
-        >
-          {sortDir === "asc" ? "▲" : "▼"}
-          <span className="text-[var(--ink-muted)]">
-            {sortDir === "asc" ? "Ascending" : "Descending"}
+      {/* Sort - explicit, because cards have no column headers to click.
+
+          Each label plus its control is ONE flex item, so a wrap can never
+          land between them. The flat row this replaced put six siblings in a
+          wrapping flex, which on a phone broke after "Period" and left that
+          label stranded at the end of the line above its own dropdown. */}
+      <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-[var(--hairline)] pt-2.5">
+        {/* Sort key and direction are one decision, so they are one bonded
+            control: the select and the toggle share an edge (-ml-px collapses
+            the doubled border) and read as a unit rather than as two
+            unrelated dropdowns. */}
+        <div className="inline-flex shrink-0 items-center gap-2">
+          <label htmlFor="sort" className="shrink-0 text-xs text-[var(--ink-muted)]">
+            Sort by
+          </label>
+          <span className="inline-flex">
+            <select
+              id="sort"
+              value={sortKey}
+              onChange={(e) => {
+                touch();
+                const key = e.target.value as SortKey;
+                setSortKey(key);
+                setSortDir(NUMERIC_KEYS.includes(key) ? "desc" : "asc");
+              }}
+              className={`${selectBase} rounded-l focus:relative focus:z-10`}
+            >
+              {SORTS.map((s) => (
+                <option key={s.key} value={s.key}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={() => { touch(); setSortDir((d) => (d === "asc" ? "desc" : "asc")); }}
+              // Announces the state AND what pressing does; "Sort ascending"
+              // alone was ambiguous about which of the two it meant.
+              aria-label={`Sorted ${sortDir === "asc" ? "ascending" : "descending"}. Switch to ${
+                sortDir === "asc" ? "descending" : "ascending"
+              }.`}
+              title={sortDir === "asc" ? "Ascending" : "Descending"}
+              className="-ml-px inline-flex h-9 min-w-9 shrink-0 items-center justify-center gap-1.5 rounded-r border border-[var(--hairline)] bg-[var(--paper-raised)] px-2 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] hover:text-[var(--ink)] focus:relative focus:z-10 focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
+            >
+              <Icon name="arrowDown" className={sortDir === "asc" ? "rotate-180" : ""} />
+              {/* The word is the icon's gloss, not its replacement: it costs
+                  ~90px, which a phone cannot spare and a desktop never
+                  notices. The title and aria-label carry it on mobile. */}
+              <span className="hidden text-[var(--ink-muted)] sm:inline">
+                {sortDir === "asc" ? "Ascending" : "Descending"}
+              </span>
+            </button>
           </span>
-        </button>
+          {/* Belongs to the SORT control, not to Period: it explains what the
+              significance scale means. It used to render after the period
+              dropdown, where it looked like Period's footnote. */}
+          {sortKey === "significance" && (
+            <InfoTip content={SIGNIFICANCE_HELP} label="Significance" />
+          )}
+        </div>
 
         {/* Period applies to every sort: it windows the metric on the
             engagement sorts and date-filters the list on the rest (see
@@ -1005,28 +1038,31 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
             A select rather than a segmented control: five rolling windows in
             pills would wrap onto its own row on phones, and the dropdown
             leaves room to add windows later without spending width. */}
-        <label htmlFor="period" className="text-xs text-[var(--ink-muted)]">
-          Period
-        </label>
-        <select
-          id="period"
-          value={period}
-          onChange={(e) => { touch(); setPeriod(e.target.value as Period); }}
-          className={selectClass}
-        >
-          {PERIODS.map((p) => (
-            <option key={p.key} value={p.key}>
-              {p.label}
-            </option>
-          ))}
-        </select>
-
-        {sortKey === "significance" && (
-          <InfoTip content={SIGNIFICANCE_HELP} label="Significance" />
-        )}
+        <div className="inline-flex shrink-0 items-center gap-2">
+          <label htmlFor="period" className="shrink-0 text-xs text-[var(--ink-muted)]">
+            Period
+          </label>
+          <select
+            id="period"
+            value={period}
+            onChange={(e) => { touch(); setPeriod(e.target.value as Period); }}
+            className={selectClass}
+          >
+            {PERIODS.map((p) => (
+              <option key={p.key} value={p.key}>
+                {p.label}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {/* The live result count: reads "all N entries" untouched, and
-            "showing X of N entries" the moment a filter or search bites. */}
+            "showing X of N entries" the moment a filter or search bites.
+
+            Full width on phones so it takes its own line instead of competing
+            with the controls. Left to wrap on its own rather than forced to a
+            full-width line: on a phone it fits beside Period, and forcing the
+            break would spend a whole row to say one short sentence. */}
         <span className="ml-auto text-xs text-[var(--ink-muted)]">
           {sorted.length === problems.length ? (
             <>all {problems.length} entries</>
