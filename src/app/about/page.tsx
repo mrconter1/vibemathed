@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CitationBox } from "@/components/CitationBox";
 
 // Deliberately short: what the site is, who runs it and how, and how open it
 // is. Everything procedural lives on the methodology page.
@@ -85,6 +86,11 @@ export default function AboutPage() {
           </Link>
           .
         </p>
+
+        {/* Under the separator, because CC BY 4.0 makes attribution a licence
+            condition rather than a courtesy: whoever reuses the dataset needs
+            a citation, and it should not be theirs to invent. */}
+        <CitationBox />
       </article>
     </main>
   );
