@@ -327,7 +327,17 @@ def arxiv_recent(days: int, since: str | None = None, until: str | None = None) 
     ns = {"a": "http://www.w3.org/2005/Atom"}
     # Hard stop scaled to the window: ~1500 submissions/day across these
     # categories, capped so a giant window cannot page forever.
-    while start < min(12000, 1500 * days):
+    #
+    # Scale it to the window actually being queried. With --since/--until the
+    # span is the date range, NOT --days, whose default of 5 would cap a
+    # three-week sweep at 7500 entries: paging would stop a third of the way
+    # in, silently, having covered only the newest end. That is the same
+    # silent-truncation failure as the swallowed paging error, arriving by a
+    # different route.
+    span_days = max(1, (datetime.fromisoformat(hi).replace(tzinfo=timezone.utc)
+                        - cutoff).days) if since else days
+    hard_stop = min(12000, 1500 * span_days)
+    while start < hard_stop:
         url = (
             "http://export.arxiv.org/api/query?search_query=" + window
             + f"&sortBy=submittedDate&sortOrder=descending&start={start}&max_results={page}"
@@ -347,6 +357,15 @@ def arxiv_recent(days: int, since: str | None = None, until: str | None = None) 
         entries = root.findall("a:entry", ns)
         if not entries:
             break
+        # Paging is the slow part and used to be completely silent: minutes of
+        # nothing, indistinguishable from a hang. Report each page to stderr,
+        # with the date reached so the remaining distance to the cutoff is
+        # visible rather than guessed at.
+        if entries:
+            oldest = entries[-1].findtext("a:published", "", ns)[:10]
+            print(f"  [page {start // page + 1}] {start + len(entries)} scanned, "
+                  f"back to {oldest} (cutoff {cutoff:%Y-%m-%d}), "
+                  f"{len(papers)} flagged", file=sys.stderr, flush=True)
         stop = False
         for e in entries:
             updated = datetime.fromisoformat(e.findtext("a:published", "", ns).replace("Z", "+00:00"))
@@ -365,6 +384,13 @@ def arxiv_recent(days: int, since: str | None = None, until: str | None = None) 
         if stop:
             break
         start += page
+    else:
+        # Fell out on the cap rather than on reaching the cutoff, so the older
+        # end of the window was never looked at. Say so: a truncated sweep that
+        # reads as a complete one is worse than no sweep, because it retires
+        # the window from the todo list.
+        print(f"_(arXiv paging hit the {hard_stop}-entry cap before reaching "
+              f"{cutoff:%Y-%m-%d}; the older end of this window is UNSCANNED)_\n")
     return papers
 
 
