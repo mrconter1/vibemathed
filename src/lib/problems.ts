@@ -241,8 +241,10 @@ export interface MathProblem {
   links?: LinkRef[];
 }
 
-/// The windows offered for time-sensitive sorting.
-export type Period = "week" | "month" | "all";
+/// The windows offered for time-sensitive sorting. All are ROLLING windows
+/// measured back from now, not calendar periods: "day" is the last 24 hours,
+/// not today.
+export type Period = "day" | "3day" | "week" | "month" | "all";
 
 /// A curated problem plus its lifetime engagement counts.
 ///
@@ -269,10 +271,14 @@ export type ProblemWithVotes = MathProblem & {
 /// happens once, server-side, inside the cached read rather than on every sort
 /// change. Only the list needs these; a single entry page does not.
 export type ProblemWithTrends = ProblemWithVotes & {
-  /// Net score from votes cast in the last 7 / 30 days.
+  /// Net score from votes cast in the last 24h / 3 / 7 / 30 days.
+  score24h: number;
+  score3d: number;
   score7d: number;
   score30d: number;
-  /// Comments posted in the last 7 / 30 days.
+  /// Comments posted in the last 24h / 3 / 7 / 30 days.
+  comments24h: number;
+  comments3d: number;
   comments7d: number;
   comments30d: number;
 };
@@ -319,8 +325,12 @@ export interface CardEntry {
   upvotes: number;
   downvotes: number;
   score: number;
+  score24h: number;
+  score3d: number;
   score7d: number;
   score30d: number;
+  comments24h: number;
+  comments3d: number;
   comments7d: number;
   comments30d: number;
   commentCount: number;

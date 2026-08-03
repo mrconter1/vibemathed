@@ -190,23 +190,30 @@ export async function getPublishedProblems(): Promise<ProblemWithTrends[]> {
   cacheTag("problems");
   cacheLife("minutes");
 
-  // `cacheLife("minutes")` means these window edges are up to a minute stale,
-  // which is immaterial for a 7- or 30-day window.
+  // `cacheLife("minutes")` means these window edges are up to a minute stale.
+  // That is immaterial for a 7- or 30-day window and still fine for 24 hours,
+  // where a minute is 0.07% of the window.
   const now = Date.now();
-  const [rows, week, month] = await Promise.all([
+  const [rows, day, threeDay, week, month] = await Promise.all([
     prisma.problem.findMany({
       where: { status: "published" },
       select: { ...PROBLEM_SELECT, id: true },
       orderBy: { solveDate: "desc" },
     }),
+    countsSince(new Date(now - DAY_MS)),
+    countsSince(new Date(now - 3 * DAY_MS)),
     countsSince(new Date(now - 7 * DAY_MS)),
     countsSince(new Date(now - 30 * DAY_MS)),
   ]);
 
   return rows.map((row) => ({
     ...toProblem(row),
+    score24h: day.score.get(row.id) ?? 0,
+    score3d: threeDay.score.get(row.id) ?? 0,
     score7d: week.score.get(row.id) ?? 0,
     score30d: month.score.get(row.id) ?? 0,
+    comments24h: day.comments.get(row.id) ?? 0,
+    comments3d: threeDay.comments.get(row.id) ?? 0,
     comments7d: week.comments.get(row.id) ?? 0,
     comments30d: month.comments.get(row.id) ?? 0,
   }));

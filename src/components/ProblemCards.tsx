@@ -64,15 +64,18 @@ type SortKey =
   | "cost";
 type SortDir = "asc" | "desc";
 
+// Alphabetical by label, so a reader scanning the dropdown can find an option
+// by name instead of learning an arbitrary order. "solveDate" stays the
+// default sort regardless of where it lands in this list.
 const SORTS: { key: SortKey; label: string }[] = [
-  { key: "solveDate", label: "Date solved" },
-  { key: "added", label: "Date added" },
-  { key: "score", label: "Votes" },
   { key: "discussion", label: "Comments" },
-  { key: "age", label: "Years open" },
-  { key: "significance", label: "Significance" },
+  { key: "added", label: "Date added" },
+  { key: "solveDate", label: "Date solved" },
   { key: "cost", label: "Disclosed cost" },
   { key: "name", label: "Name" },
+  { key: "significance", label: "Significance" },
+  { key: "score", label: "Votes" },
+  { key: "age", label: "Years open" },
 ];
 
 // The period means two things, by sort. On the engagement sorts it windows
@@ -81,11 +84,24 @@ const SORTS: { key: SortKey; label: string }[] = [
 // added for the Added sort, by solve date otherwise).
 const TIME_SENSITIVE: SortKey[] = ["score", "discussion"];
 
+// Labels name the window explicitly ("Last 7 days", not "Week") because these
+// are rolling windows measured back from now, and "Week" invites reading it as
+// the calendar week.
 const PERIODS: { key: Period; label: string }[] = [
-  { key: "week", label: "Week" },
-  { key: "month", label: "Month" },
+  { key: "day", label: "Last 24 hours" },
+  { key: "3day", label: "Last 3 days" },
+  { key: "week", label: "Last 7 days" },
+  { key: "month", label: "Last 30 days" },
   { key: "all", label: "All time" },
 ];
+
+/// Days back for each window; `all` has no cutoff.
+const PERIOD_DAYS: Record<Exclude<Period, "all">, number> = {
+  day: 1,
+  "3day": 3,
+  week: 7,
+  month: 30,
+};
 
 // The clock for period cutoffs, fixed at module load: render purity wants a
 // stable now, and a cutoff drifting by the age of the tab is nothing against
@@ -129,13 +145,25 @@ function sortValue(p: CardEntry, key: SortKey, period: Period): string | number 
     case "score":
       // "Top voted" ranks on NET score, not raw upvotes - otherwise a
       // 50-up/49-down brawl outranks a clean 20-up/0-down entry.
-      return period === "week" ? p.score7d : period === "month" ? p.score30d : p.score;
+      return period === "day"
+        ? p.score24h
+        : period === "3day"
+          ? p.score3d
+          : period === "week"
+            ? p.score7d
+            : period === "month"
+              ? p.score30d
+              : p.score;
     case "discussion":
-      return period === "week"
-        ? p.comments7d
-        : period === "month"
-          ? p.comments30d
-          : p.commentCount;
+      return period === "day"
+        ? p.comments24h
+        : period === "3day"
+          ? p.comments3d
+          : period === "week"
+            ? p.comments7d
+            : period === "month"
+              ? p.comments30d
+              : p.commentCount;
     case "name":
       return p.name.toLowerCase();
     case "age":
@@ -448,18 +476,19 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(25);
 
-  // Field chips: every group that actually occurs, with its count, in fixed
-  // taxonomy order. Entries without a group (possible on community rows) are
-  // only reachable via "All fields".
+  // Field chips: every group that actually occurs, with its count, BIGGEST
+  // FIRST. Fixed taxonomy order put one-entry groups ahead of hundred-entry
+  // ones, so the chips a reader is most likely to want were the ones they had
+  // to hunt for. Ties fall back to taxonomy order to keep the row stable
+  // rather than reshuffling on every entry added.
   const groups = useMemo(() => {
     const counts = new Map<FieldGroup, number>();
     for (const p of problems) {
       if (p.fieldGroup) counts.set(p.fieldGroup, (counts.get(p.fieldGroup) ?? 0) + 1);
     }
-    return FIELD_GROUPS.filter((g) => counts.has(g)).map((g) => ({
-      group: g,
-      count: counts.get(g)!,
-    }));
+    return FIELD_GROUPS.filter((g) => counts.has(g))
+      .map((g) => ({ group: g, count: counts.get(g)! }))
+      .sort((a, b) => b.count - a.count);
   }, [problems]);
 
   // Same present-values trick for resolution statuses. While every entry is
@@ -724,12 +753,12 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    // Rolling 7/30-day cutoff, matching the engagement metrics' windows. Only
+    // Rolling cutoff, matching the engagement metrics' windows. Only
     // non-engagement sorts date-filter; score/discussion window their metric
     // in sortValue instead, ranking the WHOLE list by that period's activity.
     const dateFiltering = period !== "all" && !TIME_SENSITIVE.includes(sortKey);
     const cutoff = dateFiltering
-      ? new Date(LOADED_AT - (period === "week" ? 7 : 30) * 86400000)
+      ? new Date(LOADED_AT - PERIOD_DAYS[period as Exclude<Period, "all">] * 86400000)
           .toISOString()
           .slice(0, 10)
       : "";
@@ -971,30 +1000,26 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
 
         {/* Period applies to every sort: it windows the metric on the
             engagement sorts and date-filters the list on the rest (see
-            TIME_SENSITIVE). All time is the default. */}
-        <div
-          role="group"
-          aria-label="Time period"
-          className="inline-flex h-9 overflow-hidden rounded border border-[var(--hairline)] bg-[var(--paper-raised)]"
+            TIME_SENSITIVE). All time is the default.
+
+            A select rather than a segmented control: five rolling windows in
+            pills would wrap onto its own row on phones, and the dropdown
+            leaves room to add windows later without spending width. */}
+        <label htmlFor="period" className="text-xs text-[var(--ink-muted)]">
+          Period
+        </label>
+        <select
+          id="period"
+          value={period}
+          onChange={(e) => { touch(); setPeriod(e.target.value as Period); }}
+          className={selectClass}
         >
-          {PERIODS.map((p, i) => (
-            <button
-              key={p.key}
-              type="button"
-              onClick={() => { touch(); setPeriod(p.key); }}
-              aria-pressed={period === p.key}
-              className={`px-2.5 text-xs transition-colors ${
-                i > 0 ? "border-l border-[var(--hairline)]" : ""
-              } ${
-                period === p.key
-                  ? "bg-[color-mix(in_srgb,var(--accent-blue)_12%,transparent)] font-medium text-[var(--accent-blue)]"
-                  : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
-              }`}
-            >
+          {PERIODS.map((p) => (
+            <option key={p.key} value={p.key}>
               {p.label}
-            </button>
+            </option>
           ))}
-        </div>
+        </select>
 
         {sortKey === "significance" && (
           <InfoTip content={SIGNIFICANCE_HELP} label="Significance" />
