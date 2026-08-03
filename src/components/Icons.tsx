@@ -21,7 +21,9 @@ export type IconName =
   | "pencil" // edit an entry
   | "bell" // notifications
   | "info" // explanatory tooltips
-  | "arrowDown"; // sort direction (rotate 180 for ascending)
+  | "arrowDown" // sort direction (rotate 180 for ascending)
+  | "copy" // copy to clipboard
+  | "check"; // confirmation after a copy
 
 const PATHS: Record<IconName, React.ReactNode> = {
   layers: (
@@ -153,6 +155,24 @@ const PATHS: Record<IconName, React.ReactNode> = {
     <>
       <path d="M8 2.8v10.4" strokeLinecap="round" />
       <path d="M4.2 9.4L8 13.2l3.8-3.8" strokeLinecap="round" strokeLinejoin="round" />
+    </>
+  ),
+  // Two sheets: the front one whole, the back one drawn only where it shows.
+  // Overlapping full rectangles would put a visible line through the front
+  // sheet, since these are stroked outlines rather than filled shapes.
+  copy: (
+    <>
+      <rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.5" />
+      <path
+        d="M10.4 5.6V4a1.5 1.5 0 00-1.5-1.5H4A1.5 1.5 0 002.5 4v4.9A1.5 1.5 0 004 10.4h1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </>
+  ),
+  check: (
+    <>
+      <path d="M3.2 8.4l3.2 3.2 6.4-7.2" strokeLinecap="round" strokeLinejoin="round" />
     </>
   ),
 };

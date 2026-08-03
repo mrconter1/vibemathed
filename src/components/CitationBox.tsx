@@ -16,6 +16,7 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { SITE_URL } from "@/lib/site";
+import { Icon } from "@/components/Icons";
 
 // Read once per page load and then reused, so the snapshot below is
 // referentially stable: returning a fresh Date on every render would spin
@@ -64,19 +65,29 @@ export function CitationBox() {
 
   return (
     <section className="border-t border-[var(--hairline)] pt-5">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="font-serif text-base text-[var(--ink)]">How to cite</h2>
+      <h2 className="font-serif text-base text-[var(--ink)]">How to cite</h2>
+
+      <div className="relative mt-3 rounded-md border border-[var(--hairline)] bg-[var(--paper)] p-3">
+        {/* Tucked into the corner of the block it acts on, which is where a
+            reader looks for it on any code sample. Icon only: the label is
+            carried by aria-label and title, and the confirmation is a tick
+            rather than the word "Copied", so the button never changes width
+            and the block never reflows under it. */}
         <button
           type="button"
           onClick={copy}
-          className="rounded-md border border-[var(--hairline)] bg-[var(--paper)] px-3 py-1.5 text-xs text-[var(--ink)] transition-colors hover:border-[var(--ink-muted)]"
+          aria-label={copied ? "BibTeX copied to clipboard" : "Copy BibTeX"}
+          title={copied ? "Copied" : "Copy"}
+          className={`absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded border transition-colors focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)] ${
+            copied
+              ? "border-[var(--accent-blue)] text-[var(--accent-blue)]"
+              : "border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-muted)] hover:border-[var(--ink-muted)] hover:text-[var(--ink)]"
+          }`}
         >
-          {copied ? "Copied" : "Copy BibTeX"}
+          <Icon name={copied ? "check" : "copy"} size={14} />
         </button>
-      </div>
-
-      <div className="mt-3 rounded-md border border-[var(--hairline)] bg-[var(--paper)] p-3">
-        <pre className="dialog-scroll overflow-x-auto whitespace-pre-wrap break-words font-mono text-[11px] leading-relaxed text-[var(--ink-secondary)]">
+        {/* pr-12 keeps long lines from sliding under the button. */}
+        <pre className="dialog-scroll overflow-x-auto whitespace-pre-wrap break-words pr-12 font-mono text-[11px] leading-relaxed text-[var(--ink-secondary)]">
           {text}
         </pre>
       </div>
