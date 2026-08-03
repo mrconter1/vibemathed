@@ -9438,6 +9438,51 @@
     ]
   },
   {
+    "slug": "wowii-graph-conjecture-144",
+    "name": "Written on the Wall II, Graph Conjecture 144",
+    "shortName": "WOWII 144",
+    "problemNumber": null,
+    "field": "Graph Theory (automated conjecture)",
+    "fieldGroup": "Combinatorics",
+    "resolution": "candidate",
+    "statement": "For every finite connected simple graph $G$, is the order of the largest induced tree at least $mathrm{girth}(G) - 1 + mathrm{ecc}(G, mathrm{center}(G))$, where the last term is the eccentricity of the centre set? Answered affirmatively, with a Lean proof.",
+    "posedBy": "Written on the Wall II (automated conjecturing)",
+    "yearPosed": null,
+    "solveType": "proved",
+    "solveDate": "2026-08-03",
+    "model": "ChatGPT + Codex",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Chris Maki"
+    ],
+    "aiRole": "The author states that ChatGPT and Codex assisted with computational exploration, proof analysis, Lean API discovery and proof engineering, and that he reviewed the work thoroughly and takes full responsibility for it.",
+    "verification": "lean-verified",
+    "verificationNote": "Checked here on 2026-08-03, statically rather than by rebuilding. The theorem statement was diffed against the upstream Formal Conjectures statement and is identical apart from a hypothesis binder name, which is the fidelity check that matters. All 16 Lean files at the pinned commit (5,873 lines) contain no sorry, no admit, no axiom declarations and no native_decide. The author reports lake build --wfail and axiom checks passing; that build was NOT reproduced here.",
+    "publication": "announcement",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://github.com/google-deepmind/formal-conjectures/pull/4696",
+    "sourceName": "Formal Conjectures PR #4696",
+    "resultNote": "The Formal Conjectures pull request flipping this from open to solved is still open rather than merged, so the canonical repository has not yet accepted it.",
+    "aiContribution": "ai-assisted",
+    "significance": 5,
+    "significanceNote": "A machine-generated conjecture from the Written on the Wall II program, which by our rule sits at the bottom of the ladder however clean the proof.",
+    "links": [
+      {
+        "label": "Lean proof at the pinned commit",
+        "url": "https://github.com/beowulf127/wowii144-lean/blob/046429d509b28c90ee2ec38ae27c1ad377c6a5fc/WOWII144/Main.lean"
+      },
+      {
+        "label": "Upstream statement (Formal Conjectures)",
+        "url": "https://github.com/google-deepmind/formal-conjectures/blob/main/FormalConjectures/WrittenOnTheWallII/GraphConjecture144.lean"
+      }
+    ]
+  },
+  {
     "slug": "wowii-graph-conjecture-217",
     "name": "Written on the Wall II, Graph Conjecture 217",
     "shortName": "WOWII 217",
