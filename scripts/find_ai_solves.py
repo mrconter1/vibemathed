@@ -42,6 +42,11 @@ Usage:
   python scripts/find_ai_solves.py --sources github,zenodo   # subset (arxiv,
                                                      # github, erdos, zenodo, feeds)
   python scripts/find_ai_solves.py --reset            # forget seen-state first
+  python scripts/find_ai_solves.py --since 2026-07-01 --until 2026-08-01
+                                                      # a fixed window; the only
+                                                      # way to reach past ~1 month,
+                                                      # since paging back from now
+                                                      # hits a 12000-result cap
 
 Output is a Markdown report on stdout: triage it against the methodology
 (vibemathed.com/methodology) before anything becomes an entry.
@@ -285,17 +290,36 @@ def catalog_index() -> dict:
 
 # ---------------------------------------------------------------- arXiv ----
 
-def arxiv_recent(days: int) -> list[dict]:
-    """Recent papers in the target categories, resolution-flavoured only."""
-    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+def arxiv_recent(days: int, since: str | None = None, until: str | None = None) -> list[dict]:
+    """Papers in the target categories, resolution-flavoured only.
+
+    Default mode pages backwards from now. That cannot reach past roughly a
+    month: the result cap below is an absolute 12000, and these categories
+    produce enough submissions to exhaust it in about that time, so an older
+    window was simply unreachable no matter what --days said.
+
+    Passing --since/--until instead puts a submittedDate range into the query
+    itself, so the whole result set is the window and pagination starts at its
+    newest edge. That is what makes historical sweeps possible.
+    """
     cat_query = "+OR+".join(f"cat:{c}" for c in ARXIV_CATEGORIES)
+    if since:
+        cutoff = datetime.fromisoformat(since).replace(tzinfo=timezone.utc)
+        hi = until or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        # Parentheses round the category OR group, or the AND binds to the
+        # last category only and the window silently does nothing.
+        window = (f"%28{cat_query}%29+AND+submittedDate:"
+                  f"%5B{cutoff.strftime('%Y%m%d')}0000+TO+{hi.replace('-', '')}0000%5D")
+    else:
+        cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+        window = cat_query
     papers, start, page = [], 0, 200
     ns = {"a": "http://www.w3.org/2005/Atom"}
     # Hard stop scaled to the window: ~1500 submissions/day across these
     # categories, capped so a giant window cannot page forever.
     while start < min(12000, 1500 * days):
         url = (
-            "http://export.arxiv.org/api/query?search_query=" + cat_query
+            "http://export.arxiv.org/api/query?search_query=" + window
             + f"&sortBy=submittedDate&sortOrder=descending&start={start}&max_results={page}"
         )
         # arXiv 500s intermittently on deep pagination. Letting that propagate
@@ -640,6 +664,8 @@ def main() -> int:
     # announcement gap, not the run cadence. Widening is free - the state file
     # dedupes, so a longer window costs fetch time, never repeated output.
     ap.add_argument("--days", type=int, default=5)
+    ap.add_argument("--since", help="YYYY-MM-DD; query a submittedDate window instead of paging back from now")
+    ap.add_argument("--until", help="YYYY-MM-DD; end of the --since window (default: today)")
     ap.add_argument("--reset", action="store_true", help="forget previously seen items")
     ap.add_argument(
         "--sources", default="arxiv,github,erdos,zenodo,feeds,index,repos,trackers",
@@ -654,7 +680,9 @@ def main() -> int:
 
     known = catalog_index()
 
-    print(f"# AI-solve candidates - last {args.days} days\n")
+    window_label = (f"{args.since} to {args.until or 'today'}" if args.since
+                    else f"last {args.days} days")
+    print(f"# AI-solve candidates - {window_label}\n")
     print(f"_Catalog check: {len(known['arxiv'])} arXiv ids, "
           f"{len(known['fc_prs'])} formal-conjectures PRs, "
           f"{len(known['mathlib_prs'])} mathlib PRs, "
@@ -665,7 +693,7 @@ def main() -> int:
         print("## arXiv (resolution-flavoured papers mentioning a model)\n")
         seen = set(state["seen_arxiv"])
         try:
-            papers = arxiv_recent(args.days)
+            papers = arxiv_recent(args.days, args.since, args.until)
         except Exception as e:
             papers = []
             print(f"_(arXiv scan failed: {e})_\n")
