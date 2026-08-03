@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getPublishedProblems } from "@/lib/data";
 import { ContributionGrowthChart } from "@/components/ContributionGrowthChart";
 import { CumulativeChart } from "@/components/CumulativeChart";
@@ -77,11 +78,19 @@ export default async function StatsPage() {
     : 0;
 
   // The stakes, in one number. Only entries with a known posed year count;
-  // most of the catalog has one.
-  const posedYears = problems
-    .map((p) => p.yearPosed)
-    .filter((y): y is number => typeof y === "number");
-  const oldest = posedYears.length ? Math.min(...posedYears) : null;
+  // most of the catalog has one. Kept as the ENTRY rather than the year so the
+  // tile can link to it - a reader who sees 1932 immediately wants to know
+  // which problem that was. Ties break on the earliest solve, then the slug,
+  // so the link is deterministic rather than dependent on query order.
+  const oldest =
+    problems
+      .filter((p) => typeof p.yearPosed === "number")
+      .sort(
+        (a, b) =>
+          (a.yearPosed ?? 0) - (b.yearPosed ?? 0) ||
+          a.solveDate.localeCompare(b.solveDate) ||
+          a.slug.localeCompare(b.slug),
+      )[0] ?? null;
 
   const tiles: {
     icon: IconName;
@@ -90,6 +99,8 @@ export default async function StatsPage() {
     change?: string;
     sub?: string;
     help?: string;
+    /// When the number names one entry, the number links to it.
+    href?: string;
   }[] = [
     {
       icon: "layers",
@@ -119,8 +130,9 @@ export default async function StatsPage() {
     {
       icon: "votes",
       label: "Oldest problem cracked",
-      value: oldest ? String(oldest) : "—",
-      sub: "year it was posed",
+      value: oldest?.yearPosed ? String(oldest.yearPosed) : "—",
+      sub: oldest ? oldest.shortName : "year it was posed",
+      href: oldest ? `/problem/${oldest.slug}` : undefined,
     },
   ];
 
@@ -141,7 +153,18 @@ export default async function StatsPage() {
             </dt>
             {/* Same centered tile as the home StatBand, plus the comparison
                 line a bare total lacks. */}
-            <dd className="mt-1 text-2xl font-semibold text-[var(--ink)]">{t.value}</dd>
+            <dd className="mt-1 text-2xl font-semibold text-[var(--ink)]">
+              {t.href ? (
+                <Link
+                  href={t.href}
+                  className="transition-colors hover:text-[var(--accent-blue)] hover:underline"
+                >
+                  {t.value}
+                </Link>
+              ) : (
+                t.value
+              )}
+            </dd>
             {t.change && (
               <p className="mt-0.5 text-[11px] font-medium text-[var(--status-good)]">
                 {t.change}
