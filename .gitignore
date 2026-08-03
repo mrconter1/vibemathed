@@ -55,3 +55,4 @@ scripts/.ratelimit_state.json
 scripts/.finder_index_url
 scripts/.index_watch.py
 scripts/.index_watch_snapshot.json
+scripts/.sweeps/
