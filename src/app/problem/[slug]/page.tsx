@@ -182,19 +182,11 @@ export default async function ProblemPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Link
-        href="/"
-        className="inline-flex items-center gap-1.5 rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-2.5 py-1.5 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] hover:text-[var(--ink)]"
-      >
-        <span aria-hidden>←</span>
-        All problems
-      </Link>
-
       {/* The entry itself sits on a raised sheet, like the cards it came
           from - on the cream page the content used to float with nothing
           holding it. Discussion and changelog stay outside, as separate
           surfaces below. */}
-      <article className="mt-4 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-5 sm:px-6 sm:py-6">
+      <article className="rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-5 sm:px-6 sm:py-6">
         <div className="flex items-start justify-between gap-4">
           <h1 className="math-prose font-serif text-2xl text-[var(--ink)] sm:text-3xl">
             <TeX>{p.name}</TeX>

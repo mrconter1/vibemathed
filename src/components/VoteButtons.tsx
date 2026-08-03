@@ -36,11 +36,15 @@ export function VoteButtons({
   upvotes,
   downvotes,
   size = "sm",
+  stacked = false,
 }: {
   slug: string;
   upvotes: number;
   downvotes: number;
   size?: "sm" | "lg";
+  /// Stack the pair vertically below `sm`. Cards only - see the comment at
+  /// the button row.
+  stacked?: boolean;
 }) {
   const { signedIn, loaded, votes, setVote } = useViewer();
   const mine = votes[slug] ?? null;
@@ -94,7 +98,17 @@ export function VoteButtons({
 
   return (
     <div className="inline-flex flex-col items-start gap-1">
-      <div className="inline-flex items-center gap-1.5">
+      {/* `stacked` is for the cards only: on a phone the pair sits in a narrow
+          column beside the title, and side by side it squeezes the heading.
+          The entry page keeps them in a row, where they line up with the edit
+          and flag icons at a matched height. */}
+      <div
+        className={
+          stacked
+            ? "inline-flex flex-col items-stretch gap-1 sm:flex-row sm:items-center sm:gap-1.5"
+            : "inline-flex items-center gap-1.5"
+        }
+      >
         <button
           type="button"
           onClick={() => cast("up")}

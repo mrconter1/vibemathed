@@ -288,7 +288,7 @@ function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string
 
         {/* Votes, kept out of the flowing text so they line up down the list */}
         <div className="relative z-10 shrink-0 pt-0.5">
-          <VoteButtons slug={p.slug} upvotes={p.upvotes} downvotes={p.downvotes} />
+          <VoteButtons slug={p.slug} upvotes={p.upvotes} downvotes={p.downvotes} stacked />
         </div>
       </div>
 

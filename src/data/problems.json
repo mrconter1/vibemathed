@@ -9445,7 +9445,7 @@
     "field": "Graph Theory (automated conjecture)",
     "fieldGroup": "Combinatorics",
     "resolution": "candidate",
-    "statement": "For every finite connected simple graph $G$, is the order of the largest induced tree at least $mathrm{girth}(G) - 1 + mathrm{ecc}(G, mathrm{center}(G))$, where the last term is the eccentricity of the centre set? Answered affirmatively, with a Lean proof.",
+    "statement": "For every finite connected simple graph $G$, is the order of the largest induced tree at least $\\mathrm{girth}(G) - 1 + \\mathrm{ecc}(G, \\mathrm{center}(G))$, where the last term is the eccentricity of the centre set? Answered affirmatively, with a Lean proof.",
     "posedBy": "Written on the Wall II (automated conjecturing)",
     "yearPosed": null,
     "solveType": "proved",
