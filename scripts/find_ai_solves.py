@@ -298,7 +298,21 @@ def arxiv_recent(days: int) -> list[dict]:
             "http://export.arxiv.org/api/query?search_query=" + cat_query
             + f"&sortBy=submittedDate&sortOrder=descending&start={start}&max_results={page}"
         )
-        root = ET.fromstring(fetch(url))
+        # arXiv 500s intermittently on deep pagination. Letting that propagate
+        # discarded the entire scan and printed "0 papers scanned", which reads
+        # as "nothing to find" rather than "the search broke" - the worst
+        # possible failure mode for a recall tool. Retry once, then keep what
+        # we already have and say so.
+        try:
+            root = ET.fromstring(fetch(url))
+        except Exception:
+            time.sleep(5)
+            try:
+                root = ET.fromstring(fetch(url))
+            except Exception as exc:
+                print(f"_(arXiv paging stopped at start={start}: {exc}; "
+                      f"{len(papers)} papers kept)_\n")
+                break
         entries = root.findall("a:entry", ns)
         if not entries:
             break
