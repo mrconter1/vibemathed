@@ -1849,7 +1849,7 @@
   },
   {
     "slug": "erdos-1026-monotonic-subsequence-sums",
-    "name": "Erdős Problem #1026 — Monotonic Subsequence Sums",
+    "name": "Erdős Problem #1026: Monotonic Subsequence Sums",
     "shortName": "Erdős #1026 (Mono. Sums)",
     "problemNumber": 1026,
     "field": "Combinatorics",
@@ -2702,7 +2702,7 @@
   },
   {
     "slug": "erdos-1196-primitive-sets",
-    "name": "Erdős Problem #1196 — Primitive Sets",
+    "name": "Erdős Problem #1196: Primitive Sets",
     "shortName": "Primitive Sets (#1196)",
     "problemNumber": 1196,
     "field": "Number Theory",
@@ -3089,7 +3089,7 @@
   },
   {
     "slug": "erdos-146",
-    "name": "Erdős Problem #146 — Degeneracy Conjecture",
+    "name": "Erdős Problem #146: Degeneracy Conjecture",
     "shortName": "Erdős #146",
     "problemNumber": 146,
     "field": "Extremal graph theory",
@@ -3204,7 +3204,7 @@
   },
   {
     "slug": "erdos-180",
-    "name": "Erdős Problem #180 — Compactness Conjecture",
+    "name": "Erdős Problem #180: Compactness Conjecture",
     "shortName": "Erdős #180",
     "problemNumber": 180,
     "field": "Extremal graph theory",
@@ -3254,7 +3254,7 @@
   },
   {
     "slug": "erdos-183",
-    "name": "Erdős Problem #183 — Multicolor Triangle Ramsey",
+    "name": "Erdős Problem #183: Multicolor Triangle Ramsey",
     "shortName": "Erdős #183",
     "problemNumber": 183,
     "field": "Ramsey theory",
@@ -5230,7 +5230,7 @@
   },
   {
     "slug": "erdos-728-factorial-divisibility",
-    "name": "Erdős Problem #728 — Factorial Divisibility",
+    "name": "Erdős Problem #728: Factorial Divisibility",
     "shortName": "Erdős #728 (Factorials)",
     "problemNumber": 728,
     "field": "Number Theory",
@@ -9565,7 +9565,7 @@
     "humanCollaborators": [
       "Peter Pfaffelhuber"
     ],
-    "aiRole": "Per the paper's authorship disclosure: Claude (Anthropic; versions Opus 4.6, 4.7, 4.8), used\ninteractively, produced the mathematical text, the numerical code, and the complete Lean\n4/Mathlib formalization. The underlying ideas, choice of research question, the structuring\nof the joint induction, and the decision to formally verify are the author's; Claude's role\nwas execution — drafting exposition, proposing and debugging Lean proof tactics, selecting\nMathlib lemmas, producing numerical scripts — with every edit reviewed by the author.",
+    "aiRole": "Per the paper's authorship disclosure: Claude (Anthropic; versions Opus 4.6, 4.7, 4.8), used\ninteractively, produced the mathematical text, the numerical code, and the complete Lean\n4/Mathlib formalization. The underlying ideas, choice of research question, the structuring\nof the joint induction, and the decision to formally verify are the author's; Claude's role\nwas execution: drafting exposition, proposing and debugging Lean proof tactics, selecting\nMathlib lemmas and producing numerical scripts, with every edit reviewed by the author.",
     "verification": "lean-verified",
     "verificationNote": "Every numbered result, including the perturbation analysis, is formally verified in Lean 4 with Mathlib: no `sorry`, no custom axioms (only propext, Classical.choice, Quot.sound), no `native_decide`/`unsafe`. Trust surface is two files (`CoinsLean/Challenge.lean`, `CoinsLean/CoinsLean/Defs.lean`), independently checkable via the Lean comparator on the public repository; manuscript↔Lean map in Appendix A. arXiv preprint (v2, June 2026), not peer-reviewed.\n\nStatus set to partially resolved (2026-08-02): p = 1/2 and p > 1/2 are fully resolved, but for p < 1/2 the paper gives only a first-order expansion in δ = 1/2 − p near 1/2, leaving the range of validity δ₀(n) open and the numerically observed local maxima outside its reach. Verification tier unchanged: the Lean checks what the paper claims, and the paper does not claim the full small-p regime.",
     "publication": "preprint",
