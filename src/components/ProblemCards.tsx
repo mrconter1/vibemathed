@@ -345,8 +345,18 @@ function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string
 
           {/* Verification + notability + discussion */}
           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px]">
+            {/* Reserved width so Significance starts at the same x down the
+                list instead of stepping in and out with the badge text, which
+                runs from "Preprint" to "Site-confirmed". Sized for those, not
+                for "Independently expert-verified" - that one is 29 characters
+                and appears on 10 entries of 272, so it pushes rather than
+                costing every other card a third of its width. From `sm` only:
+                on a phone the row wraps anyway and a reserved column there
+                would squeeze the line rather than tidy it - measured, the
+                row wraps there, so Significance lands wherever the wrap puts
+                it and reserving width just moves the raggedness. */}
             <span
-              className="relative z-10 inline-flex items-center gap-1.5"
+              className="relative z-10 inline-flex items-center gap-1.5 sm:min-w-[7.75rem]"
               style={{ color: v.color }}
               title={p.verificationNote ?? undefined}
             >
