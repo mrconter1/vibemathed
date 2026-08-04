@@ -10471,7 +10471,7 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2605.25515",
     "sourceName": "arXiv:2605.25515 - Lipschitz Functions on Sparse Graphs II",
-    "resultNote": "sharpens the previous bounds rather than closing the gap",
+    "resultNote": "Resolved the sharp constant (w.h.p.) for random graphs G(n, d/n)",
     "aiContribution": "ai-co-developed",
     "significance": 10,
     "significanceNote": "A bound from a recent paper on Lipschitz functions on sparse graphs, real but narrow."
@@ -11202,8 +11202,8 @@
   },
   {
     "slug": "non-sofic-groups-exist",
-    "name": "Existence of Non-Sofic Groups",
-    "shortName": "Non-sofic groups",
+    "name": "Gromov and Weiss's Question on Sofic Groups",
+    "shortName": "Sofic groups question",
     "problemNumber": null,
     "field": "Geometric group theory",
     "fieldGroup": "Algebra",
@@ -11228,6 +11228,7 @@
     "renownLangs": 0,
     "sourceUrl": "https://openai.com/index/ten-advances-in-mathematics/",
     "sourceName": "OpenAI: Ten advances in mathematics and theoretical computer science",
+    "resultNote": "answered no: non-sofic groups exist",
     "aiContribution": "ai-discovered",
     "significance": 60,
     "significanceNote": "A central open question of geometric group theory since Gromov (1999), entangled with Gottschalk surjunctivity, Kaplansky stable finiteness and the post-MIP* landscape.",
