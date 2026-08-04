@@ -344,3 +344,31 @@ select option::checkmark {
 .viewer-name::after {
   content: var(--viewer-name, "");
 }
+
+/*
+ * The wordmark's hover. The two halves of the name trade colours.
+ *
+ * Picked over a hundred and sixty other treatments, nearly all of which said
+ * something: a tombstone, a check, a therefore, brackets. Saying something is
+ * what makes them wrong later. The catalogue already holds disproofs as well
+ * as proofs and may grow to hold improvements, and there is no mark that
+ * covers all three and stays true. This one makes no claim at all, so it
+ * cannot stop being accurate. It is also the cheapest thing that still reads
+ * as the wordmark noticing you rather than dimming.
+ *
+ * Real pointers only. On touch, browsers emulate :hover on tap and hold, and
+ * this element is on every page.
+ */
+.wordmark-name,
+.wordmark-accent {
+  transition: color 200ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .wordmark:hover .wordmark-name {
+    color: var(--accent-blue);
+  }
+  .wordmark:hover .wordmark-accent {
+    color: var(--ink);
+  }
+}

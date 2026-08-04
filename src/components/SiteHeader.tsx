@@ -19,12 +19,12 @@ export function SiteHeader() {
           tagline on one line. Both were tight enough that the subtitle and
           the buttons read as one block. */}
       <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-7 gap-y-2 px-4 py-2.5 sm:flex-nowrap sm:gap-x-8 sm:px-8">
-        <Link
-          href="/"
-          className="order-1 block transition-opacity hover:opacity-75"
-        >
-          <span className="font-serif text-2xl leading-none tracking-tight text-[var(--ink)]">
-            Vibe<span className="text-[var(--accent-blue)]">Mathed</span>
+        {/* The hover is the colour swap in globals.css, not an opacity fade.
+            Dimming the whole block read as the header going away; trading the
+            two halves reads as it answering. */}
+        <Link href="/" className="wordmark order-1 block">
+          <span className="wordmark-name font-serif text-2xl leading-none tracking-tight text-[var(--ink)]">
+            Vibe<span className="wordmark-accent text-[var(--accent-blue)]">Mathed</span>
           </span>
           {/* The one-line site definition, carried by every page now that the
               home hero is gone. */}
