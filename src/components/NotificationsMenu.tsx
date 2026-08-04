@@ -48,13 +48,17 @@ export function NotificationsMenu() {
     pendingReviews,
     openReports,
     openMessages,
+    unreadInbox,
     clearNotifications,
   } = useViewer();
   // Curator queues are notifications too, so they belong on the bell rather
   // than on the account button. They are NOT cleared by opening the panel -
   // a queue stops counting when it is actually emptied, not when it is seen.
   const queued = isAdmin ? pendingReviews + openReports + openMessages : 0;
-  const badge = notifications + queued;
+  // Curator mail counts on the bell but clears only on /inbox, for the same
+  // reason as a queue: a message stops being unread when it has been read,
+  // not when its existence has been noticed.
+  const badge = notifications + queued + unreadInbox;
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<NotificationItem[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -156,6 +160,27 @@ export function NotificationsMenu() {
           <p className="border-b border-[var(--hairline)] px-3.5 py-2.5 font-serif text-sm text-[var(--ink)]">
             Notifications
           </p>
+
+          {/* Unread curator mail sits above the queues and the feed alike:
+              it is addressed to this person specifically, and it is the one
+              row here that cannot be read without leaving the panel. */}
+          {unreadInbox > 0 && (
+            <ul className="border-b border-[var(--hairline)] py-1">
+              <li>
+                <Link
+                  href="/inbox"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center justify-between gap-2 border-l-2 border-[var(--accent-orange)] px-3.5 py-2 text-xs transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)]"
+                >
+                  <span className="text-[var(--ink)]">
+                    {unreadInbox} unread{" "}
+                    {unreadInbox === 1 ? "message" : "messages"} from the curators
+                  </span>
+                  <span aria-hidden className="text-[var(--ink-muted)]">→</span>
+                </Link>
+              </li>
+            </ul>
+          )}
 
           {/* Curator work first: these are actionable, the feed below is not. */}
           {queued > 0 && (

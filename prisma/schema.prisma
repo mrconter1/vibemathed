@@ -148,6 +148,11 @@ model Problem {
   /// for one person, not a changelog entry.
   reviewedAt     DateTime?
   reviewMessage  String?
+  /// The canned reason the reviewer picked, one of REVIEW_REASONS in
+  /// src/lib/messages.ts. Kept beside the free-text message rather than folded
+  /// into it so decisions stay countable: "how often do we turn things down as
+  /// duplicates" is a question about the queue, not about prose.
+  reviewReason   String?
   submittedById String?
   submittedBy   User?         @relation("ProblemSubmitter", fields: [submittedById], references: [id], onDelete: SetNull)
 
@@ -164,6 +169,7 @@ model Problem {
   activities ProblemActivity[]
   links      ProblemLink[]
   reports    ProblemReport[]
+  messages   DirectMessage[]
 
   @@index([status])
   @@index([solveDate])
@@ -361,6 +367,11 @@ model User {
   /// read against this timestamp - no notification rows, no fan-out writes.
   notificationsSeenAt DateTime @default(now())
 
+  /// Inbox watermark, the counterpart of `notificationsSeenAt` for curator
+  /// mail. Separate because the two are read in different places and a
+  /// glance at the bell should not silently mark an unread letter as read.
+  inboxSeenAt DateTime @default(now())
+
   accounts          Account[]
   sessions          Session[]
   votes             ProblemVote[]
@@ -369,6 +380,59 @@ model User {
   submittedProblems Problem[]         @relation("ProblemSubmitter")
   reports           ProblemReport[]
   messages          SiteMessage[]
+  inbox             DirectMessage[]   @relation("DirectMessageRecipient")
+  sentMessages      DirectMessage[]   @relation("DirectMessageSender")
+}
+
+/// A curator writing TO one reader. The mirror of SiteMessage, which carries
+/// mail the other way.
+///
+/// This exists because every other channel the site had was either public
+/// (comments) or truncated: a report or a rejection could be acted on, but the
+/// only reply reached the reader as a 90-character snippet in the bell menu.
+/// Deciding someone's submission or their bug report and then not being able
+/// to explain why in full is the gap this closes.
+///
+/// Rows, unlike the comment notifications, which are computed against a
+/// watermark with no rows at all. That asymmetry is deliberate: a comment
+/// notification is a view over something already stored, whereas a message
+/// has content of its own and nowhere else to live.
+model DirectMessage {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  /// The reader it was written to. Cascades: an inbox is meaningless without
+  /// its owner.
+  userId String
+  user   User   @relation("DirectMessageRecipient", fields: [userId], references: [id], onDelete: Cascade)
+
+  /// The curator who wrote it, and a pseudonym snapshot in the same spirit as
+  /// Comment.userName so a deleted account does not blank the signature.
+  senderId   String?
+  sender     User?   @relation("DirectMessageSender", fields: [senderId], references: [id], onDelete: SetNull)
+  senderName String?
+
+  /// What prompted it: one of MESSAGE_KINDS in src/lib/messages.ts. Labels the
+  /// message in the inbox; carries no behaviour.
+  kind String
+
+  /// The canned reason, when the curator picked one. Shown as the message's
+  /// headline, with `body` underneath as the human part.
+  reason String?
+
+  /// PLAIN TEXT. Never rendered as markdown or HTML: this is curator mail, not
+  /// a comment, and it should not become a formatting surface.
+  body String
+
+  /// The entry it concerns, when it concerns one. Nullable because a message
+  /// about a deleted entry is still worth keeping, and because not every
+  /// message has an entry behind it.
+  problemId String?  @db.Uuid
+  problem   Problem? @relation(fields: [problemId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  /// The inbox read and the unread count, both by recipient and recency.
+  @@index([userId, createdAt])
 }
 
 model Account {

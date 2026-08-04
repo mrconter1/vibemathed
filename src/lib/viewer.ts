@@ -33,6 +33,10 @@ export interface ViewerState {
   /// Unread notifications for THIS viewer: comments by others, newer than
   /// their seen-watermark, on entries they submitted or commented on.
   notifications: number;
+  /// Unread curator mail for THIS viewer. Counted for everyone, unlike the
+  /// three queue counts above, and on its own watermark so glancing at the
+  /// bell does not mark an unread letter as read.
+  unreadInbox: number;
   /// The viewer's own votes, keyed by problem slug.
   votes: Record<string, VoteKind>;
 }
@@ -49,5 +53,6 @@ export const SIGNED_OUT: ViewerState = {
   openReports: 0,
   openMessages: 0,
   notifications: 0,
+  unreadInbox: 0,
   votes: {},
 };

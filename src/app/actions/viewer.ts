@@ -58,20 +58,32 @@ export async function getViewerState(): Promise<ViewerState> {
     `,
     prisma.user.findUnique({
       where: { id: userId },
-      select: { bio: true, role: true, verified: true, notificationsSeenAt: true },
+      select: {
+        bio: true,
+        role: true,
+        verified: true,
+        notificationsSeenAt: true,
+        inboxSeenAt: true,
+      },
     }),
   ]);
 
   // Decisions on your own submissions count as unread too, on the same
-  // watermark as comments.
-  const unreadDecisions = me
-    ? await prisma.problem.count({
-        where: {
-          submittedById: userId,
-          reviewedAt: { gt: me.notificationsSeenAt },
-        },
-      })
-    : 0;
+  // watermark as comments. Curator mail is counted separately, against its own
+  // watermark, because it is read on its own page.
+  const [unreadDecisions, unreadInbox] = me
+    ? await Promise.all([
+        prisma.problem.count({
+          where: {
+            submittedById: userId,
+            reviewedAt: { gt: me.notificationsSeenAt },
+          },
+        }),
+        prisma.directMessage.count({
+          where: { userId, createdAt: { gt: me.inboxSeenAt } },
+        }),
+      ])
+    : [0, 0];
 
   const notifications = Number(unread[0]?.count ?? 0) + unreadDecisions;
 
@@ -87,6 +99,7 @@ export async function getViewerState(): Promise<ViewerState> {
     openReports,
     openMessages,
     notifications,
+    unreadInbox,
     votes: Object.fromEntries(votes.map((v) => [v.problem.slug, v.vote])),
   };
 }

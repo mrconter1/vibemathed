@@ -141,6 +141,15 @@ export function AuthMenu() {
               You appear publicly as your display name only. Your Google name
               and picture are never shown on the site.
             </p>
+            {/* The bell announces new mail, but only while it is unread. This
+                is how someone gets back to a message they have already read. */}
+            <Link
+              href="/inbox"
+              onClick={() => setOpen(false)}
+              className="mt-2.5 inline-block text-xs text-[var(--accent-blue)] hover:underline"
+            >
+              Inbox
+            </Link>
           </div>
 
           {isAdmin && (
