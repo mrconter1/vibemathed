@@ -32,7 +32,9 @@ function bibtex(accessed: Date | null): string {
   return [
     "@misc{vibemathed,",
     "  author       = {{VibeMathed contributors}},",
-    "  title        = {{VibeMathed: a record of mathematical problems solved with AI}},",
+    // A comma rather than a colon, so the About page's no-colon rule holds
+    // for the one piece of text on it a reader copies out.
+    "  title        = {{VibeMathed, a record of mathematical problems solved with AI}},",
     "  year         = {2026},",
     `  howpublished = {\\url{${SITE_URL}}},`,
     `  urldate      = {${accessed ? accessed.toISOString().slice(0, 10) : "YYYY-MM-DD"}},`,
@@ -41,15 +43,35 @@ function bibtex(accessed: Date | null): string {
   ].join("\n");
 }
 
-export function CitationBox() {
+export function CitationBox({
+  divider = true,
+  heading = true,
+  compact = false,
+}: {
+  /// The hairline above the heading. On the original About page it separated
+  /// the citation from the prose above it. Layouts that already draw their
+  /// own edge around this block, or that put it in a tile of its own, want it
+  /// off rather than doubled.
+  divider?: boolean;
+  /// The "How to cite" line. Off when the surrounding layout already says it,
+  /// so a disclosure does not label the same block twice.
+  heading?: boolean;
+  /// Tighter leading and a shorter trailing note, for the case where this is
+  /// revealed by a disclosure and every pixel it occupies is a pixel the page
+  /// moves when it opens.
+  compact?: boolean;
+} = {}) {
   const [copied, setCopied] = useState(false);
   const accessed = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
   const text = bibtex(accessed);
 
-  // Clear the confirmation on its own.
+  // Clear the confirmation on its own. Short, because the tick is only
+  // telling you something already happened. Two seconds left it sitting there
+  // long after the point had landed, which reads as a state rather than an
+  // acknowledgement.
   useEffect(() => {
     if (!copied) return;
-    const t = setTimeout(() => setCopied(false), 2000);
+    const t = setTimeout(() => setCopied(false), 900);
     return () => clearTimeout(t);
   }, [copied]);
 
@@ -64,10 +86,16 @@ export function CitationBox() {
   }
 
   return (
-    <section className="border-t border-[var(--hairline)] pt-5">
-      <h2 className="font-serif text-base text-[var(--ink)]">How to cite</h2>
+    <section className={divider ? "border-t border-[var(--hairline)] pt-5" : ""}>
+      {heading && (
+        <h2 className="font-serif text-base text-[var(--ink)]">How to cite</h2>
+      )}
 
-      <div className="relative mt-3 rounded-md border border-[var(--hairline)] bg-[var(--paper)] p-3">
+      <div
+        className={`relative rounded-md border border-[var(--hairline)] bg-[var(--paper)] ${
+          compact ? "mt-0 p-2.5" : "mt-3 p-3"
+        }`}
+      >
         {/* Tucked into the corner of the block it acts on, which is where a
             reader looks for it on any code sample. Icon only: the label is
             carried by aria-label and title, and the confirmation is a tick
@@ -78,7 +106,12 @@ export function CitationBox() {
           onClick={copy}
           aria-label={copied ? "BibTeX copied to clipboard" : "Copy BibTeX"}
           title={copied ? "Copied" : "Copy"}
-          className={`absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded border transition-colors focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)] ${
+          // focus-visible, not focus. A mouse click leaves a button focused,
+          // so a plain focus ring stayed lit after copying and read as "this
+          // button is still selected". focus-visible shows the ring for
+          // keyboard navigation, which is who it is for, and stays quiet for
+          // the pointer.
+          className={`absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded border transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent-blue)] ${
             copied
               ? "border-[var(--accent-blue)] text-[var(--accent-blue)]"
               : "border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-muted)] hover:border-[var(--ink-muted)] hover:text-[var(--ink)]"
@@ -87,14 +120,26 @@ export function CitationBox() {
           <Icon name={copied ? "check" : "copy"} size={14} />
         </button>
         {/* pr-12 keeps long lines from sliding under the button. */}
-        <pre className="dialog-scroll overflow-x-auto whitespace-pre-wrap break-words pr-12 font-mono text-[11px] leading-relaxed text-[var(--ink-secondary)]">
+        <pre
+          className={`dialog-scroll overflow-x-auto whitespace-pre-wrap break-words pr-12 font-mono text-[11px] text-[var(--ink-secondary)] ${
+            compact ? "leading-snug" : "leading-relaxed"
+          }`}
+        >
           {text}
         </pre>
       </div>
 
-      <p className="mt-2 text-xs text-[var(--ink-muted)]">
-        Citing an individual entry? Cite its own source, listed on the entry
-        page, and this record alongside it.
+      {/* Two lines of advice that only matter to someone already reading
+          the citation, so in the compact case they are trimmed to one. */}
+      <p className="mt-2 text-xs leading-snug text-[var(--ink-muted)]">
+        {compact ? (
+          <>Citing one entry? Cite its own source alongside this record.</>
+        ) : (
+          <>
+            Citing an individual entry? Cite its own source, listed on the entry
+            page, and this record alongside it.
+          </>
+        )}
       </p>
     </section>
   );
