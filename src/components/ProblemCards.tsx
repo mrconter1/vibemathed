@@ -12,6 +12,7 @@
 // Cards have no column headers, so sorting moved into an explicit control.
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useBeforePaint } from "@/lib/before-paint";
 import Link from "next/link";
 import {
   ageAtSolve,
@@ -523,7 +524,10 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
   // external system that only exists on the client). Every value is validated
   // against what the UI can actually offer today, so a stale or tampered
   // entry falls back silently.
-  /* eslint-disable react-hooks/set-state-in-effect */
+  //
+  // Before paint, not after. As an ordinary effect the list rendered in the
+  // default order and then visibly reshuffled into the remembered one, which
+  // on a 400-entry list is the most conspicuous flicker on the site.
   const [restored, setRestored] = useState(false);
   // URL mirroring happens only after an explicit interaction with a control.
   // A "first persist run" heuristic breaks under StrictMode's double effects
@@ -533,7 +537,7 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
   const touch = () => {
     touched.current = true;
   };
-  useEffect(() => {
+  useBeforePaint(() => {
     // Two sources, URL first: a shared link's query params beat this
     // browser's remembered settings, key by key. Every value is validated
     // against what the UI can actually offer today, so a stale or tampered
@@ -598,7 +602,6 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
     setRestored(true);
     // Once per mount on purpose so it cannot undo choices made since.
   }, []);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Persist on every change - but only after restore has run, otherwise the
   // first render would overwrite the stored settings with the defaults.

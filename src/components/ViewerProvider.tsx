@@ -16,6 +16,7 @@ import {
 } from "react";
 import type { VoteKind } from "@prisma/client";
 import { getViewerState } from "@/app/actions/viewer";
+import { useBeforePaint } from "@/lib/before-paint";
 import { SIGNED_OUT, type ViewerState } from "@/lib/viewer";
 
 interface ViewerContextValue extends ViewerState {
@@ -38,14 +39,33 @@ interface ViewerContextValue extends ViewerState {
 
 const ViewerContext = createContext<ViewerContextValue | null>(null);
 
-/// Last known viewer state, per tab. Seeding from it makes the header
-/// controls render instantly on every navigation instead of waiting a
-/// server round trip; the real fetch then corrects anything stale.
+/// Last known viewer state. Seeding from it makes the header controls render
+/// instantly instead of waiting a server round trip; the real fetch then
+/// corrects anything stale.
+///
+/// localStorage, not sessionStorage. Per-tab storage is empty on the first
+/// load in any new tab, which is exactly when the header sat on a skeleton
+/// for a whole round trip - the case the cache was supposed to cover. Nothing
+/// here is a credential: it is a snapshot of what the last fetch returned,
+/// and every privileged action re-checks on the server regardless.
 const CACHE_KEY = "vibemathed:viewer";
+
+/// Drops the cached snapshot. Called on sign-out: the seed is what makes the
+/// header render before the fetch resolves, so leaving a signed-in snapshot
+/// behind would greet a signed-out visitor with their own avatar until the
+/// fetch corrected it. Latent with sessionStorage, which already survived the
+/// redirect; now that the cache outlives the tab it would survive a restart.
+export function clearViewerCache() {
+  try {
+    localStorage.removeItem(CACHE_KEY);
+  } catch {
+    // Nothing to do: a cache we cannot clear is one we could not have read.
+  }
+}
 
 function readCache(): ViewerState | null {
   try {
-    const raw = sessionStorage.getItem(CACHE_KEY);
+    const raw = localStorage.getItem(CACHE_KEY);
     if (!raw) return null;
     const cached = JSON.parse(raw) as ViewerState;
     return typeof cached?.signedIn === "boolean" ? { ...SIGNED_OUT, ...cached } : null;
@@ -61,18 +81,19 @@ export function ViewerProvider({ children }: { children: ReactNode }) {
   const [nonce, setNonce] = useState(0);
 
   // Optimistic seed from the cache, before the fetch resolves. Effect (not
-  // initial state): sessionStorage does not exist during SSR/hydration.
-  // One-time hydration from storage is the sanctioned exception to the
+  // initial state): storage does not exist during SSR/hydration. One-time
+  // hydration from storage is the sanctioned exception to the
   // set-state-in-effect rule (same pattern as the list settings restore).
-  /* eslint-disable react-hooks/set-state-in-effect */
-  useEffect(() => {
+  //
+  // Before paint, so a returning visitor's header renders as itself rather
+  // than painting the loading placeholder first and swapping.
+  useBeforePaint(() => {
     const cached = readCache();
     if (cached) {
       setState(cached);
       setLoaded(true);
     }
   }, []);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     let alive = true;
@@ -81,7 +102,7 @@ export function ViewerProvider({ children }: { children: ReactNode }) {
         if (!alive) return;
         setState(next);
         try {
-          sessionStorage.setItem(CACHE_KEY, JSON.stringify(next));
+          localStorage.setItem(CACHE_KEY, JSON.stringify(next));
         } catch {
           // Storage full or blocked - the fetch still populated the state.
         }
@@ -104,7 +125,7 @@ export function ViewerProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!loaded) return;
     try {
-      sessionStorage.setItem(CACHE_KEY, JSON.stringify(state));
+      localStorage.setItem(CACHE_KEY, JSON.stringify(state));
     } catch {
       // Best effort only.
     }

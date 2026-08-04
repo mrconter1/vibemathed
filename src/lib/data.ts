@@ -22,6 +22,7 @@ import {
   type ActivityView,
   type SiteActivityView,
 } from "@/lib/activity";
+import { relativeFallback } from "@/lib/relative-time";
 import { formatCommentDate, renderCommentHtml } from "@/lib/comment-render";
 import { texToHtml } from "@/components/TeX";
 import type { CommentView } from "@/lib/comments";
@@ -300,7 +301,7 @@ export async function getActivity(slug: string): Promise<ActivityView[]> {
     field: a.field,
     oldValue: a.oldValue,
     newValue: a.newValue,
-    createdAt: formatCommentDate(a.createdAt),
+    createdAt: relativeFallback(a.createdAt, formatCommentDate(a.createdAt)),
   }));
 }
 
@@ -343,7 +344,7 @@ export async function getRecentActivity(limit = 8): Promise<SiteActivityView[]> 
     field: a.field,
     oldValue: a.oldValue,
     newValue: a.newValue,
-    createdAt: formatCommentDate(a.createdAt),
+    createdAt: relativeFallback(a.createdAt, formatCommentDate(a.createdAt)),
     createdAtIso: a.createdAt.toISOString(),
     problemName: a.problem.name,
     problemSlug: a.problem.slug,
@@ -498,6 +499,9 @@ export async function getUserProfile(pseudonym: string): Promise<UserProfile | n
     edits: edits.map((a) => ({
       id: a.id,
       field: a.field,
+      // Absolute here on purpose: the profile prints this string as-is, with
+      // no RelativeTime around it to keep it current, so relative wording
+      // would freeze at whatever the cache was built at.
       createdAt: formatCommentDate(a.createdAt),
       problemName: a.problem.name,
       problemSlug: a.problem.slug,
