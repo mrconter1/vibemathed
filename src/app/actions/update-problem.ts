@@ -76,7 +76,10 @@ function display(value: unknown): string | null {
     return value
       .map((v) =>
         typeof v === "object" && v !== null && "url" in v
-          ? `${(v as LinkRef).label} | ${(v as LinkRef).url}`
+          // The kind is part of what a link IS, so retyping one without
+          // touching its label or URL is a real edit and has to register as a
+          // change - otherwise the diff sees nothing and drops it.
+          ? `${(v as LinkRef).kind ?? "other"}: ${(v as LinkRef).label} | ${(v as LinkRef).url}`
           : String(v),
       )
       .join(", ");
@@ -132,7 +135,7 @@ export async function updateProblem(
       citationsUrl: true,
       sourceUrl: true,
       sourceName: true,
-      links: { select: { label: true, url: true }, orderBy: { position: "asc" } },
+      links: { select: { label: true, url: true, kind: true }, orderBy: { position: "asc" } },
     },
   });
   if (!current) {

@@ -73,6 +73,9 @@ async function EntryList() {
     commentCount: p.commentCount,
     submittedBy: p.submittedBy,
     addedAt: p.addedAt,
+    sourceUrl: p.sourceUrl,
+    sourceName: p.sourceName,
+    links: p.links ?? [],
   }));
 
   // Which entries get their math inlined now depends on the reader's own

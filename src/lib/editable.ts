@@ -27,6 +27,7 @@
 // still said "preprint". Changing the tier requires updating the note in the
 // same edit (see `update-problem.ts`), and every change is in the changelog.
 
+import { inferLinkKind, isLinkKind } from "@/lib/link-kinds";
 import { FIELD_GROUPS, type LinkRef, type MathProblem } from "@/lib/problems";
 
 export type EditableKey =
@@ -324,7 +325,14 @@ export function decodeLinks(raw: string): LinkRef[] {
     if (!Array.isArray(parsed)) return [];
     return parsed
       .filter((l) => l && typeof l === "object")
-      .map((l) => ({ label: String(l.label ?? ""), url: String(l.url ?? "") }));
+      // The kind rides along. Without it the editor's own round trip through
+      // the form value dropped what the picker had just set, so a link could
+      // only ever be saved as whatever the URL happened to imply.
+      .map((l) => ({
+        label: String(l.label ?? ""),
+        url: String(l.url ?? ""),
+        kind: isLinkKind(l.kind) ? l.kind : "other",
+      }));
   } catch {
     return [];
   }
@@ -353,7 +361,10 @@ export function parseLinks(
         error: `Link URL must start with http:// or https:// ("${url.slice(0, 40)}").`,
       };
     }
-    value.push({ label, url });
+    // An unrecognised or missing kind is not an error: the picker offers a
+    // fixed list, so anything else came from an older draft or a hand-built
+    // payload, and "other" is the honest reading of it.
+    value.push({ label, url, kind: isLinkKind(row.kind) ? row.kind : inferLinkKind(url, label) });
   }
   return { ok: true, value };
 }

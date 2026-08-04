@@ -23,9 +23,76 @@ export type IconName =
   | "info" // explanatory tooltips
   | "arrowDown" // sort direction (rotate 180 for ascending)
   | "copy" // copy to clipboard
-  | "check"; // confirmation after a copy
+  | "check" // confirmation after a copy
+  // Link kinds. Deliberately distinguishable at 12px on a card, which rules
+  // out anything with interior detail: these are read as silhouettes.
+  | "paper" // a write-up
+  | "leanProof" // a machine-checked proof
+  | "leanStatement" // a formal statement with no proof
+  | "code" // scripts, certificates, a repository
+  | "branch" // someone else's proof of the same thing
+  | "transcript" // a model session or provenance note
+  | "bookmark" // the canonical problem record
+  | "link"; // anything else
 
 const PATHS: Record<IconName, React.ReactNode> = {
+  paper: (
+    <>
+      <path d="M4 2h5l3 3v9H4z" strokeLinejoin="round" />
+      <path d="M9 2v3h3" strokeLinejoin="round" />
+      <path d="M6 8.5h4M6 11h4" strokeLinecap="round" />
+    </>
+  ),
+  // A checked box: the proof exists and a kernel agreed with it.
+  leanProof: (
+    <>
+      <path d="M2.5 3.5h11v9h-11z" strokeLinejoin="round" />
+      <path d="M5.5 8l1.8 1.9L10.5 6.4" strokeLinecap="round" strokeLinejoin="round" />
+    </>
+  ),
+  // The same box with a single bar where the tick would be. Two lines of
+  // different lengths was the first attempt and it was indistinguishable from
+  // the tick at 13px, which is the size these actually render at on a card:
+  // at that scale only the silhouette and one bold interior mark survive.
+  // Reads correctly too - the statement is written down, not settled.
+  leanStatement: (
+    <>
+      <path d="M2.5 3.5h11v9h-11z" strokeLinejoin="round" />
+      <path d="M5.3 8h5.4" strokeLinecap="round" />
+    </>
+  ),
+  code: (
+    <>
+      <path d="M5.5 5.5L2.5 8l3 2.5M10.5 5.5L13.5 8l-3 2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9.2 3.4L6.8 12.6" strokeLinecap="round" />
+    </>
+  ),
+  branch: (
+    <>
+      <circle cx="4.5" cy="4" r="1.6" />
+      <circle cx="4.5" cy="12" r="1.6" />
+      <circle cx="11.5" cy="8" r="1.6" />
+      <path d="M4.5 5.6v4.8M6.1 4.6c2.5.6 3.3 1.7 3.9 2.9M6.1 11.4c2.5-.6 3.3-1.7 3.9-2.9" strokeLinecap="round" />
+    </>
+  ),
+  // Speech turns stacked: a conversation with a model, not a document.
+  transcript: (
+    <>
+      <path d="M2.5 3.5h8v5h-5l-3 2.5z" strokeLinejoin="round" />
+      <path d="M13.5 6.5v6l-2.2-1.8H7" strokeLinejoin="round" />
+    </>
+  ),
+  bookmark: (
+    <>
+      <path d="M4 2.5h8v11l-4-3-4 3z" strokeLinejoin="round" />
+    </>
+  ),
+  link: (
+    <>
+      <path d="M6.8 9.2a2.6 2.6 0 000 0l3-3a2.6 2.6 0 10-3.7-3.7l-1 1" strokeLinecap="round" />
+      <path d="M9.2 6.8a2.6 2.6 0 000 0l-3 3a2.6 2.6 0 103.7 3.7l1-1" strokeLinecap="round" />
+    </>
+  ),
   layers: (
     <>
       <path d="M8 2.5L14 5.5 8 8.5 2 5.5 8 2.5z" strokeLinejoin="round" />

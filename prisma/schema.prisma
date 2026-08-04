@@ -191,6 +191,12 @@ model ProblemLink {
   problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
   label     String
   url       String
+  /// What the link IS: one of LINK_KINDS in src/lib/link-kinds.ts. Separate
+  /// from `label`, which stays free text for the specifics ("Lean proof" is
+  /// the kind, "Kitamura's formalization of Theorem 1.1(a)" is the label).
+  /// Drives the icon, the grouping on the entry page, and eventually
+  /// filtering, none of which a free-text label could support.
+  kind      String  @default("other")
   /// Display order within the entry, 0-based.
   position  Int     @default(0)
 

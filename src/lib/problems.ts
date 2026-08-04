@@ -85,6 +85,9 @@ export type FieldGroup = (typeof FIELD_GROUPS)[number];
 export interface LinkRef {
   label: string;
   url: string;
+  /// One of LINK_KINDS in src/lib/link-kinds.ts. Optional on the way in so
+  /// older callers and stored form drafts keep working; it reads as "other".
+  kind?: string;
 }
 
 // How CHECKED the mathematics is, strongest to weakest. Deliberately
@@ -336,6 +339,11 @@ export interface CardEntry {
   commentCount: number;
   submittedBy: string | null;
   addedAt: string;
+  /** Where the entry's primary source points, so a card can offer it directly. */
+  sourceUrl: string;
+  sourceName: string;
+  /** Typed extra links, for the card's icon row. */
+  links: LinkRef[];
 }
 
 const SOLVE_TYPES: SolveType[] = ["proved", "disproved"];

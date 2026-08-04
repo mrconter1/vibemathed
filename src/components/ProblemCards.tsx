@@ -13,6 +13,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useBeforePaint } from "@/lib/before-paint";
+import { inferLinkKind, topLinkKinds } from "@/lib/link-kinds";
 import {
   DEFAULT_SETTINGS,
   NUMERIC_KEYS,
@@ -56,7 +57,7 @@ import {
   VERIFICATION,
 } from "@/lib/display";
 import { FilterPanel, type FilterFacet } from "@/components/FilterPanel";
-import { Icon } from "@/components/Icons";
+import { Icon, type IconName } from "@/components/Icons";
 import { StatusIcon } from "@/components/StatusIcon";
 import { InfoTip, StarNote } from "@/components/Tooltip";
 import { VoteButtons } from "@/components/VoteButtons";
@@ -117,6 +118,14 @@ function Fact({ label, children }: { label: string; children: React.ReactNode })
 
 function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string | null }) {
   const st = SOLVE_TYPE[p.solveType];
+  // The primary source counts as a link. For 265 of the entries it IS the
+  // paper, so leaving it out would have shown a paper icon only on the
+  // minority that happen to carry a second copy as an extra link. It has no
+  // stored kind of its own, so it is classified from its URL and name.
+  const linkIcons = topLinkKinds([
+    { url: p.sourceUrl, label: p.sourceName, kind: inferLinkKind(p.sourceUrl, p.sourceName) },
+    ...p.links,
+  ]);
   // The trust badge: verification when it says something; the publication
   // stage as the fallback when nobody independent has checked yet -
   // reproducing the old single-ladder look over honest two-axis data.
@@ -315,6 +324,30 @@ function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string
                   <span className="text-[var(--ink-secondary)]">{p.significance}</span>
                 </span>
                 {p.significanceNote && <StarNote text={p.significanceNote} />}
+              </span>
+            )}
+
+            {/* Straight to the artifact. The question a reader most often has
+                about an entry on this page is "is there a paper" or "is there
+                a Lean proof", and answering it used to mean opening the entry
+                and reading a list of free-text labels. These are the entry's
+                own links, typed, so the icon is a promise about what is on the
+                other end. z-10 lifts them above the card's click overlay. */}
+            {linkIcons.length > 0 && (
+              <span className="relative z-10 inline-flex items-center gap-1.5">
+                {linkIcons.map(({ spec, link }) => (
+                  <a
+                    key={spec.value}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={`${spec.label}: ${spec.help}`}
+                    aria-label={spec.label}
+                    className="text-[var(--ink-muted)] transition-colors hover:text-[var(--accent-blue)]"
+                  >
+                    <Icon name={spec.icon as IconName} size={14} />
+                  </a>
+                ))}
               </span>
             )}
 

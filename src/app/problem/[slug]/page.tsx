@@ -13,7 +13,9 @@ import {
   VERIFICATION,
 } from "@/lib/display";
 import { toEditableValues } from "@/lib/editable";
+import { groupLinksByKind } from "@/lib/link-kinds";
 import { SITE_URL } from "@/lib/site";
+import { Icon, type IconName } from "@/components/Icons";
 import { Changelog } from "@/components/Changelog";
 import { CommentsSection } from "@/components/CommentsSection";
 import { EditEntryDialog } from "@/components/EditEntryDialog";
@@ -316,18 +318,44 @@ export default async function ProblemPage({
               {p.sourceName}
             </a>
           </p>
+          {/* Grouped by what each link IS, not the order they were added.
+              A dozen links used to be one undifferentiated list where the
+              Lean proof, the paper and somebody else's independent proof all
+              read the same; the kind carries that now, so the label is free
+              to say only what is specific to this one. */}
           {(p.links ?? []).length > 0 && (
-            <ul className="mt-1.5 space-y-1 text-sm">
-              {(p.links ?? []).map((l) => (
-                <li key={l.url}>
-                  <a
-                    href={l.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="break-words text-[var(--accent-blue)] hover:underline"
+            <ul className="mt-2.5 space-y-1.5 text-sm">
+              {groupLinksByKind(p.links ?? []).map(({ spec, links }) => (
+                <li key={spec.value} className="flex gap-2">
+                  <span
+                    className="mt-0.5 shrink-0 text-[var(--ink-muted)]"
+                    title={spec.help}
+                    aria-hidden
                   >
-                    {l.label}
-                  </a>
+                    <Icon name={spec.icon as IconName} size={14} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="mr-2 text-[11px] uppercase tracking-wide text-[var(--ink-muted)]">
+                      {spec.label}
+                    </span>
+                    {links.map((l, i) => (
+                      <span key={l.url}>
+                        {i > 0 && (
+                          <span aria-hidden className="text-[var(--hairline)]">
+                            {" · "}
+                          </span>
+                        )}
+                        <a
+                          href={l.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="break-words text-[var(--accent-blue)] hover:underline"
+                        >
+                          {l.label || spec.label}
+                        </a>
+                      </span>
+                    ))}
+                  </span>
                 </li>
               ))}
             </ul>
