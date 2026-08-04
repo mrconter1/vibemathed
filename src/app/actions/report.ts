@@ -1,6 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
+import { sendDirectMessage } from "@/app/actions/inbox";
 import { isAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 
@@ -67,19 +68,45 @@ export async function reportProblem(slug: string, body: string): Promise<ReportR
   }
 }
 
-/// Marks a report as handled. Curator-only; the report stays in the table as
-/// a record, it just leaves the queue and the badge count.
-export async function handleReport(reportId: string): Promise<ReportResult> {
+/// Marks a report as handled, and optionally answers the reporter.
+///
+/// Curator-only; the report stays in the table as a record, it just leaves the
+/// queue and the badge count. The reply is optional because plenty of reports
+/// need no answer, but until now there was no way to give one at all: someone
+/// took the trouble to flag a wrong entry and the outcome was silence.
+export async function handleReport(
+  reportId: string,
+  message = "",
+): Promise<ReportResult> {
   const session = await auth();
   if (!isAdmin(session?.user?.email)) {
     return { ok: false, error: "Not allowed." };
   }
 
   try {
+    // Read before updating: the reply needs the reporter and the entry, and
+    // after the update there is no reason to go back for them.
+    const report = await prisma.problemReport.findUnique({
+      where: { id: reportId },
+      select: { userId: true, problemId: true },
+    });
+    if (!report) return { ok: false, error: "That report no longer exists." };
+
     await prisma.problemReport.update({
       where: { id: reportId },
       data: { status: "handled", handledAt: new Date() },
     });
+
+    // Deliberately after the update and not inside a transaction: handling
+    // the report is the thing that must not fail. `sendDirectMessage` is a
+    // no-op for an anonymous reporter or an empty message.
+    await sendDirectMessage({
+      userId: report.userId,
+      kind: "report",
+      body: message,
+      problemId: report.problemId,
+    });
+
     return { ok: true };
   } catch (error) {
     console.error("handleReport failed", error);

@@ -76,6 +76,7 @@ async function Queue() {
     // Raw pseudonym for the profile link; null when there is no account to
     // link (the display name then renders unlinked).
     submittedByPseudonym: r.submittedBy?.pseudonym ?? null,
+    canDeliver: r.submittedBy !== null,
     // Date AND time: three spam entries in one night made clear that "when
     // exactly" matters when reviewing a queue.
     submittedAt: `${formatCommentDate(r.createdAt)}, ${String(r.createdAt.getUTCHours()).padStart(2, "0")}:${String(r.createdAt.getUTCMinutes()).padStart(2, "0")} UTC`,

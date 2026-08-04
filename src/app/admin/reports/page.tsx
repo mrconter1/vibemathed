@@ -39,6 +39,7 @@ async function Queue() {
       id: true,
       body: true,
       createdAt: true,
+      userId: true,
       userName: true,
       user: { select: { pseudonym: true } },
       problem: { select: { slug: true, name: true } },
@@ -52,6 +53,9 @@ async function Queue() {
     // profile link); the snapshot covers deleted accounts.
     reporter: r.user?.pseudonym ?? r.userName ?? "deleted account",
     reporterPseudonym: r.user?.pseudonym ?? null,
+    // The account, not the pseudonym: a member who has not been assigned a
+    // display name yet is still reachable.
+    canReply: r.userId !== null,
     problemSlug: r.problem.slug,
     problemName: r.problem.name,
     reportedAt: `${formatCommentDate(r.createdAt)}, ${String(r.createdAt.getUTCHours()).padStart(2, "0")}:${String(r.createdAt.getUTCMinutes()).padStart(2, "0")} UTC`,

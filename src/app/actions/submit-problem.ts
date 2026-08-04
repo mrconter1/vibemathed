@@ -3,6 +3,7 @@
 import type { Prisma } from "@prisma/client";
 import { updateTag } from "next/cache";
 import { auth } from "@/auth";
+import { sendDirectMessage } from "@/app/actions/inbox";
 import { isAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { isHttpUrl, isValidSolveDate, parseLinks } from "@/lib/editable";
@@ -184,13 +185,14 @@ async function requireAdmin() {
 export async function approveSubmission(
   slug: string,
   message = "",
+  reason: string | null = null,
 ): Promise<ReviewResult> {
   const session = await requireAdmin();
   if (!session) return { ok: false, error: "Not authorised." };
 
   const problem = await prisma.problem.findUnique({
     where: { slug },
-    select: { id: true, status: true },
+    select: { id: true, status: true, submittedById: true },
   });
   if (!problem) return { ok: false, error: "That submission no longer exists." };
   if (problem.status !== "pending") {
@@ -205,6 +207,7 @@ export async function approveSubmission(
           status: "published",
           reviewedAt: new Date(),
           reviewMessage: message.trim() || null,
+          reviewReason: reason,
         },
       }),
       prisma.problemActivity.create({
@@ -221,6 +224,16 @@ export async function approveSubmission(
     return { ok: false, error: "Could not approve that entry." };
   }
 
+  // The decision already shows in the submitter's notifications; this puts the
+  // full text somewhere they can actually read it.
+  await sendDirectMessage({
+    userId: problem.submittedById,
+    kind: "decision",
+    reason,
+    body: message,
+    problemId: problem.id,
+  });
+
   updateTag("problems");
   updateTag(`problem-${slug}`);
   updateTag("submissions");
@@ -235,13 +248,14 @@ export async function approveSubmission(
 export async function rejectSubmission(
   slug: string,
   message = "",
+  reason: string | null = null,
 ): Promise<ReviewResult> {
   const session = await requireAdmin();
   if (!session) return { ok: false, error: "Not authorised." };
 
   const problem = await prisma.problem.findUnique({
     where: { slug },
-    select: { id: true, status: true },
+    select: { id: true, status: true, submittedById: true },
   });
   if (!problem) return { ok: false, error: "That submission no longer exists." };
   if (problem.status !== "pending") {
@@ -256,6 +270,7 @@ export async function rejectSubmission(
           status: "rejected",
           reviewedAt: new Date(),
           reviewMessage: message.trim() || null,
+          reviewReason: reason,
         },
       }),
       prisma.problemActivity.create({
@@ -271,6 +286,16 @@ export async function rejectSubmission(
     console.error("rejectSubmission failed", error);
     return { ok: false, error: "Could not reject that entry." };
   }
+
+  // The one place this matters most: a rejected entry has no public page, so
+  // without the inbox the reason existed only as a truncated line in a menu.
+  await sendDirectMessage({
+    userId: problem.submittedById,
+    kind: "decision",
+    reason,
+    body: message,
+    problemId: problem.id,
+  });
 
   updateTag("submissions");
   return { ok: true };

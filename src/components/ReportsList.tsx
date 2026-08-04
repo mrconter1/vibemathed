@@ -1,12 +1,16 @@
 "use client";
 
 // The curator's report queue: one card per open report, with the entry it
-// concerns, who sent it, when, and the free-text explanation. "Mark handled"
-// clears it from the queue (and the header badge) without deleting the row.
+// concerns, who sent it, when, and the free-text explanation. Handling one
+// clears it from the queue (and the header badge) without deleting the row,
+// and can answer the reporter in the same step - a report used to be a
+// one-way channel, which is a poor way to treat someone who took the trouble
+// to flag a wrong entry.
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { handleReport } from "@/app/actions/report";
+import { MessageDialog } from "@/components/MessageDialog";
 import { useViewer } from "@/components/ViewerProvider";
 
 export interface OpenReport {
@@ -15,6 +19,9 @@ export interface OpenReport {
   reporter: string;
   /// Null when the account is gone; the name then renders unlinked.
   reporterPseudonym: string | null;
+  /// False when the reporting account no longer exists, so there is nobody
+  /// left to answer.
+  canReply: boolean;
   problemSlug: string;
   problemName: string;
   reportedAt: string;
@@ -25,21 +32,26 @@ export function ReportsList({ reports }: { reports: OpenReport[] }) {
   const [done, setDone] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  /// Which report is being answered. Null means no dialog is open. Declared
+  /// with the other hooks, above the early return, or it would be called
+  /// conditionally.
+  const [replying, setReplying] = useState<OpenReport | null>(null);
 
   const open = reports.filter((r) => !done.has(r.id));
   if (open.length === 0 && reports.length > 0) {
     return <p className="text-sm text-[var(--ink-secondary)]">All handled.</p>;
   }
 
-  function markHandled(id: string) {
+  function markHandled(id: string, message: string) {
     setError(null);
     startTransition(async () => {
-      const result = await handleReport(id);
+      const result = await handleReport(id, message);
       if (!result.ok) {
         setError(result.error);
         return;
       }
       setDone((prev) => new Set(prev).add(id));
+      setReplying(null);
       // The header badge counts open reports; pull the new number.
       refresh();
     });
@@ -84,18 +96,44 @@ export function ReportsList({ reports }: { reports: OpenReport[] }) {
             {r.body}
           </p>
 
-          <div className="mt-3 border-t border-[var(--hairline)] pt-2.5">
+          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[var(--hairline)] pt-2.5">
             <button
               type="button"
-              onClick={() => markHandled(r.id)}
+              onClick={() => setReplying(r)}
               disabled={pending}
               className="rounded-md border border-[var(--hairline)] bg-[var(--paper)] px-3 py-1.5 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)] disabled:opacity-40"
             >
-              Mark handled
+              Handle and reply
+            </button>
+            {/* Kept as a one-click path: most reports are acted on silently,
+                and forcing a dialog on all of them would slow the queue down
+                to make a minority case tidier. */}
+            <button
+              type="button"
+              onClick={() => markHandled(r.id, "")}
+              disabled={pending}
+              className="rounded-md px-2.5 py-1.5 text-xs text-[var(--ink-muted)] transition-colors hover:text-[var(--ink)] disabled:opacity-40"
+            >
+              Handle without replying
             </button>
           </div>
         </article>
       ))}
+
+      {replying && (
+        <MessageDialog
+          // Fresh dialog per report; see the same note in ReviewQueue.
+          key={replying.id}
+          title="Reply and mark handled"
+          intro="Goes to the reporter's inbox. It is not public and is not posted to the entry."
+          placeholder="What you found, and what you changed or why you left it."
+          confirmLabel="Send and mark handled"
+          canDeliver={replying.canReply}
+          busy={pending}
+          onCancel={() => setReplying(null)}
+          onConfirm={(_reason, message) => markHandled(replying.id, message)}
+        />
+      )}
     </div>
   );
 }
