@@ -55,21 +55,42 @@ export function AuthMenu() {
 
 
 
-  // Reserve the slot while loading so the header does not jump, and so a
-  // signed-in visitor never sees a "Sign in" flash.
+  const signInLink = (
+    <Link
+      href="/sign-in"
+      className="inline-flex h-8 items-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 text-xs text-[var(--ink)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)]"
+    >
+      Sign in
+    </Link>
+  );
+
+  // Before the viewer is known, ship BOTH variants and let the inline script's
+  // `data-viewer` attribute choose between them in CSS. This used to be a grey
+  // placeholder, which meant the account button was simply missing until a
+  // round trip finished - the header's most-used control, absent on every
+  // cold load. The signed-in variant here is a shell: real button, real
+  // avatar disc, letter supplied by the same script through a custom
+  // property. Counts and the menu itself arrive with React.
   if (!loaded) {
-    return <span className="h-8 w-24 rounded bg-[var(--hairline)]/40" aria-hidden />;
+    return (
+      <>
+        <span className="viewer-out contents">{signInLink}</span>
+        {/* Mirrors the real button's classes exactly, including the name it
+            shows from `sm` up, so React taking over changes nothing about the
+            geometry. */}
+        <span
+          className="viewer-in h-8 max-w-[14rem] items-center gap-2 truncate rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] pl-1.5 pr-1.5 text-xs text-[var(--ink)] sm:pr-3"
+          aria-hidden
+        >
+          <span className="viewer-initial inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--accent-blue)_14%,transparent)] text-[10px] font-semibold uppercase text-[var(--accent-blue)]" />
+          <span className="viewer-name hidden truncate sm:inline" />
+        </span>
+      </>
+    );
   }
 
   if (!signedIn) {
-    return (
-      <Link
-        href="/sign-in"
-        className="inline-flex h-8 items-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 text-xs text-[var(--ink)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)]"
-      >
-        Sign in
-      </Link>
-    );
+    return signInLink;
   }
 
   const name = pseudonym ?? "Anonymous";

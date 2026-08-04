@@ -103,6 +103,25 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${sourceSerif.variable} h-full antialiased`}
     >
+      <head>
+        {/* Blocking, tiny, and deliberately before anything else paints.
+            React cannot help here: the header's two variants both ship in the
+            HTML, and until something says which visitor this is, neither can
+            be shown. Waiting for hydration to decide is what left the account
+            and notification buttons missing for the first few hundred
+            milliseconds of every load.
+
+            It only reads the snapshot the last fetch wrote. No attribute
+            means "unknown", which the CSS treats as signed out - correct for
+            a first visit and for anyone without JavaScript. A stale snapshot
+            costs one wrong header until the fetch corrects it, which is the
+            same trade the seeded state already makes. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var v=JSON.parse(localStorage.getItem("vibemathed:viewer")||"null");if(v&&v.signedIn){var d=document.documentElement,p=(v.pseudonym||"").trim();d.dataset.viewer="in";d.style.setProperty("--viewer-initial",JSON.stringify(p.charAt(0).toUpperCase()||"?"));d.style.setProperty("--viewer-name",JSON.stringify(p));}}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         {/* One provider for the whole app: it fetches who the viewer is and how
             they have voted once, and the header plus every vote control reads

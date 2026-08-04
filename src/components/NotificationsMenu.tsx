@@ -103,7 +103,23 @@ export function NotificationsMenu() {
     };
   }, [open]);
 
-  if (!loaded || !signedIn) return null;
+  // Same reasoning as the account button: while the viewer is unknown, ship
+  // the bell and let `data-viewer` decide whether it is shown. Rendering
+  // nothing meant the bell popped into an already-settled header a beat late,
+  // shoving the account button sideways as it arrived. No badge here - a
+  // count is a claim about unread things, and we do not have one yet.
+  if (!loaded) {
+    return (
+      <span
+        className="viewer-in h-8 w-8 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-secondary)]"
+        aria-hidden
+      >
+        <Icon name="bell" size={15} />
+      </span>
+    );
+  }
+
+  if (!signedIn) return null;
 
   async function openPanel() {
     setOpen(true);

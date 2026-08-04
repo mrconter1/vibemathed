@@ -298,3 +298,49 @@ select option::checkmark {
 .comment-body .katex-display {
   margin: 0.6em 0;
 }
+
+/*
+ * Header identity, decided before first paint.
+ *
+ * The account and notification buttons cannot be server-rendered correctly:
+ * whether you are signed in lives in an httpOnly cookie the markup cannot see.
+ * So the header ships BOTH variants and the inline script in <head> sets
+ * `data-viewer` from the cached snapshot, which picks one with no JavaScript
+ * framework involved and no wait for hydration. React takes over once it
+ * knows the real answer, and renders only the true variant.
+ *
+ * No attribute means unknown: show the signed-out variant. That is right for
+ * a first-ever visit and for anyone with JavaScript disabled, and it is the
+ * cheaper mistake - a stray "Sign in" is ordinary, a stray avatar is not.
+ */
+.viewer-in {
+  display: none;
+}
+
+:root[data-viewer="in"] .viewer-in {
+  display: flex;
+}
+
+:root[data-viewer="in"] .viewer-out {
+  display: none;
+}
+
+/*
+ * The pseudonym's first letter, carried as a custom property by the same
+ * script so the avatar is not an empty disc for the first few frames. Falls
+ * back to nothing rather than a placeholder glyph: an empty circle reads as
+ * "loading", a wrong letter reads as the wrong person.
+ */
+.viewer-initial::after {
+  content: var(--viewer-initial, "");
+}
+
+/*
+ * The name beside it, for one reason only: width. Without it the placeholder
+ * button was 80px and the real one 172px, so the bell and the avatar jumped
+ * 92px left the moment React took over - a smaller version of the same
+ * popping the placeholder was meant to remove.
+ */
+.viewer-name::after {
+  content: var(--viewer-name, "");
+}
