@@ -112,16 +112,27 @@ export function CitationBox({
           // keyboard navigation, which is who it is for, and stays quiet for
           // the pointer.
           className={`absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded border transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent-blue)] ${
+            // Both states carry a background. The block below scrolls
+            // sideways now, so a transparent button would have code sliding
+            // visibly underneath it.
             copied
-              ? "border-[var(--accent-blue)] text-[var(--accent-blue)]"
+              ? "border-[var(--accent-blue)] bg-[var(--paper-raised)] text-[var(--accent-blue)]"
               : "border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-muted)] hover:border-[var(--ink-muted)] hover:text-[var(--ink)]"
           }`}
         >
           <Icon name={copied ? "check" : "copy"} size={14} />
         </button>
-        {/* pr-12 keeps long lines from sliding under the button. */}
+        {/* Scrolls sideways rather than wrapping. BibTeX is code, and on a
+            phone `whitespace-pre-wrap` broke every long field across two or
+            three ragged lines, which is worse than unreadable: it looks like
+            the citation itself is malformed. A reader copies this with the
+            button anyway and never retypes it, so the line that runs off the
+            edge costs nothing. Wide content scrolling inside its own
+            container is what the rest of the site does too.
+
+            pr-12 keeps the first lines clear of the copy button. */}
         <pre
-          className={`dialog-scroll overflow-x-auto whitespace-pre-wrap break-words pr-12 font-mono text-[11px] text-[var(--ink-secondary)] ${
+          className={`dialog-scroll overflow-x-auto whitespace-pre pr-12 font-mono text-[11px] text-[var(--ink-secondary)] ${
             compact ? "leading-snug" : "leading-relaxed"
           }`}
         >

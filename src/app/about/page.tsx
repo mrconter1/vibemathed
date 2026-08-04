@@ -127,14 +127,8 @@ export default function AboutPage() {
 
       {/* Native <details>, so it works before hydration and needs no state.
           `select-none` because this is a control, not prose. Toggling it twice
-          in a row otherwise selects the words, which looks like a mis-click.
-
-          The panel is absolutely positioned rather than part of the flow, so
-          opening it moves nothing at all. Capping and tightening the expanded
-          block only reduced the shove from 267px to 170px, and any inline
-          disclosure shoves by however tall its contents are. Floating it costs
-          one `relative` and settles the question. */}
-      <details className="group relative mt-3 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3 sm:px-5">
+          in a row otherwise selects the words, which looks like a mis-click. */}
+      <details className="group mt-3 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3 sm:px-5">
         <summary className="cursor-pointer select-none list-none font-serif text-base text-[var(--ink)] transition-colors hover:text-[var(--accent-blue)]">
           <span
             aria-hidden
@@ -144,9 +138,20 @@ export default function AboutPage() {
           </span>
           How to cite
         </summary>
-        {/* Left and right pinned to the disclosure, so it is exactly as wide
-            as the control that opened it at every breakpoint. */}
-        <div className="absolute inset-x-0 top-full z-20 mt-1.5 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3.5 shadow-lg sm:px-5">
+        {/* Part of the flow, which it was not for a while. It floated in an
+            absolutely positioned panel so that opening it moved nothing, back
+            when this page centred its content in the leftover viewport height
+            and growing the block shoved the tiles upward. Top-aligning the
+            page fixed that at the source, and the tiles sit above the
+            disclosure regardless, so all an in-flow panel can push is the
+            footer, which is what a disclosure is supposed to do.
+
+            Floating it had a real cost: an absolutely positioned panel
+            contributes no height, so the page never grew to fit it. On a
+            phone that put the end of the citation past the bottom of the
+            scrollable page, and on a short desktop window it printed the
+            panel over the footer. */}
+        <div className="mt-3">
           {/* The summary already says "How to cite", and this panel has its
               own edge, so the box brings neither. */}
           <CitationBox divider={false} heading={false} compact />
