@@ -431,8 +431,17 @@ function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string
                 see their name on the front page, not only on the entry page.
                 Links to their profile; z-10 lifts it above the card overlay. */}
             {p.submittedBy && (
+              // The space is a non-breaking one inside the text, not a `{" "}`
+              // between the label and the link. Flexbox drops a whitespace-only
+              // text node sitting between two flex items, so the words ran
+              // together the moment this span became inline-flex; a trailing
+              // ordinary space would be trimmed at the end of its own flex item
+              // too. `gap-1` would work but at 4px reads tighter than the
+              // natural space in `Fact` label/value pairs on the row above.
+              // The Significance span is unaffected only because its space
+              // lives inside a nested inline span.
               <span className="relative z-10 inline-flex items-center font-mono text-[var(--ink-muted)]">
-                Submitted by{" "}
+                Submitted by&nbsp;
                 <Link
                   href={`/user/${encodeURIComponent(p.submittedBy)}`}
                   className="text-[var(--ink-secondary)] hover:text-[var(--accent-blue)] hover:underline"
