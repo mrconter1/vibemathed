@@ -13,6 +13,23 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useBeforePaint } from "@/lib/before-paint";
+import {
+  DEFAULT_SETTINGS,
+  NUMERIC_KEYS,
+  PAGE_SIZES,
+  PERIODS,
+  PERIOD_DAYS,
+  SETTINGS_COOKIE,
+  SETTINGS_COOKIE_MAX_AGE,
+  SETTINGS_KEY,
+  SORTS,
+  TIME_SENSITIVE,
+  normalizeListSettings,
+  sortValue,
+  type ListSettings,
+  type SortDir,
+  type SortKey,
+} from "@/lib/list-settings";
 import Link from "next/link";
 import {
   ageAtSolve,
@@ -21,13 +38,9 @@ import {
   PUBLICATION_STATUSES,
   RESOLUTION_METHODS,
   RESOLUTION_STATUSES,
-  type AiContribution,
   type CardEntry,
   type FieldGroup,
   type Period,
-  type PublicationStatus,
-  type ResolutionMethod,
-  type ResolutionStatus,
   type SolveType,
   type VerificationStatus,
 } from "@/lib/problems";
@@ -49,135 +62,12 @@ import { InfoTip, StarNote } from "@/components/Tooltip";
 import { VoteButtons } from "@/components/VoteButtons";
 import { TeX, deTeX } from "@/components/TeX";
 
-// Only genuinely ordinal keys (plus alphabetical Name) belong here. Result,
-// field and model are CATEGORIES - they live in the filters, where "sorting"
-// by them was really just grouping. Labels name the key, never a direction:
-// the direction toggle is its own control, so "Top voted" would lie when
-// flipped ascending.
-type SortKey =
-  | "solveDate"
-  | "added"
-  | "score"
-  | "discussion"
-  | "name"
-  | "age"
-  | "significance"
-  | "cost";
-type SortDir = "asc" | "desc";
-
-// Alphabetical by label, so a reader scanning the dropdown can find an option
-// by name instead of learning an arbitrary order. "solveDate" stays the
-// default sort regardless of where it lands in this list.
-const SORTS: { key: SortKey; label: string }[] = [
-  { key: "discussion", label: "Comments" },
-  { key: "added", label: "Date added" },
-  { key: "solveDate", label: "Date solved" },
-  { key: "cost", label: "Disclosed cost" },
-  { key: "name", label: "Name" },
-  { key: "significance", label: "Significance" },
-  { key: "score", label: "Votes" },
-  { key: "age", label: "Years open" },
-];
-
-// The period means two things, by sort. On the engagement sorts it windows
-// the METRIC (votes/comments gained that period, across all entries); on
-// every other sort it FILTERS the list to entries from that period (by date
-// added for the Added sort, by solve date otherwise).
-const TIME_SENSITIVE: SortKey[] = ["score", "discussion"];
-
-// Labels name the window explicitly ("Last 7 days", not "Week") because these
-// are rolling windows measured back from now, and "Week" invites reading it as
-// the calendar week.
-const PERIODS: { key: Period; label: string }[] = [
-  { key: "day", label: "Last 24 hours" },
-  { key: "3day", label: "Last 3 days" },
-  { key: "week", label: "Last 7 days" },
-  { key: "month", label: "Last 30 days" },
-  { key: "all", label: "All time" },
-];
-
-/// Days back for each window; `all` has no cutoff.
-const PERIOD_DAYS: Record<Exclude<Period, "all">, number> = {
-  day: 1,
-  "3day": 3,
-  week: 7,
-  month: 30,
-};
 
 // The clock for period cutoffs, fixed at module load: render purity wants a
 // stable now, and a cutoff drifting by the age of the tab is nothing against
 // 7/30-day windows.
 const LOADED_AT = Date.now();
 
-// These default to descending on first pick (highest / most recent first, so
-// entries with no value - stored as -1 - sink instead of leading). "added" is
-// an ISO string, but "most recent first" is equally the right default.
-const NUMERIC_KEYS: SortKey[] = ["solveDate", "added", "age", "significance", "score", "discussion", "cost"];
-
-const PAGE_SIZES = [10, 25, 50, 100];
-
-/// The list settings that survive a reload (kept in localStorage). The search
-/// text and page number deliberately do not: a leftover query silently hides
-/// entries, and a stored page can be out of range once filters differ.
-const SETTINGS_KEY = "vibemathed:list-settings";
-
-interface StoredSettings {
-  fieldFilter: string;
-  resultFilter: string;
-  statusFilter: string;
-  contributionFilter: string;
-  modelFilter: string;
-  verificationFilter: string;
-  publicationFilter: string;
-  methodFilter: string;
-  sortKey: SortKey;
-  sortDir: SortDir;
-  period: Period;
-  perPage: number;
-}
-
-function sortValue(p: CardEntry, key: SortKey, period: Period): string | number {
-  switch (key) {
-    case "solveDate":
-      return p.solveDate;
-    case "added":
-      // ISO timestamps sort correctly as strings.
-      return p.addedAt;
-    case "score":
-      // "Top voted" ranks on NET score, not raw upvotes - otherwise a
-      // 50-up/49-down brawl outranks a clean 20-up/0-down entry.
-      return period === "day"
-        ? p.score24h
-        : period === "3day"
-          ? p.score3d
-          : period === "week"
-            ? p.score7d
-            : period === "month"
-              ? p.score30d
-              : p.score;
-    case "discussion":
-      return period === "day"
-        ? p.comments24h
-        : period === "3day"
-          ? p.comments3d
-          : period === "week"
-            ? p.comments7d
-            : period === "month"
-              ? p.comments30d
-              : p.commentCount;
-    case "name":
-      return p.name.toLowerCase();
-    case "age":
-      return ageAtSolve(p) ?? -1;
-    case "significance":
-      // Unassessed entries sink rather than lead.
-      return p.significance ?? -1;
-    case "cost":
-      // Almost nothing has a disclosed cost, so undisclosed sinks; the
-      // handful that published a figure rise to the top.
-      return p.solveCostUsd ?? -1;
-  }
-}
 
 /// Compact page list: first, last, current and neighbours, with gaps elsewhere.
 function pageWindow(current: number, total: number): (number | "gap")[] {
@@ -470,21 +360,30 @@ function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string
   );
 }
 
-export function ProblemCards({ problems }: { problems: CardEntry[] }) {
+export function ProblemCards({
+  problems,
+  initial = DEFAULT_SETTINGS,
+}: {
+  problems: CardEntry[];
+  /// The view the SERVER already rendered, read from the settings cookie.
+  /// Seeding state from it is the whole point of the cookie: the markup and
+  /// the first client render agree, so there is no reshuffle to watch.
+  initial?: ListSettings;
+}) {
   const [query, setQuery] = useState("");
-  const [fieldFilter, setFieldFilter] = useState("all");
-  const [resultFilter, setResultFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [contributionFilter, setContributionFilter] = useState("all");
-  const [modelFilter, setModelFilter] = useState("all");
-  const [verificationFilter, setVerificationFilter] = useState("all");
-  const [publicationFilter, setPublicationFilter] = useState("all");
-  const [methodFilter, setMethodFilter] = useState("all");
-  const [sortKey, setSortKey] = useState<SortKey>("solveDate");
-  const [sortDir, setSortDir] = useState<SortDir>("desc");
-  const [period, setPeriod] = useState<Period>("all");
+  const [fieldFilter, setFieldFilter] = useState(initial.fieldFilter);
+  const [resultFilter, setResultFilter] = useState(initial.resultFilter);
+  const [statusFilter, setStatusFilter] = useState(initial.statusFilter);
+  const [contributionFilter, setContributionFilter] = useState(initial.contributionFilter);
+  const [modelFilter, setModelFilter] = useState(initial.modelFilter);
+  const [verificationFilter, setVerificationFilter] = useState(initial.verificationFilter);
+  const [publicationFilter, setPublicationFilter] = useState(initial.publicationFilter);
+  const [methodFilter, setMethodFilter] = useState(initial.methodFilter);
+  const [sortKey, setSortKey] = useState<SortKey>(initial.sortKey);
+  const [sortDir, setSortDir] = useState<SortDir>(initial.sortDir);
+  const [period, setPeriod] = useState<Period>(initial.period);
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(25);
+  const [perPage, setPerPage] = useState(initial.perPage);
 
   // Field chips: every group that actually occurs, with its count, BIGGEST
   // FIRST. Fixed taxonomy order put one-entry groups ahead of hundred-entry
@@ -538,66 +437,60 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
     touched.current = true;
   };
   useBeforePaint(() => {
-    // Two sources, URL first: a shared link's query params beat this
-    // browser's remembered settings, key by key. Every value is validated
-    // against what the UI can actually offer today, so a stale or tampered
-    // entry falls back silently.
-    let s: Partial<StoredSettings> = {};
+    // Two sources on top of what the server already used, in order of
+    // authority: the cookie the page rendered from, then this browser's
+    // localStorage, then the URL. A shared link beats a remembered view; a
+    // remembered view beats a cookie that may lag behind another tab.
+    //
+    // With the cookie in place this usually resolves to exactly the state
+    // already rendered, React bails out of the update, and nothing moves.
+    let stored: unknown = {};
     try {
-      s =
-        (JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? "null") as
-          | Partial<StoredSettings>
-          | null) ?? {};
+      stored = JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? "null") ?? {};
     } catch {
       // Malformed storage reads as "nothing stored".
     }
-    const url = new URLSearchParams(window.location.search);
-    const pick = (param: string, storedValue: string | undefined) =>
-      url.get(param) ?? storedValue;
 
-    const field = pick("field", s.fieldFilter);
-    if (field === "all" || FIELD_GROUPS.includes(field as FieldGroup)) {
-      setFieldFilter(field as string);
+    const url = new URLSearchParams(window.location.search);
+    const fromUrl: Record<string, unknown> = {};
+    const PARAMS: [string, keyof ListSettings][] = [
+      ["field", "fieldFilter"],
+      ["result", "resultFilter"],
+      ["status", "statusFilter"],
+      ["contribution", "contributionFilter"],
+      ["model", "modelFilter"],
+      ["verification", "verificationFilter"],
+      ["publication", "publicationFilter"],
+      ["method", "methodFilter"],
+      ["sort", "sortKey"],
+      ["dir", "sortDir"],
+      ["period", "period"],
+    ];
+    for (const [param, key] of PARAMS) {
+      const v = url.get(param);
+      if (v !== null) fromUrl[key] = v;
     }
-    const result = pick("result", s.resultFilter);
-    if (result === "all" || (result ?? "") in SOLVE_TYPE) {
-      setResultFilter(result as string);
-    }
-    const status = pick("status", s.statusFilter);
-    if (status === "all" || RESOLUTION_STATUSES.includes(status as ResolutionStatus)) {
-      setStatusFilter(status as string);
-    }
-    const contribution = pick("contribution", s.contributionFilter);
-    if (
-      contribution === "all" ||
-      AI_CONTRIBUTIONS.includes(contribution as AiContribution)
-    ) {
-      setContributionFilter(contribution as string);
-    }
-    const model = pick("model", s.modelFilter);
-    if (model === "all" || MODEL_FAMILIES.some((f) => f.key === model)) {
-      setModelFilter(model as string);
-    }
-    const verification = pick("verification", s.verificationFilter);
-    if (verification === "all" || (verification ?? "") in VERIFICATION) {
-      setVerificationFilter(verification as string);
-    }
-    const publication = pick("publication", s.publicationFilter);
-    if (publication === "all" || PUBLICATION_STATUSES.includes(publication as PublicationStatus)) {
-      setPublicationFilter(publication as string);
-    }
-    const method = pick("method", s.methodFilter);
-    if (method === "all" || RESOLUTION_METHODS.includes(method as ResolutionMethod)) {
-      setMethodFilter(method as string);
-    }
-    const sort = pick("sort", s.sortKey);
-    if (SORTS.some((x) => x.key === sort)) setSortKey(sort as SortKey);
-    const dir = pick("dir", s.sortDir);
-    if (dir === "asc" || dir === "desc") setSortDir(dir);
-    const period_ = pick("period", s.period);
-    if (PERIODS.some((x) => x.key === period_)) setPeriod(period_ as Period);
-    const per = url.get("per") ?? (s.perPage !== undefined ? String(s.perPage) : null);
-    if (per !== null && PAGE_SIZES.includes(Number(per))) setPerPage(Number(per));
+    const per = url.get("per");
+    if (per !== null) fromUrl.perPage = Number(per);
+
+    const next = normalizeListSettings({
+      ...initial,
+      ...(typeof stored === "object" && stored !== null ? stored : {}),
+      ...fromUrl,
+    });
+
+    setFieldFilter(next.fieldFilter);
+    setResultFilter(next.resultFilter);
+    setStatusFilter(next.statusFilter);
+    setContributionFilter(next.contributionFilter);
+    setModelFilter(next.modelFilter);
+    setVerificationFilter(next.verificationFilter);
+    setPublicationFilter(next.publicationFilter);
+    setMethodFilter(next.methodFilter);
+    setSortKey(next.sortKey);
+    setSortDir(next.sortDir);
+    setPeriod(next.period);
+    setPerPage(next.perPage);
 
     setRestored(true);
     // Once per mount on purpose so it cannot undo choices made since.
@@ -607,24 +500,46 @@ export function ProblemCards({ problems }: { problems: CardEntry[] }) {
   // first render would overwrite the stored settings with the defaults.
   useEffect(() => {
     if (!restored) return;
+    const s: ListSettings = {
+      fieldFilter,
+      resultFilter,
+      statusFilter,
+      contributionFilter,
+      modelFilter,
+      verificationFilter,
+      publicationFilter,
+      methodFilter,
+      sortKey,
+      sortDir,
+      period,
+      perPage,
+    };
+    const json = JSON.stringify(s);
     try {
-      const s: StoredSettings = {
-        fieldFilter,
-        resultFilter,
-        statusFilter,
-        contributionFilter,
-        modelFilter,
-        verificationFilter,
-        publicationFilter,
-        methodFilter,
-        sortKey,
-        sortDir,
-        period,
-        perPage,
-      };
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+      localStorage.setItem(SETTINGS_KEY, json);
     } catch {
       // Storage full or blocked - the list still works, it just won't persist.
+    }
+    // The same thing again where the SERVER can see it. This copy is what
+    // lets the next page load render in this order rather than the default
+    // one, and it is the only reason a cookie is involved at all. Lax so it
+    // rides ordinary navigation without being sent on cross-site requests;
+    // no sensitive content, so nothing here needs more than that.
+    //
+    // Only when it says something. A reader on the defaults gets no cookie at
+    // all rather than one asserting the defaults, and going back to them
+    // removes it again - so the common visitor keeps a bare request and the
+    // server keeps serving them the same default order it always did.
+    const isDefault = (Object.keys(DEFAULT_SETTINGS) as (keyof ListSettings)[]).every(
+      (k) => s[k] === DEFAULT_SETTINGS[k],
+    );
+    try {
+      document.cookie = isDefault
+        ? `${SETTINGS_COOKIE}=; path=/; max-age=0; samesite=lax`
+        : `${SETTINGS_COOKIE}=${encodeURIComponent(json)}; path=/; max-age=${SETTINGS_COOKIE_MAX_AGE}; samesite=lax`;
+    } catch {
+      // Cookies disabled: the list still works, the server just keeps
+      // rendering the default order and the client corrects it as before.
     }
     // Mirror non-default settings into the URL so a filtered view is
     // shareable - but only once the VISITOR changes something. Loading or

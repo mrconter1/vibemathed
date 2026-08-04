@@ -102,6 +102,12 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${sourceSerif.variable} h-full antialiased`}
+      // The script below writes `data-viewer` and two custom properties onto
+      // this element before React ever runs, so the client's attributes
+      // necessarily differ from the server's. That is the entire point, but
+      // React sees it as a mismatch and says so. Scoped to this element only:
+      // a mismatch anywhere else is still worth hearing about.
+      suppressHydrationWarning
     >
       <head>
         {/* Blocking, tiny, and deliberately before anything else paints.

@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import { cookies } from "next/headers";
 import { getPublishedProblems, getRecentActivity, getUserCount } from "@/lib/data";
+import { SETTINGS_COOKIE, readSettingsCookie, sortValue } from "@/lib/list-settings";
 import type { CardEntry } from "@/lib/problems";
 import { SITE_URL } from "@/lib/site";
 import { Highlights } from "@/components/Highlights";
@@ -12,30 +15,31 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-export default async function Home() {
-  // Ten activity rows. The feed scrolls inside a capped height on both
-  // layouts (max-h-36 on mobile, the absolute fill on lg), so a longer list
-  // adds history without changing how tall the card is.
-  const [problems, activity, users] = await Promise.all([
-    getPublishedProblems(),
-    getRecentActivity(10),
-    getUserCount(),
-  ]);
+/// The entry list, rendered from the viewer's remembered view.
+///
+/// Split out and wrapped in Suspense because it reads a cookie, and under
+/// Cache Components a dynamic read has to sit behind a boundary or the whole
+/// route stops prerendering. This way the page shell stays static and only
+/// the list is per-request - and it streams inside the same response, so the
+/// cards follow the shell by a server render rather than a round trip.
+async function EntryList() {
+  // Cached, so asking again here costs nothing beyond the cache read.
+  const [problems, store] = await Promise.all([getPublishedProblems(), cookies()]);
+  const initial = readSettingsCookie(store.get(SETTINGS_COOKIE)?.value);
 
   // Statement math is rendered to HTML here, on the server, so the client
   // cards can show real math without KaTeX ever reaching the browser bundle.
-  // Only the first default-sort page ships its statements inline; the rest of
-  // the map arrives via /api/statements after hydration (see CardEntry).
+  // Only the first page ships its statements inline; the rest of the map
+  // arrives via /api/statements after hydration (see CardEntry).
   const INLINE_STATEMENTS = 25;
-  const cards: CardEntry[] = problems.map((p, i) => ({
+  const cards: CardEntry[] = problems.map((p) => ({
     slug: p.slug,
     name: p.name,
     problemNumber: p.problemNumber,
     field: p.field,
     fieldGroup: p.fieldGroup,
     hasStatement: p.statement !== null,
-    statementHtml:
-      p.statement && i < INLINE_STATEMENTS ? texToHtml(p.statement) : null,
+    statementHtml: null,
     posedBy: p.posedBy,
     yearPosed: p.yearPosed,
     solveType: p.solveType,
@@ -70,6 +74,42 @@ export default async function Home() {
     submittedBy: p.submittedBy,
     addedAt: p.addedAt,
   }));
+
+  // Which entries get their math inlined now depends on the reader's own
+  // sort, not on the default one. Before the server knew the sort, someone
+  // who ranks by significance got inline statements for the 25 most recent
+  // solves - none of which they were looking at - and fetched the ones they
+  // could see over the network instead.
+  //
+  // Sort only, not the filters: reproducing the filter pipeline here to shave
+  // a request is not worth two copies of it drifting apart. A filtered view
+  // simply inlines fewer of the right ones.
+  const dir = initial.sortDir === "asc" ? 1 : -1;
+  const order = [...cards].sort((a, b) => {
+    const va = sortValue(a, initial.sortKey, initial.period);
+    const vb = sortValue(b, initial.sortKey, initial.period);
+    if (va === vb) return a.slug.localeCompare(b.slug);
+    return (va < vb ? -1 : 1) * dir;
+  });
+  const inline = new Set(order.slice(0, INLINE_STATEMENTS).map((c) => c.slug));
+  const byStatement = new Map(problems.map((p) => [p.slug, p.statement]));
+  for (const c of cards) {
+    const statement = byStatement.get(c.slug);
+    if (statement && inline.has(c.slug)) c.statementHtml = texToHtml(statement);
+  }
+
+  return <ProblemCards problems={cards} initial={initial} />;
+}
+
+export default async function Home() {
+  // Ten activity rows. The feed scrolls inside a capped height on both
+  // layouts (max-h-36 on mobile, the absolute fill on lg), so a longer list
+  // adds history without changing how tall the card is.
+  const [problems, activity, users] = await Promise.all([
+    getPublishedProblems(),
+    getRecentActivity(10),
+    getUserCount(),
+  ]);
 
   // Two schema.org objects on the home page. WebSite is what Google reads the
   // site NAME from (the bold name above the URL in a result); Dataset
@@ -142,7 +182,22 @@ export default async function Home() {
           <h2 className="font-serif text-xl text-[var(--ink)]">All entries</h2>
           <span aria-hidden className="h-px flex-1 bg-[var(--hairline)]" />
         </div>
-        <ProblemCards problems={cards} />
+        {/* The fallback reserves the list's shape so the streamed cards
+            do not push the footer around when they land. */}
+        <Suspense
+          fallback={
+            <div className="space-y-3" aria-hidden>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-28 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)]"
+                />
+              ))}
+            </div>
+          }
+        >
+          <EntryList />
+        </Suspense>
       </section>
     </main>
   );
