@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signOutEverywhere } from "@/app/actions/auth";
-import { useViewer } from "@/components/ViewerProvider";
+import { clearViewerCache, useViewer } from "@/components/ViewerProvider";
 
 /// The colored initial standing in for an avatar - the site never shows the
 /// real Google picture, so the pseudonym's first letter is the identity mark.
@@ -189,6 +189,7 @@ export function AuthMenu() {
 
           <form
             action={signOutEverywhere}
+            onSubmit={clearViewerCache}
             className="border-t border-[var(--hairline)] px-3.5 py-2.5"
           >
             <button
