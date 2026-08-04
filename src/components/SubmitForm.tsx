@@ -10,6 +10,7 @@ import {
   emptySubmission,
   type SubmissionValues,
 } from "@/lib/submission";
+import { DuplicateHint } from "@/components/DuplicateHint";
 import { EntryFields } from "@/components/EntryFields";
 import { useViewer } from "@/components/ViewerProvider";
 
@@ -164,6 +165,11 @@ export function SubmitForm() {
               setValues((v) => ({ ...v, [key]: value }) as SubmissionValues)
             }
             idPrefix="submit"
+            // Under the title only. Duplicates are the commonest avoidable
+            // rejection, and the title is the field that can predict one.
+            renderAfter={(key) =>
+              key === "name" ? <DuplicateHint value={values.name ?? ""} /> : null
+            }
           />
         );
 

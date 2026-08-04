@@ -4,6 +4,7 @@
 // the submission form so the two stay visually and behaviourally identical -
 // they differ only in which fields they are handed.
 
+import type { ReactNode } from "react";
 import { LinkRows } from "@/components/LinkRows";
 
 export interface RenderableField {
@@ -25,11 +26,17 @@ export function EntryFields({
   values,
   onChange,
   idPrefix,
+  renderAfter,
 }: {
   fields: RenderableField[];
   values: Record<string, string>;
   onChange: (key: string, value: string) => void;
   idPrefix: string;
+  /// Extra content under a given field's control, above its help text. Exists
+  /// so the submission form can hang a duplicate check off the title without
+  /// this component knowing anything about duplicates; the edit dialog passes
+  /// nothing and renders exactly as before.
+  renderAfter?: (key: string) => ReactNode;
 }) {
   return (
     <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
@@ -86,6 +93,8 @@ export function EntryFields({
                 className={`${controlClass} mt-1`}
               />
             )}
+
+            {renderAfter?.(spec.key)}
 
             {spec.help && (
               <p className="mt-1 text-[11px] leading-snug text-[var(--ink-muted)]">
