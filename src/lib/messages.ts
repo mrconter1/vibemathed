@@ -139,4 +139,18 @@ export function reasonLabel(value: string | null | undefined): string | null {
 /// explanation, short enough that it stays a message rather than a review.
 /// `REVIEW_MESSAGE_MAX` in submission.ts re-exports this so the review dialog
 /// and the reports dialog cannot drift apart.
-export const MESSAGE_MAX = 600;
+///
+/// Raised from 600. That figure was set when a message was one note attached
+/// to one decision, and it held for that. It stopped holding once the inbox
+/// became a conversation: the replies worth writing are the ones that explain
+/// a correction and answer a question in the same breath, and 600 characters
+/// cut those off mid-sentence. Still well under the comment cap of 5000,
+/// because this is mail and not an essay.
+///
+/// The silent truncation this used to cause was the worse half of the
+/// problem. `sendDirectMessage` slices to this length without telling the
+/// sender, so an over-long decision note lost its ending with no warning, on
+/// exactly the messages that most needed their reasoning intact. The reply
+/// path validates and refuses instead; the review dialogs count down against
+/// this same constant.
+export const MESSAGE_MAX = 2000;
