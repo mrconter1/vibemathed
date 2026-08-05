@@ -450,8 +450,19 @@ model DirectMessage {
 
   createdAt DateTime @default(now())
 
+  /// When the recipient opened the conversation this message is in. Null means
+  /// unread, and drives both the bell count and the marker in the list.
+  ///
+  /// Per message rather than one watermark on the account, because the inbox
+  /// is a list of conversations now: opening one of them says nothing about
+  /// whether the others have been read, and a single `User.inboxSeenAt` could
+  /// not tell them apart.
+  readAt DateTime?
+
   /// The inbox read and the unread count, both by recipient and recency.
   @@index([userId, createdAt])
+  /// The bell's unread count, which asks only for this recipient's null ones.
+  @@index([userId, readAt])
   /// Loading a thread's replies in order.
   @@index([parentId, createdAt])
 }

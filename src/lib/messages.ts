@@ -16,7 +16,25 @@ export const MESSAGE_KINDS = {
   /// does not fall through to "From the curators", which a reader's own reply
   /// is not.
   reply: "Reply",
+
+  /// The contact form, one kind per topic.
+  ///
+  /// One kind each rather than a single `contact` plus the topic in another
+  /// column, because the topic belongs in the heading a curator reads first
+  /// and this keeps that a plain lookup. The suffixes are the CONTACT_TOPICS
+  /// values in src/lib/contact.ts, so adding a topic there means adding a kind
+  /// here; `contactKind` below is the one place that has to agree.
+  "contact-general": "Contact form: Something else",
+  "contact-verification": "Contact form: Profile verification",
+  "contact-data": "Contact form: Dataset, API or reuse",
+  "contact-press": "Contact form: Press or research",
 } as const;
+
+/// The message kind for a contact-form topic.
+export function contactKind(topic: string): string {
+  const kind = `contact-${topic}`;
+  return kind in MESSAGE_KINDS ? kind : "contact-general";
+}
 
 export type MessageKind = keyof typeof MESSAGE_KINDS;
 

@@ -21,7 +21,7 @@ export async function getViewerState(): Promise<ViewerState> {
 
   const userId = session.user.id;
 
-  const [votes, pendingReviews, openReports, openMessages, unread, me] = await Promise.all([
+  const [votes, pendingReviews, openReports, unread, me] = await Promise.all([
     prisma.problemVote.findMany({
       where: { userId },
       select: { vote: true, problem: { select: { slug: true } } },
@@ -31,9 +31,6 @@ export async function getViewerState(): Promise<ViewerState> {
     admin ? prisma.problem.count({ where: { status: "pending" } }) : Promise.resolve(0),
     admin
       ? prisma.problemReport.count({ where: { status: "open" } })
-      : Promise.resolve(0),
-    admin
-      ? prisma.siteMessage.count({ where: { status: "open" } })
       : Promise.resolve(0),
     // Unread = comments by OTHERS, newer than the viewer's watermark, on
     // published entries the viewer submitted or has commented on. Raw SQL so
@@ -63,14 +60,14 @@ export async function getViewerState(): Promise<ViewerState> {
         role: true,
         verified: true,
         notificationsSeenAt: true,
-        inboxSeenAt: true,
       },
     }),
   ]);
 
   // Decisions on your own submissions count as unread too, on the same
-  // watermark as comments. Curator mail is counted separately, against its own
-  // watermark, because it is read on its own page.
+  // watermark as comments. Curator mail is counted per message instead: the
+  // inbox is a list of conversations, and opening one says nothing about
+  // whether the others have been read.
   const [unreadDecisions, unreadInbox] = me
     ? await Promise.all([
         prisma.problem.count({
@@ -80,7 +77,7 @@ export async function getViewerState(): Promise<ViewerState> {
           },
         }),
         prisma.directMessage.count({
-          where: { userId, createdAt: { gt: me.inboxSeenAt } },
+          where: { userId, readAt: null },
         }),
       ])
     : [0, 0];
@@ -97,7 +94,6 @@ export async function getViewerState(): Promise<ViewerState> {
     isAdmin: admin,
     pendingReviews,
     openReports,
-    openMessages,
     notifications,
     unreadInbox,
     votes: Object.fromEntries(votes.map((v) => [v.problem.slug, v.vote])),

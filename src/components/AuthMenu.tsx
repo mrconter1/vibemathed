@@ -192,13 +192,6 @@ export function AuthMenu() {
                 Review reports
               </Link>
               <Link
-                href="/admin/messages"
-                onClick={() => setOpen(false)}
-                className="block text-xs text-[var(--accent-blue)] hover:underline"
-              >
-                Inbox
-              </Link>
-              <Link
                 href="/admin/stats"
                 onClick={() => setOpen(false)}
                 className="block text-xs text-[var(--accent-blue)] hover:underline"

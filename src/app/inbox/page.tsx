@@ -7,8 +7,9 @@ import { InboxList } from "@/components/InboxList";
 // line in the bell menu, which is no place to read the reason your submission
 // was turned down.
 //
-// Not confusable with /admin/messages: that one is the curators' end of the
-// /contact form, mail coming IN. This is mail going out, one reader at a time.
+// It is now the single place any conversation with the site happens:
+// decisions, reports, and the contact form, which used to have a curators-only
+// queue of its own.
 
 export const metadata: Metadata = {
   title: "Inbox",

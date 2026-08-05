@@ -3,6 +3,7 @@
 import { auth } from "@/auth";
 import { isAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
+import { contactKind } from "@/lib/messages";
 import {
   BODY_MAX,
   DEFAULT_TOPIC,
@@ -31,6 +32,49 @@ export interface ContactInput {
   /// Honeypot. A real person never sees this field, so anything in it came
   /// from a bot filling every input on the page.
   company: string;
+}
+
+/// Copies a contact-form message into every curator's inbox.
+///
+/// One row per curator rather than one shared row, because a DirectMessage is
+/// addressed to exactly one reader and its read state is that reader's. Two
+/// curators should not mark each other's mail as read.
+///
+/// Failure here is logged and swallowed: the sender's message is already
+/// saved, and telling them it failed would invite a duplicate.
+async function deliverToCurators(input: {
+  senderId: string | null;
+  senderName: string;
+  topic: string;
+  body: string;
+}): Promise<void> {
+  const emails = (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  if (emails.length === 0) return;
+
+  try {
+    const curators = await prisma.user.findMany({
+      where: { email: { in: emails } },
+      select: { id: true },
+    });
+    if (curators.length === 0) return;
+
+    await prisma.directMessage.createMany({
+      data: curators.map((c) => ({
+        userId: c.id,
+        // Null for an anonymous sender, which is what makes the thread
+        // unanswerable in place rather than answerable to nobody.
+        senderId: input.senderId,
+        senderName: input.senderName,
+        kind: contactKind(input.topic),
+        body: input.body,
+      })),
+    });
+  } catch (error) {
+    console.error("deliverToCurators failed", error);
+  }
 }
 
 export async function sendSiteMessage(input: ContactInput): Promise<ContactResult> {
@@ -86,6 +130,10 @@ export async function sendSiteMessage(input: ContactInput): Promise<ContactResul
   }
 
   try {
+    // Two writes, on purpose. SiteMessage stays the record of what was sent
+    // and is what the rate limits above count; the DirectMessage copies are
+    // how a curator actually reads and answers it, in the same inbox as every
+    // other conversation.
     await prisma.siteMessage.create({
       data: {
         userId,
@@ -95,29 +143,24 @@ export async function sendSiteMessage(input: ContactInput): Promise<ContactResul
         body: text,
       },
     });
+    await deliverToCurators({
+      senderId: userId,
+      // Who this is from, as one string. A pseudonym when there is an account,
+      // otherwise whatever reply address was typed, which is the only handle
+      // an anonymous sender has. Both may be absent, and "Anonymous" is then
+      // the honest answer.
+      senderName: session?.user?.pseudonym ?? (replyTo || null) ?? "Anonymous",
+      topic,
+      // The reply address rides in the body when there is no account behind
+      // the message, because that thread cannot be answered in place and the
+      // address is the only way to answer at all.
+      body: userId || !replyTo ? text : `${text}
+
+Reply to: ${replyTo}`,
+    });
     return { ok: true };
   } catch (error) {
     console.error("sendSiteMessage failed", error);
     return { ok: false, error: "Could not send the message. Please try again." };
-  }
-}
-
-/// Clears a message from the queue and the badge. The row stays as a record,
-/// exactly like a handled report.
-export async function handleSiteMessage(messageId: string): Promise<ContactResult> {
-  const session = await auth();
-  if (!isAdmin(session?.user?.email)) {
-    return { ok: false, error: "Not allowed." };
-  }
-
-  try {
-    await prisma.siteMessage.update({
-      where: { id: messageId },
-      data: { status: "handled", handledAt: new Date() },
-    });
-    return { ok: true };
-  } catch (error) {
-    console.error("handleSiteMessage failed", error);
-    return { ok: false, error: "Could not update the message." };
   }
 }
