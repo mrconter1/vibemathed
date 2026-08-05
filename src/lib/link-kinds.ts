@@ -18,6 +18,7 @@ export type LinkKind =
   | "code"
   | "transcript"
   | "problem-record"
+  | "wikipedia"
   | "discussion"
   | "independent"
   | "other";
@@ -87,18 +88,25 @@ export const LINK_KINDS: LinkKindSpec[] = [
     rank: 7,
   },
   {
+    value: "wikipedia",
+    label: "Wikipedia",
+    help: "The encyclopedia article for the problem",
+    icon: "globe",
+    rank: 8,
+  },
+  {
     value: "discussion",
     label: "Discussion",
     help: "A thread, question or forum post",
     icon: "bubble",
-    rank: 8,
+    rank: 9,
   },
   {
     value: "other",
     label: "Other",
     help: "Anything else",
     icon: "link",
-    rank: 9,
+    rank: 10,
   },
 ];
 
@@ -167,6 +175,11 @@ export function inferLinkKind(url: string, label = ""): LinkKind {
   if (/erdosproblems\.com\/\d|\bproblem (record|list|page)\b|conjecture list/.test(both)) {
     return "problem-record";
   }
+  // Host is decisive here in a way it is not elsewhere: a wikipedia.org URL is
+  // a Wikipedia article whatever the label calls it. It has to come before the
+  // discussion rule so an article whose title contains "question" or "problem"
+  // is not read as somebody asking one.
+  if (/\bwikipedia\.org/.test(u)) return "wikipedia";
   // Plural included deliberately: "Copilot threads" fell through to `other`
   // without it.
   if (/mathoverflow|\bthreads?\b|\bforums?\b|\bdiscussions?\b|\bquestions?\b/.test(both)) {
