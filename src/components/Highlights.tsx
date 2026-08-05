@@ -1,5 +1,10 @@
 // Two entry points into the dataset, above the full list: what just happened
-// and what took the longest. Neither duplicates the list's default ordering.
+// and what mattered most this week. Neither duplicates the list's default
+// ordering.
+//
+// "This week" replaced a "longest standing" column ranked by years open. That
+// one was static: the oldest problems in the record rarely change, so the
+// column said the same thing every day and stopped being a reason to look.
 //
 // A third "best known" column (by notability) fits here naturally if the row
 // ever wants it back - notability is already a sort option in the list.
@@ -12,7 +17,7 @@
 // sort control.
 
 import Link from "next/link";
-import { ageAtSolve, type ProblemWithVotes } from "@/lib/problems";
+import { type ProblemWithVotes } from "@/lib/problems";
 import { Icon, type IconName } from "@/components/Icons";
 import { TeX } from "@/components/TeX";
 
@@ -68,24 +73,48 @@ function buildColumns(all: ProblemWithVotes[], rows: number): Column[] {
     detail: formatSolveDate(p.solveDate, refYear),
   }));
 
-  const longestStanding = problems
-    .map((p) => ({ p, age: ageAtSolve(p) }))
-    .filter((x): x is { p: ProblemWithVotes; age: number } => x.age !== null)
-    .sort((a, b) => b.age - a.age)
+  // The week's best, by how much mathematics cared about the problem before
+  // it fell. A rolling seven days rather than the calendar week: on a Monday
+  // a calendar week is nearly empty, and the column would read as though
+  // nothing had happened when in fact six days of results had just scrolled
+  // out of it.
+  //
+  // Entries with no significance yet are skipped rather than sorted as zero.
+  // A blank score means not assessed, and ranking it below a 5 would state
+  // something the record does not know.
+  // Seven days back from the newest solve, not from the wall clock. Two
+  // reasons, and the second is the one that matters. The page is
+  // prerendered, and reading the current time in a server component opts the
+  // whole route out of that. And a window anchored to the data is the more
+  // useful one regardless: after a quiet stretch a clock-based week empties
+  // out and the column reads as though nothing has been solved, when what
+  // actually happened is that nothing was solved THIS week specifically.
+  const newest = recent[0]?.solveDate ?? "";
+  const weekAgo = newest
+    ? new Date(`${newest.slice(0, 10)}T00:00:00Z`).getTime() - 7 * 86400000
+    : 0;
+  const cutoff = newest ? new Date(weekAgo).toISOString().slice(0, 10) : "";
+  const thisWeek = problems
+    .filter((p) => p.significance != null && p.solveDate >= cutoff)
+    .sort(
+      (a, b) =>
+        (b.significance ?? 0) - (a.significance ?? 0) ||
+        b.solveDate.localeCompare(a.solveDate),
+    )
     .slice(0, rows)
-    .map(({ p, age }) => ({
+    .map((p) => ({
       slug: p.slug,
       name: p.shortName,
-      detail: `open ${age}y`,
+      detail: `${p.significance}/100`,
     }));
 
   return [
     { icon: "spark", title: "Just solved", hint: "Most recent results", rows: justSolved },
     {
-      icon: "hourglass",
-      title: "Longest standing",
-      hint: "Open the longest before falling",
-      rows: longestStanding,
+      icon: "pulse",
+      title: "This week",
+      hint: "Most significant of the last seven days",
+      rows: thisWeek,
     },
   ];
 }
