@@ -28,10 +28,12 @@ export default function InboxPage() {
         Inbox
       </h1>
       <p className="mb-6 mt-2 max-w-2xl text-sm leading-relaxed text-[var(--ink-secondary)]">
-        Messages from the curators. Nothing here is public, and replies are not
-        posted to entries.{" "}
+        Conversations with the curators, each one starting from a decision or a
+        report. Reply in the thread and the answer comes back here. Nothing on
+        this page is public, and nothing said here is posted to an entry. For
+        anything that does not follow from a message below, use the{" "}
         <Link href="/contact" className="text-[var(--accent-blue)] hover:underline">
-          Write back through the contact form
+          contact form
         </Link>
         .
       </p>

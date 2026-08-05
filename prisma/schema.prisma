@@ -435,10 +435,25 @@ model DirectMessage {
   problemId String?  @db.Uuid
   problem   Problem? @relation(fields: [problemId], references: [id], onDelete: SetNull)
 
+  /// The message this one answers, and always the ROOT of the thread rather
+  /// than the immediate parent. A thread here is two people going back and
+  /// forth about one decision, so a flat list under one root reads better than
+  /// a tree and cannot produce unbounded nesting in the UI. Cascades: a reply
+  /// with no thread to belong to is noise.
+  ///
+  /// Null on a root. A root is always curator-written, because replying is the
+  /// only way to create a message without picking a recipient, which is what
+  /// keeps this from becoming a way to cold-message readers.
+  parentId String?         @db.Uuid
+  parent   DirectMessage?  @relation("DirectMessageThread", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  DirectMessage[] @relation("DirectMessageThread")
+
   createdAt DateTime @default(now())
 
   /// The inbox read and the unread count, both by recipient and recency.
   @@index([userId, createdAt])
+  /// Loading a thread's replies in order.
+  @@index([parentId, createdAt])
 }
 
 model Account {

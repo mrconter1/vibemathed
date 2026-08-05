@@ -11,6 +11,11 @@ export const MESSAGE_KINDS = {
   decision: "About your submission",
   report: "About a report you sent",
   note: "From the curators",
+  /// Only ever a message inside a thread, never the one that starts it, so
+  /// this label heads nothing. It exists so the stored `kind` has a name and
+  /// does not fall through to "From the curators", which a reader's own reply
+  /// is not.
+  reply: "Reply",
 } as const;
 
 export type MessageKind = keyof typeof MESSAGE_KINDS;
