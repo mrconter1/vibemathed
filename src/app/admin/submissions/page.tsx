@@ -4,7 +4,7 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { isAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
-import { formatCommentDate } from "@/lib/comment-render";
+import { formatCommentDateTime } from "@/lib/comment-render";
 import { resolveSnapshot } from "@/lib/identity";
 import { texToHtml } from "@/components/TeX";
 import { ReviewQueue, type PendingEntry } from "@/components/ReviewQueue";
@@ -79,7 +79,7 @@ async function Queue() {
     canDeliver: r.submittedBy !== null,
     // Date AND time: three spam entries in one night made clear that "when
     // exactly" matters when reviewing a queue.
-    submittedAt: `${formatCommentDate(r.createdAt)}, ${String(r.createdAt.getUTCHours()).padStart(2, "0")}:${String(r.createdAt.getUTCMinutes()).padStart(2, "0")} UTC`,
+    submittedAt: formatCommentDateTime(r.createdAt),
   }));
 
   return (

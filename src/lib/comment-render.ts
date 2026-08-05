@@ -77,3 +77,22 @@ export function formatCommentDate(d: Date): string {
   ];
   return `${day} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 }
+
+/// The same date with the time on it, for anything that reads as a
+/// conversation.
+///
+/// A date alone is enough to place an entry in the record, but it is not
+/// enough to follow an exchange: several comments a day is normal on an active
+/// thread, and "04 Aug 2026" three times in a row says nothing about what
+/// answered what. The admin queues had already worked this out and were each
+/// hand-assembling this string; they call this now instead.
+///
+/// UTC, and labelled as such, for the same reason the date is: the value is
+/// formatted on the server and shipped as a string, so it cannot depend on the
+/// reader's timezone without risking a hydration mismatch. An explicit "UTC"
+/// beats a time that is silently somebody else's.
+export function formatCommentDateTime(d: Date): string {
+  const hh = String(d.getUTCHours()).padStart(2, "0");
+  const mm = String(d.getUTCMinutes()).padStart(2, "0");
+  return `${formatCommentDate(d)}, ${hh}:${mm} UTC`;
+}

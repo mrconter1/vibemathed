@@ -4,7 +4,7 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { isAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
-import { formatCommentDate } from "@/lib/comment-render";
+import { formatCommentDateTime } from "@/lib/comment-render";
 import { ReportsList, type OpenReport } from "@/components/ReportsList";
 
 export const metadata: Metadata = {
@@ -58,7 +58,7 @@ async function Queue() {
     canReply: r.userId !== null,
     problemSlug: r.problem.slug,
     problemName: r.problem.name,
-    reportedAt: `${formatCommentDate(r.createdAt)}, ${String(r.createdAt.getUTCHours()).padStart(2, "0")}:${String(r.createdAt.getUTCMinutes()).padStart(2, "0")} UTC`,
+    reportedAt: formatCommentDateTime(r.createdAt),
   }));
 
   return (

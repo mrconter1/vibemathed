@@ -3,7 +3,7 @@
 import { updateTag } from "next/cache";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { formatCommentDate, renderCommentHtml } from "@/lib/comment-render";
+import { formatCommentDateTime, renderCommentHtml } from "@/lib/comment-render";
 import {
   COMMENT_MAX_LENGTH,
   COMMENT_RATE_LIMIT_MS,
@@ -92,7 +92,7 @@ export async function addComment(slug: string, raw: string): Promise<CommentResu
         authorPseudonym: userName,
         html: renderCommentHtml(checked.text),
         source: checked.text,
-        createdAt: formatCommentDate(created.createdAt),
+        createdAt: formatCommentDateTime(created.createdAt),
         edited: false,
       },
     };
@@ -144,7 +144,7 @@ export async function editComment(
         authorPseudonym: session.user.pseudonym ?? null,
         html: renderCommentHtml(checked.text),
         source: checked.text,
-        createdAt: formatCommentDate(existing.createdAt),
+        createdAt: formatCommentDateTime(existing.createdAt),
         edited: true,
       },
     };

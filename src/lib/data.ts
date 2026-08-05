@@ -23,7 +23,11 @@ import {
   type SiteActivityView,
 } from "@/lib/activity";
 import { relativeFallback } from "@/lib/relative-time";
-import { formatCommentDate, renderCommentHtml } from "@/lib/comment-render";
+import {
+  formatCommentDate,
+  formatCommentDateTime,
+  renderCommentHtml,
+} from "@/lib/comment-render";
 import { texToHtml } from "@/components/TeX";
 import type { CommentView } from "@/lib/comments";
 import { resolveSnapshot } from "@/lib/identity";
@@ -266,7 +270,7 @@ export async function getComments(slug: string): Promise<CommentView[]> {
     authorPseudonym: c.user?.pseudonym ?? null,
     html: renderCommentHtml(c.body),
     source: c.body,
-    createdAt: formatCommentDate(c.createdAt),
+    createdAt: formatCommentDateTime(c.createdAt),
     edited: c.editedAt !== null,
   }));
 }
@@ -490,7 +494,7 @@ export async function getUserProfile(pseudonym: string): Promise<UserProfile | n
     comments: comments.map((c) => ({
       id: c.id,
       html: renderCommentHtml(c.body),
-      createdAt: formatCommentDate(c.createdAt),
+      createdAt: formatCommentDateTime(c.createdAt),
       problemName: c.problem.name,
       problemSlug: c.problem.slug,
     })),

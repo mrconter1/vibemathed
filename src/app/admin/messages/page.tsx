@@ -4,7 +4,7 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { isAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
-import { formatCommentDate } from "@/lib/comment-render";
+import { formatCommentDateTime } from "@/lib/comment-render";
 import { MessagesList, type InboxMessage } from "@/components/MessagesList";
 
 export const metadata: Metadata = {
@@ -49,7 +49,7 @@ async function Queue() {
     sender: m.user?.pseudonym ?? m.userName,
     senderPseudonym: m.user?.pseudonym ?? null,
     replyTo: m.replyTo,
-    sentAt: `${formatCommentDate(m.createdAt)}, ${String(m.createdAt.getUTCHours()).padStart(2, "0")}:${String(m.createdAt.getUTCMinutes()).padStart(2, "0")} UTC`,
+    sentAt: formatCommentDateTime(m.createdAt),
   }));
 
   return (
