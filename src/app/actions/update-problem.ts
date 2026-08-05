@@ -2,9 +2,11 @@
 
 import { updateTag } from "next/cache";
 import { auth } from "@/auth";
+import { isAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import {
   EDITABLE_FIELDS,
+  CURATOR_FIELDS,
   isHttpUrl,
   isValidSolveDate,
   parseLinks,
@@ -90,9 +92,12 @@ function display(value: unknown): string | null {
 
 /// Applies a community edit to an entry and records every changed field.
 ///
-/// Only fields in EDITABLE_FIELDS can be written - the incoming object is
-/// whitelisted against it rather than spread into the update, so a crafted
-/// request cannot reach `verification`, `renownLangs` or `slug`.
+/// Only whitelisted fields can be written - the incoming object is checked
+/// against the list rather than spread into the update, so a crafted request
+/// cannot reach `slug`, `solveType` or `significance`. Curator-only fields are
+/// in a second list that is appended for admins and simply absent for everyone
+/// else, so a non-curator posting `renownLangs` has it ignored rather than
+/// rejected: there is nothing to tell them, since the form never offered it.
 export async function updateProblem(
   slug: string,
   values: Partial<EditableValues>,
@@ -115,6 +120,8 @@ export async function updateProblem(
       resolution: true,
       aiContribution: true,
       claimIssueNote: true,
+      renownLangs: true,
+      renownNote: true,
       statement: true,
       posedBy: true,
       yearPosed: true,
@@ -148,7 +155,11 @@ export async function updateProblem(
   // rewritten wholesale rather than assigned onto the problem row.
   let nextLinks: LinkRef[] | null = null;
 
-  for (const spec of EDITABLE_FIELDS) {
+  const writable = isAdmin(session.user.email)
+    ? [...EDITABLE_FIELDS, ...CURATOR_FIELDS]
+    : EDITABLE_FIELDS;
+
+  for (const spec of writable) {
     const raw = values[spec.key];
     if (raw === undefined) continue;
 

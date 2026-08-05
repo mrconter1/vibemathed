@@ -11,11 +11,20 @@
 //                 `name`, not the slug.
 //   problemNumber Identity link to erdosproblems.com/<n>.
 //   solveType     "Proved" vs "disproved" is the entry's headline claim.
-//   renownLangs   Documented as a frozen snapshot on purpose, so coverage
-//                 triggered BY a solution can never inflate the score after
-//                 the fact. It is a measurement with a methodology, not a fact
-//                 to be corrected - self-reporting would defeat the design.
 //   status        Publication state - a moderation concern, not a content one.
+//
+// CURATOR-ONLY, in CURATOR_FIELDS below: editable, but not by the people whose
+// entries they score.
+//
+//   renownLangs   A Wikipedia-langlinks count, and part of how notable an
+//                 entry looks. Self-reporting it would let a submitter inflate
+//                 their own entry, which is why it was locked outright at
+//                 first. But locked outright it could not be corrected either,
+//                 and a reader who finds a dedicated article we missed has no
+//                 way to get it recorded. A curator can now fix it; nobody
+//                 else can touch it.
+//   renownNote    Says what the count does and does not include, so it is only
+//                 meaningful in the same hands as the count.
 //
 // `verification` IS editable, deliberately. It looks like the field most worth
 // protecting, but the trust ladder is factual and time-varying - a preprint
@@ -60,7 +69,9 @@ export type EditableKey =
   | "citationsUrl"
   | "sourceUrl"
   | "sourceName"
-  | "links";
+  | "links"
+  | "renownLangs"
+  | "renownNote";
 
 export type FieldKind =
   | "text"
@@ -276,13 +287,38 @@ export const EDITABLE_FIELDS: FieldSpec[] = [
   },
 ];
 
+/// Fields only a curator may write. Same shape as the rest, kept apart so the
+/// server can whitelist against exactly one of the two lists depending on who
+/// is asking, rather than checking a flag per field.
+export const CURATOR_FIELDS: FieldSpec[] = [
+  {
+    key: "renownLangs",
+    label: "Wikipedia languages",
+    kind: "number",
+    help: "Language editions with an article dedicated to THIS problem. 0 means no dedicated article, not unknown.",
+  },
+  {
+    key: "renownNote",
+    label: "Wikipedia note",
+    kind: "textarea",
+    maxLength: 300,
+    help: "What the count leaves out, when it needs saying.",
+  },
+];
+
 export const EDITABLE_KEYS = EDITABLE_FIELDS.map((f) => f.key);
+export const CURATOR_KEYS = CURATOR_FIELDS.map((f) => f.key);
+
+/// What one editor is allowed to write.
+export function fieldsFor(isCurator: boolean): FieldSpec[] {
+  return isCurator ? [...EDITABLE_FIELDS, ...CURATOR_FIELDS] : EDITABLE_FIELDS;
+}
 
 /// Form values are all strings; the server parses per `kind`.
 export type EditableValues = Record<EditableKey, string>;
 
 export const PROTECTED_FIELDS_NOTE =
-  "Result, notability, the Erdős number and the URL slug are curator-only. Everything else, including the verification tier, is yours to correct.";
+  "Result, significance, the Erdős number and the URL slug are curator-only. Everything else, including the verification tier, is yours to correct.";
 
 /// Seeds the edit form from an entry. Pure, so the entry page can build this
 /// from data it already has instead of querying again.
@@ -292,7 +328,7 @@ export const PROTECTED_FIELDS_NOTE =
 /// producing a blank input.
 export function toEditableValues(source: Pick<MathProblem, EditableKey>): EditableValues {
   const out = {} as EditableValues;
-  for (const spec of EDITABLE_FIELDS) {
+  for (const spec of [...EDITABLE_FIELDS, ...CURATOR_FIELDS]) {
     if (spec.kind === "links") {
       // Carried through the string-keyed form values as JSON; the row editor
       // parses and re-serializes it, and `parseLinks` validates on the server.

@@ -11,7 +11,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { updateProblem } from "@/app/actions/update-problem";
 import {
-  EDITABLE_FIELDS,
+  fieldsFor,
   PROTECTED_FIELDS_NOTE,
   type EditableValues,
 } from "@/lib/editable";
@@ -27,7 +27,10 @@ export function EditEntryDialog({
   slug: string;
   initial: EditableValues;
 }) {
-  const { signedIn, loaded } = useViewer();
+  // The curator fields are offered only to curators. This is convenience, not
+  // the control: the server whitelists against the same split, so a forged
+  // post cannot write them either.
+  const { signedIn, loaded, isAdmin } = useViewer();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState<EditableValues>(initial);
@@ -125,7 +128,7 @@ export function EditEntryDialog({
 
             <div className="dialog-scroll flex-1 px-5 py-4">
               <EntryFields
-                fields={EDITABLE_FIELDS}
+                fields={fieldsFor(isAdmin)}
                 values={values}
                 onChange={(key, value) =>
                   setValues((v) => ({ ...v, [key]: value }) as EditableValues)
