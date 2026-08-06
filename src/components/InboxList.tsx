@@ -267,16 +267,27 @@ function ConversationView({
         </p>
       ) : (
         <div className="border-t border-[var(--hairline)] bg-[var(--paper)] px-3 py-3">
+          {/* Grows with what is typed. Two fixed rows is fine for "thanks"
+              and cramped for anything worth saying; on a phone it meant
+              writing a paragraph through a two-line window. Capped so a long
+              reply cannot push the send button off screen, and it scrolls
+              past that. Height comes from scrollHeight after a reset to auto,
+              because scrollHeight never shrinks on its own. */}
           <textarea
             value={text}
+            ref={(el) => {
+              if (!el) return;
+              el.style.height = "auto";
+              el.style.height = `${Math.min(el.scrollHeight, 220)}px`;
+            }}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) void send();
             }}
-            rows={2}
+            rows={3}
             maxLength={MESSAGE_MAX}
             placeholder={`Reply to ${conversation.other}`}
-            className="w-full resize-y rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 py-2 text-sm leading-relaxed text-[var(--ink)] focus:border-[var(--accent-blue)] focus:outline-none"
+            className="w-full resize-none overflow-y-auto rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 py-2 text-sm leading-relaxed text-[var(--ink)] focus:border-[var(--accent-blue)] focus:outline-none"
           />
           <div className="mt-2 flex flex-wrap items-center gap-3">
             <button

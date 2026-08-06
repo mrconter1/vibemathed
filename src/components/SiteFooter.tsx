@@ -42,6 +42,13 @@ export function SiteFooter() {
           <Link href="/contact" className={link}>
             Contact
           </Link>
+          <span aria-hidden>·</span>
+          {/* Plain anchor, not Link: this is a file, not a route, and the
+              router should hand it to the reader's feed client rather than
+              try to navigate to it. */}
+          <a href="/feed.xml" className={link}>
+            RSS
+          </a>
         </p>
       </div>
     </footer>

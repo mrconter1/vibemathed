@@ -64,39 +64,10 @@ export async function getNotifications(): Promise<NotificationsResult> {
     },
   });
 
-  // A curator's decision on YOUR submission, with whatever message they
-  // left. Rejected entries have no public page, so those rows link nowhere -
-  // the message is the whole notification.
-  const decisions = await prisma.problem.findMany({
-    where: { submittedById: userId, reviewedAt: { not: null } },
-    orderBy: { reviewedAt: "desc" },
-    take: FEED_SIZE,
-    select: {
-      id: true,
-      slug: true,
-      name: true,
-      status: true,
-      reviewedAt: true,
-      reviewMessage: true,
-    },
-  });
-
-  const decisionItems: NotificationItem[] = decisions.map((d) => ({
-    id: `decision-${d.id}`,
-    kind: "decision" as const,
-    entrySlug: d.status === "published" ? d.slug : "",
-    entryName: d.name,
-    author: d.status === "published" ? "Approved" : "Not accepted",
-    snippet:
-      d.reviewMessage && d.reviewMessage.length > SNIPPET_MAX
-        ? `${d.reviewMessage.slice(0, SNIPPET_MAX)}…`
-        : (d.reviewMessage ??
-          (d.status === "published"
-            ? "Your submission is now published."
-            : "Your submission was not accepted.")),
-    when: formatCommentDate(d.reviewedAt as Date),
-    isNew: (d.reviewedAt as Date) > me.notificationsSeenAt,
-  }));
+  // Decisions used to be their own rows here. They no longer are: a decision
+  // always writes a DirectMessage carrying the full reasoning, so showing
+  // both meant one action produced two notifications, the bell's being a
+  // truncated copy of the inbox's. The inbox owns this now.
 
   const items: NotificationItem[] = rows.map((r) => ({
     id: r.id,
@@ -110,9 +81,7 @@ export async function getNotifications(): Promise<NotificationsResult> {
     isNew: r.createdAt > me.notificationsSeenAt,
   }));
 
-  // Newest first across both kinds, then capped: a decision is not more
-  // important than a reply, it is just another thing that happened.
-  const merged = [...items, ...decisionItems]
+  const merged = items
     .sort((a, b) => (a.isNew === b.isNew ? 0 : a.isNew ? -1 : 1))
     .slice(0, FEED_SIZE);
 

@@ -68,21 +68,14 @@ export async function getViewerState(): Promise<ViewerState> {
   // watermark as comments. Curator mail is counted per message instead: the
   // inbox is a list of conversations, and opening one says nothing about
   // whether the others have been read.
-  const [unreadDecisions, unreadInbox] = me
-    ? await Promise.all([
-        prisma.problem.count({
-          where: {
-            submittedById: userId,
-            reviewedAt: { gt: me.notificationsSeenAt },
-          },
-        }),
-        prisma.directMessage.count({
-          where: { userId, readAt: null },
-        }),
-      ])
-    : [0, 0];
+  // Decisions are not counted here. Each one writes a DirectMessage, which
+  // `unreadInbox` already counts, and adding both made a single rejection
+  // light the bell twice.
+  const unreadInbox = me
+    ? await prisma.directMessage.count({ where: { userId, readAt: null } })
+    : 0;
 
-  const notifications = Number(unread[0]?.count ?? 0) + unreadDecisions;
+  const notifications = Number(unread[0]?.count ?? 0);
 
   return {
     signedIn: true,

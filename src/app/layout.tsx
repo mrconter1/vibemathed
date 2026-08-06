@@ -110,6 +110,17 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        {/* Feed autodiscovery as a plain tag rather than metadata.alternates.
+            Page-level metadata REPLACES `alternates` wholesale rather than
+            merging into it, so the home page setting its own canonical was
+            silently dropping the feed link on the one page most likely to be
+            handed to a reader. A tag here cannot be overridden. */}
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="VibeMathed"
+          href="/feed.xml"
+        />
         {/* Blocking, tiny, and deliberately before anything else paints.
             React cannot help here: the header's two variants both ship in the
             HTML, and until something says which visitor this is, neither can
