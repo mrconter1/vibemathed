@@ -14,7 +14,7 @@
 
 import { useEffect, useState } from "react";
 import { useBeforePaint } from "@/lib/before-paint";
-import { relativeTime } from "@/lib/relative-time";
+import { freshRelative, relativeTime } from "@/lib/relative-time";
 
 export { relativeTime };
 
@@ -59,4 +59,40 @@ export function RelativeTime({
       {label}
     </time>
   );
+}
+
+/// The "Just solved" column's stamp: the solve date, and the age beside it
+/// while the solve is less than a day old.
+///
+/// A bare "6 Aug" cannot separate something that landed an hour ago from
+/// something that landed last night, and the top of that column is the one
+/// place on the site where that difference is the entire point. Older rows
+/// keep the date alone, so the column does not turn into a wall of "4 days
+/// ago" that has to be decoded back into dates.
+///
+/// Unlike `RelativeTime` this needs no `suppressHydrationWarning`: the server
+/// renders the date, the client's first render renders the same date, and the
+/// age is appended in the before-paint pass afterwards. Nothing disagrees.
+export function SolvedStamp({ iso, date }: { iso: string; date: string }) {
+  // The date alone, which is all a prerendered shell may know - reading the
+  // clock on the server would opt the home page out of being prerendered at
+  // all, and bake a timestamp into static HTML besides.
+  const [label, setLabel] = useState(date);
+
+  const stamp = () => {
+    const rel = freshRelative(iso, Date.now());
+    setLabel(rel ? `${date} · ${rel}` : date);
+  };
+
+  useBeforePaint(stamp, [iso, date]);
+
+  // A solve date is midnight, so just after one the wording really does move
+  // minute by minute. A minute ticker is enough to keep that honest.
+  useEffect(() => {
+    const id = setInterval(stamp, 60_000);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [iso, date]);
+
+  return <time dateTime={iso}>{label}</time>;
 }

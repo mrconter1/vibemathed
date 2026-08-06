@@ -19,6 +19,7 @@
 import Link from "next/link";
 import { type ProblemWithVotes } from "@/lib/problems";
 import { Icon, type IconName } from "@/components/Icons";
+import { SolvedStamp } from "@/components/RelativeTime";
 import { TeX } from "@/components/TeX";
 
 const MONTHS = [
@@ -47,6 +48,11 @@ interface Row {
   name: string;
   /// The value this column ranks on, shown beside the name.
   detail: string;
+  /// Set only where `detail` is a solve date precise enough to age: the
+  /// timestamp the client recomputes "14 hours ago" from. Absent on
+  /// month-only and year-only solve dates, and on columns whose detail is not
+  /// a date at all.
+  iso?: string;
 }
 
 interface Column {
@@ -71,6 +77,10 @@ function buildColumns(all: ProblemWithVotes[], rows: number): Column[] {
     slug: p.slug,
     name: p.shortName,
     detail: formatSolveDate(p.solveDate, refYear),
+    // Only a full "YYYY-MM-DD" can be aged. A solve recorded as "2026-06" is
+    // a month, and treating it as the first of that month would invent a
+    // precision the record does not have.
+    iso: p.solveDate.length === 10 ? `${p.solveDate}T00:00:00Z` : undefined,
   }));
 
   // The week's best, by how much mathematics cared about the problem before
@@ -158,7 +168,11 @@ export function Highlights({
                     <TeX>{row.name}</TeX>
                   </span>
                   <span className="shrink-0 font-mono text-[11px] text-[var(--ink-muted)]">
-                    {row.detail}
+                    {row.iso ? (
+                      <SolvedStamp iso={row.iso} date={row.detail} />
+                    ) : (
+                      row.detail
+                    )}
                   </span>
                 </Link>
               </li>

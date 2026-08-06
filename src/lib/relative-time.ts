@@ -24,6 +24,22 @@ export function relativeTime(iso: string, now: number): string | null {
   return null;
 }
 
+/// The relative wording only while it still adds something to a date shown
+/// beside it: under a day old. Past that the date says it better, and
+/// "6 days ago" next to "31 Jul" is two ways of writing one fact.
+///
+/// A solve dated in the future gets nothing rather than "just now". Solve
+/// dates come from announcement dates in whatever timezone the source used,
+/// so a date one day ahead of the reader's clock is an ordinary occurrence
+/// and not a thing that just happened.
+export function freshRelative(iso: string, now: number): string | null {
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return null;
+  const age = now - then;
+  if (age < 0 || age >= 86_400_000) return null;
+  return relativeTime(iso, now);
+}
+
 /// What a server read should put in an activity row's display date.
 ///
 /// Callers used to send the absolute date and let the client turn it into
