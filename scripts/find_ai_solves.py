@@ -59,9 +59,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
-import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -238,8 +238,17 @@ def _pacing_note(host: str, code: int, wait: float, attempt: int, why: str) -> N
 
 def fetch(url: str, timeout: int = 30) -> str:
     """Rate-limit-aware GET. Pacing is adaptive and shared per host - see
-    scripts/ratelimit.py for why a fixed sleep was the wrong shape."""
-    return LIMITER.fetch(url, UA, timeout=timeout, on_wait=_pacing_note).decode(
+    scripts/ratelimit.py for why a fixed sleep was the wrong shape.
+
+    A GITHUB_TOKEN env var, if present, authenticates API calls (5000/hour
+    instead of 60). Optional by design: every source works keyless.
+    """
+    headers = dict(UA)
+    if urllib.parse.urlsplit(url).netloc == "api.github.com":
+        token = os.environ.get("GITHUB_TOKEN", "").strip()
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+    return LIMITER.fetch(url, headers, timeout=timeout, on_wait=_pacing_note).decode(
         "utf-8", errors="replace")
 
 
@@ -549,42 +558,45 @@ def arxiv_ai_mentions(paper: dict) -> tuple[list[str], str]:
 # --------------------------------------------------------------- GitHub ----
 
 def github_prs(repo: str, days: int, ai_only: bool, max_pages: int) -> list[dict]:
-    """Recent PRs (any state), paginated back to the cutoff.
+    """Recent PRs (any state) via the search endpoint.
+
+    Search rather than listing because of the request budget: one search page
+    covers 100 PRs already filtered to the window, where the listing endpoint
+    spent a request per page paginating back to the cutoff (ten pages per run
+    on mathlib alone, against an unauthenticated allowance of 60 per hour).
+    A GITHUB_TOKEN env var raises the ceiling but is deliberately optional -
+    the whole finder runs keyless.
 
     ai_only repos report only PRs whose title/body mentions a model; the rest
     also report resolution-flavoured titles.
     """
-    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    cutoff_date = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
     out = []
     for page_no in range(1, max_pages + 1):
-        url = (f"https://api.github.com/repos/{repo}/pulls"
-               f"?state=all&sort=created&direction=desc&per_page=100&page={page_no}")
-        rows = json.loads(fetch(url))
-        if not rows:
-            break
-        past_cutoff = False
+        q = urllib.parse.quote(f"repo:{repo} is:pr created:>={cutoff_date}")
+        data = json.loads(fetch(
+            f"https://api.github.com/search/issues?q={q}"
+            f"&sort=created&order=desc&per_page=100&page={page_no}"
+        ))
+        rows = data.get("items", [])
         for pr in rows:
-            created = datetime.fromisoformat(pr["created_at"].replace("Z", "+00:00"))
-            if created < cutoff:
-                past_cutoff = True
-                break
-            text = (pr["title"] or "") + "\n" + (pr["body"] or "")
+            text = (pr["title"] or "") + "\n" + (pr.get("body") or "")
             ai = MODEL_RE.search(text) is not None
             proofy = re.search(
                 r"disprov|prove|counterexample|solv", pr["title"] or "", re.IGNORECASE
             ) is not None
             if (ai_only and ai) or (not ai_only and (ai or proofy)):
+                merged = (pr.get("pull_request") or {}).get("merged_at")
                 out.append({
                     "number": pr["number"],
                     "title": pr["title"],
                     "url": pr["html_url"],
-                    "state": pr["state"] + (" (merged)" if pr.get("merged_at") else ""),
+                    "state": pr["state"] + (" (merged)" if merged else ""),
                     "ai_mention": ai,
-                    "snippets": context_lines(text, MODEL_RE) if ai else [],
+                    "snippets": ai_mention_snippets(text) if ai else [],
                 })
-        if past_cutoff:
+        if len(rows) < 100:
             break
-        time.sleep(1)  # unauthenticated API: 60 req/hour, be frugal
     return out
 
 
@@ -612,6 +624,12 @@ def erdos_ledger_rows() -> list[dict]:
     html = fetch(ERDOS_WIKI_URL)
     body = html.split('<div class="markdown-body"', 1)[-1]
     tables = re.findall(r"<table.*?</table>", body, re.S)
+    # The section names are mapped POSITIONALLY, so a changed table count
+    # would silently mislabel rows - and the labels decide what counts as a
+    # solve. Refuse loudly instead.
+    if len(tables) < 8:
+        raise RuntimeError(
+            f"expected 8 outcome tables, found {len(tables)} - page structure changed?")
     rows = []
     for ti, t in enumerate(tables[:8]):
         heads = [re.sub(r"<[^>]+>", "", h).strip()
@@ -637,13 +655,23 @@ def erdos_ledger_rows() -> list[dict]:
                 "key": f"{','.join(map(str, nums))}|{LEDGER_SECTIONS[ti]}|"
                        f"{cells.get('Date', '')}|{cells.get('Outcome', '')}",
             })
+    # Zero rows from a page that has never had fewer than dozens is a parse
+    # failure wearing an empty report as a disguise.
+    if not rows:
+        raise RuntimeError("parsed 0 ledger rows - page structure changed?")
     return rows
 
 
 # ---------------------------------------------------------------- Zenodo ----
 
-def zenodo_recent(days: int) -> list[dict]:
-    """Recent Zenodo records that look like a resolution and mention a model."""
+def zenodo_recent(days: int) -> tuple[list[dict], bool]:
+    """Recent Zenodo records that look like a resolution and mention a model.
+
+    Returns (records, truncated). Truncated means all 25 rows the API allows
+    an unauthenticated caller were still inside the window, so older matches
+    in the same window exist that this scan never saw - a real risk on
+    backfill-sized windows, invisible without the flag.
+    """
     cutoff = datetime.now(timezone.utc) - timedelta(days=days)
     # No quoted phrases: Zenodo's query parser 400s on them. The client-side
     # RESOLUTION_RE / MODEL_RE re-check below covers the lost precision.
@@ -655,11 +683,14 @@ def zenodo_recent(days: int) -> list[dict]:
     data = json.loads(fetch(
         f"https://zenodo.org/api/records?q={q}&sort=mostrecent&size=25"
     ))
+    rows = data.get("hits", {}).get("hits", [])
+    in_window = 0
     out = []
-    for hit in data.get("hits", {}).get("hits", []):
+    for hit in rows:
         created = datetime.fromisoformat(hit["created"].replace("Z", "+00:00"))
         if created < cutoff:
             continue
+        in_window += 1
         meta = hit.get("metadata", {})
         title = meta.get("title", "")
         desc = strip_tags(meta.get("description", "") or "")
@@ -674,7 +705,7 @@ def zenodo_recent(days: int) -> list[dict]:
             "created": created.date().isoformat(),
             "snippets": context_lines(blob, MODEL_RE),
         })
-    return out
+    return out, len(rows) == 25 and in_window == len(rows)
 
 
 # ----------------------------------------------------------------- feeds ----
@@ -743,8 +774,13 @@ def index_claims(known: dict) -> list[dict]:
     if not url:
         raise RuntimeError("no index URL configured (FINDER_INDEX_URL)")
     html = fetch(url, timeout=90)
+    articles = re.findall(r'<article class="claim"[^>]*id="([^"]+)"(.*?)</article>', html, re.S)
+    # An index with zero claim articles is not an index with zero unmatched
+    # claims; it is a page whose markup moved out from under the parser.
+    if not articles:
+        raise RuntimeError("no claim articles parsed - page structure changed?")
     out = []
-    for cid, body in re.findall(r'<article class="claim"[^>]*id="([^"]+)"(.*?)</article>', html, re.S):
+    for cid, body in articles:
         links = re.findall(r'href="(https?://[^"]+)"', body)
         hit = False
         for u in links:
@@ -771,21 +807,37 @@ def index_claims(known: dict) -> list[dict]:
 # ----------------------------------------------------------- watched repos ----
 
 def repo_commits(repo: str, days: int) -> list[dict]:
-    """Commits pushed to a watched artifact repo within the window."""
-    cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
-    rows = json.loads(fetch(
-        f"https://api.github.com/repos/{repo}/commits?since={cutoff}&per_page=30"
-    ))
+    """Commits pushed to a watched artifact repo within the window.
+
+    Read from the repo's public Atom feed rather than the REST API: the feed
+    is keyless and draws nothing from the 60-per-hour unauthenticated API
+    budget, which the PR search needs more. The feed carries the newest ~20
+    commits of the default branch - plenty for repos whose whole point is
+    that a commit is an event.
+    """
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    atom = {"a": "http://www.w3.org/2005/Atom"}
+    root = ET.fromstring(fetch(f"https://github.com/{repo}/commits.atom"))
     out = []
-    for c in rows:
-        msg = (c.get("commit", {}).get("message") or "").splitlines()[0]
+    for e in root.findall("a:entry", atom):
+        stamp = e.findtext("a:updated", "", atom)
+        try:
+            when = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if when < cutoff:
+            continue
+        link = e.find("a:link", atom)
+        url = link.get("href", "") if link is not None else ""
+        sha = url.rsplit("/", 1)[-1][:12]
+        msg = re.sub(r"\s+", " ", e.findtext("a:title", "", atom) or "").strip()
         out.append({
-            "sha": c.get("sha", "")[:12],
-            "key": f"{repo}@{c.get('sha', '')[:12]}",
+            "sha": sha,
+            "key": f"{repo}@{sha}",
             "repo": repo,
             "msg": msg[:110],
-            "url": c.get("html_url", ""),
-            "date": (c.get("commit", {}).get("committer", {}).get("date") or "")[:10],
+            "url": url,
+            "date": stamp[:10],
         })
     return out
 
@@ -795,14 +847,20 @@ def repo_commits(repo: str, days: int) -> list[dict]:
 def starfleet_numbers() -> list[int]:
     """Erdős numbers on Star Fleet Math's proposed-solutions list."""
     html = fetch(STARFLEET_URL)
-    return sorted({int(m.group(1)) for m in ERDOS_NUM_RE.finditer(html)})
+    nums = sorted({int(m.group(1)) for m in ERDOS_NUM_RE.finditer(html)})
+    if not nums:
+        raise RuntimeError("no Erdos numbers found - page structure changed?")
+    return nums
 
 
 def epoch_problem_slugs() -> list[str]:
     """Problem pages on Epoch AI's FrontierMath open-problems index."""
     html = fetch(EPOCH_URL)
     slugs = {m.group(1) for m in re.finditer(r'href="/frontiermath/open-problems/([\w-]+)"', html)}
-    return sorted(s for s in slugs if s not in ("about",) and not s.startswith("about"))
+    out = sorted(s for s in slugs if s not in ("about",) and not s.startswith("about"))
+    if not out:
+        raise RuntimeError("no problem slugs found - page structure changed?")
+    return out
 
 
 def firstproof_items() -> list[str]:
@@ -813,6 +871,8 @@ def firstproof_items() -> list[str]:
         for u in re.findall(r'href="([^"]+)"', html):
             if re.search(r"\.pdf$|batch|arxiv\.org|cmsa\.fas", u, re.I):
                 out.add(u if u.startswith("http") else f"https://1stproof.org/{u.lstrip('/')}")
+    if not out:
+        raise RuntimeError("no document links found - page structure changed?")
     return sorted(out)
 
 
@@ -954,6 +1014,7 @@ def main() -> int:
                   f"where disclosures never appear. Re-run before treating "
                   f"this window as covered.**\n")
         state["seen_arxiv"] = sorted(seen)
+        save_state(state)
 
     if "github" in wanted:
         for cfg in PR_REPOS:
@@ -980,6 +1041,7 @@ def main() -> int:
                     print(f"  - {s}")
             print(f"\n_({len(prs)} matching PRs in window, {len(new_prs)} new)_\n")
             state[state_key] = sorted(seen)
+            save_state(state)
 
     if "erdos" in wanted:
         print("## Tao's AI-contributions ledger (teorth/erdosproblems wiki)\n")
@@ -1021,15 +1083,21 @@ def main() -> int:
               f"{len(secondary)} secondary (literature/formalization/rewrite/compute, "
               f"not solves) on uncatalogued problems)_\n")
         state["seen_erdos_rows"] = sorted(seen)
+        save_state(state)
 
     if "zenodo" in wanted:
         print("## Zenodo (resolution-flavoured records mentioning a model)\n")
         seen = set(state["seen_zenodo"])
+        truncated = False
         try:
-            records = zenodo_recent(args.days)
+            records, truncated = zenodo_recent(args.days)
         except Exception as e:
             records = []
             print(f"_(Zenodo scan failed: {e})_")
+        if truncated:
+            print("_(all 25 rows the unauthenticated API returns were inside "
+                  "the window - older matches in this window exist and were "
+                  "NOT scanned)_\n")
         new_records = [r for r in records if r["id"] not in seen]
         for r in new_records:
             seen.add(r["id"])
@@ -1041,6 +1109,7 @@ def main() -> int:
             print()
         print(f"_({len(records)} matching records in window, {len(new_records)} new)_\n")
         state["seen_zenodo"] = sorted(seen)
+        save_state(state)
 
     if "index" in wanted:
         print("## External claim index (claims matching nothing in our catalog)\n")
@@ -1060,6 +1129,7 @@ def main() -> int:
               f"since last run. Unmatched is a triage signal, not a verdict - the "
               f"index also lists partials, re-proofs and things we excluded on purpose.)_\n")
         state["seen_index"] = sorted(seen)
+        save_state(state)
 
     if "repos" in wanted:
         print("## Watched artifact repositories (new commits)\n")
@@ -1077,9 +1147,9 @@ def main() -> int:
                 seen.add(c["key"])
                 shown += 1
                 print(f"- **{c['repo']}** [{c['msg']}]({c['url']}) - {c['date']}")
-            time.sleep(1)  # unauthenticated API budget
         print(f"\n_({shown} new commits across {len(WATCHED_REPOS)} watched repos)_\n")
         state["seen_repo_commits"] = sorted(seen)
+        save_state(state)
 
     if "trackers" in wanted:
         print("## Trackers (Star Fleet Math, Epoch AI, First Proof)\n")
@@ -1118,6 +1188,7 @@ def main() -> int:
             print(f"_(First Proof scan failed: {e})_")
         print(f"\n_({shown} new tracker items)_\n")
         state["seen_tracker_items"] = sorted(seen)
+        save_state(state)
 
     if "feeds" in wanted:
         print("## Announcement feeds\n")
@@ -1137,6 +1208,7 @@ def main() -> int:
                 print(f"- **{it['feed']}** [{it['title']}]({it['url']}) - {it['date']}")
         print(f"\n_({shown} new resolution-flavoured feed items)_")
         state["seen_feed_items"] = sorted(seen)
+        save_state(state)
 
     save_state(state)
     # Persist what this run learned about each host's tolerance, so the next
