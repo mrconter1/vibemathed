@@ -672,57 +672,112 @@ export function InboxList() {
     setOpen(conversation);
   }, []);
 
-  if (loaded && !signedIn) {
-    return (
-      <p className="text-sm leading-relaxed text-[var(--ink-secondary)]">
-        Sign in to read your inbox.
-      </p>
-    );
-  }
+  // Whether the composer button belongs in the heading row: only over the
+  // list, where starting a conversation is the next thing someone might do.
+  // An open thread and the composer itself have their own ways forward.
+  const listView = items !== null && !open && !composing && !error;
 
-  if (error) {
-    return <p className="text-sm text-[var(--status-critical)]">{error}</p>;
-  }
+  const body = (() => {
+    if (loaded && !signedIn) {
+      return (
+        <p className="text-sm leading-relaxed text-[var(--ink-secondary)]">
+          Sign in to read your inbox.
+        </p>
+      );
+    }
 
-  if (items === null) {
-    return (
-      <div className="space-y-3" aria-hidden>
-        <div className="h-20 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)]" />
-        <div className="h-20 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)]" />
-      </div>
-    );
-  }
+    if (error) {
+      return <p className="text-sm text-[var(--status-critical)]">{error}</p>;
+    }
 
-  if (open) {
+    if (items === null) {
+      return (
+        <div className="space-y-3" aria-hidden>
+          <div className="h-20 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)]" />
+          <div className="h-20 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)]" />
+        </div>
+      );
+    }
+
+    if (open) {
+      return (
+        <ConversationView
+          conversation={open}
+          onBack={() => setOpen(null)}
+          onReplied={(reply) => onReplied(open.id, reply)}
+        />
+      );
+    }
+
+    if (composing) {
+      return <ComposeView onBack={() => setComposing(false)} onSent={onSent} />;
+    }
+
+    const pages = Math.max(1, Math.ceil(items.length / PER_PAGE));
+    const current = Math.min(page, pages - 1);
+    const visible = items.slice(current * PER_PAGE, (current + 1) * PER_PAGE);
+
     return (
-      <ConversationView
-        conversation={open}
-        onBack={() => setOpen(null)}
-        onReplied={(reply) => onReplied(open.id, reply)}
+      <ListBody
+        items={items}
+        visible={visible}
+        pages={pages}
+        current={current}
+        opening={opening}
+        onOpen={openThread}
+        onWarm={warm}
+        setPage={setPage}
       />
     );
-  }
+  })();
 
-  if (composing) {
-    return <ComposeView onBack={() => setComposing(false)} onSent={onSent} />;
-  }
-
-  const pages = Math.max(1, Math.ceil(items.length / PER_PAGE));
-  const current = Math.min(page, pages - 1);
-  const visible = items.slice(current * PER_PAGE, (current + 1) * PER_PAGE);
-
+  // The heading and the button share a row: the page title and the one
+  // action that belongs at the top level, rather than a title, a gap, and a
+  // lone right-floated button under it.
   return (
     <div>
-      <div className="mb-3 flex justify-end">
-        <button
-          type="button"
-          onClick={() => setComposing(true)}
-          className="rounded-md bg-[var(--accent-blue)] px-3 py-1.5 text-xs text-white transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent-blue)]"
-        >
-          Send new message
-        </button>
+      <div className="mb-6 flex items-center justify-between gap-3">
+        <h1 className="font-serif text-3xl tracking-tight text-[var(--ink)]">
+          Inbox
+        </h1>
+        {listView && (
+          <button
+            type="button"
+            onClick={() => setComposing(true)}
+            className="rounded-md bg-[var(--accent-blue)] px-3 py-1.5 text-xs text-white transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent-blue)]"
+          >
+            Send new message
+          </button>
+        )}
       </div>
+      {body}
+    </div>
+  );
+}
 
+/// The list and its pager, split out so the view dispatch above stays a list
+/// of one-liners.
+function ListBody({
+  items,
+  visible,
+  pages,
+  current,
+  opening,
+  onOpen,
+  onWarm,
+  setPage,
+}: {
+  items: InboxSummary[];
+  visible: InboxSummary[];
+  pages: number;
+  current: number;
+  opening: string | null;
+  onOpen: (id: string) => Promise<void>;
+  onWarm: (id: string) => void;
+  setPage: (page: number) => void;
+}) {
+  return (
+    <div>
       {items.length === 0 ? (
         <p className="rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-6 text-center text-sm text-[var(--ink-muted)]">
           No messages. When a curator answers a report you sent or decides on
@@ -735,8 +790,8 @@ export function InboxList() {
             <div key={item.id} className={opening === item.id ? "opacity-50" : ""}>
               <SummaryRow
                 item={item}
-                onOpen={() => void openThread(item.id)}
-                onWarm={() => warm(item.id)}
+                onOpen={() => void onOpen(item.id)}
+                onWarm={() => onWarm(item.id)}
               />
             </div>
           ))}

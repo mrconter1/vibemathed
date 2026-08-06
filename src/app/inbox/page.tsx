@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { InboxList } from "@/components/InboxList";
 
 // Every signed-in reader has one of these. The site could already write to
@@ -18,20 +17,14 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// The shell is just the column; the heading lives in InboxList, which knows
+// whether it is showing the list (heading plus the composer button on one
+// row) or an open conversation. No intro paragraph and no back link: the
+// header's own navigation covers leaving, the empty state teaches the
+// mechanics to whoever needs them, and everything else was noise above mail.
 export default function InboxPage() {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 pb-4 pt-8 sm:px-8 sm:pt-10">
-      <Link href="/" className="text-xs text-[var(--accent-blue)] hover:underline">
-        ← All entries
-      </Link>
-
-      {/* No intro paragraph: the list explains itself, the empty state
-          explains the mechanics to whoever actually needs them, and a privacy
-          disclaimer above someone's mail read as noise. */}
-      <h1 className="mb-6 mt-4 font-serif text-3xl tracking-tight text-[var(--ink)]">
-        Inbox
-      </h1>
-
       <InboxList />
     </main>
   );
