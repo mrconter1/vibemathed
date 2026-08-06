@@ -11,15 +11,15 @@ import {
 import { GranularityToggle, TimeAxis } from "@/components/GranularityToggle";
 import { useChartSettings } from "@/lib/chart-settings";
 
-// The hero curve: the whole record over time. Its card spans the full grid
-// row, so the plot renders from two viewBox widths - the shared 640 for
-// single-column layouts and a wide 1360 for desktop - switched purely by CSS
-// so there is no hydration jump. Both fill their container's width, which
-// lands the wide variant at the same rendered height (and text size) as the
-// sibling half-row charts.
+// The whole record over time, in the same half-width column as every other
+// chart on the page - a fixed 640 viewBox like its siblings, not a special
+// wide one. It used to be a full-width hero row with its own 1360-wide
+// variant so labels rendered at the sibling charts' size; now that its card
+// is an ordinary column, a still-1360 viewBox would render into a
+// half-width container and shrink every label and stroke by half - which is
+// exactly the "zoomed out" bug this fixed.
 
-const NARROW_W = 640;
-const WIDE_W = 1360;
+const VIEW_W = 640;
 const VIEW_H = 360;
 const MARGIN = { top: 20, right: 20, bottom: 40, left: 44 };
 const PLOT_H = VIEW_H - MARGIN.top - MARGIN.bottom;
@@ -37,12 +37,12 @@ interface PlotData {
   interactive: boolean;
 }
 
-function Plot({ viewW, data }: { viewW: number; data: PlotData }) {
+function Plot({ data }: { data: PlotData }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hover, setHover] = useState<number | null>(null);
   const { range, cumulative, yMax, gran, interactive } = data;
 
-  const plotW = viewW - MARGIN.left - MARGIN.right;
+  const plotW = VIEW_W - MARGIN.left - MARGIN.right;
   const x = (i: number) =>
     MARGIN.left + (range.length === 1 ? plotW / 2 : (i / (range.length - 1)) * plotW);
   const yScale = (v: number) => MARGIN.top + PLOT_H - (v / yMax) * PLOT_H;
@@ -57,7 +57,7 @@ function Plot({ viewW, data }: { viewW: number; data: PlotData }) {
     const svg = svgRef.current;
     if (!svg) return;
     const rect = svg.getBoundingClientRect();
-    const svgX = ((e.clientX - rect.left) / rect.width) * viewW;
+    const svgX = ((e.clientX - rect.left) / rect.width) * VIEW_W;
     const t = (svgX - MARGIN.left) / plotW;
     const i = Math.round(t * (range.length - 1));
     setHover(Math.min(Math.max(i, 0), range.length - 1));
@@ -66,10 +66,10 @@ function Plot({ viewW, data }: { viewW: number; data: PlotData }) {
   const active = interactive && hover !== null ? hover : null;
 
   return (
-    <div className="relative" style={{ aspectRatio: `${viewW} / ${VIEW_H}` }}>
+    <div className="relative" style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}` }}>
       <svg
         ref={svgRef}
-        viewBox={`0 0 ${viewW} ${VIEW_H}`}
+        viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         className="h-full w-full"
         role="img"
         aria-label={`Cumulative tracked problems over time, rising to ${total}`}
@@ -78,7 +78,7 @@ function Plot({ viewW, data }: { viewW: number; data: PlotData }) {
           <g key={t}>
             <line
               x1={MARGIN.left}
-              x2={viewW - MARGIN.right}
+              x2={VIEW_W - MARGIN.right}
               y1={yScale(t)}
               y2={yScale(t)}
               stroke="var(--hairline)"
@@ -107,13 +107,7 @@ function Plot({ viewW, data }: { viewW: number; data: PlotData }) {
           strokeLinecap="round"
         />
 
-        <TimeAxis
-          range={range}
-          gran={gran}
-          x={x}
-          y={VIEW_H - MARGIN.bottom + 18}
-          scale={viewW / NARROW_W}
-        />
+        <TimeAxis range={range} gran={gran} x={x} y={VIEW_H - MARGIN.bottom + 18} />
 
         {active !== null && (
           <g pointerEvents="none">
@@ -154,7 +148,7 @@ function Plot({ viewW, data }: { viewW: number; data: PlotData }) {
         <div
           className="pointer-events-none absolute z-10 whitespace-nowrap rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-2.5 py-1.5 text-xs shadow-sm"
           style={{
-            left: `${(x(active) / viewW) * 100}%`,
+            left: `${(x(active) / VIEW_W) * 100}%`,
             top: `${(yScale(cumulative[active]) / VIEW_H) * 100}%`,
             transform: "translate(-50%, calc(-100% - 10px))",
           }}
@@ -209,12 +203,7 @@ export function CumulativeChart({ problems }: { problems: ChartProblem[] }) {
       </p>
 
       <div className="mt-3 flex flex-1 flex-col justify-center">
-        <div className="lg:hidden">
-          <Plot viewW={NARROW_W} data={data} />
-        </div>
-        <div className="hidden lg:block">
-          <Plot viewW={WIDE_W} data={data} />
-        </div>
+        <Plot data={data} />
       </div>
 
       {/* Bucket picker, centered below the plot on every time chart;
