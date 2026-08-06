@@ -19,6 +19,7 @@ import { prisma } from "@/lib/prisma";
 import type { ProfileLinks } from "@/lib/profile-links";
 import {
   CHANGELOG_TYPES,
+  collapseBursts,
   type ActivityView,
   type SiteActivityView,
 } from "@/lib/activity";
@@ -85,7 +86,10 @@ export const PROBLEM_SELECT = {
   sourceUrl: true,
   sourceName: true,
   createdAt: true,
-  links: { select: { label: true, url: true, kind: true }, orderBy: { position: "asc" } },
+  links: {
+    select: { label: true, url: true, kind: true },
+    orderBy: { position: "asc" },
+  },
   upvotes: true,
   downvotes: true,
   submittedBy: { select: { pseudonym: true } },
@@ -226,7 +230,9 @@ export async function getPublishedProblems(): Promise<ProblemWithTrends[]> {
 
 /// One problem by its public slug, or null when it does not exist or is not
 /// published. Tagged individually so a vote only busts that entry's page.
-export async function getProblemBySlug(slug: string): Promise<ProblemWithVotes | null> {
+export async function getProblemBySlug(
+  slug: string,
+): Promise<ProblemWithVotes | null> {
   "use cache";
   cacheTag("problems", `problem-${slug}`);
   cacheLife("minutes");
@@ -297,16 +303,18 @@ export async function getActivity(slug: string): Promise<ActivityView[]> {
     },
   });
 
-  return rows.map((a) => ({
-    id: a.id,
-    userName: resolveSnapshot(a.userName, a.userId !== null),
-    createdAtIso: a.createdAt.toISOString(),
-    type: a.type,
-    field: a.field,
-    oldValue: a.oldValue,
-    newValue: a.newValue,
-    createdAt: relativeFallback(a.createdAt, formatCommentDate(a.createdAt)),
-  }));
+  return collapseBursts(
+    rows.map((a) => ({
+      id: a.id,
+      userName: resolveSnapshot(a.userName, a.userId !== null),
+      createdAtIso: a.createdAt.toISOString(),
+      type: a.type,
+      field: a.field,
+      oldValue: a.oldValue,
+      newValue: a.newValue,
+      createdAt: relativeFallback(a.createdAt, formatCommentDate(a.createdAt)),
+    })),
+  );
 }
 
 /// Site-wide recent activity, newest first, across published entries only.
@@ -314,7 +322,9 @@ export async function getActivity(slug: string): Promise<ActivityView[]> {
 /// Same type filter as the per-entry changelog: votes are recorded but not
 /// shown, because an unbounded "X voted" stream would bury the edits and
 /// discussion this is meant to surface.
-export async function getRecentActivity(limit = 8): Promise<SiteActivityView[]> {
+export async function getRecentActivity(
+  limit = 8,
+): Promise<SiteActivityView[]> {
   "use cache";
   cacheTag("activity");
   cacheLife("minutes");
@@ -325,7 +335,11 @@ export async function getRecentActivity(limit = 8): Promise<SiteActivityView[]> 
       problem: { status: "published" },
     },
     orderBy: { createdAt: "desc" },
-    take: limit,
+    // Over-fetch, because collapsing is what decides how many rows this
+    // actually yields. One person changing twelve fields used to fill the
+    // whole feed; now it is one line, and the slice has to be deep enough to
+    // still find `limit` distinct things underneath it.
+    take: limit * 12,
     select: {
       id: true,
       userId: true,
@@ -340,19 +354,21 @@ export async function getRecentActivity(limit = 8): Promise<SiteActivityView[]> 
     },
   });
 
-  return rows.map((a) => ({
-    id: a.id,
-    userName: resolveSnapshot(a.userName, a.userId !== null),
-    userPseudonym: a.user?.pseudonym ?? null,
-    type: a.type,
-    field: a.field,
-    oldValue: a.oldValue,
-    newValue: a.newValue,
-    createdAt: relativeFallback(a.createdAt, formatCommentDate(a.createdAt)),
-    createdAtIso: a.createdAt.toISOString(),
-    problemName: a.problem.name,
-    problemSlug: a.problem.slug,
-  }));
+  return collapseBursts(
+    rows.map((a) => ({
+      id: a.id,
+      userName: resolveSnapshot(a.userName, a.userId !== null),
+      userPseudonym: a.user?.pseudonym ?? null,
+      type: a.type,
+      field: a.field,
+      oldValue: a.oldValue,
+      newValue: a.newValue,
+      createdAt: relativeFallback(a.createdAt, formatCommentDate(a.createdAt)),
+      createdAtIso: a.createdAt.toISOString(),
+      problemName: a.problem.name,
+      problemSlug: a.problem.slug,
+    })),
+  ).slice(0, limit);
 }
 
 /// A member's public profile: their published contributions and nothing else.
@@ -406,7 +422,9 @@ export interface UserProfile {
 }
 
 /// Public profile by CURRENT pseudonym, or null when no such member exists.
-export async function getUserProfile(pseudonym: string): Promise<UserProfile | null> {
+export async function getUserProfile(
+  pseudonym: string,
+): Promise<UserProfile | null> {
   "use cache";
   cacheTag("users");
   cacheLife("minutes");
@@ -414,56 +432,66 @@ export async function getUserProfile(pseudonym: string): Promise<UserProfile | n
   const user = await prisma.user.findUnique({
     where: { pseudonym },
     select: {
-      id: true, pseudonym: true, createdAt: true, bio: true,
-      role: true, verified: true, verifiedNote: true,
-      linkWebsite: true, linkArxiv: true, linkOrcid: true,
-      linkGithub: true, linkLinkedin: true,
+      id: true,
+      pseudonym: true,
+      createdAt: true,
+      bio: true,
+      role: true,
+      verified: true,
+      verifiedNote: true,
+      linkWebsite: true,
+      linkArxiv: true,
+      linkOrcid: true,
+      linkGithub: true,
+      linkLinkedin: true,
     },
   });
   if (!user?.pseudonym) return null;
 
   const publishedOnly = { problem: { status: "published" as const } };
-  const [entries, comments, commentCount, edits, editCount] = await Promise.all([
-    prisma.problem.findMany({
-      where: { submittedById: user.id, status: "published" },
-      orderBy: { createdAt: "desc" },
-      select: {
-        slug: true,
-        name: true,
-        solveDate: true,
-        solveType: true,
-        resolution: true,
-        upvotes: true,
-        downvotes: true,
-      },
-    }),
-    prisma.comment.findMany({
-      where: { userId: user.id, ...publishedOnly },
-      orderBy: { createdAt: "desc" },
-      take: 50,
-      select: {
-        id: true,
-        body: true,
-        createdAt: true,
-        problem: { select: { name: true, slug: true } },
-      },
-    }),
-    prisma.comment.count({ where: { userId: user.id, ...publishedOnly } }),
-    prisma.problemActivity.findMany({
-      where: { userId: user.id, type: "updated", ...publishedOnly },
-      orderBy: { createdAt: "desc" },
-      take: 15,
-      select: {
-        id: true,
-        field: true,
-        createdAt: true,
-        problem: { select: { name: true, slug: true } },
-      },
-    }),
-    prisma.problemActivity.count({
-      where: { userId: user.id, type: "updated", ...publishedOnly },
-    }),
-  ]);
+  const [entries, comments, commentCount, edits, editCount] = await Promise.all(
+    [
+      prisma.problem.findMany({
+        where: { submittedById: user.id, status: "published" },
+        orderBy: { createdAt: "desc" },
+        select: {
+          slug: true,
+          name: true,
+          solveDate: true,
+          solveType: true,
+          resolution: true,
+          upvotes: true,
+          downvotes: true,
+        },
+      }),
+      prisma.comment.findMany({
+        where: { userId: user.id, ...publishedOnly },
+        orderBy: { createdAt: "desc" },
+        take: 50,
+        select: {
+          id: true,
+          body: true,
+          createdAt: true,
+          problem: { select: { name: true, slug: true } },
+        },
+      }),
+      prisma.comment.count({ where: { userId: user.id, ...publishedOnly } }),
+      prisma.problemActivity.findMany({
+        where: { userId: user.id, type: "updated", ...publishedOnly },
+        orderBy: { createdAt: "desc" },
+        take: 15,
+        select: {
+          id: true,
+          field: true,
+          createdAt: true,
+          problem: { select: { name: true, slug: true } },
+        },
+      }),
+      prisma.problemActivity.count({
+        where: { userId: user.id, type: "updated", ...publishedOnly },
+      }),
+    ],
+  );
 
   const contributions = entries.length + editCount + commentCount;
 

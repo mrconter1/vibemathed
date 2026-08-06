@@ -13,9 +13,7 @@ function truncate(value: string | null, max = 90): string {
 }
 
 function Quoted({ children }: { children: string }) {
-  return (
-    <span className="text-[var(--ink)]">&ldquo;{children}&rdquo;</span>
-  );
+  return <span className="text-[var(--ink)]">&ldquo;{children}&rdquo;</span>;
 }
 
 function describe(a: ActivityView) {
@@ -32,20 +30,33 @@ function describe(a: ActivityView) {
       const field = a.field ?? "a field";
       const hadOld = a.oldValue !== null && a.oldValue.trim() !== "";
       const hasNew = a.newValue !== null && a.newValue.trim() !== "";
+      // On the entry's own changelog the other fields are NAMED rather than
+      // counted. The reader is already here and wants to know what moved; a
+      // bare "and 9 others" would make them open the diff to find out.
+      const others = a.alsoFields?.length
+        ? `, also ${a.alsoFields.join(", ")}`
+        : "";
       if (!hadOld && hasNew) {
         return (
           <>
             set {field} to <Quoted>{truncate(a.newValue)}</Quoted>
+            {others}
           </>
         );
       }
       if (hadOld && !hasNew) {
-        return <>cleared {field}</>;
+        return (
+          <>
+            cleared {field}
+            {others}
+          </>
+        );
       }
       return (
         <>
           changed {field} from <Quoted>{truncate(a.oldValue)}</Quoted> to{" "}
           <Quoted>{truncate(a.newValue)}</Quoted>
+          {others}
         </>
       );
     }
@@ -74,7 +85,9 @@ export function Changelog({ activity }: { activity: ActivityView[] }) {
           >
             <span className="font-medium text-[var(--ink)]">{a.userName}</span>
             {/* break-words: quoted old/new values can be unbreakable URLs */}
-            <span className="min-w-0 flex-1 break-words text-[var(--ink-secondary)]">{describe(a)}</span>
+            <span className="min-w-0 flex-1 break-words text-[var(--ink-secondary)]">
+              {describe(a)}
+            </span>
             <span className="shrink-0 font-mono text-[11px] text-[var(--ink-muted)]">
               <RelativeTime iso={a.createdAtIso} fallback={a.createdAt} />
             </span>
