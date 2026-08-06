@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { RESOLUTION_METHODS, type MathProblem, type ResolutionMethod } from "@/lib/problems";
+import { RESOLUTION_METHODS, type ChartProblem, type ResolutionMethod } from "@/lib/problems";
 import { RESOLUTION_METHOD } from "@/lib/display";
 import { bucketKey, bucketRange, bucketTooltipLabel } from "@/lib/time-buckets";
 import { GranularityToggle, TimeAxis } from "@/components/GranularityToggle";
@@ -28,7 +28,7 @@ function niceMax(v: number, step: number) {
   return Math.max(step, Math.ceil(v / step) * step);
 }
 
-export function MethodGrowthChart({ problems }: { problems: MathProblem[] }) {
+export function MethodGrowthChart({ problems }: { problems: ChartProblem[] }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hover, setHover] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);

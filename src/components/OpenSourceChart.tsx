@@ -1,4 +1,4 @@
-import type { MathProblem } from "@/lib/problems";
+import type { ChartProblem } from "@/lib/problems";
 import { RatioPie } from "@/components/RatioPie";
 
 // Model strings are free-form and often name several systems (see ModelsChart),
@@ -9,7 +9,7 @@ import { RatioPie } from "@/components/RatioPie";
 // the ones present today, so future submissions classify correctly.
 const OPEN_WEIGHTS = /deepseek|glm|hunyuan|\bhy3\b|qwen|kimi|llama|mistral|seed prover/i;
 
-export function OpenSourceChart({ problems }: { problems: MathProblem[] }) {
+export function OpenSourceChart({ problems }: { problems: ChartProblem[] }) {
   const open = problems.filter((p) =>
     OPEN_WEIGHTS.test(`${p.model} ${p.modelMaker ?? ""}`),
   ).length;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AI_CONTRIBUTIONS, type AiContribution, type MathProblem } from "@/lib/problems";
+import { AI_CONTRIBUTIONS, type AiContribution, type ChartProblem } from "@/lib/problems";
 import { AI_CONTRIBUTION } from "@/lib/display";
 import { bucketKey, bucketRange, bucketTooltipLabel } from "@/lib/time-buckets";
 import { GranularityToggle, TimeAxis } from "@/components/GranularityToggle";
@@ -30,7 +30,7 @@ function niceMax(v: number, step: number) {
   return Math.max(step, Math.ceil(v / step) * step);
 }
 
-export function ContributionGrowthChart({ problems }: { problems: MathProblem[] }) {
+export function ContributionGrowthChart({ problems }: { problems: ChartProblem[] }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hover, setHover] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);

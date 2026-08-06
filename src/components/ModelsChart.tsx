@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { MODEL_FAMILIES } from "@/lib/display";
-import type { MathProblem } from "@/lib/problems";
+import type { ChartProblem } from "@/lib/problems";
 import { bucketKey, bucketRange, bucketTooltipLabel } from "@/lib/time-buckets";
 import { GranularityToggle, TimeAxis } from "@/components/GranularityToggle";
 import { useChartSettings } from "@/lib/chart-settings";
@@ -35,7 +35,7 @@ function niceMax(v: number, step: number) {
   return Math.max(step, Math.ceil(v / step) * step);
 }
 
-export function ModelsChart({ problems }: { problems: MathProblem[] }) {
+export function ModelsChart({ problems }: { problems: ChartProblem[] }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hover, setHover] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);

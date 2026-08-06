@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ageAtSolve, type MathProblem } from "@/lib/problems";
+import { ageAtSolve, type ChartProblem } from "@/lib/problems";
 import { useChartSettings } from "@/lib/chart-settings";
 import { TeX, deTeX } from "@/components/TeX";
 
@@ -31,7 +31,10 @@ const LABEL_THRESHOLD = 40;
 
 const VIEW_W = 640;
 const VIEW_H = 360;
-const MARGIN = { top: 20, right: 24, bottom: 44, left: 56 };
+// Top margin is label headroom: stacked outlier labels climb, and 20px put
+// the top row outside the card. Cheaper than it looks - the plot loses 14px
+// of height nobody reads, the labels stop colliding with the frame.
+const MARGIN = { top: 34, right: 24, bottom: 44, left: 56 };
 const PLOT_W = VIEW_W - MARGIN.left - MARGIN.right;
 const PLOT_H = VIEW_H - MARGIN.top - MARGIN.bottom;
 
@@ -45,7 +48,7 @@ function ticks(max: number, step: number) {
   return out;
 }
 
-export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
+export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const router = useRouter();
   // Legend chips toggle point groups (proved / disproved / under review),
@@ -69,7 +72,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
   const plottable = enriched.filter(
     (
       d,
-    ): d is { problem: MathProblem; age: number; significance: number; claimed: boolean } =>
+    ): d is { problem: ChartProblem; age: number; significance: number; claimed: boolean } =>
       d.age !== null && d.significance !== null,
   );
   const pending = enriched.length - plottable.length;
@@ -112,16 +115,16 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
       const cx = x(d.age);
       // Estimated rendered width at fontSize 14 - the collision test must use
       // the actual text lengths, or long neighbours still overprint.
-      const w = d.problem.shortName.length * 7.5 + 8;
+      const w = d.problem.shortName.length * 6.4 + 8;
       let labelY = y(d.significance) - 12;
       // Lift one line at a time until no placed label overlaps horizontally
       // at this height.
       for (let guard = 0; guard < 6; guard++) {
         const hit = placed.some(
-          (p) => Math.abs(p.cx - cx) < (p.w + w) / 2 && Math.abs(p.labelY - labelY) < 14,
+          (p) => Math.abs(p.cx - cx) < (p.w + w) / 2 && Math.abs(p.labelY - labelY) < 13,
         );
         if (!hit) break;
-        labelY -= 14;
+        labelY -= 13;
       }
       placed.push({ cx, w, labelY });
       labelYBySlug.set(d.problem.slug, labelY);
@@ -230,7 +233,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
               y={VIEW_H - MARGIN.bottom + 20}
               textAnchor="middle"
               className="font-mono"
-              style={{ fontSize: 14, fill: "var(--ink-muted)", fontVariantNumeric: "tabular-nums" }}
+              style={{ fontSize: 12, fill: "var(--ink-muted)", fontVariantNumeric: "tabular-nums" }}
             >
               {t}
             </text>
@@ -239,7 +242,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
             x={MARGIN.left + PLOT_W / 2}
             y={VIEW_H - 6}
             textAnchor="middle"
-            style={{ fontSize: 14, fill: "var(--ink-secondary)" }}
+            style={{ fontSize: 12.5, fill: "var(--ink-secondary)" }}
           >
             Years open when resolved
           </text>
@@ -253,7 +256,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
               dominantBaseline="middle"
               textAnchor="end"
               className="font-mono"
-              style={{ fontSize: 14, fill: "var(--ink-muted)", fontVariantNumeric: "tabular-nums" }}
+              style={{ fontSize: 12, fill: "var(--ink-muted)", fontVariantNumeric: "tabular-nums" }}
             >
               {t}
             </text>
@@ -263,7 +266,7 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
             y={16}
             textAnchor="middle"
             transform="rotate(-90)"
-            style={{ fontSize: 14, fill: "var(--ink-secondary)" }}
+            style={{ fontSize: 12.5, fill: "var(--ink-secondary)" }}
           >
             Significance (0-100)
           </text>
@@ -325,7 +328,18 @@ export function ReferencesChart({ problems }: { problems: MathProblem[] }) {
                     x={cx}
                     y={labelYBySlug.get(problem.slug) ?? cy - 12}
                     textAnchor={labelAnchor}
-                    style={{ fontSize: 14, fill: "var(--ink-secondary)" }}
+                    // The halo (paint-order trick) is what un-cramps the
+                    // plot: labels sit over gridlines and neighbouring
+                    // points, and a paper-colored stroke behind the glyphs
+                    // buys legibility that 14px type was faking with size.
+                    style={{
+                      fontSize: 12,
+                      fill: "var(--ink-secondary)",
+                      paintOrder: "stroke",
+                      stroke: "var(--paper-raised)",
+                      strokeWidth: 3.5,
+                      strokeLinejoin: "round",
+                    }}
                   >
                     {deTeX(problem.shortName)}
                   </text>

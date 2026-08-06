@@ -1,7 +1,7 @@
-import type { MathProblem } from "@/lib/problems";
+import type { ChartProblem } from "@/lib/problems";
 import { RatioPie } from "@/components/RatioPie";
 
-export function SolveRatioChart({ problems }: { problems: MathProblem[] }) {
+export function SolveRatioChart({ problems }: { problems: ChartProblem[] }) {
   const proved = problems.filter((p) => p.solveType === "proved").length;
   const disproved = problems.filter((p) => p.solveType === "disproved").length;
 

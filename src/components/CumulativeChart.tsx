@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { MathProblem } from "@/lib/problems";
+import type { ChartProblem } from "@/lib/problems";
 import {
   bucketKey,
   bucketRange,
@@ -171,7 +171,7 @@ function Plot({ viewW, data }: { viewW: number; data: PlotData }) {
   );
 }
 
-export function CumulativeChart({ problems }: { problems: MathProblem[] }) {
+export function CumulativeChart({ problems }: { problems: ChartProblem[] }) {
   const [isDesktop, setIsDesktop] = useState(false);
   // Granularity survives reloads (see useChartSettings).
   const { gran, setGran } = useChartSettings("cumulative");

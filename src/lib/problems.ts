@@ -476,6 +476,29 @@ export function assertProblem(value: unknown, index: number): MathProblem {
 }
 
 /** Years a problem was open before resolution, or null if the posed year is unknown. */
+/// What the stats charts actually consume, and ALL they consume. The stats
+/// page used to hand every chart the full MathProblem array - statements,
+/// notes, links, trend counters - and since client components receive their
+/// props serialized, the page shipped the entire catalog's prose to draw a
+/// few hundred dots. This projection is the whole payload now.
+export type ChartProblem = Pick<
+  MathProblem,
+  | "slug"
+  | "name"
+  | "shortName"
+  | "field"
+  | "solveDate"
+  | "solveType"
+  | "resolution"
+  | "resolutionMethod"
+  | "aiContribution"
+  | "model"
+  | "modelMaker"
+  | "verification"
+  | "yearPosed"
+  | "significance"
+>;
+
 export function ageAtSolve(problem: Pick<MathProblem, "yearPosed" | "solveDate">): number | null {
   if (problem.yearPosed === null) return null;
   const solveYear = parseInt(problem.solveDate.slice(0, 4), 10);

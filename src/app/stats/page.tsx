@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getPublishedProblems } from "@/lib/data";
+import type { ChartProblem } from "@/lib/problems";
 import { ContributionGrowthChart } from "@/components/ContributionGrowthChart";
 import { CumulativeChart } from "@/components/CumulativeChart";
 import { MethodGrowthChart } from "@/components/MethodGrowthChart";
@@ -28,11 +29,33 @@ export const metadata: Metadata = {
 export default async function StatsPage() {
   const problems = await getPublishedProblems();
 
+  // The charts are client components, so whatever they receive as props is
+  // serialized into the page payload. Handing them the raw catalog shipped
+  // every statement, note and trend counter to the browser to draw a few
+  // hundred dots - most of this page's weight, and most of its load time.
+  // The projection IS the payload: fourteen fields, nothing prose-sized.
+  const slim: ChartProblem[] = problems.map((p) => ({
+    slug: p.slug,
+    name: p.name,
+    shortName: p.shortName,
+    field: p.field,
+    solveDate: p.solveDate,
+    solveType: p.solveType,
+    resolution: p.resolution,
+    resolutionMethod: p.resolutionMethod,
+    aiContribution: p.aiContribution,
+    model: p.model,
+    modelMaker: p.modelMaker,
+    verification: p.verification,
+    yearPosed: p.yearPosed,
+    significance: p.significance,
+  }));
+
   // Most charts describe SOLVES, so they only see fully resolved entries - a
   // candidate under review, a partial advance or a retracted claim is tracked
   // but has not resolved anything. The tiles and the hero curve describe the
   // whole record.
-  const resolved = problems.filter((p) => p.resolution === "resolved");
+  const resolved = slim.filter((p) => p.resolution === "resolved");
 
   // Month-over-month on the last COMPLETE month, deliberately not a rolling
   // window. Two reasons. A month-to-date comparison shows a fake collapse for
@@ -184,7 +207,7 @@ export default async function StatsPage() {
         {/* Whole record: the scatter itself splits resolved (filled) from
             candidate (hollow) and excludes partial/variant/retracted. */}
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
-          <ReferencesChart problems={problems} />
+          <ReferencesChart problems={slim} />
         </div>
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <ModelsChart problems={resolved} />
@@ -199,7 +222,7 @@ export default async function StatsPage() {
         {/* The hero curve carries a full-width row on its own, and unlike the
             solve charts it counts EVERY tracked entry. */}
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5 lg:col-span-2">
-          <CumulativeChart problems={problems} />
+          <CumulativeChart problems={slim} />
         </div>
         <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
           <SolveRatioChart problems={resolved} />
