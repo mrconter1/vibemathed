@@ -487,6 +487,7 @@ export type ChartProblem = Pick<
   | "name"
   | "shortName"
   | "field"
+  | "fieldGroup"
   | "solveDate"
   | "solveType"
   | "resolution"

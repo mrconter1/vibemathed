@@ -5,6 +5,7 @@ import { ChartCard } from "@/components/ChartCard";
 import type { ChartProblem } from "@/lib/problems";
 import { ContributionGrowthChart } from "@/components/ContributionGrowthChart";
 import { CumulativeChart } from "@/components/CumulativeChart";
+import { FieldsChart } from "@/components/FieldsChart";
 import { MethodGrowthChart } from "@/components/MethodGrowthChart";
 import { Icon, type IconName } from "@/components/Icons";
 import { ModelsChart } from "@/components/ModelsChart";
@@ -40,6 +41,7 @@ export default async function StatsPage() {
     name: p.name,
     shortName: p.shortName,
     field: p.field,
+    fieldGroup: p.fieldGroup,
     solveDate: p.solveDate,
     solveType: p.solveType,
     resolution: p.resolution,
@@ -205,9 +207,14 @@ export default async function StatsPage() {
         <ChartCard>
           <MethodGrowthChart problems={resolved} />
         </ChartCard>
-        {/* The hero curve carries a full-width row on its own, and unlike the
-            solve charts it counts EVERY tracked entry. */}
-        <ChartCard className="lg:col-span-2">
+        {/* The record by area beside the record's total - both count EVERY
+            tracked entry, unlike the solve charts, and the pair reads as
+            "what it is made of" next to "how it has grown". Growth on the
+            right, as asked. */}
+        <ChartCard>
+          <FieldsChart problems={slim} />
+        </ChartCard>
+        <ChartCard>
           <CumulativeChart problems={slim} />
         </ChartCard>
         <ChartCard>

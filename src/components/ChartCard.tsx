@@ -74,8 +74,12 @@ export function ChartCard({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            style={{ width: "min(80vw, 132vh)" }}
-            className="dialog-scroll relative max-h-[85vh] overflow-y-auto rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-6 pt-8 shadow-xl"
+            // 108vh, not 80vh times the SVG aspect: the box also holds the
+            // chart's title, legend and caption, whose height scales with
+            // nothing. The tighter factor leaves room for that chrome, so the
+            // box fits the viewport whole and never grows a scrollbar.
+            style={{ width: "min(80vw, 108vh)" }}
+            className="relative rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-6 pt-8 shadow-xl"
           >
             <button
               type="button"
