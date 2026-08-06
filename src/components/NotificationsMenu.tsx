@@ -47,17 +47,16 @@ export function NotificationsMenu() {
     isAdmin,
     pendingReviews,
     openReports,
-    unreadInbox,
     clearNotifications,
   } = useViewer();
   // Curator queues are notifications too, so they belong on the bell rather
   // than on the account button. They are NOT cleared by opening the panel -
   // a queue stops counting when it is actually emptied, not when it is seen.
   const queued = isAdmin ? pendingReviews + openReports : 0;
-  // Curator mail counts on the bell and clears when the conversation carrying
-  // it is opened, not when the bell is. Contact-form messages arrive as
-  // conversations too, so this is the count for those as well.
-  const badge = notifications + queued + unreadInbox;
+  // Mail is NOT counted here: the envelope beside this bell carries it. The
+  // bell counts what happened near you; the envelope, what was written to
+  // you.
+  const badge = notifications + queued;
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<NotificationItem[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -176,45 +175,9 @@ export function NotificationsMenu() {
             Notifications
           </p>
 
-          {/* Unread curator mail sits above the queues and the feed alike:
-              it is addressed to this person specifically, and it is the one
-              row here that cannot be read without leaving the panel. */}
-          {unreadInbox > 0 && (
-            <ul className="border-b border-[var(--hairline)] py-1">
-              <li>
-                <Link
-                  href="/inbox"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center justify-between gap-2 border-l-2 border-[var(--accent-orange)] px-3.5 py-2 text-xs transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)]"
-                >
-                  <span className="text-[var(--ink)]">
-                    {unreadInbox} unread{" "}
-                    {unreadInbox === 1 ? "message" : "messages"} from the curators
-                  </span>
-                  <span aria-hidden className="text-[var(--ink-muted)]">→</span>
-                </Link>
-              </li>
-            </ul>
-          )}
-
-          {/* Curator work first: these are actionable, the feed below is not. */}
-          {unreadInbox > 0 && (
-            <ul className="border-b border-[var(--hairline)]">
-              <li>
-                <Link
-                  href="/inbox"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center justify-between gap-2 border-l-2 border-[var(--accent-orange)] px-3.5 py-2 text-xs transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)]"
-                >
-                  <span className="text-[var(--ink)]">
-                    {unreadInbox} unread {unreadInbox === 1 ? "message" : "messages"}
-                  </span>
-                  <span aria-hidden className="text-[var(--ink-muted)]">→</span>
-                </Link>
-              </li>
-            </ul>
-          )}
-
+          {/* Curator work first: these are actionable, the feed below is
+              not. Mail is not listed here at all - the envelope beside the
+              bell is its home. */}
           {queued > 0 && (
             <ul className="border-b border-[var(--hairline)] py-1">
               {pendingReviews > 0 && (

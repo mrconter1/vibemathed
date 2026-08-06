@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AuthMenu } from "@/components/AuthMenu";
+import { InboxButton } from "@/components/InboxButton";
 import { NavLinks } from "@/components/NavLinks";
 import { NotificationsMenu } from "@/components/NotificationsMenu";
 
@@ -36,7 +37,9 @@ export function SiteHeader() {
         <NavLinks />
 
         <div className="order-2 ml-auto flex items-center gap-2 sm:order-3">
-          {/* Renders nothing for signed-out visitors. */}
+          {/* Both render nothing for signed-out visitors. Mail before the
+              bell: it is the more personal of the two. */}
+          <InboxButton />
           <NotificationsMenu />
           <AuthMenu />
         </div>

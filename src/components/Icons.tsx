@@ -20,6 +20,7 @@ export type IconName =
   | "flag" // report an entry
   | "pencil" // edit an entry
   | "bell" // notifications
+  | "mail" // the inbox
   | "info" // explanatory tooltips
   | "arrowDown" // sort direction (rotate 180 for ascending)
   | "copy" // copy to clipboard
@@ -201,6 +202,14 @@ const PATHS: Record<IconName, React.ReactNode> = {
         strokeLinejoin="round"
       />
       <path d="M6.6 13.3a1.5 1.5 0 002.8 0" strokeLinecap="round" />
+    </>
+  ),
+  // An envelope: body and flap, nothing else, since at 15px in the header
+  // only the silhouette survives.
+  mail: (
+    <>
+      <path d="M2 3.8h12v8.4H2z" strokeLinejoin="round" />
+      <path d="M2.4 4.4L8 8.8l5.6-4.4" strokeLinecap="round" strokeLinejoin="round" />
     </>
   ),
   // Replaces the "ⓘ" glyph, which the browser rasterised from a font at 11px
