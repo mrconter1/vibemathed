@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """Finds candidate "problem solved with AI" items across several sources:
 
-  1. arXiv: recent papers in math / theory categories whose title or abstract
-     smells like a resolution (conjecture, counterexample, disproof, open
-     problem, ...). For each candidate the HTML full text (when arXiv has one)
-     is fetched and searched for AI-model mentions - that is where AI-use
-     disclosures actually live, not in the abstract.
+  1. arXiv: papers in math / theory categories whose title or abstract smells
+     like a resolution (conjecture, counterexample, disproof, open problem,
+     ...), harvested over OAI-PMH - arXiv's own bulk interface, which does
+     date windows natively (no 12000-result cap, no deep-pagination 500s)
+     and is keyless. Daily runs resume from a checkpoint, so skipped days
+     are covered by the next run. For each candidate the HTML full text
+     (when arXiv has one) is fetched and searched for AI-model mentions -
+     that is where AI-use disclosures actually live, not in the abstract.
+     The search API remains only as a fallback when the harvester fails.
   2. GitHub PRs: google-deepmind/formal-conjectures (any resolution-flavoured
      or AI-mentioning PR) and leanprover-community/mathlib4 (AI-disclosing PRs
      only - mathlib requires disclosure in the PR body, and every mathlib PR
@@ -43,10 +47,9 @@ Usage:
                                                      # github, erdos, zenodo, feeds)
   python scripts/find_ai_solves.py --reset            # forget seen-state first
   python scripts/find_ai_solves.py --since 2026-07-01 --until 2026-08-01
-                                                      # a fixed window; the only
-                                                      # way to reach past ~1 month,
-                                                      # since paging back from now
-                                                      # hits a 12000-result cap
+                                                      # a fixed window (backfills);
+                                                      # same OAI harvest as daily
+                                                      # mode, any size, resumable
 
 Output is a Markdown report on stdout: triage it against the methodology
 (vibemathed.com/methodology) before anything becomes an entry.
@@ -252,6 +255,9 @@ def load_state() -> dict:
     state.setdefault("seen_index", [])
     state.setdefault("seen_repo_commits", [])
     state.setdefault("seen_tracker_items", [])
+    # Last date the default (non --since) arXiv harvest completed through.
+    # A run after a gap resumes from here instead of losing the gap days.
+    state.setdefault("arxiv_oai_until", "")
     return state
 
 
@@ -321,8 +327,94 @@ def catalog_index() -> dict:
 
 # ---------------------------------------------------------------- arXiv ----
 
+# The OAI-PMH harvester: arXiv's own bulk interface, and the primary way this
+# script reads arXiv now. Keyless, date-ranged, resumption-token paginated,
+# ~1000 records per response - none of the search API's failure modes (the
+# 12000-result cap, deep-pagination 500s, the sort-order dependence) exist
+# here, because bulk harvesting is what OAI-PMH is FOR.
+OAI_URL = "https://oaipmh.arxiv.org/oai"
+# The sets covering ARXIV_CATEGORIES. OAI serves whole sets; the category
+# filter runs client-side on each record's own category list.
+OAI_SETS = ["math", "cs", "physics:math-ph", "physics:quant-ph"]
+OAI_NS = {"oai": "http://www.openarchives.org/OAI/2.0/",
+          "ax": "http://arxiv.org/OAI/arXiv/"}
+CATEGORY_SET = set(ARXIV_CATEGORIES)
+
+
+def arxiv_oai_window(from_date: str, until_date: str | None) -> list[dict]:
+    """Resolution-flavoured papers with a created date in the window.
+
+    Harvests by DATESTAMP (last metadata change), which is the only range
+    OAI-PMH offers. A new paper's datestamp is its announcement day, but its
+    `created` is the SUBMISSION day, typically days earlier - so the created
+    filter takes slack before the window rather than aligning with it, or a
+    one-day harvest would drop every new paper it returned (measured: 860
+    in-category records on 2026-08-04, zero with created that same day).
+    What the slack exists to exclude is the other kind of record a datestamp
+    harvest returns: v2s and metadata edits of years-old papers. Overlap
+    between adjacent sweeps is the seen-state's problem, and it handles it.
+    Dates are YYYY-MM-DD, both ends inclusive, in arXiv's clock (UTC).
+    """
+    slack = (datetime.fromisoformat(from_date) - timedelta(days=14)).date().isoformat()
+    papers: list[dict] = []
+    for oai_set in OAI_SETS:
+        token: str | None = None
+        pages = 0
+        while True:
+            if token:
+                query = f"verb=ListRecords&resumptionToken={urllib.parse.quote(token)}"
+            else:
+                query = (f"verb=ListRecords&metadataPrefix=arXiv&set={oai_set}"
+                         f"&from={from_date}"
+                         + (f"&until={until_date}" if until_date else ""))
+            root = ET.fromstring(fetch(f"{OAI_URL}?{query}", timeout=90))
+            err = root.find("oai:error", OAI_NS)
+            if err is not None:
+                # An empty window is an answer, not a failure.
+                if err.get("code") == "noRecordsMatch":
+                    break
+                raise RuntimeError(f"OAI {err.get('code')}: {(err.text or '').strip()}")
+            for rec in root.findall(".//oai:record", OAI_NS):
+                meta = rec.find(".//ax:arXiv", OAI_NS)
+                if meta is None:
+                    continue  # deleted/withdrawn record: header only
+                cats = (meta.findtext("ax:categories", "", OAI_NS) or "").split()
+                if not CATEGORY_SET.intersection(cats):
+                    continue
+                created = meta.findtext("ax:created", "", OAI_NS)
+                if created < slack or (until_date and created > until_date):
+                    continue
+                title = re.sub(r"\s+", " ", meta.findtext("ax:title", "", OAI_NS)).strip()
+                abstract = re.sub(r"\s+", " ", meta.findtext("ax:abstract", "", OAI_NS)).strip()
+                if RESOLUTION_RE.search(title + " " + abstract):
+                    papers.append({
+                        "id": meta.findtext("ax:id", "", OAI_NS),
+                        "title": title, "abstract": abstract,
+                        "primary": cats[0] if cats else "",
+                    })
+            pages += 1
+            tok = root.find(".//oai:resumptionToken", OAI_NS)
+            token = (tok.text or "").strip() if tok is not None else ""
+            print(f"  [oai:{oai_set}] page {pages}, {len(papers)} flagged so far",
+                  file=sys.stderr, flush=True)
+            if not token:
+                break
+    # Cross-listed papers arrive once per set they belong to (math.CO + cs.DM
+    # shows up in both harvests); one report each.
+    seen_ids: set[str] = set()
+    unique = []
+    for p in papers:
+        if p["id"] in seen_ids:
+            continue
+        seen_ids.add(p["id"])
+        unique.append(p)
+    return unique
+
+
 def arxiv_recent(days: int, since: str | None = None, until: str | None = None) -> list[dict]:
-    """Papers in the target categories, resolution-flavoured only.
+    """FALLBACK: the search-API scan, used only when the OAI harvest fails.
+
+    Papers in the target categories, resolution-flavoured only.
 
     Default mode pages backwards from now. That cannot reach past roughly a
     month: the result cap below is an absolute 12000, and these categories
@@ -763,11 +855,50 @@ def main() -> int:
     if "arxiv" in wanted:
         print("## arXiv (resolution-flavoured papers mentioning a model)\n")
         seen = set(state["seen_arxiv"])
+        # One code path for daily runs and backfills: a date window, harvested
+        # over OAI-PMH. Daily mode self-heals - it resumes from the checkpoint
+        # of the last completed harvest, so skipped days are covered by the
+        # next run instead of falling between windows. The checkpoint lookback
+        # is capped: a state file untouched for months must not silently turn
+        # a daily run into a mega-harvest (run a --since sweep for the gap).
+        today = datetime.now(timezone.utc).date()
+        if args.since:
+            from_date, until_date = args.since, args.until
+        else:
+            from_date = (today - timedelta(days=args.days)).isoformat()
+            checkpoint = state["arxiv_oai_until"]
+            if checkpoint and checkpoint < from_date:
+                floor_date = (today - timedelta(days=30)).isoformat()
+                if checkpoint < floor_date:
+                    print(f"_(harvest checkpoint {checkpoint} is over 30 days old; "
+                          f"resuming from {floor_date} - run --since {checkpoint} "
+                          f"--until {floor_date} to cover the gap)_\n")
+                    from_date = floor_date
+                else:
+                    from_date = checkpoint
+            until_date = None
+        harvested = False
         try:
-            papers = arxiv_recent(args.days, args.since, args.until)
+            papers = arxiv_oai_window(from_date, until_date)
+            harvested = True
         except Exception as e:
-            papers = []
-            print(f"_(arXiv scan failed: {e})_\n")
+            # The search API remains as the fallback, with all its known
+            # sharp edges; a failed harvest must not cost the day's scan.
+            print(f"_(OAI harvest failed ({e}); falling back to the search API)_\n")
+            try:
+                papers = arxiv_recent(args.days, args.since, args.until)
+            except Exception as e2:
+                papers = []
+                print(f"_(arXiv scan failed: {e2})_\n")
+        if harvested and not args.since:
+            state["arxiv_oai_until"] = today.isoformat()
+        print(f"_(window {from_date}..{until_date or 'today'} via "
+              f"{'OAI-PMH' if harvested else 'search API'})_\n")
+        # Seen-state may hold versioned ids from the search-API era; OAI ids
+        # are unversioned. Compare and store version-blind.
+        seen = {s.split("v")[0] for s in seen}
+        for p in papers:
+            p["id"] = p["id"].split("v")[0]
         new_papers = [p for p in papers if p["id"] not in seen]
         # The full-text fetches dominate the runtime and are independent; a small
         # pool keeps a week-sized sweep to minutes while staying polite to arXiv.
