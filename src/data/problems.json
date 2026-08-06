@@ -10021,7 +10021,13 @@
     "ageNote": "Only n ≥ 3 is disproved; the two-variable (plane) case of Keller's 1939 conjecture remains open. Counterexample found by Levent Alpöge with Claude Fable 5.",
     "aiContribution": "ai-discovered",
     "significance": 65,
-    "significanceNote": "On Smale's problem list and notorious across algebraic geometry since 1939."
+    "significanceNote": "On Smale's problem list and notorious across algebraic geometry since 1939.",
+    "links": [
+      {
+        "label": "Gao's self-contained account, generalizing the tangent-sweep mechanism",
+        "url": "https://arxiv.org/abs/2608.00222"
+      }
+    ]
   },
   {
     "slug": "jauslin-kreiss-moser-vanishing-viscosity",
@@ -12164,6 +12170,51 @@
     "significanceNote": "A named theorem in the Bernoulli factory literature that had been cited as settled for twenty years."
   },
   {
+    "slug": "nesterov-point-convergence",
+    "name": "Point Convergence of Nesterov's Accelerated Gradient Method",
+    "shortName": "Nesterov point convergence",
+    "problemNumber": null,
+    "field": "Convex optimization",
+    "fieldGroup": "Algorithms & optimization",
+    "resolution": "resolved",
+    "statement": "Nesterov's accelerated gradient method (1983) is a cornerstone of optimization, yet whether its iterates themselves converge to a minimizer, rather than just the function values, stayed open for over forty years. Jang and Ryu resolve it in the affirmative. Ryu first announced the continuous-time result on X; Bot, Fadili and Nguyen's concurrent human proof of the critical-regime case (answering a decade-old conjecture of Attouch and co-authors) explicitly credits that AI-assisted announcement as what it discretizes.",
+    "posedBy": "Yurii Nesterov (method); point convergence open since its introduction",
+    "yearPosed": 1983,
+    "solveType": "proved",
+    "solveDate": "2025-10-27",
+    "model": "GPT-5 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Uijeong Jang",
+      "Ernest K. Ryu"
+    ],
+    "aiRole": "The discovery was heavily assisted by ChatGPT (GPT-5 Pro), and the paper documents how: the process was highly interactive, with roughly 80% of generated arguments incorrect but several ideas novel enough to pursue; the working prompt supplied the continuous-time proof in LaTeX and asked for a discrete-time analogue. The authors note that after the result was found, GPT-5 Pro could reproduce a correct proof from a single well-formulated prompt.",
+    "verification": "unreviewed",
+    "verificationNote": "A v2 preprint submitted for journal review; the result triggered immediate follow-up work (Bot-Fadili-Nguyen, and inexact-FISTA extensions) but no formal review has appeared.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2510.23513",
+    "sourceName": "arXiv",
+    "aiContribution": "ai-co-developed",
+    "significance": 30,
+    "significanceNote": "The method is world-famous and the point-convergence question was known across the optimization community for four decades, with Attouch-school partial results; invisible outside the field.",
+    "links": [
+      {
+        "label": "Ryu's original X announcement of the continuous-time result",
+        "url": "https://x.com/ernestryu/status/1980759528984686715"
+      },
+      {
+        "label": "Bot-Fadili-Nguyen: concurrent human proof of the critical regime, crediting Ryu's announcement",
+        "url": "https://arxiv.org/abs/2510.22715"
+      }
+    ]
+  },
+  {
     "slug": "nikolov-ullman-pure-dp-square-root-rate",
     "name": "Nikolov-Ullman Pure-DP Query Release Conjecture",
     "shortName": "Pure-DP square-root rate",
@@ -14254,7 +14305,13 @@
     "resultNote": "the counterexample to the original Jacobian conjecture does not specialize to characteristic 2; this is a modification that does",
     "aiContribution": "ai-co-developed",
     "significance": 25,
-    "significanceNote": "The separable formulation is the version of the Jacobian conjecture designed to survive in positive characteristic, and the author notes no other counterexample to it is known."
+    "significanceNote": "The separable formulation is the version of the Jacobian conjecture designed to survive in positive characteristic, and the author notes no other counterexample to it is known.",
+    "links": [
+      {
+        "label": "Dimension-two counterexample, Lean kernel-checked (Mondello)",
+        "url": "https://arxiv.org/abs/2608.02634"
+      }
+    ]
   },
   {
     "slug": "seymour-second-neighborhood-outdegree-7",
@@ -15458,7 +15515,13 @@
     "resultNote": "disproved at d = 4; the conjecture for smaller d is untouched",
     "aiContribution": "ai-assisted",
     "significance": 15,
-    "significanceNote": "A 2022 conjecture from the product structure theory programme, put forward by eight authors and cited as a target in that literature."
+    "significanceNote": "A 2022 conjecture from the product structure theory programme, put forward by eight authors and cited as a target in that literature.",
+    "links": [
+      {
+        "label": "Second counterexample construction via subdivided expanders (Aug 2026)",
+        "url": "https://arxiv.org/abs/2608.04659"
+      }
+    ]
   },
   {
     "slug": "tsp-optimal-chain-density",
