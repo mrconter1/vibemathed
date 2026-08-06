@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { isAdmin } from "@/lib/admin";
 import { formatCommentDateTime } from "@/lib/comment-render";
-import { MESSAGE_MAX, messageKindLabel, reasonLabel } from "@/lib/messages";
+import { MESSAGE_MAX, SUBJECT_MAX, messageKindLabel, reasonLabel } from "@/lib/messages";
 import { prisma } from "@/lib/prisma";
 
 // The reader's inbox: mail a curator wrote to them, read in full.
@@ -39,6 +39,12 @@ export interface InboxSummary {
   kindLabel: string;
   /// Who is on the other end.
   other: string;
+  /// The other end's pseudonym when they are a real account, so the name can
+  /// link to their profile. Null for "the curators" and deleted accounts.
+  otherUser: string | null;
+  /// The composer's subject line. Null on curator mail, which is headed by
+  /// its kind and entry instead.
+  subject: string | null;
   /// The entry it concerns, when it still exists and is public.
   entrySlug: string | null;
   entryName: string | null;
@@ -61,6 +67,8 @@ export interface Conversation {
   id: string;
   kindLabel: string;
   other: string;
+  otherUser: string | null;
+  subject: string | null;
   entrySlug: string | null;
   entryName: string | null;
   messages: InboxMessage[];
@@ -103,26 +111,21 @@ export async function getInbox(): Promise<InboxResult> {
   if (!session?.user?.id) return { ok: false, error: "Sign in to read your inbox." };
   const userId = session.user.id;
 
-  // Two passes rather than one. A conversation is only partly addressed to
-  // the reader: their own replies were addressed to the other end, so a query
-  // on `userId` alone returns half of it. The first pass finds which threads
-  // they are in, the second reads those threads whole.
-  const involved = await prisma.directMessage.findMany({
-    where: { OR: [{ userId }, { senderId: userId }] },
+  // One query. Membership in a thread is decided entirely by its root: the
+  // two ends of a conversation are the root's recipient and sender, and
+  // `replyToMessage` only ever lets those two write in it. So the reader's
+  // threads are exactly the roots naming them, and `include: replies` brings
+  // each thread along in the same round trip - this used to be two sequential
+  // queries, the first of which filtered on unindexed `senderId` and scanned
+  // the table.
+  const roots = await prisma.directMessage.findMany({
+    where: { parentId: null, OR: [{ userId }, { senderId: userId }] },
     orderBy: { createdAt: "desc" },
-    take: PAGE * 4,
-    select: { id: true, parentId: true },
-  });
-  const rootIds = [...new Set(involved.map((m) => m.parentId ?? m.id))].slice(0, PAGE);
-  if (rootIds.length === 0) return { ok: true, items: [] };
-
-  const rows = await prisma.directMessage.findMany({
-    where: { OR: [{ id: { in: rootIds } }, { parentId: { in: rootIds } }] },
-    orderBy: { createdAt: "asc" },
+    take: PAGE,
     select: {
       id: true,
-      parentId: true,
       kind: true,
+      subject: true,
       body: true,
       createdAt: true,
       readAt: true,
@@ -132,70 +135,109 @@ export async function getInbox(): Promise<InboxResult> {
       sender: { select: { pseudonym: true } },
       user: { select: { pseudonym: true } },
       problem: { select: { slug: true, name: true, status: true } },
+      replies: {
+        orderBy: { createdAt: "asc" },
+        select: {
+          body: true,
+          createdAt: true,
+          readAt: true,
+          userId: true,
+          senderId: true,
+        },
+      },
     },
   });
 
-  const items: InboxSummary[] = [];
-  for (const root of rows.filter((m) => m.parentId === null)) {
-    const thread = [root, ...rows.filter((m) => m.parentId === root.id)];
-    const last = thread[thread.length - 1];
+  const items = roots.map((root) => {
+    const last = root.replies[root.replies.length - 1] ?? root;
     // Whoever is not the reader. Read off the root, since both ends appear on
     // it whichever direction it went: a curator sees the submitter's name, a
     // submitter sees the curator's.
-    const otherName =
+    const otherUser =
       root.senderId === userId
-        ? (root.user?.pseudonym ?? "them")
-        : (root.sender?.pseudonym ?? root.senderName ?? "the curators");
+        ? (root.user?.pseudonym ?? null)
+        : (root.sender?.pseudonym ?? null);
+    const other =
+      otherUser ??
+      (root.senderId === userId ? "them" : (root.senderName ?? "the curators"));
+    const unread = (m: { userId: string; readAt: Date | null }) =>
+      m.userId === userId && m.readAt === null;
 
-    items.push({
-      id: root.id,
-      kindLabel: messageKindLabel(root.kind),
-      other: otherName,
-      entrySlug: root.problem?.status === "published" ? root.problem.slug : null,
-      entryName: root.problem?.name ?? null,
-      started: formatCommentDateTime(root.createdAt),
-      lastAt: formatCommentDateTime(last.createdAt),
-      preview: preview(last.body),
-      lastMine: last.senderId === userId,
-      messageCount: thread.length,
-      unreadCount: thread.filter((m) => m.userId === userId && m.readAt === null).length,
-    });
-  }
+    return {
+      stamp: last.createdAt.getTime(),
+      item: {
+        id: root.id,
+        kindLabel: messageKindLabel(root.kind),
+        other,
+        otherUser,
+        subject: root.subject,
+        entrySlug: root.problem?.status === "published" ? root.problem.slug : null,
+        entryName: root.problem?.name ?? null,
+        started: formatCommentDateTime(root.createdAt),
+        lastAt: formatCommentDateTime(last.createdAt),
+        preview: preview(last.body),
+        lastMine: last.senderId === userId,
+        messageCount: 1 + root.replies.length,
+        unreadCount: (unread(root) ? 1 : 0) + root.replies.filter(unread).length,
+      } satisfies InboxSummary,
+    };
+  });
 
   // Most recently spoken in first: a conversation answered an hour ago
-  // belongs above one that has been quiet for a week.
-  const order = new Map(rows.map((m, i) => [m.id, i]));
-  const lastIndex = (id: string) =>
-    Math.max(
-      order.get(id) ?? 0,
-      ...rows.filter((m) => m.parentId === id).map((m) => order.get(m.id) ?? 0),
-    );
-  items.sort((a, b) => lastIndex(b.id) - lastIndex(a.id));
-  return { ok: true, items };
+  // belongs above one that has been quiet for a week. (The take-PAGE window
+  // above is by root age, so a thread older than the newest fifty roots ages
+  // out of the list even if it was answered today - acceptable at fifty, and
+  // the trade is what keeps this a single indexed read.)
+  items.sort((a, b) => b.stamp - a.stamp);
+  return { ok: true, items: items.map((x) => x.item) };
 }
 
-/// One conversation, in full, and reading it marks it read.
+/// One conversation, in full.
 ///
-/// The read stamp lands here rather than on the list for a reason: this is
-/// the only call that actually returns the words, so it is the only moment
-/// when "read" is true.
-export async function getConversation(rootId: string): Promise<ConversationResult> {
+/// Reading it marks it read, unless `peek` is set. Peek exists for the list's
+/// hover prefetch: fetching words ahead of time is a speed win, but "read"
+/// has to mean the reader actually opened it, so a prefetch takes the words
+/// and leaves the stamp to `markConversationRead`.
+export async function getConversation(
+  rootId: string,
+  peek = false,
+): Promise<ConversationResult> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: "Sign in to read your inbox." };
   const userId = session.user.id;
 
+  // Root and thread in one round trip; membership is checked after the read.
   const root = await prisma.directMessage.findUnique({
     where: { id: rootId },
     select: {
       id: true,
       parentId: true,
       kind: true,
+      subject: true,
+      reason: true,
+      body: true,
+      createdAt: true,
+      readAt: true,
       userId: true,
       senderId: true,
       senderName: true,
       sender: { select: { pseudonym: true } },
       user: { select: { pseudonym: true } },
       problem: { select: { slug: true, name: true, status: true } },
+      replies: {
+        orderBy: { createdAt: "asc" },
+        select: {
+          id: true,
+          reason: true,
+          body: true,
+          createdAt: true,
+          readAt: true,
+          userId: true,
+          senderId: true,
+          senderName: true,
+          sender: { select: { pseudonym: true } },
+        },
+      },
     },
   });
   // A reply id is not a conversation id, and neither is somebody else's.
@@ -206,22 +248,7 @@ export async function getConversation(rootId: string): Promise<ConversationResul
     return { ok: false, error: "That conversation is not yours." };
   }
 
-  const rows = await prisma.directMessage.findMany({
-    where: { OR: [{ id: rootId }, { parentId: rootId }] },
-    orderBy: { createdAt: "asc" },
-    select: {
-      id: true,
-      reason: true,
-      body: true,
-      createdAt: true,
-      readAt: true,
-      userId: true,
-      senderId: true,
-      senderName: true,
-      sender: { select: { pseudonym: true } },
-    },
-  });
-
+  const rows = [root, ...root.replies];
   const messages: InboxMessage[] = rows.map((m) => ({
     id: m.id,
     reason: reasonLabel(m.reason),
@@ -234,29 +261,52 @@ export async function getConversation(rootId: string): Promise<ConversationResul
 
   // Stamped after the view is built, so the messages that were unread on
   // arrival still render with their marker this once.
-  const unread = rows.filter((m) => m.userId === userId && m.readAt === null);
-  if (unread.length > 0) {
-    await prisma.directMessage.updateMany({
-      where: { id: { in: unread.map((m) => m.id) } },
-      data: { readAt: new Date() },
-    });
+  if (!peek) {
+    const unread = rows.filter((m) => m.userId === userId && m.readAt === null);
+    if (unread.length > 0) {
+      await prisma.directMessage.updateMany({
+        where: { id: { in: unread.map((m) => m.id) } },
+        data: { readAt: new Date() },
+      });
+    }
   }
 
+  const otherUser =
+    root.senderId === userId
+      ? (root.user?.pseudonym ?? null)
+      : (root.sender?.pseudonym ?? null);
   return {
     ok: true,
     conversation: {
       id: root.id,
       kindLabel: messageKindLabel(root.kind),
       other:
-        root.senderId === userId
-          ? (root.user?.pseudonym ?? "them")
-          : (root.sender?.pseudonym ?? root.senderName ?? "the curators"),
+        otherUser ??
+        (root.senderId === userId ? "them" : (root.senderName ?? "the curators")),
+      otherUser,
+      subject: root.subject,
       entrySlug: root.problem?.status === "published" ? root.problem.slug : null,
       entryName: root.problem?.name ?? null,
       messages,
       canReply: (root.userId === userId ? root.senderId : root.userId) !== null,
     },
   };
+}
+
+/// Settles the read stamp for a conversation fetched with `peek`. Called when
+/// a prefetched thread is actually opened; scoped to the reader's own unread
+/// messages, so it cannot mark anything on the other end.
+export async function markConversationRead(rootId: string): Promise<void> {
+  const session = await auth();
+  if (!session?.user?.id) return;
+  await prisma.directMessage.updateMany({
+    where: {
+      userId: session.user.id,
+      readAt: null,
+      OR: [{ id: rootId }, { parentId: rootId }],
+    },
+    data: { readAt: new Date() },
+  });
 }
 
 /// Answers a message, inside its thread.
@@ -337,6 +387,130 @@ export async function replyToMessage(messageId: string, raw: string): Promise<Re
   }
 }
 
+/// Pseudonyms matching a composer's To field, for the autocomplete.
+///
+/// Pseudonyms are the site's only public identity, already shown on every
+/// comment and vote, so listing matches leaks nothing. Signed-in only, two
+/// characters minimum, eight results: enough to find someone, not enough to
+/// walk the user table.
+export async function searchUsers(raw: string): Promise<string[]> {
+  const session = await auth();
+  if (!session?.user?.id) return [];
+  const q = raw.trim();
+  if (q.length < 2) return [];
+  const rows = await prisma.user.findMany({
+    where: {
+      pseudonym: { contains: q, mode: "insensitive" },
+      NOT: { id: session.user.id },
+    },
+    orderBy: { pseudonym: "asc" },
+    take: 8,
+    select: { pseudonym: true },
+  });
+  return rows.map((r) => r.pseudonym).filter((p): p is string => p !== null);
+}
+
+/// How many conversations one account may start per day. A gentle cap: real
+/// use is a handful, and a spammer's value scales with volume, so this is
+/// where the two part ways.
+const NEW_THREADS_PER_DAY = 10;
+
+/// Starts a conversation from the composer.
+///
+/// This opens the door `replyToMessage`'s design kept shut: a recipient is
+/// typed rather than derived from a thread. The trade is deliberate - readers
+/// asked to be able to write to the curators (and each other) without waiting
+/// to be written to first - and the daily cap plus the reply rate limit are
+/// what keep the open door from becoming a cold-mail cannon.
+export async function startConversation(input: {
+  to: string;
+  subject: string;
+  body: string;
+}): Promise<ConversationResult> {
+  const session = await auth();
+  if (!session?.user?.id) return { ok: false, error: "Sign in to send a message." };
+  const userId = session.user.id;
+
+  const subject = input.subject.trim();
+  const body = input.body.trim();
+  if (!subject) return { ok: false, error: "Give the message a subject." };
+  if (subject.length > SUBJECT_MAX) {
+    return { ok: false, error: `Subject is too long (max ${SUBJECT_MAX} characters).` };
+  }
+  if (!body) return { ok: false, error: "Message cannot be empty." };
+  if (body.length > MESSAGE_MAX) {
+    return { ok: false, error: `Message is too long (max ${MESSAGE_MAX} characters).` };
+  }
+
+  // The recipient must exist, exactly. Insensitive on case because the To
+  // field is typed by hand, but never fuzzy: "did you mean" belongs in the
+  // autocomplete, not in where mail gets delivered.
+  const to = input.to.trim();
+  const recipient = to
+    ? await prisma.user.findFirst({
+        where: { pseudonym: { equals: to, mode: "insensitive" } },
+        select: { id: true, pseudonym: true },
+      })
+    : null;
+  if (!recipient) {
+    return { ok: false, error: `No user named "${to}". Pick a name from the suggestions.` };
+  }
+  if (recipient.id === userId) {
+    return { ok: false, error: "That would be a note to yourself." };
+  }
+
+  const dayAgo = new Date(Date.now() - 86_400_000);
+  const started = await prisma.directMessage.count({
+    where: { senderId: userId, parentId: null, createdAt: { gte: dayAgo } },
+  });
+  if (started >= NEW_THREADS_PER_DAY) {
+    return { ok: false, error: "You have started a lot of conversations today. Try again tomorrow." };
+  }
+
+  try {
+    const created = await prisma.directMessage.create({
+      data: {
+        userId: recipient.id,
+        senderId: userId,
+        senderName: session.user.pseudonym ?? null,
+        kind: "message",
+        subject,
+        body,
+      },
+      select: { id: true, createdAt: true },
+    });
+    // The full conversation, so the composer can land in the thread it just
+    // started without another round trip.
+    return {
+      ok: true,
+      conversation: {
+        id: created.id,
+        kindLabel: messageKindLabel("message"),
+        other: recipient.pseudonym ?? "them",
+        otherUser: recipient.pseudonym,
+        subject,
+        entrySlug: null,
+        entryName: null,
+        messages: [
+          {
+            id: created.id,
+            reason: null,
+            body,
+            from: session.user.pseudonym ?? "you",
+            when: formatCommentDateTime(created.createdAt),
+            isNew: false,
+            mine: true,
+          },
+        ],
+        canReply: true,
+      },
+    };
+  } catch (error) {
+    console.error("startConversation failed", error);
+    return { ok: false, error: "Could not send your message. Please try again." };
+  }
+}
+
 /// How many messages are addressed to the reader and not yet opened. Read by
 /// the header badge, so it stays a count query rather than a fetch.
 export async function countUnreadMessages(): Promise<number> {
@@ -351,9 +525,8 @@ export async function countUnreadMessages(): Promise<number> {
 ///
 /// Server-only helper rather than an exported action taking a recipient: the
 /// callers are the review queue and the reports queue, both of which already
-/// know who they are answering. Nothing on the site lets a curator type an
-/// arbitrary recipient, which keeps this from becoming a way to cold-message
-/// readers.
+/// know who they are answering. Typed recipients go through
+/// `startConversation` and its caps instead.
 export async function sendDirectMessage(input: {
   userId: string | null | undefined;
   kind: string;

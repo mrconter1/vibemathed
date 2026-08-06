@@ -11,6 +11,10 @@ export const MESSAGE_KINDS = {
   decision: "About your submission",
   report: "About a report you sent",
   note: "From the curators",
+  /// A conversation somebody started from the composer, reader or curator.
+  /// The only kind whose root carries a `subject`, which is what heads it;
+  /// this label is the fallback for the row line when a subject is missing.
+  message: "Direct message",
   /// Only ever a message inside a thread, never the one that starts it, so
   /// this label heads nothing. It exists so the stored `kind` has a name and
   /// does not fall through to "From the curators", which a reader's own reply
@@ -154,3 +158,8 @@ export function reasonLabel(value: string | null | undefined): string | null {
 /// path validates and refuses instead; the review dialogs count down against
 /// this same constant.
 export const MESSAGE_MAX = 2000;
+
+/// Cap for the composer's subject line. A subject is a headline for a list
+/// row, not a first paragraph; anything that needs more room belongs in the
+/// body it is introducing.
+export const SUBJECT_MAX = 120;

@@ -421,6 +421,11 @@ model DirectMessage {
   /// message in the inbox; carries no behaviour.
   kind String
 
+  /// Subject line, set only on roots written in the composer. Curator mail
+  /// born from a decision or a report has its context (the kind, the entry)
+  /// instead, and replies title nothing, so those stay null.
+  subject String?
+
   /// The canned reason, when the curator picked one. Shown as the message's
   /// headline, with `body` underneath as the human part.
   reason String?
@@ -441,9 +446,10 @@ model DirectMessage {
   /// a tree and cannot produce unbounded nesting in the UI. Cascades: a reply
   /// with no thread to belong to is noise.
   ///
-  /// Null on a root. A root is always curator-written, because replying is the
-  /// only way to create a message without picking a recipient, which is what
-  /// keeps this from becoming a way to cold-message readers.
+  /// Null on a root. Roots come from curators (decisions, report answers,
+  /// notes) and, since the composer, from any signed-in reader - see
+  /// `startConversation` in src/app/actions/inbox.ts for the rate limits that
+  /// keep the open door from becoming a spam vector.
   parentId String?         @db.Uuid
   parent   DirectMessage?  @relation("DirectMessageThread", fields: [parentId], references: [id], onDelete: Cascade)
   replies  DirectMessage[] @relation("DirectMessageThread")
@@ -465,6 +471,10 @@ model DirectMessage {
   @@index([userId, readAt])
   /// Loading a thread's replies in order.
   @@index([parentId, createdAt])
+  /// The other half of the inbox read (threads the reader STARTED, where they
+  /// are the sender, not the recipient) and the reply rate-limit read. Without
+  /// it, both fall back to a table scan.
+  @@index([senderId, createdAt])
 }
 
 model Account {
