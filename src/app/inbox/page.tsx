@@ -25,15 +25,12 @@ export default function InboxPage() {
         ← All entries
       </Link>
 
-      <h1 className="mt-4 font-serif text-3xl tracking-tight text-[var(--ink)]">
+      {/* No intro paragraph: the list explains itself, the empty state
+          explains the mechanics to whoever actually needs them, and a privacy
+          disclaimer above someone's mail read as noise. */}
+      <h1 className="mb-6 mt-4 font-serif text-3xl tracking-tight text-[var(--ink)]">
         Inbox
       </h1>
-      <p className="mb-6 mt-2 max-w-2xl text-sm leading-relaxed text-[var(--ink-secondary)]">
-        Conversations with the curators and other readers: decisions on your
-        submissions, answers to your reports, and anything started with Send
-        new message. Reply in the thread and the answer comes back here. Nothing on
-        this page is public, and nothing said here is posted to an entry.
-      </p>
 
       <InboxList />
     </main>
