@@ -265,11 +265,20 @@ export default function MethodologyPage() {
         <p>
           Every entry carries an <strong className="text-[var(--ink)]">AI-estimated
           significance score</strong>: how much mathematics cared about the problem{" "}
-          <em>before</em> it was solved, from 0 to 100 in steps of 5. It is
+          <em>before</em> it was solved, as an integer from 0 to 100. It is
           calibrated against an anchored ladder - the Riemann hypothesis is 100,
           Collatz sits near 80, the Jacobian conjecture near 65, a conjecture
           famous within one research community around 30, a typical numbered
-          Erdős problem around 10, and machine-generated conjectures around 5.
+          Erdős problem around 10, and machine-generated conjectures around 5 -
+          and, since v2 of the scoring prompt (August 2026), each score is
+          placed comparatively against a fixed spine of catalog entries whose
+          scores are frozen by editorial decree. A single problem judged in
+          isolation is only honest to a band of about five points; one-point
+          resolution comes from answering &quot;above or below <em>that</em>{" "}
+          one?&quot; against named neighbours. Ties are deliberate: problems of
+          genuinely similar standing share a score rather than being forced
+          into spurious distinct integers. The whole catalog was rescored
+          under v2 on 6 August 2026.
         </p>
         <p>
           The score is a curator measurement, never self-reported: it is

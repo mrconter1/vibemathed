@@ -121,10 +121,13 @@ model Problem {
   renownLangs Int     @default(0)
   renownNote  String?
   /// AI-estimated significance of the PROBLEM as it stood before the solve,
-  /// 0-100 in steps of 5 against the anchored ladder in the methodology
-  /// (Riemann hypothesis = 100). Curator measurement like renownLangs, never
-  /// self-reported; null = not yet assessed. Scored with the published prompt
-  /// in public/significance-prompt.md (served at /significance-prompt.md).
+  /// an integer 0-100 against the anchored ladder in the methodology
+  /// (Riemann hypothesis = 100) and, since prompt v2, placed comparatively
+  /// against a fixed spine of catalog anchors - one-point resolution is
+  /// earned by comparison, not claimed in isolation. Curator measurement
+  /// like renownLangs, never self-reported; null = not yet assessed. Scored
+  /// with the published prompt in public/significance-prompt.md (served at
+  /// /significance-prompt.md).
   significance     Int?
   /// One-line justification for the score, shown on the entry page.
   significanceNote String?

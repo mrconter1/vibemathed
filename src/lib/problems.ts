@@ -206,8 +206,8 @@ export interface MathProblem {
    */
   renownNote?: string | null;
   /**
-   * AI-estimated significance of the problem BEFORE the solve, 0-100 in steps
-   * of 5 against the anchored ladder documented in the methodology (Riemann
+   * AI-estimated significance of the problem BEFORE the solve, an integer
+   * 0-100 against the anchored ladder documented in the methodology (Riemann
    * hypothesis = 100). A curator measurement like renownLangs - assigned at
    * review with the published prompt, never self-reported. Null = not yet
    * assessed; renders as a dash, never as a default score.

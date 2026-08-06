@@ -138,4 +138,4 @@ export const MODEL_FAMILIES: { key: string; label: string; test: RegExp }[] = [
 
 /// Explanation of the significance score, shown wherever the number appears.
 export const SIGNIFICANCE_HELP =
-  "AI-estimated weight of the problem BEFORE it was solved, 0-100 in steps of 5 against an anchored ladder (Riemann hypothesis 100, Collatz ~80, a field-famous workhorse ~30, a typical numbered Erdős problem ~10). Assigned at review with a published prompt; full rubric in the methodology.";
+  "AI-estimated weight of the problem BEFORE it was solved, an integer 0-100 placed against an anchored ladder and a fixed spine of catalog anchors (Riemann hypothesis 100, Collatz ~80, a field-famous workhorse ~30, a typical numbered Erdős problem ~10). Assigned at review with a published prompt; full rubric in the methodology.";
