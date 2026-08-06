@@ -149,6 +149,14 @@ export default async function UserPage({
             {profile.bio}
           </p>
         )}
+        {/* The Google identity, present only when its owner turned the
+            toggle on - getUserProfile nulls what is not shared. */}
+        {(profile.googleName || profile.googleEmail) && (
+          <p className="mt-1.5 text-sm text-[var(--ink-secondary)]">
+            {[profile.googleName, profile.googleEmail].filter(Boolean).join(" · ")}
+            <span className="text-[var(--ink-muted)]"> (Google account, shared by choice)</span>
+          </p>
+        )}
         <p className="mt-1.5 text-sm text-[var(--ink-muted)]">
           Member since {profile.joined}
         </p>

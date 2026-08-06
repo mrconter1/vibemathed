@@ -20,6 +20,10 @@ export interface ViewerState {
   role: string | null;
   /// Whether a curator has verified this member's identity.
   verified: boolean;
+  /// The viewer's own privacy toggles, for seeding the profile editor: show
+  /// the Google name / email on the public profile. Both default off.
+  showGoogleName: boolean;
+  showGoogleEmail: boolean;
   /// Whether this viewer may review submissions. The UI uses it to decide what
   /// to show; every privileged action re-checks server-side regardless.
   isAdmin: boolean;
@@ -46,6 +50,8 @@ export const SIGNED_OUT: ViewerState = {
   bio: null,
   role: null,
   verified: false,
+  showGoogleName: false,
+  showGoogleEmail: false,
   isAdmin: false,
   pendingReviews: 0,
   openReports: 0,

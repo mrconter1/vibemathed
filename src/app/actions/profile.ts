@@ -153,3 +153,30 @@ export async function updateLinks(raw: Record<string, string>): Promise<LinksRes
   updateTag("users");
   return { ok: true, links };
 }
+
+export type GoogleVisibilityResult = { ok: true } | { ok: false; error: string };
+
+/// Sets one of the two Google-identity privacy toggles. Owner-only by
+/// construction (it writes to the session's own row), and the flags only
+/// change what the profile page RENDERS - the name and email stay where
+/// OAuth put them either way.
+export async function updateGoogleVisibility(
+  field: "name" | "email",
+  show: boolean,
+): Promise<GoogleVisibilityResult> {
+  const session = await auth();
+  if (!session?.user?.id) return { ok: false, error: "Sign in first." };
+
+  try {
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: field === "name" ? { showGoogleName: show } : { showGoogleEmail: show },
+    });
+  } catch (error) {
+    console.error("updateGoogleVisibility failed", error);
+    return { ok: false, error: "Could not save that. Please try again." };
+  }
+
+  updateTag("users");
+  return { ok: true };
+}

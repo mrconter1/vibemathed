@@ -15,6 +15,7 @@ import { useState } from "react";
 import Link from "next/link";
 import {
   updateBio,
+  updateGoogleVisibility,
   updateLinks,
   updatePseudonym,
   updateRole,
@@ -109,6 +110,21 @@ export function ProfileEditor({
     const r = await updateRole(next);
     if (!r.ok) {
       viewer.setRole(previous === "" ? null : previous);
+      setError(r.error);
+      return;
+    }
+    window.location.reload();
+  }
+
+  /// Same immediate-save shape as the role picker: a privacy toggle should
+  /// take effect when flipped, not sit in a draft, and the reload shows the
+  /// profile exactly as visitors now see it.
+  async function toggleGoogle(field: "name" | "email", show: boolean) {
+    setError(null);
+    viewer.setGoogleVisibility(field, show);
+    const r = await updateGoogleVisibility(field, show);
+    if (!r.ok) {
+      viewer.setGoogleVisibility(field, !show);
       setError(r.error);
       return;
     }
@@ -221,6 +237,36 @@ export function ProfileEditor({
               />
             </label>
           ))}
+        </div>
+      </fieldset>
+
+      <fieldset className="mt-3">
+        <legend className="text-[11px] font-medium text-[var(--ink-secondary)]">
+          Google account
+        </legend>
+        <p className="mt-0.5 text-[11px] leading-snug text-[var(--ink-muted)]">
+          Off by default: nothing from your Google account is shown unless you
+          turn it on here. Saves immediately.
+        </p>
+        <div className="mt-1.5 space-y-1">
+          <label className="flex items-center gap-2 text-xs text-[var(--ink-secondary)]">
+            <input
+              type="checkbox"
+              checked={viewer.showGoogleName}
+              onChange={(e) => toggleGoogle("name", e.target.checked)}
+              className="accent-[var(--accent-blue)]"
+            />
+            Show my Google name on this profile
+          </label>
+          <label className="flex items-center gap-2 text-xs text-[var(--ink-secondary)]">
+            <input
+              type="checkbox"
+              checked={viewer.showGoogleEmail}
+              onChange={(e) => toggleGoogle("email", e.target.checked)}
+              className="accent-[var(--accent-blue)]"
+            />
+            Show my Google email on this profile
+          </label>
         </div>
       </fieldset>
 

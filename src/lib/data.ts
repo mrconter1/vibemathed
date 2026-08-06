@@ -383,6 +383,11 @@ export interface UserProfile {
   /// Curator-set identity check, and what was checked.
   verified: boolean;
   verifiedNote: string | null;
+  /// The Google identity, present ONLY when the owner turned its toggle on.
+  /// Null carries no information about whether the account has one - the
+  /// projection below never selects what it will not show.
+  googleName: string | null;
+  googleEmail: string | null;
   /// Fixed set of profile links; absent keys are unset.
   links: ProfileLinks;
   /// Everything the member has actually done here, in one number: entries
@@ -439,6 +444,10 @@ export async function getUserProfile(
       role: true,
       verified: true,
       verifiedNote: true,
+      name: true,
+      email: true,
+      showGoogleName: true,
+      showGoogleEmail: true,
       linkWebsite: true,
       linkArxiv: true,
       linkOrcid: true,
@@ -501,6 +510,8 @@ export async function getUserProfile(
     role: user.role,
     verified: user.verified,
     verifiedNote: user.verifiedNote,
+    googleName: user.showGoogleName ? user.name : null,
+    googleEmail: user.showGoogleEmail ? user.email : null,
     contributions,
     links: {
       website: user.linkWebsite,

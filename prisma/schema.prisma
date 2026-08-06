@@ -358,6 +358,14 @@ model User {
   linkGithub   String?
   linkLinkedin String?
 
+  /// Owner-set visibility of the Google identity on the public profile.
+  /// Both default OFF: the pseudonym is the only identity anyone gets
+  /// without an explicit choice, and these flags are that choice. Read at
+  /// render time - turning one off removes the fact from the page, it was
+  /// never copied anywhere.
+  showGoogleName  Boolean @default(false)
+  showGoogleEmail Boolean @default(false)
+
   /// Curator-set: identity or affiliation was actually checked. Never
   /// self-serve. `verifiedNote` records what was checked, shown on hover.
   verified     Boolean @default(false)
