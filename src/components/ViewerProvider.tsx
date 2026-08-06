@@ -27,6 +27,7 @@ interface ViewerContextValue extends ViewerState {
   setPseudonym: (pseudonym: string) => void;
   setBio: (bio: string) => void;
   setRole: (role: string | null) => void;
+  setGoogleVisibility: (field: "name" | "email", show: boolean) => void;
   /// Zeroes the unread-notification badge locally, after the server watermark
   /// has been moved (opening the notifications panel does both).
   clearNotifications: () => void;
@@ -120,6 +121,23 @@ export function ViewerProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(() => setNonce((n) => n + 1), []);
 
+  // Background poll, one viewer-state read a minute, so a new notification
+  // or a letter reaches the badges while the tab just sits there. Hidden
+  // tabs skip the tick and catch up the moment they are looked at again -
+  // that is what the visibilitychange arm is for, and it is also why coming
+  // back to a day-old tab does not wait up to a minute for fresh counts.
+  useEffect(() => {
+    const tick = () => {
+      if (document.visibilityState === "visible") refresh();
+    };
+    const id = setInterval(tick, 60_000);
+    document.addEventListener("visibilitychange", tick);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", tick);
+    };
+  }, [refresh]);
+
   // Keep the cache in step with local mutations (a vote cast, the badge
   // cleared, a rename), so the next navigation's seed is not stale.
   useEffect(() => {
@@ -155,13 +173,24 @@ export function ViewerProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({ ...prev, role }));
   }, []);
 
+  const setGoogleVisibility = useCallback(
+    (field: "name" | "email", show: boolean) => {
+      setState((prev) =>
+        field === "name"
+          ? { ...prev, showGoogleName: show }
+          : { ...prev, showGoogleEmail: show },
+      );
+    },
+    [],
+  );
+
   const clearNotifications = useCallback(() => {
     setState((prev) => ({ ...prev, notifications: 0 }));
   }, []);
 
   const value = useMemo(
-    () => ({ ...state, loaded, setVote, setPseudonym, setBio, setRole, clearNotifications, refresh }),
-    [state, loaded, setVote, setPseudonym, setBio, setRole, clearNotifications, refresh],
+    () => ({ ...state, loaded, setVote, setPseudonym, setBio, setRole, setGoogleVisibility, clearNotifications, refresh }),
+    [state, loaded, setVote, setPseudonym, setBio, setRole, setGoogleVisibility, clearNotifications, refresh],
   );
 
   return <ViewerContext.Provider value={value}>{children}</ViewerContext.Provider>;

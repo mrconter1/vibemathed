@@ -2,6 +2,7 @@
 
 import { auth } from "@/auth";
 import { formatCommentDate } from "@/lib/comment-render";
+import { relativeFallback } from "@/lib/relative-time";
 import { prisma } from "@/lib/prisma";
 
 // The viewer's notification feed: comments by others on entries they
@@ -19,7 +20,12 @@ export interface NotificationItem {
   author: string;
   /// Plain-text opening of the comment.
   snippet: string;
+  /// Display wording: "3 hours ago" while it is fresh, the absolute date
+  /// once it is not. The client recomputes from `iso` so a cached feed does
+  /// not read stale.
   when: string;
+  /// Raw timestamp, the only thing accurate enough to recompute from.
+  iso: string;
   /// Newer than the viewer's watermark at fetch time.
   isNew: boolean;
 }
@@ -77,7 +83,8 @@ export async function getNotifications(): Promise<NotificationsResult> {
     author: r.user?.pseudonym ?? r.userName ?? "deleted account",
     snippet:
       r.body.length > SNIPPET_MAX ? `${r.body.slice(0, SNIPPET_MAX)}…` : r.body,
-    when: formatCommentDate(r.createdAt),
+    when: relativeFallback(r.createdAt, formatCommentDate(r.createdAt)),
+    iso: r.createdAt.toISOString(),
     isNew: r.createdAt > me.notificationsSeenAt,
   }));
 

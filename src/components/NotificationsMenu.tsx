@@ -14,6 +14,7 @@ import {
   type NotificationItem,
 } from "@/app/actions/notifications";
 import { Icon } from "@/components/Icons";
+import { RelativeTime } from "@/components/RelativeTime";
 
 /// Last feed this tab saw. The panel renders from it instantly on open while
 /// the live fetch refreshes underneath, so navigating between pages never
@@ -250,7 +251,7 @@ export function NotificationsMenu() {
                       {n.snippet}
                     </span>
                     <span className="mt-0.5 block font-mono text-[10px] text-[var(--ink-muted)]">
-                      {n.when}
+                      <RelativeTime iso={n.iso} fallback={n.when} />
                     </span>
                   </li>
                 ) : (
@@ -275,7 +276,7 @@ export function NotificationsMenu() {
                       {n.snippet}
                     </span>
                     <span className="mt-0.5 block font-mono text-[10px] text-[var(--ink-muted)]">
-                      {n.when}
+                      <RelativeTime iso={n.iso} fallback={n.when} />
                     </span>
                   </Link>
                 </li>
