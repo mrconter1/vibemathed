@@ -135,7 +135,7 @@ export default function RootLayout({
             same trade the seeded state already makes. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var v=JSON.parse(localStorage.getItem("vibemathed:viewer")||"null");if(v&&v.signedIn){var d=document.documentElement,p=(v.pseudonym||"").trim();d.dataset.viewer="in";d.style.setProperty("--viewer-initial",JSON.stringify(p.charAt(0).toUpperCase()||"?"));d.style.setProperty("--viewer-name",JSON.stringify(p));}}catch(e){}`,
+            __html: `try{var v=JSON.parse(localStorage.getItem("vibemathed:viewer")||"null");if(v&&v.signedIn){var d=document.documentElement,p=(v.pseudonym||"").trim();d.dataset.viewer="in";d.style.setProperty("--viewer-initial",JSON.stringify(p.charAt(0).toUpperCase()||"?"));}}catch(e){}`,
           }}
         />
       </head>

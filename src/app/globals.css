@@ -336,16 +336,6 @@ select option::checkmark {
 }
 
 /*
- * The name beside it, for one reason only: width. Without it the placeholder
- * button was 80px and the real one 172px, so the bell and the avatar jumped
- * 92px left the moment React took over - a smaller version of the same
- * popping the placeholder was meant to remove.
- */
-.viewer-name::after {
-  content: var(--viewer-name, "");
-}
-
-/*
  * The wordmark's hover. The two halves of the name trade colours.
  *
  * Picked over a hundred and sixty other treatments, nearly all of which said

@@ -75,15 +75,14 @@ export function AuthMenu() {
     return (
       <>
         <span className="viewer-out contents">{signInLink}</span>
-        {/* Mirrors the real button's classes exactly, including the name it
-            shows from `sm` up, so React taking over changes nothing about the
-            geometry. */}
+        {/* Mirrors the real button's classes exactly, so React taking over
+            changes nothing about the geometry. A fixed square, which is also
+            what lets this shell stop carrying the name for width-matching. */}
         <span
-          className="viewer-in h-8 max-w-[14rem] items-center gap-2 truncate rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] pl-1.5 pr-1.5 text-xs text-[var(--ink)] sm:pr-3"
+          className="viewer-in h-8 w-8 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)]"
           aria-hidden
         >
           <span className="viewer-initial inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--accent-blue)_14%,transparent)] text-[10px] font-semibold uppercase text-[var(--accent-blue)]" />
-          <span className="viewer-name hidden truncate sm:inline" />
         </span>
       </>
     );
@@ -102,14 +101,13 @@ export function AuthMenu() {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="dialog"
-        // Phones show the avatar alone: the name costs ~90px next to the
-        // bell and the wordmark, and the initial already identifies you.
+        // The initial alone, in the same square as the envelope and the bell
+        // beside it: the full name lives in the dropdown's identity block.
         // Queue counts live on the bell now, so this button carries none.
-        className="inline-flex h-8 max-w-[14rem] items-center gap-2 truncate rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] pl-1.5 pr-1.5 text-xs text-[var(--ink)] transition-colors hover:border-[var(--accent-blue)] sm:pr-3"
+        className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] transition-colors hover:border-[var(--accent-blue)]"
         aria-label={`Account: ${name}`}
       >
         <AvatarInitial name={name} size="sm" />
-        <span className="hidden truncate sm:inline">{name}</span>
       </button>
 
       {open && (
