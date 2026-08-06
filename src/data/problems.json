@@ -320,7 +320,7 @@
     "sourceName": "Asymptotically attaining the Moore bound",
     "resultNote": "Settles two conjectures. Theorem 1.1 proves Bollobas's asymptotic degree-diameter conjecture, in the stronger liminf form rather than the conjectured limsup. Corollary 1.2 proves Conjecture 3 of Cambie, Cames van Batenburg, de Joannis de Verclos and Kang on the edge variant, again in the stronger liminf form, and is tight for bipartite graphs.",
     "aiContribution": "ai-co-developed",
-    "significance": 40,
+    "significance": 38,
     "significanceNote": "The degree-diameter problem carries its own Electronic Journal of Combinatorics dynamic survey (DS14, Miller and Siran), and the asymptotic form is Bollobas's own conjecture, recorded in Extremal Graph Theory and Random Graphs. It stood 48 years with the asymptotic known only for k in {2, 3, 5}, through generalized polygons, and the best uniform coefficient for large k was 0.629.",
     "links": [
       {
@@ -654,8 +654,8 @@
     "sourceName": "arXiv:2605.21718 - Reciprocals of Partition Polynomials",
     "resultNote": "six of the ten conjectures proved; one was found false as printed and its corrected form remains open",
     "aiContribution": "ai-discovered",
-    "significance": 25,
-    "significanceNote": "Six published conjectures settled at once, and settled in Lean rather than in prose, which is a materially stronger form of evidence."
+    "significance": 15,
+    "significanceNote": "Six conjectures from one recent paper on subsum polynomials: real, published, specialist, with no accumulated literature beyond the posing paper."
   },
   {
     "slug": "bandelt-dress-quartet-distance",
@@ -874,7 +874,7 @@
     "sourceUrl": "https://arxiv.org/abs/2607.12208",
     "sourceName": "arXiv:2607.12208 - The Benjamini-Hochberg procedure can fail to control the FDR",
     "aiContribution": "ai-discovered",
-    "significance": 15,
+    "significance": 14,
     "significanceNote": "FDR under correlation is a widely felt applied-statistics question, but diffuse as a single problem."
   },
   {
@@ -977,7 +977,7 @@
     "resultNote": "exponential improvement over the 1977 MRRW bounds; the exact rate-distance trade-off remains open",
     "ageNote": "Dated to the McEliece-Rodemich-Rumsey-Welch linear-programming bounds of 1977, the barrier this result breaks; the underlying question of optimal code size is older.",
     "aiContribution": "ai-discovered",
-    "significance": 40,
+    "significance": 39,
     "significanceNote": "The rate-distance trade-off is coding theory's central asymptotic question; the MRRW barrier stood since 1977.",
     "links": [
       {
@@ -1237,7 +1237,7 @@
     "sourceName": "arXiv:2607.10779 - Counting Odd Cycles in Graphs with Bounded Circumference",
     "resultNote": "the odd-cycle half; the even-cycle half is a companion paper by the same authors",
     "aiContribution": "ai-assisted",
-    "significance": 10,
+    "significance": 9,
     "significanceNote": "A 2023 Bulletin of the LMS conjecture in generalized Turan theory, real and cited but recent and specialized."
   },
   {
@@ -1776,7 +1776,7 @@
     "sourceUrl": "https://arxiv.org/abs/2608.04153",
     "sourceName": "arXiv",
     "aiContribution": "ai-discovered",
-    "significance": 10,
+    "significance": 12,
     "significanceNote": "A documented 2024 conjecture unifying thirty years of partial results on the devil's staircase, known within the chip-firing community."
   },
   {
@@ -1914,7 +1914,7 @@
     "sourceUrl": "https://arxiv.org/abs/2608.00575",
     "sourceName": "arXiv",
     "aiContribution": "ai-co-developed",
-    "significance": 10,
+    "significance": 12,
     "significanceNote": "A named 1999 problem adjacent to Wilf's conjecture, with a real literature (Yang solved the first two problems of the same set in 2001)."
   },
   {
@@ -2066,7 +2066,7 @@
     "sourceUrl": "https://arxiv.org/abs/2607.10774",
     "sourceName": "arXiv:2607.10774 - Minimum distance and decoding of Coxeter codes",
     "aiContribution": "ai-assisted",
-    "significance": 10,
+    "significance": 7,
     "significanceNote": "A conjectural minimum distance proposed in the paper that introduced the codes; recent and specialized, though Reed-Muller codes give it wider context."
   },
   {
@@ -2299,8 +2299,8 @@
     "sourceUrl": "https://arxiv.org/abs/2605.19979",
     "sourceName": "arXiv:2605.19979 - Short Proofs in Algebraic and Enumerative Combinatorics",
     "aiContribution": "ai-discovered",
-    "significance": 25,
-    "significanceNote": "Several distinct published conjectures from different corners of combinatorics, settled in a single paper by a model working without human proof input."
+    "significance": 17,
+    "significanceNote": "A bundle of recent specialist conjectures from separate corners of algebraic combinatorics, each comparable to a documented named question with a small audience."
   },
   {
     "slug": "denjoy-theorem-sharpness",
@@ -2551,7 +2551,7 @@
     "sourceUrl": "https://arxiv.org/abs/2607.26450",
     "sourceName": "arXiv",
     "aiContribution": "ai-co-developed",
-    "significance": 15,
+    "significance": 13,
     "significanceNote": "Disproves a stated conjecture of Kominers and improves bounds of Ruzsa, van Doorn and Kominers on functions introduced by Erdős and Pomerance."
   },
   {
@@ -2734,7 +2734,7 @@
     "sourceName": "arXiv",
     "resultNote": "Improved bounds rather than a settled question: the asked-for inequality is not established in general.",
     "aiContribution": "ai-co-developed",
-    "significance": 15,
+    "significance": 12,
     "significanceNote": "Progress on a question posed in the PatternBoost paper, itself a study of machine-assisted mathematics."
   },
   {
@@ -2840,7 +2840,7 @@
     "sourceUrl": "https://arxiv.org/abs/2606.20848",
     "sourceName": "arXiv:2606.20848 - The normalized orbit of a bounded normal operator can be a frame",
     "aiContribution": "ai-co-developed",
-    "significance": 10,
+    "significance": 8,
     "significanceNote": "A numbered conjecture from the 2026 dynamical sampling survey, recent and specialized but explicitly posed."
   },
   {
@@ -4536,7 +4536,7 @@
     "sourceUrl": "https://openai.com/index/ten-advances-in-mathematics/",
     "sourceName": "OpenAI: Ten advances in mathematics and theoretical computer science",
     "aiContribution": "ai-discovered",
-    "significance": 20,
+    "significance": 21,
     "significanceNote": "A \\$250 Erdős prize problem from 1961, well known across Ramsey theory.",
     "links": [
       {
@@ -8214,7 +8214,7 @@
     "sourceName": "v0.3.0 fixed-gadget scenario-cover release",
     "resultNote": "Fixed four-terminal planar DAG; positive route-cost differences for m≥2, with non-attained suprema; signed/zero only for m=1, whose attainment is unstated. No topology-wide/unrestricted-planar claim.",
     "aiContribution": "ai-co-developed",
-    "significance": 5,
+    "significance": 4,
     "significanceNote": "A sharp constant inside one gadget construction.",
     "links": [
       {
@@ -9080,7 +9080,7 @@
     "sourceName": "arXiv:2607.22033 - Exponentially Fewer-Server PIR from Sparser S-Decoding Polynomials",
     "resultNote": "the PIR consequence is conditional on a number-theoretic conjecture implied by either the generalized repunit conjecture or Schinzel's hypothesis H, and is unconditional for s <= 15",
     "aiContribution": "ai-discovered",
-    "significance": 15,
+    "significance": 12,
     "significanceNote": "An open problem posed at ITCS 2026 with a matching lower bound already in hand, inside the matching-vector PIR line running from Efremenko to Ghasemi-Kopparty-Sudan."
   },
   {
@@ -9703,7 +9703,7 @@
     "sourceUrl": "https://arxiv.org/abs/2605.30840",
     "sourceName": "arXiv:2605.30840 - Finitely generated Howson groups which are not strongly Howson",
     "aiContribution": "ai-co-developed",
-    "significance": 10,
+    "significance": 9,
     "significanceNote": "A recently posed question separating two natural subgroup-intersection properties in combinatorial group theory."
   },
   {
@@ -9740,7 +9740,7 @@
     "sourceUrl": "https://arxiv.org/abs/2608.05044",
     "sourceName": "arXiv",
     "aiContribution": "ai-co-developed",
-    "significance": 35,
+    "significance": 33,
     "significanceNote": "The central open problem of time-frequency and Gabor analysis for thirty years, with a continuous partial-results literature, but little known outside harmonic analysis."
   },
   {
@@ -9847,7 +9847,7 @@
     "sourceUrl": "https://arxiv.org/abs/2608.00109",
     "sourceName": "arXiv",
     "aiContribution": "ai-co-developed",
-    "significance": 10,
+    "significance": 11,
     "significanceNote": "A 2010 specialist conjecture with a genuine partial-results literature (trees, unicyclic graphs, exhaustive small-order checks)."
   },
   {
@@ -10096,7 +10096,7 @@
     "sourceUrl": "https://arxiv.org/abs/2607.16743",
     "sourceName": "arXiv:2607.16743 - The power set of a quasinilpotent backward weighted shift",
     "aiContribution": "ai-co-developed",
-    "significance": 10,
+    "significance": 9,
     "significanceNote": "A question from a recent specialist paper on Douglas-Yang resolvent geometry, with a small but active operator-theory readership."
   },
   {
@@ -10421,7 +10421,7 @@
     "sourceUrl": "https://arxiv.org/abs/2607.16810",
     "sourceName": "arXiv:2607.16810 - The unlabeled list color function of disconnected graphs",
     "aiContribution": "ai-co-developed",
-    "significance": 10,
+    "significance": 9,
     "significanceNote": "A two-year-old conjecture from a specialist list-coloring paper, real and documented but with a small audience."
   },
   {
@@ -10597,7 +10597,7 @@
     "sourceUrl": "https://arxiv.org/abs/2607.09441",
     "sourceName": "arXiv:2607.09441 - Near-optimal node-private community estimation in polynomial-time",
     "aiContribution": "ai-co-developed",
-    "significance": 15,
+    "significance": 12,
     "significanceNote": "An open question from a 2026 paper on private community detection, at the junction of differential privacy and the well-studied stochastic block model."
   },
   {
@@ -10867,7 +10867,7 @@
     "sourceUrl": "https://arxiv.org/abs/2607.17477",
     "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook",
     "aiContribution": "ai-discovered",
-    "significance": 15,
+    "significance": 14,
     "significanceNote": "From the Kourovka Notebook, group theory's recognized standing problem list."
   },
   {
@@ -10900,7 +10900,7 @@
     "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook",
     "ageNote": "New in the 21st edition of the Kourovka Notebook (2026).",
     "aiContribution": "ai-discovered",
-    "significance": 15,
+    "significance": 13,
     "significanceNote": "From the Kourovka Notebook, group theory's recognized standing problem list."
   },
   {
@@ -10933,7 +10933,7 @@
     "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook",
     "ageNote": "New in the 21st edition of the Kourovka Notebook (2026).",
     "aiContribution": "ai-discovered",
-    "significance": 15,
+    "significance": 13,
     "significanceNote": "From the Kourovka Notebook, group theory's recognized standing problem list."
   },
   {
@@ -10966,7 +10966,7 @@
     "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook",
     "ageNote": "New in the 21st edition of the Kourovka Notebook (2026).",
     "aiContribution": "ai-discovered",
-    "significance": 15,
+    "significance": 13,
     "significanceNote": "From the Kourovka Notebook, group theory's recognized standing problem list."
   },
   {
@@ -10999,7 +10999,7 @@
     "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook",
     "ageNote": "New in the 21st edition of the Kourovka Notebook (2026).",
     "aiContribution": "ai-discovered",
-    "significance": 15,
+    "significance": 13,
     "significanceNote": "From the Kourovka Notebook, group theory's recognized standing problem list."
   },
   {
@@ -11031,7 +11031,7 @@
     "sourceUrl": "https://arxiv.org/abs/2607.17477",
     "sourceName": "arXiv:2607.17477 - On some problems from the Kourovka Notebook",
     "aiContribution": "ai-discovered",
-    "significance": 15,
+    "significance": 16,
     "significanceNote": "From the Kourovka Notebook, group theory's recognized standing problem list."
   },
   {
@@ -11339,7 +11339,7 @@
     "sourceName": "arXiv:2607.22874 - The signature of connected line graphs is unbounded",
     "resultNote": "no constant-bound repair of the conjecture is possible",
     "aiContribution": "ai-discovered",
-    "significance": 5,
+    "significance": 4,
     "significanceNote": "A 2026 conjecture refuted within months of being posed."
   },
   {
@@ -11374,7 +11374,7 @@
     "sourceName": "arXiv:2605.25515 - Lipschitz Functions on Sparse Graphs II",
     "resultNote": "Resolved the sharp constant (w.h.p.) for random graphs G(n, d/n)",
     "aiContribution": "ai-co-developed",
-    "significance": 10,
+    "significance": 9,
     "significanceNote": "A bound from a recent paper on Lipschitz functions on sparse graphs, real but narrow."
   },
   {
@@ -11961,7 +11961,7 @@
     "sourceUrl": "https://arxiv.org/abs/2607.08110",
     "sourceName": "arXiv:2607.08110 - Minimum edge-outerplanar embeddings are polynomial-time computable",
     "aiContribution": "ai-co-developed",
-    "significance": 5,
+    "significance": 7,
     "significanceNote": "A specialist complexity question with a small audience."
   },
   {
@@ -12201,7 +12201,7 @@
     "sourceUrl": "https://arxiv.org/abs/2510.23513",
     "sourceName": "arXiv",
     "aiContribution": "ai-co-developed",
-    "significance": 30,
+    "significance": 32,
     "significanceNote": "The method is world-famous and the point-convergence question was known across the optimization community for four decades, with Attouch-school partial results; invisible outside the field.",
     "links": [
       {
@@ -12534,7 +12534,7 @@
     "sourceUrl": "https://arxiv.org/abs/2607.04388",
     "sourceName": "arXiv:2607.04388 - Optimal online discrepancy minimization in linear time",
     "aiContribution": "ai-discovered",
-    "significance": 10,
+    "significance": 9,
     "significanceNote": "An algorithmic follow-up in online discrepancy."
   },
   {
@@ -12847,7 +12847,7 @@
     "sourceUrl": "https://arxiv.org/abs/2607.26396",
     "sourceName": "arXiv",
     "aiContribution": "ai-co-developed",
-    "significance": 10,
+    "significance": 7,
     "significanceNote": "A specialist question in classical projective geometry, posed in a 2026 remark and answered within months."
   },
   {
@@ -12951,7 +12951,7 @@
     "sourceName": "OpenAI: Ten advances in mathematics and theoretical computer science",
     "resultNote": "an n^4/log n formula lower bound; VP vs VNP remains wide open",
     "aiContribution": "ai-discovered",
-    "significance": 40,
+    "significance": 38,
     "significanceNote": "Permanent lower bounds are the flagship program of algebraic complexity since Valiant (1979); formula bounds had been stuck near quadratic.",
     "links": [
       {
@@ -13238,7 +13238,7 @@
     "sourceUrl": "https://arxiv.org/abs/2607.26275",
     "sourceName": "arXiv",
     "aiContribution": "ai-co-developed",
-    "significance": 10,
+    "significance": 7,
     "significanceNote": "Settles a question posed in the paper that introduced the measure, closing it completely rather than improving a bound."
   },
   {
@@ -13273,7 +13273,7 @@
     "sourceUrl": "https://arxiv.org/abs/2605.21946",
     "sourceName": "arXiv:2605.21946 - Optimal Approximation of the Permanent of Positive Semidefinite Matrices",
     "aiContribution": "ai-co-developed",
-    "significance": 30,
+    "significance": 28,
     "significanceNote": "Closes the gap between the best known algorithm and the known hardness bound for a well-studied approximation problem, fixing the optimal exponent."
   },
   {
@@ -13592,7 +13592,7 @@
     "sourceUrl": "https://arxiv.org/abs/2606.19663",
     "sourceName": "arXiv:2606.19663 - Counterexample to a conjecture on the pairwise independent correlation gap using AI",
     "aiContribution": "ai-discovered",
-    "significance": 10,
+    "significance": 7,
     "significanceNote": "A conjecture the same authors published in 2025; recent and narrow, but explicitly stated in the literature."
   },
   {
@@ -13947,7 +13947,7 @@
     "sourceUrl": "https://arxiv.org/abs/2607.11043",
     "sourceName": "arXiv:2607.11043 - Disproofs of two conjectures concerning nondeficient numbers",
     "aiContribution": "ai-co-developed",
-    "significance": 10,
+    "significance": 7,
     "significanceNote": "Two conjectures from a 2024 paper introducing the notion; recent and specialized, in the classical perfect-numbers tradition."
   },
   {
@@ -13983,7 +13983,7 @@
     "sourceUrl": "https://arxiv.org/abs/2607.22515",
     "sourceName": "arXiv:2607.22515 - Matroid flat counts are not unimodal",
     "aiContribution": "ai-co-developed",
-    "significance": 35,
+    "significance": 36,
     "significanceNote": "Rota's 1970 unimodality circle, the family of conjectures behind a Fields-medal program."
   },
   {
@@ -14121,7 +14121,7 @@
     "sourceName": "arXiv",
     "ageNote": "Grew out of Schiffer's work in the 1950s; the equivalent Pompeiu problem dates to 1929, and the conjecture appears as Problem 80 on Yau's 1982 list.",
     "aiContribution": "ai-assisted",
-    "significance": 55,
+    "significance": 53,
     "significanceNote": "A flagship problem of spectral geometry for seven decades: Problem 80 on Yau's list, equivalent to the 1929 Pompeiu problem, with a partial-results literature running since the 1970s."
   },
   {
@@ -14348,7 +14348,7 @@
     "resultNote": "minimum out-degree 7; the conjecture is open in general",
     "ageNote": "Seymour posed it around 1990; the out-degree threshold had not moved since Kaneko and Locke reached 6 in 2001.",
     "aiContribution": "ai-assisted",
-    "significance": 30,
+    "significance": 32,
     "significanceNote": "One of the best known open problems on tournaments and oriented graphs, attacked steadily for three decades with the out-degree threshold as the standard measure of progress."
   },
   {
@@ -14688,7 +14688,7 @@
     "sourceName": "Sombor Energy Conjecture Counterexample",
     "ageNote": "First posted on arXiv in 2021 and published in 2022.",
     "aiContribution": "ai-discovered",
-    "significance": 5,
+    "significance": 6,
     "significanceNote": "A 2021 conjecture in chemical graph theory with a small literature."
   },
   {
@@ -15304,7 +15304,7 @@
     "sourceUrl": "https://arxiv.org/abs/2605.10908",
     "sourceName": "arXiv:2605.10908 - On Talagrand's Convexity Conjecture",
     "aiContribution": "ai-co-developed",
-    "significance": 40,
+    "significance": 37,
     "significanceNote": "Talagrand posed it in 1995 and kept restating it in his problem collections through 2026; it is also Problem 54 in Ben Green's list of 100 open problems, and Talagrand identified several connections from it into probability and combinatorics."
   },
   {
@@ -15989,7 +15989,7 @@
     "sourceUrl": "https://arxiv.org/abs/2603.15929",
     "sourceName": "arXiv:2603.15929 - Semi-autonomous formalization of the Vlasov-Maxwell-Landau equilibrium",
     "aiContribution": "ai-discovered",
-    "significance": 5,
+    "significance": 4,
     "significanceNote": "A concrete equilibrium statement from the formalization project itself."
   },
   {
@@ -16142,7 +16142,7 @@
     "sourceUrl": "https://arxiv.org/abs/2607.12728",
     "sourceName": "arXiv",
     "aiContribution": "ai-discovered",
-    "significance": 10,
+    "significance": 7,
     "significanceNote": "A specialist closed-form evaluation rather than a named open problem, listed for the unusually complete AI authorship."
   },
   {
