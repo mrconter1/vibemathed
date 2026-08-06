@@ -194,6 +194,31 @@ async function countsSince(since: Date): Promise<WindowCounts> {
 }
 
 /// Every publicly listed problem. Pending and rejected submissions are excluded.
+/// How many entries were ADDED to the catalog in the last seven days, and in
+/// the seven before them. By createdAt, not solve date: this measures the
+/// record's own growth. Lives behind "use cache" because that is the one
+/// place a prerendered page may read the clock - same pattern as the vote
+/// trend windows above, and a minute of staleness is nothing against a
+/// seven-day window.
+export async function getEntryFlow(): Promise<{ week: number; prevWeek: number }> {
+  "use cache";
+  cacheTag("problems");
+  cacheLife("minutes");
+  const now = Date.now();
+  const [week, prevWeek] = await Promise.all([
+    prisma.problem.count({
+      where: { status: "published", createdAt: { gte: new Date(now - 7 * DAY_MS) } },
+    }),
+    prisma.problem.count({
+      where: {
+        status: "published",
+        createdAt: { gte: new Date(now - 14 * DAY_MS), lt: new Date(now - 7 * DAY_MS) },
+      },
+    }),
+  ]);
+  return { week, prevWeek };
+}
+
 export async function getPublishedProblems(): Promise<ProblemWithTrends[]> {
   "use cache";
   cacheTag("problems");

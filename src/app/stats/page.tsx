@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getPublishedProblems } from "@/lib/data";
+import { getEntryFlow, getPublishedProblems } from "@/lib/data";
 import { ChartCard } from "@/components/ChartCard";
 import type { ChartProblem } from "@/lib/problems";
 import { ContributionGrowthChart } from "@/components/ContributionGrowthChart";
@@ -58,31 +58,13 @@ export default async function StatsPage() {
   // whole record.
   const resolved = slim.filter((p) => p.resolution === "resolved");
 
-  // Week-over-week, anchored to the DATA rather than the wall clock: reading
-  // `new Date()` in a prerendered server component is a Cache Components
-  // build error, and a data-anchored window is more useful regardless - after
-  // a quiet stretch a clock week empties out and reads as though nothing was
-  // ever solved. Same anchoring as the home page's "This week" column. Only
-  // day-precision solve dates can sit in a 7-day window; month-precision
-  // entries ("2026-07") are left out rather than invented onto a day.
-  const dayDates = problems
-    .map((p) => p.solveDate)
-    .filter((d) => d.length === 10)
-    .sort();
-  const newestDay = dayDates.at(-1);
-  const backFrom = (iso: string, days: number) =>
-    new Date(new Date(`${iso}T00:00:00Z`).getTime() - days * 86400000)
-      .toISOString()
-      .slice(0, 10);
-  const weekStart = newestDay ? backFrom(newestDay, 6) : "";
-  const prevWeekStart = newestDay ? backFrom(newestDay, 13) : "";
-  const weekCount = newestDay ? dayDates.filter((d) => d >= weekStart).length : 0;
-  const prevWeekCount = newestDay
-    ? dayDates.filter((d) => d >= prevWeekStart && d < weekStart).length
-    : 0;
+  // The record's own growth: entries added in the last seven days against
+  // the seven before. The clock read lives inside getEntryFlow's cache scope,
+  // where a prerendered page is allowed to have one.
+  const flow = await getEntryFlow();
   const weekChange =
-    prevWeekCount > 0
-      ? Math.round(((weekCount - prevWeekCount) / prevWeekCount) * 100)
+    flow.prevWeek > 0
+      ? Math.round(((flow.week - flow.prevWeek) / flow.prevWeek) * 100)
       : null;
 
   // A share, not a count: how much of the record is machine-checked.
@@ -131,15 +113,15 @@ export default async function StatsPage() {
     },
     {
       icon: "spark",
-      label: "Solved this week",
-      value: String(weekCount),
+      label: "New entries this week",
+      value: String(flow.week),
       change:
         weekChange === null
           ? undefined
           : `${weekChange >= 0 ? "▲" : "▼"} ${Math.abs(weekChange)}% on last week`,
       changeDown: weekChange !== null && weekChange < 0,
-      sub: weekChange === null ? `${prevWeekCount} the week before` : undefined,
-      help: "The seven days ending at the newest recorded solve, against the seven before them. Counted by the date the problem was solved, not the date we added it, so the window follows the data rather than the calendar.",
+      sub: weekChange === null ? `${flow.prevWeek} the week before` : undefined,
+      help: "Entries added to the catalog in the last seven days, against the seven days before them. Counted by the date we published the entry, not the date the problem was solved.",
     },
     {
       icon: "shield",
