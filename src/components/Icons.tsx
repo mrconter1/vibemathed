@@ -21,6 +21,8 @@ export type IconName =
   | "pencil" // edit an entry
   | "bell" // notifications
   | "mail" // the inbox
+  | "expand" // open a chart full-size
+  | "close" // dismiss the expanded chart
   | "info" // explanatory tooltips
   | "arrowDown" // sort direction (rotate 180 for ascending)
   | "copy" // copy to clipboard
@@ -210,6 +212,21 @@ const PATHS: Record<IconName, React.ReactNode> = {
     <>
       <path d="M2 3.8h12v8.4H2z" strokeLinejoin="round" />
       <path d="M2.4 4.4L8 8.8l5.6-4.4" strokeLinecap="round" strokeLinejoin="round" />
+    </>
+  ),
+  // Two arrows leaving opposite corners: out, bigger.
+  expand: (
+    <>
+      <path d="M9.5 2.5h4v4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M13.5 2.5L9.2 6.8" strokeLinecap="round" />
+      <path d="M6.5 13.5h-4v-4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M2.5 13.5l4.3-4.3" strokeLinecap="round" />
+    </>
+  ),
+  close: (
+    <>
+      <path d="M4 4l8 8" strokeLinecap="round" />
+      <path d="M12 4l-8 8" strokeLinecap="round" />
     </>
   ),
   // Replaces the "ⓘ" glyph, which the browser rasterised from a font at 11px

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getPublishedProblems } from "@/lib/data";
+import { ChartCard } from "@/components/ChartCard";
 import type { ChartProblem } from "@/lib/problems";
 import { ContributionGrowthChart } from "@/components/ContributionGrowthChart";
 import { CumulativeChart } from "@/components/CumulativeChart";
@@ -57,39 +58,32 @@ export default async function StatsPage() {
   // whole record.
   const resolved = slim.filter((p) => p.resolution === "resolved");
 
-  // Month-over-month on the last COMPLETE month, deliberately not a rolling
-  // window. Two reasons. A month-to-date comparison shows a fake collapse for
-  // the first three weeks of every month - on 3 August, August-so-far against
-  // July reads -89%. And on a series this bursty a rolling ratio is an
-  // artefact of the window: the same data gives +44% over 7 days, +386% over
-  // 30 and +478% over 120. A completed month is the one comparison a reader
-  // cannot recompute into a different headline.
-  const monthly = new Map<string, number>();
-  for (const p of problems) {
-    // Month-precision entries ("2026-07") already carry the month; day
-    // precision is truncated to it.
-    const month = p.solveDate.slice(0, 7);
-    if (month.length === 7) monthly.set(month, (monthly.get(month) ?? 0) + 1);
-  }
-  const months = [...monthly.keys()].sort();
-  // "Complete" is derived from the data, not the clock. Reading `new Date()`
-  // in a prerendered server component is a Cache Components build error, and
-  // the newest month present is in practice the one still filling, so the
-  // month before it is the newest complete one. If a month has not yet
-  // produced an entry the report simply lags a month, which is the safe
-  // direction to be wrong in.
-  const lastMonth = months.at(-2);
-  const prevMonth = months.at(-3);
-  const lastCount = lastMonth ? (monthly.get(lastMonth) ?? 0) : 0;
-  const prevCount = prevMonth ? (monthly.get(prevMonth) ?? 0) : 0;
-  const monthChange =
-    prevCount > 0 ? Math.round(((lastCount - prevCount) / prevCount) * 100) : null;
-  const monthName = lastMonth
-    ? new Date(`${lastMonth}-02`).toLocaleString("en-GB", { month: "long" })
-    : "";
-  const prevName = prevMonth
-    ? new Date(`${prevMonth}-02`).toLocaleString("en-GB", { month: "long" })
-    : "";
+  // Week-over-week, anchored to the DATA rather than the wall clock: reading
+  // `new Date()` in a prerendered server component is a Cache Components
+  // build error, and a data-anchored window is more useful regardless - after
+  // a quiet stretch a clock week empties out and reads as though nothing was
+  // ever solved. Same anchoring as the home page's "This week" column. Only
+  // day-precision solve dates can sit in a 7-day window; month-precision
+  // entries ("2026-07") are left out rather than invented onto a day.
+  const dayDates = problems
+    .map((p) => p.solveDate)
+    .filter((d) => d.length === 10)
+    .sort();
+  const newestDay = dayDates.at(-1);
+  const backFrom = (iso: string, days: number) =>
+    new Date(new Date(`${iso}T00:00:00Z`).getTime() - days * 86400000)
+      .toISOString()
+      .slice(0, 10);
+  const weekStart = newestDay ? backFrom(newestDay, 6) : "";
+  const prevWeekStart = newestDay ? backFrom(newestDay, 13) : "";
+  const weekCount = newestDay ? dayDates.filter((d) => d >= weekStart).length : 0;
+  const prevWeekCount = newestDay
+    ? dayDates.filter((d) => d >= prevWeekStart && d < weekStart).length
+    : 0;
+  const weekChange =
+    prevWeekCount > 0
+      ? Math.round(((weekCount - prevWeekCount) / prevWeekCount) * 100)
+      : null;
 
   // A share, not a count: how much of the record is machine-checked.
   const leanShare = problems.length
@@ -120,6 +114,8 @@ export default async function StatsPage() {
     label: string;
     value: string;
     change?: string;
+    /// Whether the change line reports a decline, for its colour.
+    changeDown?: boolean;
     sub?: string;
     help?: string;
     /// When the number names one entry, the number links to it.
@@ -135,13 +131,15 @@ export default async function StatsPage() {
     },
     {
       icon: "spark",
-      label: `Solved in ${monthName}`,
-      value: String(lastCount),
+      label: "Solved this week",
+      value: String(weekCount),
       change:
-        monthChange === null
+        weekChange === null
           ? undefined
-          : `${monthChange >= 0 ? "▲" : "▼"} ${Math.abs(monthChange)}% on ${prevName}`,
-      help: "Counted by the date the problem was solved, not the date we added it, and always the last complete month - a month still in progress would show a decline that is only the calendar.",
+          : `${weekChange >= 0 ? "▲" : "▼"} ${Math.abs(weekChange)}% on last week`,
+      changeDown: weekChange !== null && weekChange < 0,
+      sub: weekChange === null ? `${prevWeekCount} the week before` : undefined,
+      help: "The seven days ending at the newest recorded solve, against the seven before them. Counted by the date the problem was solved, not the date we added it, so the window follows the data rather than the calendar.",
     },
     {
       icon: "shield",
@@ -189,7 +187,13 @@ export default async function StatsPage() {
               )}
             </dd>
             {t.change && (
-              <p className="mt-0.5 text-[11px] font-medium text-[var(--status-good)]">
+              <p
+                className={`mt-0.5 text-[11px] font-medium ${
+                  t.changeDown
+                    ? "text-[var(--ink-muted)]"
+                    : "text-[var(--status-good)]"
+                }`}
+              >
                 {t.change}
               </p>
             )}
@@ -206,30 +210,30 @@ export default async function StatsPage() {
       <section className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
         {/* Whole record: the scatter itself splits resolved (filled) from
             candidate (hollow) and excludes partial/variant/retracted. */}
-        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
+        <ChartCard>
           <ReferencesChart problems={slim} />
-        </div>
-        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
+        </ChartCard>
+        <ChartCard>
           <ModelsChart problems={resolved} />
-        </div>
-        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
+        </ChartCard>
+        <ChartCard>
           <ContributionGrowthChart problems={resolved} />
-        </div>
+        </ChartCard>
         {/* The "is AI doing theory yet?" chart. */}
-        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
+        <ChartCard>
           <MethodGrowthChart problems={resolved} />
-        </div>
+        </ChartCard>
         {/* The hero curve carries a full-width row on its own, and unlike the
             solve charts it counts EVERY tracked entry. */}
-        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5 lg:col-span-2">
+        <ChartCard className="lg:col-span-2">
           <CumulativeChart problems={slim} />
-        </div>
-        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
+        </ChartCard>
+        <ChartCard>
           <SolveRatioChart problems={resolved} />
-        </div>
-        <div className="min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5">
+        </ChartCard>
+        <ChartCard>
           <OpenSourceChart problems={resolved} />
-        </div>
+        </ChartCard>
       </section>
     </main>
   );
