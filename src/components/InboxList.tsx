@@ -274,7 +274,10 @@ function ConversationView({
   }, [busy, text, conversation.id, onReplied]);
 
   return (
-    <section className="rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)]">
+    // overflow-hidden because the header and composer bars are opaque
+    // squares: without the clip their corners paint over the section's
+    // rounding.
+    <section className="overflow-hidden rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)]">
       <header className="flex items-start gap-3 border-b border-[var(--hairline)] bg-[var(--paper)] px-3 py-2.5">
         <button
           type="button"
@@ -439,7 +442,10 @@ function ComposeView({
     "w-full rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 py-2 text-sm text-[var(--ink)] focus:border-[var(--accent-blue)] focus:outline-none";
 
   return (
-    <section className="rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)]">
+    // Clipped for the same reason as the conversation view: the opaque
+    // header bar must not square off the card's corners. The autocomplete
+    // dropdown stays inside the card's box, so the clip cannot cut it.
+    <section className="overflow-hidden rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)]">
       <header className="flex items-center gap-3 border-b border-[var(--hairline)] bg-[var(--paper)] px-3 py-2.5">
         <button
           type="button"
