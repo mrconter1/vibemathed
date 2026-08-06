@@ -62,6 +62,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -879,6 +880,7 @@ def firstproof_items() -> list[str]:
 # --------------------------------------------------------------- report ----
 
 def main() -> int:
+    started = time.monotonic()
     ap = argparse.ArgumentParser()
     # 5, not 3. arXiv's search index advances when papers are ANNOUNCED, and
     # announcements pause at weekends: on Sunday 2026-08-02 the newest paper
@@ -1214,7 +1216,13 @@ def main() -> int:
     # Persist what this run learned about each host's tolerance, so the next
     # invocation starts at the right pace instead of rediscovering the limit.
     LIMITER.save()
+    elapsed = time.monotonic() - started
+    # In the report AND on stderr: the report is what gets read later, and
+    # "how long does a run cost" is the first question when scheduling one.
+    print(f"\n_(total run time {int(elapsed // 60)}m {elapsed % 60:.0f}s)_")
     print(f"  [pace] learned: {LIMITER.status()}", file=sys.stderr)
+    print(f"  [done] total run time {int(elapsed // 60)}m {elapsed % 60:.0f}s",
+          file=sys.stderr)
     return 0
 
 
