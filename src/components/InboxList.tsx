@@ -448,7 +448,7 @@ function ComposeView({
         >
           ← All
         </button>
-        <p className="font-serif text-base text-[var(--ink)]">New message</p>
+        <p className="font-serif text-base text-[var(--ink)]">Send new message</p>
       </header>
 
       <div className="flex flex-col gap-3 px-3 py-4">
@@ -719,7 +719,7 @@ export function InboxList() {
           onClick={() => setComposing(true)}
           className="rounded-md bg-[var(--accent-blue)] px-3 py-1.5 text-xs text-white transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent-blue)]"
         >
-          New message
+          Send new message
         </button>
       </div>
 
@@ -727,7 +727,7 @@ export function InboxList() {
         <p className="rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-6 text-center text-sm text-[var(--ink-muted)]">
           No messages. When a curator answers a report you sent or decides on
           something you submitted, their reply lands here - or start a
-          conversation yourself with New message.
+          conversation yourself with Send new message.
         </p>
       ) : (
         <div className="space-y-2">

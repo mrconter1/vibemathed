@@ -30,8 +30,8 @@ export default function InboxPage() {
       </h1>
       <p className="mb-6 mt-2 max-w-2xl text-sm leading-relaxed text-[var(--ink-secondary)]">
         Conversations with the curators and other readers: decisions on your
-        submissions, answers to your reports, and anything started with New
-        message. Reply in the thread and the answer comes back here. Nothing on
+        submissions, answers to your reports, and anything started with Send
+        new message. Reply in the thread and the answer comes back here. Nothing on
         this page is public, and nothing said here is posted to an entry.
       </p>
 
