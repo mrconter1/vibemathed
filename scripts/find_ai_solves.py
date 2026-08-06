@@ -59,6 +59,7 @@ import json
 import re
 import sys
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -107,19 +108,39 @@ NOISE_RE = re.compile(
     r"|Conference on Artificial|Journal of Artificial|Cited by",
     re.IGNORECASE,
 )
-MODEL_RE = re.compile("|".join(re.escape(t) for t in MODEL_TERMS), re.IGNORECASE)
 
-# Found by triage 2026-08-03: "Aristotle" matched "Aristotle University of
-# Thessaloniki" in an author affiliation, flagging an ergodic theory paper with
-# no AI in it at all. Model names that are also ordinary proper nouns need the
-# obvious exclusions.
+
+def _model_term(t: str) -> str:
+    """One model name, guarded against running into other words.
+
+    No LETTERS on either side: "GPTV01" and "GPTW24" are citation keys,
+    "grokking" is a phenomenon, "GPTs" is usually generalized probabilistic
+    theories - each of these cost a full-text fetch and a human look in the
+    May 2026 sweep. Digits stay allowed on purpose: "GPT4" and "Gemini 3
+    Thinking" are real names.
+    """
+    return rf"(?<![A-Za-z]){re.escape(t)}(?![A-Za-z])"
+
+
+MODEL_RE = re.compile("|".join(_model_term(t) for t in MODEL_TERMS), re.IGNORECASE)
+
+# Contexts where a guarded term still is not a model. Each line is a real
+# false positive from a measured sweep, not a guess: "Aristotle University of
+# Thessaloniki" flagged an ergodic theory paper (2026-08-03); mathematics is
+# full of French Claudes (Berge, Chevalley, Shannon's first name, and the
+# Universite Claude Bernard in Lyon on half of all French affiliations); and
+# "[GPT23]" is an author-initials citation key, which the letter guard cannot
+# catch because a digit follows.
+#
+# Applied per SNIPPET: a paper mentioning both Claude-the-model and Claude
+# Bernard still surfaces through the model snippet.
 MODEL_FALSE_POSITIVE_RE = re.compile(
-    r"Aristotle University|Aristotle'?s|Codex (?:Sinaiticus|Vaticanus)",
+    r"Aristotle University|Aristotle's|Codex (?:Sinaiticus|Vaticanus)"
+    r"|Universit[ée]\w* Claude|Claude[- ]Bernard"
+    r"|Claude (?:Berge|Shannon|Chevalley|Laflamme|Gittelson|Bardos|LeBrun|Viterbo)"
+    r"|GPT[A-Z]{0,2}\d{2}(?!\d)",
     re.IGNORECASE,
 )
-# "Claude" and "GPT" style terms inside ordinary words ("claudication") are not
-# a risk worth engineering around at this volume; the context line shown in
-# the report makes false positives obvious.
 
 # What a resolution smells like, in a title or abstract.
 RESOLUTION_RE = re.compile(
@@ -394,25 +415,43 @@ def arxiv_recent(days: int, since: str | None = None, until: str | None = None) 
     return papers
 
 
-def arxiv_ai_mentions(paper: dict) -> list[str]:
-    """Fetches the HTML full text (if any) and returns AI-mention snippets.
+def ai_mention_snippets(text: str) -> list[str]:
+    """Model-mention snippets that survive the noise and collision filters.
 
-    Falls back to the abstract alone when no HTML version exists - PDFs are
-    deliberately not parsed to keep this dependency-free.
+    The single definition of "this text discloses AI involvement": the
+    scanner and the regression corpus in test_find_ai_solves.py both call it,
+    which is what makes editing the patterns above safe.
     """
-    plain_id = paper["id"].split("v")[0]
-    try:
-        html = fetch(f"https://arxiv.org/html/{paper['id']}")
-    except Exception:
-        try:
-            html = fetch(f"https://arxiv.org/html/{plain_id}")
-        except Exception:
-            html = paper["abstract"]
-    text = re.sub(r"<[^>]+>", " ", html)
     return [
         c for c in context_lines(text, MODEL_RE)
         if not NOISE_RE.search(c) and not MODEL_FALSE_POSITIVE_RE.search(c)
     ]
+
+
+def arxiv_ai_mentions(paper: dict) -> tuple[list[str], str]:
+    """Fetches the HTML full text (if any) and returns (snippets, how).
+
+    `how` distinguishes the two very different reasons for scanning an
+    abstract instead of a paper: "no-html" (arXiv has no HTML rendering,
+    normal for PDF-only submissions) and "failed" (the fetch itself broke,
+    which is a RECALL LOSS the report must count - a sweep that silently
+    degrades to abstracts stops seeing disclosures at all, and that is how
+    an hour of scanning once produced nothing).
+
+    One fetch, of the unversioned id: arXiv serves the latest version there,
+    and the old versioned-then-plain fallback just 404ed twice per PDF-only
+    paper. PDFs are deliberately not parsed to keep this dependency-free.
+    """
+    plain_id = paper["id"].split("v")[0]
+    how = "html"
+    try:
+        html = fetch(f"https://arxiv.org/html/{plain_id}")
+    except urllib.error.HTTPError as err:
+        html, how = paper["abstract"], ("no-html" if err.code == 404 else "failed")
+    except Exception:
+        html, how = paper["abstract"], "failed"
+    text = re.sub(r"<[^>]+>", " ", html)
+    return ai_mention_snippets(text), how
 
 
 # --------------------------------------------------------------- GitHub ----
@@ -733,7 +772,10 @@ def main() -> int:
         # The full-text fetches dominate the runtime and are independent; a small
         # pool keeps a week-sized sweep to minutes while staying polite to arXiv.
         with ThreadPoolExecutor(max_workers=4) as pool:
-            all_snippets = list(pool.map(arxiv_ai_mentions, new_papers))
+            results = list(pool.map(arxiv_ai_mentions, new_papers))
+        all_snippets = [snips for snips, _ in results]
+        no_html = sum(1 for _, how in results if how == "no-html")
+        failed = sum(1 for _, how in results if how == "failed")
         hits = 0
         for p, snippets in zip(new_papers, all_snippets):
             seen.add(p["id"])
@@ -768,7 +810,18 @@ def main() -> int:
             for s in snippets:
                 print(f"- {s}")
             print()
-        print(f"_({len(papers)} resolution-flavoured papers scanned, {hits} new with AI mentions)_\n")
+        print(f"_({len(papers)} resolution-flavoured papers scanned "
+              f"({len(new_papers)} new; {no_html} abstract-only, no HTML; "
+              f"{failed} full-text fetches FAILED), {hits} with AI mentions)_\n")
+        # Degraded recall must not read as a quiet day. "No HTML" is a fact
+        # about the paper; "failed" is a fact about this run, and enough of
+        # them means the window is NOT covered even though the report ends
+        # normally.
+        if failed > max(3, len(new_papers) // 20):
+            print(f"**WARNING: {failed} of {len(new_papers)} full-text fetches "
+                  f"failed, so those papers were scanned on abstracts alone, "
+                  f"where disclosures never appear. Re-run before treating "
+                  f"this window as covered.**\n")
         state["seen_arxiv"] = sorted(seen)
 
     if "github" in wanted:

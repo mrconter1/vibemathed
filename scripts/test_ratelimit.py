@@ -170,6 +170,21 @@ def run():
     check("stampless state ages from file mtime", reborn._current_delay("h") < 1.0,
           f"reads as {reborn._current_delay('h'):.2f}s")
 
+    # 12. A per-host floor overrides the global one: pacing for a host with a
+    #     PUBLISHED rate never decays below it, while other hosts still get
+    #     the global floor. This is what stops the decay walking arXiv pacing
+    #     under its documented 3s and into a 429 oscillation.
+    lim = AdaptiveLimiter(floor=0.0, start=4.0, decrease=3.0,
+                          half_life=float("inf"), floors={"slow": 3.0})
+    opener, _ = make_opener([b"ok"])
+    ratelimit.urllib.request.urlopen = opener
+    lim.fetch("http://slow/x", UA)
+    lim.fetch("http://fast/x", UA)
+    check("per-host floor holds", abs(lim._delay["slow"] - 3.0) < 1e-9,
+          f"slow={lim._delay['slow']:.2f}s")
+    check("other hosts keep the global floor", abs(lim._delay["fast"] - 1.0) < 1e-9,
+          f"fast={lim._delay['fast']:.2f}s")
+
     ratelimit.urllib.request.urlopen = real_open
     if ratelimit.STATE_PATH.exists():
         ratelimit.STATE_PATH.unlink()

@@ -63,13 +63,19 @@ class AdaptiveLimiter:
 
     def __init__(self, floor: float = 0.5, ceiling: float = 120.0,
                  start: float = 3.0, decrease: float = 0.25, multiplier: float = 3.0,
-                 half_life: float = 600.0):
+                 half_life: float = 600.0, floors: dict[str, float] | None = None):
         self.floor = floor
         self.ceiling = ceiling
         self.start = start
         self.decrease = decrease
         self.multiplier = multiplier
         self.half_life = half_life
+        # Hosts whose tolerable rate is PUBLISHED do not need it learned.
+        # Additive decrease walks pacing below such a host's real limit, earns
+        # a 429, backs off, and decays right back into the limit - an
+        # oscillation that is slower in wall-clock terms than just holding the
+        # documented pace. The floor is the knowledge; encode it.
+        self.floors = floors or {}
         self._lock = threading.Lock()
         self._next_ok: dict[str, float] = {}
         self._delay: dict[str, float] = {}
@@ -95,7 +101,7 @@ class AdaptiveLimiter:
         stamps = saved.get("stamp", {})
         for host, d in saved.get("delay", {}).items():
             try:
-                self._delay[host] = min(self.ceiling, max(self.floor, float(d)))
+                self._delay[host] = min(self.ceiling, max(self._floor(host), float(d)))
                 self._stamp[host] = float(stamps.get(host, default_stamp))
             except (TypeError, ValueError):
                 continue
@@ -113,6 +119,9 @@ class AdaptiveLimiter:
             self._write()
 
     # ------------------------------------------------------------- controls
+    def _floor(self, host: str) -> float:
+        return self.floors.get(host, self.floor)
+
     def _current_delay(self, host: str) -> float:
         """The stored delay, aged. Caller holds the lock.
 
@@ -122,9 +131,9 @@ class AdaptiveLimiter:
         """
         d = self._delay.get(host)
         if d is None:
-            return self.start
+            return max(self._floor(host), self.start)
         age = max(0.0, time.time() - self._stamp.get(host, time.time()))
-        return max(self.floor, d * (0.5 ** (age / self.half_life)))
+        return max(self._floor(host), d * (0.5 ** (age / self.half_life)))
 
     def _wait_turn(self, host: str) -> None:
         """Block until this host's next slot, then claim the one after it."""
@@ -142,13 +151,13 @@ class AdaptiveLimiter:
         with self._lock:
             # Decrease from the aged value, then re-stamp: the new number is
             # current as of now, so its own decay restarts here.
-            self._delay[host] = max(self.floor, self._current_delay(host) - self.decrease)
+            self._delay[host] = max(self._floor(host), self._current_delay(host) - self.decrease)
             self._stamp[host] = time.time()
 
     def _on_congestion(self, host: str) -> float:
         """Multiplicative increase; returns the new steady-state delay."""
         with self._lock:
-            d = min(self.ceiling, max(self.floor, self._current_delay(host)) * self.multiplier)
+            d = min(self.ceiling, max(self._floor(host), self._current_delay(host)) * self.multiplier)
             self._delay[host] = d
             self._stamp[host] = time.time()
             # Nobody touches this host again until the new delay has passed.
@@ -234,4 +243,10 @@ class AdaptiveLimiter:
             return ", ".join(parts)
 
 
-LIMITER = AdaptiveLimiter()
+# arXiv's API terms ask for one request every three seconds, on both the
+# search API and the OAI-PMH harvester. The web frontend (arxiv.org, CDN
+# backed) is not the API and keeps the default floor.
+LIMITER = AdaptiveLimiter(floors={
+    "export.arxiv.org": 3.0,
+    "oaipmh.arxiv.org": 3.0,
+})
