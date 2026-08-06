@@ -5,33 +5,31 @@ import Link from "next/link";
 import { signOutEverywhere } from "@/app/actions/auth";
 import { clearViewerCache, useViewer } from "@/components/ViewerProvider";
 
-/// The colored initial standing in for an avatar - the site never shows the
-/// real Google picture, so the pseudonym's first letter is the identity mark.
-function AvatarInitial({ name, size }: { name: string; size: "sm" | "lg" }) {
-  const cls =
-    size === "sm"
-      ? "h-5 w-5 text-[10px]"
-      : "h-9 w-9 text-base";
+/// The colored initial standing in for an avatar in the DROPDOWN's identity
+/// block - the site never shows the real Google picture. The header button
+/// deliberately does not use this: there the initial renders as a plain
+/// glyph, so the account control matches the envelope and the bell beside it
+/// instead of being the one button with its own colored fill.
+function AvatarInitial({ name }: { name: string }) {
   return (
     <span
       aria-hidden
-      className={`inline-flex shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--accent-blue)_14%,transparent)] font-semibold uppercase text-[var(--accent-blue)] ${cls}`}
+      className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--accent-blue)_14%,transparent)] text-base font-semibold uppercase text-[var(--accent-blue)]"
     >
       {name.trim().charAt(0) || "?"}
     </span>
   );
 }
 
+/// One row of the dropdown: full-width, quiet, lit by hover. The menu is a
+/// list of places, so every row is a link (or, for sign out, styled as one).
+const ROW =
+  "flex w-full items-center px-3.5 py-2 text-left text-sm text-[var(--ink-secondary)] transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] hover:text-[var(--ink)]";
+
 export function AuthMenu() {
-  const {
-    loaded,
-    signedIn,
-    pseudonym,
-    isAdmin,
-  } = useViewer();
+  const { loaded, signedIn, pseudonym, isAdmin } = useViewer();
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
-
 
   // Close on outside click or Escape.
   useEffect(() => {
@@ -52,9 +50,6 @@ export function AuthMenu() {
     };
   }, [open]);
 
-
-
-
   const signInLink = (
     <Link
       href="/sign-in"
@@ -68,21 +63,17 @@ export function AuthMenu() {
   // `data-viewer` attribute choose between them in CSS. This used to be a grey
   // placeholder, which meant the account button was simply missing until a
   // round trip finished - the header's most-used control, absent on every
-  // cold load. The signed-in variant here is a shell: real button, real
-  // avatar disc, letter supplied by the same script through a custom
-  // property. Counts and the menu itself arrive with React.
+  // cold load. The signed-in variant here is a shell: real button geometry,
+  // letter supplied by the same script through a custom property.
   if (!loaded) {
     return (
       <>
         <span className="viewer-out contents">{signInLink}</span>
-        {/* Mirrors the real button's classes exactly, so React taking over
-            changes nothing about the geometry. A fixed square, which is also
-            what lets this shell stop carrying the name for width-matching. */}
         <span
           className="viewer-in h-8 w-8 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)]"
           aria-hidden
         >
-          <span className="viewer-initial inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--accent-blue)_14%,transparent)] text-[10px] font-semibold uppercase text-[var(--accent-blue)]" />
+          <span className="viewer-initial text-[13px] font-semibold uppercase text-[var(--ink-secondary)]" />
         </span>
       </>
     );
@@ -101,106 +92,65 @@ export function AuthMenu() {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="dialog"
-        // The initial alone, in the same square as the envelope and the bell
-        // beside it: the full name lives in the dropdown's identity block.
-        // Queue counts live on the bell now, so this button carries none.
-        className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] transition-colors hover:border-[var(--accent-blue)]"
+        // The initial as a plain glyph in the same square as the envelope
+        // and the bell: three controls, one treatment. The full name and the
+        // colored avatar live in the dropdown.
+        className="relative inline-flex h-8 w-8 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)]"
         aria-label={`Account: ${name}`}
       >
-        <AvatarInitial name={name} size="sm" />
+        <span aria-hidden className="text-[13px] font-semibold uppercase">
+          {name.trim().charAt(0) || "?"}
+        </span>
       </button>
 
       {open && (
         <div
           role="dialog"
           aria-label="Your account"
-          className="absolute right-0 z-50 mt-2 w-72 rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] shadow-lg"
+          className="absolute right-0 z-50 mt-2 w-64 overflow-hidden rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] shadow-lg"
         >
-          {/* Identity block: who the site thinks you are, and the way out to
-              the public profile that name carries. */}
+          {/* Identity, not a menu row: who the site thinks you are. */}
           <div className="flex items-center gap-3 border-b border-[var(--hairline)] px-3.5 py-3">
-            <AvatarInitial name={name} size="lg" />
-            <div className="min-w-0">
-              <p className="truncate font-serif text-base leading-tight text-[var(--ink)]">
-                {name}
-              </p>
-              {pseudonym ? (
-                <Link
-                  href={`/user/${encodeURIComponent(pseudonym)}`}
-                  onClick={() => setOpen(false)}
-                  className="text-[11px] text-[var(--accent-blue)] hover:underline"
-                >
-                  View your public profile
-                </Link>
-              ) : (
-                <p className="text-[11px] text-[var(--ink-muted)]">
-                  No public name assigned yet
-                </p>
-              )}
-            </div>
+            <AvatarInitial name={name} />
+            <p className="min-w-0 truncate font-serif text-base leading-tight text-[var(--ink)]">
+              {name}
+            </p>
           </div>
 
-          {/* Editing moved to the profile page, where the result is
-              visible. This stays a signpost, not a second editor. */}
-          <div className="px-3.5 py-3">
-            {pseudonym ? (
+          <nav className="py-1">
+            {pseudonym && (
               <Link
                 href={`/user/${encodeURIComponent(pseudonym)}`}
                 onClick={() => setOpen(false)}
-                className="inline-flex items-center rounded-md border border-[var(--hairline)] bg-[var(--paper)] px-2.5 py-1.5 text-xs text-[var(--ink)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)]"
+                className={ROW}
               >
-                Edit name, bio and role
+                Public profile
               </Link>
-            ) : (
-              <p className="text-[11px] text-[var(--ink-muted)]">
-                No public name assigned yet.
-              </p>
             )}
-            <p className="mt-1.5 text-[11px] leading-snug text-[var(--ink-muted)]">
-              You appear publicly as your display name only. Your Google name
-              and picture are never shown on the site.
-            </p>
-            {/* No Inbox link here: the envelope in the header is the way in,
-                read or unread. */}
-          </div>
+          </nav>
 
           {isAdmin && (
-            <div className="space-y-1.5 border-t border-[var(--hairline)] px-3.5 py-3">
-              {/* Plain links: what needs acting on is counted on the bell,
-                  so repeating the numbers here just competed with it. */}
-              <Link
-                href="/admin/submissions"
-                onClick={() => setOpen(false)}
-                className="block text-xs text-[var(--accent-blue)] hover:underline"
-              >
-                Review submissions
+            <nav className="border-t border-[var(--hairline)] py-1">
+              {/* Plain rows: what needs acting on is counted on the bell, so
+                  repeating the numbers here just competed with it. */}
+              <Link href="/admin/submissions" onClick={() => setOpen(false)} className={ROW}>
+                Reviews
               </Link>
-              <Link
-                href="/admin/reports"
-                onClick={() => setOpen(false)}
-                className="block text-xs text-[var(--accent-blue)] hover:underline"
-              >
-                Review reports
+              <Link href="/admin/reports" onClick={() => setOpen(false)} className={ROW}>
+                Reports
               </Link>
-              <Link
-                href="/admin/stats"
-                onClick={() => setOpen(false)}
-                className="block text-xs text-[var(--accent-blue)] hover:underline"
-              >
+              <Link href="/admin/stats" onClick={() => setOpen(false)} className={ROW}>
                 Site stats
               </Link>
-            </div>
+            </nav>
           )}
 
           <form
             action={signOutEverywhere}
             onSubmit={clearViewerCache}
-            className="border-t border-[var(--hairline)] px-3.5 py-2.5"
+            className="border-t border-[var(--hairline)] py-1"
           >
-            <button
-              type="submit"
-              className="text-xs text-[var(--accent-blue)] hover:underline"
-            >
+            <button type="submit" className={ROW}>
               Sign out
             </button>
           </form>
