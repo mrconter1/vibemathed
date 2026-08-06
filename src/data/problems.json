@@ -3054,7 +3054,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1026-monotonic-subsequence-sums",
@@ -3091,7 +3091,7 @@
     "sourceName": "Terence Tao's blog",
     "aiContribution": "ai-co-developed",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1032",
@@ -3124,7 +3124,7 @@
     "resultNote": "a new density-degree inequality gives δ(G) ≤ (3/10 + o(1))|V(G)|, improving 0.328; existence of a linear construction remains open",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1038",
@@ -3156,7 +3156,7 @@
     "sourceName": "erdosproblems.com/1038",
     "aiContribution": "ai-co-developed",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1039",
@@ -3189,7 +3189,7 @@
     "resultNote": "order of magnitude determined; the exact asymptotic constant remains open",
     "aiContribution": "ai-co-developed",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1040",
@@ -3222,7 +3222,7 @@
     "resultNote": "capacity alone does not determine the invariant; the zero-measure clause is a separate open question",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1051",
@@ -3254,7 +3254,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-106",
@@ -3286,8 +3286,8 @@
     "sourceName": "erdosproblems.com/106",
     "ageNote": "Dated to 1932 by Soifer, who heard it from Erdős directly (\"In 1932, the 19-year old Paul Erdős poses the following problem\"). Erdős independently dated it to \"more than 60 years ago\" writing in 1994.",
     "aiContribution": "ai-assisted",
-    "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "significance": 11,
+    "significanceNote": "A numbered Erdos problem that an unusually dense reference trail on erdosproblems.com (9 sources), setting it above the typical entry in the catalog.",
     "links": [
       {
         "label": "Construction and verification code (GitHub)",
@@ -3325,7 +3325,7 @@
     "sourceName": "erdosproblems.com/1061",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1061-sum-of-divisors",
@@ -3359,7 +3359,7 @@
     "sourceName": "arXiv:2606.25849 - A resolution of Erdos Problem 1061 on the sum-of-divisors function",
     "aiContribution": "ai-co-developed",
     "significance": 10,
-    "significanceNote": "A numbered Erdos problem on the sum-of-divisors function."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1089",
@@ -3391,7 +3391,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1091",
@@ -3423,7 +3423,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1092",
@@ -3457,7 +3457,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1101",
@@ -3490,7 +3490,7 @@
     "resultNote": "a subexponential good sequence is constructed; the polynomial-growth question remains open",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1133",
@@ -3522,7 +3522,7 @@
     "sourceName": "erdosproblems.com/1133",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1138",
@@ -3558,7 +3558,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1141",
@@ -3590,7 +3590,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1148",
@@ -3626,7 +3626,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1151",
@@ -3663,7 +3663,7 @@
     "ageNote": "As recorded in the 1999 problem collection [Va99]; the question itself is older.",
     "aiContribution": "ai-co-developed",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
     "links": [
       {
         "label": "Write-up",
@@ -3709,7 +3709,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1177",
@@ -3741,7 +3741,7 @@
     "sourceName": "erdosproblems.com/1177",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1186",
@@ -3774,7 +3774,7 @@
     "resultNote": "exact k = 3 constant established, settling the Parrilo-Robertson-Saracino conjecture for 3-APs; general k remains open",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1188",
@@ -3806,7 +3806,7 @@
     "sourceName": "erdosproblems.com/1188",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1189",
@@ -3839,7 +3839,7 @@
     "resultNote": "exact largest modulus 3·2^{k-3} for k ≥ 5, near-linear least maximum, reciprocal mass Θ(log k), and an infinite divisor family; the counting asymptotic rests on the cited BBMST theorem",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-119",
@@ -3872,8 +3872,8 @@
     "sourceUrl": "https://www.erdosproblems.com/119",
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-assisted",
-    "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significance": 13,
+    "significanceNote": "A numbered Erdos problem that carries a $100 Erdos prize and an unusually dense reference trail on erdosproblems.com (10 sources), setting it above the typical entry in the catalog."
   },
   {
     "slug": "erdos-1190",
@@ -3907,7 +3907,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1195",
@@ -3941,7 +3941,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1196-primitive-sets",
@@ -4020,7 +4020,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-12",
@@ -4052,8 +4052,8 @@
     "sourceName": "erdosproblems.com/12",
     "resultNote": "parts (i) and (ii) resolved - a near-linear-density construction exists, refuting the N^{1-c} decay; the reciprocal-sum part remains open",
     "aiContribution": "ai-discovered",
-    "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significance": 12,
+    "significanceNote": "A numbered Erdos problem that an unusually dense reference trail on erdosproblems.com (13 sources), setting it above the typical entry in the catalog."
   },
   {
     "slug": "erdos-1201",
@@ -4089,7 +4089,7 @@
     "ageNote": "Erdős proved the $n^{1/2-\\epsilon}$ version in a 1976 paper and conjectured the strengthening there; catalogued from his 1980 problem list.",
     "aiContribution": "ai-co-developed",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
     "links": [
       {
         "label": "GPT-5.5 Pro note",
@@ -4127,7 +4127,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-1217",
@@ -4159,7 +4159,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
     "links": [
       {
         "label": "Alexeev et al., the paper behind this solve",
@@ -4198,8 +4198,8 @@
     "sourceUrl": "https://www.erdosproblems.com/123",
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
-    "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significance": 11,
+    "significanceNote": "A numbered Erdos problem that an unusually dense reference trail on erdosproblems.com (6 sources), setting it above the typical entry in the catalog."
   },
   {
     "slug": "erdos-125",
@@ -4231,7 +4231,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-130",
@@ -4264,7 +4264,7 @@
     "resultNote": "the infinite-chromatic subquestion is proved; the rest of the problem remains open",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-131-non-dividing-sets",
@@ -4297,7 +4297,7 @@
     "resultNote": "The new content is the upper bound; the matching N^(1/5) construction is prior work of Erdős and Csaba. erdosproblems.com has not accepted the claim",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
     "links": [
       {
         "label": "Lean 4 formalization",
@@ -4339,8 +4339,8 @@
     "sourceName": "erdosproblems.com/138",
     "resultNote": "the stronger question $W(k)^{1/k} \\to \\infty$ remains open",
     "aiContribution": "ai-discovered",
-    "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significance": 14,
+    "significanceNote": "A numbered Erdos problem that carries a $500 Erdos prize and an unusually dense reference trail on erdosproblems.com (15 sources), setting it above the typical entry in the catalog."
   },
   {
     "slug": "erdos-146",
@@ -4422,7 +4422,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-176",
@@ -4454,8 +4454,8 @@
     "sourceName": "erdosproblems.com/176",
     "resultNote": "a polynomial bound for N(k,2), stronger than the exponential bound asked for; the two-parameter problem remains open",
     "aiContribution": "ai-discovered",
-    "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significance": 11,
+    "significanceNote": "A numbered Erdos problem that an unusually dense reference trail on erdosproblems.com (7 sources), setting it above the typical entry in the catalog."
   },
   {
     "slug": "erdos-180",
@@ -4588,8 +4588,8 @@
     "sourceUrl": "https://www.erdosproblems.com/202",
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
-    "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significance": 12,
+    "significanceNote": "A numbered Erdos problem that an unusually dense reference trail on erdosproblems.com (11 sources), setting it above the typical entry in the catalog."
   },
   {
     "slug": "erdos-205",
@@ -4621,7 +4621,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-254",
@@ -4653,7 +4653,7 @@
     "sourceName": "erdosproblems.com/254",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-258",
@@ -4685,7 +4685,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-26",
@@ -4718,7 +4718,7 @@
     "resultNote": "The question as posed was implicit in Davenport–Erdős (1951); the AI result settles Tenenbaum's open variant negatively",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
     "links": [
       {
         "label": "Formalised statement (formal-conjectures)",
@@ -4756,7 +4756,7 @@
     "sourceName": "erdosproblems.com/267",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-281",
@@ -4788,7 +4788,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-283",
@@ -4823,7 +4823,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-306",
@@ -4855,7 +4855,7 @@
     "sourceName": "erdosproblems.com/306",
     "aiContribution": "ai-assisted",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-320",
@@ -4891,7 +4891,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-321",
@@ -4927,7 +4927,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-326",
@@ -4962,7 +4962,7 @@
     "resultNote": "Affirmative answer claimed, contrary to the negative answer Erdős and Graham conjectured; erdosproblems.com still lists the problem open",
     "aiContribution": "ai-assisted",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
     "links": [
       {
         "label": "Manuscript (latest version)",
@@ -5002,7 +5002,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-333",
@@ -5034,7 +5034,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-336",
@@ -5066,7 +5066,7 @@
     "sourceName": "erdosproblems.com/336",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-346",
@@ -5101,7 +5101,7 @@
     "resultNote": "The problem statement is ambiguous: the limit-exists reading is claimed proved (Lean), while the convergence-from-hypotheses reading was disproved by a Lean-checked construction of Price that the community classes as a variant",
     "aiContribution": "ai-co-developed",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
     "links": [
       {
         "label": "Kitamura's Lean formalization",
@@ -5149,7 +5149,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-351",
@@ -5184,7 +5184,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-369",
@@ -5218,7 +5218,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-38",
@@ -5250,7 +5250,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-380",
@@ -5284,7 +5284,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-387-binomial-divisors",
@@ -5354,7 +5354,7 @@
     "sourceName": "erdosproblems.com/394",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-397",
@@ -5386,7 +5386,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-401",
@@ -5423,7 +5423,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-42",
@@ -5457,7 +5457,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-424",
@@ -5492,7 +5492,7 @@
     "resultNote": "Proves positive lower density. The Formal Conjectures encoding asks for Set.HasPosDensity, a density that exists and is positive; erdosproblems.com says Erdos most likely meant lower density.",
     "aiContribution": "ai-co-developed",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
     "links": [
       {
         "label": "Lean proof (Erdos424.lean)",
@@ -5542,8 +5542,8 @@
     "sourceName": "erdosproblems.com/43",
     "resultNote": "both proposed bounds fail",
     "aiContribution": "ai-discovered",
-    "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significance": 11,
+    "significanceNote": "A numbered Erdos problem that carries a $100 Erdos prize, setting it above the typical entry in the catalog."
   },
   {
     "slug": "erdos-450",
@@ -5575,7 +5575,7 @@
     "sourceName": "erdosproblems.com/450",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-451",
@@ -5608,7 +5608,7 @@
     "resultNote": "the conjectured superpolynomial growth is established; the sharper order remains open",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-457",
@@ -5640,7 +5640,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-469",
@@ -5674,7 +5674,7 @@
     "sourceName": "erdosproblems.com/469",
     "aiContribution": "ai-co-developed",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-477",
@@ -5706,7 +5706,7 @@
     "sourceName": "erdosproblems.com/477",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-489",
@@ -5738,7 +5738,7 @@
     "sourceName": "erdosproblems.com/489",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-514",
@@ -5771,7 +5771,7 @@
     "resultNote": "an escape path dominating every power of |z| with bounded initial length is constructed, and universal positive-power lower bounds are ruled out; the broader variant remains open",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-522",
@@ -5803,7 +5803,7 @@
     "sourceName": "erdosproblems.com/522",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-538",
@@ -5835,7 +5835,7 @@
     "sourceName": "erdosproblems.com/538",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-539",
@@ -5868,7 +5868,7 @@
     "resultNote": "main exponent determined; sharper subpolynomial factors remain open",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-543",
@@ -5900,7 +5900,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-550",
@@ -5935,7 +5935,7 @@
     "resultNote": "Claimed proved in a preprint of E. Li; erdosproblems.com still lists the problem open pending human review",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
     "links": [
       {
         "label": "arXiv preprint",
@@ -5974,7 +5974,7 @@
     "resultNote": "the literal wording is refuted; the intended variant remains open",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-593",
@@ -6005,8 +6005,8 @@
     "sourceUrl": "https://www.erdosproblems.com/593",
     "sourceName": "erdosproblems.com/593",
     "aiContribution": "ai-discovered",
-    "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significance": 13,
+    "significanceNote": "A numbered Erdos problem that carries a $500 Erdos prize, setting it above the typical entry in the catalog."
   },
   {
     "slug": "erdos-593-1177-obligatory-triple-systems",
@@ -6040,8 +6040,8 @@
     "sourceName": "arXiv:2606.24882 - A Resolution of Erdos Problems 593 and 1177: Obligatory Triple Systems and Exact Spectra",
     "resultNote": "settles two numbered Erdos problems at once",
     "aiContribution": "ai-co-developed",
-    "significance": 10,
-    "significanceNote": "Two numbered Erdos problems in infinite combinatorics, in the uncountable-chromatic-number tradition of Erdos and Hajnal."
+    "significance": 13,
+    "significanceNote": "A numbered Erdos problem that carries a $500 Erdos prize, setting it above the typical entry in the catalog."
   },
   {
     "slug": "erdos-603",
@@ -6075,7 +6075,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-610",
@@ -6108,8 +6108,8 @@
     "sourceUrl": "https://www.erdosproblems.com/610",
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
-    "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significance": 11,
+    "significanceNote": "A numbered Erdos problem that an unusually dense reference trail on erdosproblems.com (6 sources), setting it above the typical entry in the catalog."
   },
   {
     "slug": "erdos-619",
@@ -6141,7 +6141,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-623",
@@ -6176,7 +6176,7 @@
     "resultNote": "Resolved (if correct) by an independence result rather than a proof or disproof in ZFC: consistency of the positive answer is equivalent to a measurable cardinal, of the negative to ZFC alone",
     "aiContribution": "ai-co-developed",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
     "links": [
       {
         "label": "Paper and LaTeX source",
@@ -6214,7 +6214,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-654",
@@ -6247,7 +6247,7 @@
     "resultNote": "the strongest form is disproved via configurations where every point sees at most about 3n/4 distinct distances; the weaker improvement remains open",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-659",
@@ -6281,7 +6281,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-662",
@@ -6314,7 +6314,7 @@
     "resultNote": "natural readings of the ambiguous historical statement are disproved",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-671",
@@ -6348,8 +6348,8 @@
     "sourceName": "erdosproblems.com/671",
     "resultNote": "Both parts claimed answered affirmatively, with a Lean formalization; two proof claims are filed on erdosproblems.com but the problem is still listed open",
     "aiContribution": "ai-discovered",
-    "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "significance": 12,
+    "significanceNote": "A numbered Erdos problem that carries a $250 Erdos prize, setting it above the typical entry in the catalog.",
     "links": [
       {
         "label": "Write-up",
@@ -6387,7 +6387,7 @@
     "sourceName": "erdosproblems.com/684",
     "claimIssueNote": "A preprint claimed $\\limsup f(n)/\\log n = \\infty$, but a deterministic audit later found a counterexample to its key Lemma 18. The stated conclusion is not established and the problem remains open.",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-690",
@@ -6422,7 +6422,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-694",
@@ -6454,7 +6454,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-696",
@@ -6489,7 +6489,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-7",
@@ -6520,8 +6520,8 @@
     "sourceUrl": "https://www.erdosproblems.com/7",
     "sourceName": "erdosproblems.com/7",
     "claimIssueNote": "The claimed Lean proof that no such covering system exists was withdrawn after audit: its central axiom asserted that a product of factors greater than one is less than one, and a statement-fidelity audit confirmed the gap. The problem remains open.",
-    "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significance": 12,
+    "significanceNote": "A numbered Erdos problem that an unusually dense reference trail on erdosproblems.com (16 sources), setting it above the typical entry in the catalog."
   },
   {
     "slug": "erdos-709",
@@ -6554,7 +6554,7 @@
     "resultNote": "upper bound improved to f(n) ≤ 14n^{3/7} with an explicit logarithmic lower bound; matching bounds remain open",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-728-factorial-divisibility",
@@ -6591,7 +6591,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered Erdős-Graham-era divisibility problem with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-729",
@@ -6623,7 +6623,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-731-dyadic-regularity",
@@ -6658,7 +6658,7 @@
     "resultNote": "resolved under an explicit formalization of 'reasonable', not in full generality",
     "aiContribution": "ai-co-developed",
     "significance": 10,
-    "significanceNote": "A numbered Erdos problem: documented and real, with the usual small audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-741",
@@ -6690,7 +6690,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-750",
@@ -6724,7 +6724,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-768",
@@ -6758,7 +6758,7 @@
     "sourceName": "erdosproblems.com/768",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-768-sylow-divisor-condition",
@@ -6792,7 +6792,7 @@
     "sourceName": "arXiv:2606.24872 - A Resolution of Erdos Problem 768: the Sylow Divisor Condition",
     "aiContribution": "ai-co-developed",
     "significance": 10,
-    "significanceNote": "A numbered Erdos problem, with the constant pinned exactly."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-769",
@@ -6825,7 +6825,7 @@
     "resultNote": "the conjectured lower bound is disproved; good bounds for c(n) remain open",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-793",
@@ -6859,7 +6859,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-796",
@@ -6891,7 +6891,7 @@
     "sourceName": "erdosproblems.com/796",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-846",
@@ -6923,7 +6923,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-848",
@@ -6959,7 +6959,7 @@
     "resultNote": "Resolved for all sufficiently large N via a stability theorem; small N remain a finite computation (erdosproblems.com marks the problem DECIDABLE)",
     "aiContribution": "ai-co-developed",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
     "links": [
       {
         "label": "Sawhney's note resolving the problem",
@@ -6997,7 +6997,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-856",
@@ -7032,7 +7032,7 @@
     "resultNote": "Identifies the exponent as a variational sunflower-capacity constant, sharpening the Tang-Zhang bounds; the value of that constant itself remains open, as does site acceptance",
     "aiContribution": "ai-co-developed",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
     "links": [
       {
         "label": "Write-up",
@@ -7072,7 +7072,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-863",
@@ -7106,7 +7106,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-co-developed",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-865",
@@ -7140,7 +7140,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-866",
@@ -7173,7 +7173,7 @@
     "resultNote": "h₄(n) = 4 for every n ≥ 331,777, with improved global bounds; the broader problem remains open",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-870",
@@ -7208,7 +7208,7 @@
     "resultNote": "A total refutation is claimed for all k>=3, building on the Larsen-Larsen resolution of problem #868; erdosproblems.com still lists the problem open",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
     "links": [
       {
         "label": "Write-up",
@@ -7246,7 +7246,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-888",
@@ -7280,7 +7280,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-896",
@@ -7314,7 +7314,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-897",
@@ -7346,7 +7346,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-906",
@@ -7381,7 +7381,7 @@
     "resultNote": "Two independent affirmative claims (Adriano's, posted first, and a GPT-5.5 Pro note); Erdős himself wrote in 1982 that the problem had been solved affirmatively long before, without a locatable reference",
     "aiContribution": "ai-co-developed",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
     "links": [
       {
         "label": "GPT-5.5 Pro note",
@@ -7424,7 +7424,7 @@
     "resultNote": "lower bound improved to ≫ log n/(log log n · log log log n) infinitely often; the extremal order remains open",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-948",
@@ -7456,7 +7456,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-953",
@@ -7488,7 +7488,7 @@
     "sourceName": "erdosproblems.com/953",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-959",
@@ -7521,7 +7521,7 @@
     "resultNote": "superlinear lower bound M(n) ≥ n^{1 + 1/(50000 log log n)}, improving Ω(n log n); the exact order remains open",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-960",
@@ -7553,7 +7553,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-966",
@@ -7586,7 +7586,7 @@
     "resultNote": "Erdős reported in 1975 that Spencer had shown existence but gave no reference; no proof was on record before the AI solution",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-986",
@@ -7619,8 +7619,8 @@
     "sourceUrl": "https://www.erdosproblems.com/986",
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
-    "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significance": 11,
+    "significanceNote": "A numbered Erdos problem that an unusually dense reference trail on erdosproblems.com (8 sources), setting it above the typical entry in the catalog."
   },
   {
     "slug": "erdos-987",
@@ -7651,8 +7651,8 @@
     "sourceUrl": "https://www.erdosproblems.com/987",
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
-    "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significance": 11,
+    "significanceNote": "A numbered Erdos problem that an unusually dense reference trail on erdosproblems.com (6 sources), setting it above the typical entry in the catalog."
   },
   {
     "slug": "erdos-990",
@@ -7684,7 +7684,7 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
   },
   {
     "slug": "erdos-996",
@@ -7719,7 +7719,7 @@
     "resultNote": "Answered negatively in a preprint that also settles the p=2 case of problem #995; erdosproblems.com still lists the problem open",
     "aiContribution": "ai-assisted",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience.",
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
     "links": [
       {
         "label": "arXiv preprint",
@@ -7756,8 +7756,8 @@
     "sourceUrl": "https://www.erdosproblems.com/997",
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
-    "significance": 10,
-    "significanceNote": "A numbered problem from the Erdős catalog: real and documented, with a specialist audience."
+    "significance": 11,
+    "significanceNote": "A numbered Erdos problem that an unusually dense reference trail on erdosproblems.com (6 sources), setting it above the typical entry in the catalog."
   },
   {
     "slug": "erdos-borwein-binary-blocks",
