@@ -200,6 +200,10 @@ function SummaryRow({
 function Bubble({ m }: { m: InboxMessage }) {
   return (
     <div className={`flex flex-col ${m.mine ? "items-end" : "items-start"}`}>
+      {/* No "New" pill in here: opening the thread IS reading it, so the
+          marker would label something the reader is looking at. Unread state
+          lives on the list row and the header badge, which are about threads
+          not yet opened. */}
       <div className="flex items-baseline gap-2 px-1">
         <span className="text-xs font-medium text-[var(--ink)]">
           {m.mine ? "You" : m.from}
@@ -207,11 +211,6 @@ function Bubble({ m }: { m: InboxMessage }) {
         <span className="font-mono text-[10px] text-[var(--ink-muted)]">
           {m.when}
         </span>
-        {m.isNew && (
-          <span className="rounded-full bg-[var(--accent-orange)] px-1.5 py-px text-[10px] font-medium text-white">
-            New
-          </span>
-        )}
       </div>
 
       {/* Sided rather than full width, which is what makes a run of messages
@@ -351,7 +350,12 @@ function ConversationView({
             placeholder={`Reply to ${conversation.other}`}
             className="w-full resize-none overflow-y-auto rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 py-2 text-sm leading-relaxed text-[var(--ink)] focus:border-[var(--accent-blue)] focus:outline-none"
           />
-          <div className="mt-2 flex flex-wrap items-center gap-3">
+          {/* Send sits at the lower right, where every mail composer puts
+              it; the counter keeps the quiet left corner. */}
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
+            <span className="font-mono text-[11px] text-[var(--ink-muted)]">
+              {text.length}/{MESSAGE_MAX}
+            </span>
             <button
               type="button"
               onClick={() => void send()}
@@ -360,9 +364,6 @@ function ConversationView({
             >
               {busy ? "Sending" : "Send"}
             </button>
-            <span className="font-mono text-[11px] text-[var(--ink-muted)]">
-              {text.length}/{MESSAGE_MAX}
-            </span>
           </div>
           {error && (
             <p className="mt-2 text-xs text-[var(--status-critical)]">
@@ -530,7 +531,10 @@ function ComposeView({
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <span className="font-mono text-[11px] text-[var(--ink-muted)]">
+            {body.length}/{MESSAGE_MAX}
+          </span>
           <button
             type="button"
             onClick={() => void send()}
@@ -539,9 +543,6 @@ function ComposeView({
           >
             {busy ? "Sending" : "Send"}
           </button>
-          <span className="font-mono text-[11px] text-[var(--ink-muted)]">
-            {body.length}/{MESSAGE_MAX}
-          </span>
         </div>
         {error && (
           <p className="text-xs text-[var(--status-critical)]">{error}</p>
