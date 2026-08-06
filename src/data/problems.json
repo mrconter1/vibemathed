@@ -14090,15 +14090,15 @@
   },
   {
     "slug": "schiffer-conjecture",
-    "name": "Schiffer's Conjecture",
+    "name": "Schiffer's Conjecture and the Pompeiu Problem",
     "shortName": "Schiffer's Conjecture",
     "problemNumber": null,
     "field": "Spectral geometry",
     "fieldGroup": "Analysis",
     "resolution": "resolved",
-    "statement": "If a smooth bounded domain in $\\mathbb{R}^n$ admits a Neumann eigenfunction of the Laplacian that is constant on the boundary, must the domain be a ball? Cao-Labora and de Dios Pont construct infinitely many planar domains with large $N$-fold symmetry that are not balls and admit such eigenfunctions, disproving the conjecture together with the closely related Pompeiu problem.",
-    "posedBy": "M. M. Schiffer",
-    "yearPosed": 1957,
+    "statement": "If a smooth bounded domain in $\\mathbb{R}^n$ admits a Neumann eigenfunction of the Laplacian that is constant on the boundary, must the domain be a ball? Pompeiu posed an equivalent integral-equation form in 1929; Schiffer's 1957 reformulation via Neumann eigenfunctions is the version on Yau's 1982 list (Problem 80), and Williams proved the two formulations logically equivalent for simply connected domains in 1976. Cao-Labora and de Dios Pont construct infinitely many planar domains with large $N$-fold symmetry that are not balls and admit such an eigenfunction, disproving Schiffer's conjecture; applying Williams' classical reduction to the same domains (their Corollary 1.2) disproves Pompeiu's problem as well.",
+    "posedBy": "D. Pompeiu (1929); reformulated via Neumann eigenfunctions by M. M. Schiffer (1957)",
+    "yearPosed": 1929,
     "solveType": "disproved",
     "solveDate": "2026-08-05",
     "model": "GPT-5.6, Claude Opus 4.8, Claude Fable 5",
@@ -14119,10 +14119,17 @@
     "renownLangs": 0,
     "sourceUrl": "https://arxiv.org/abs/2608.05114",
     "sourceName": "arXiv",
-    "ageNote": "Grew out of Schiffer's work in the 1950s; the equivalent Pompeiu problem dates to 1929, and the conjecture appears as Problem 80 on Yau's 1982 list.",
+    "resultNote": "Also refutes the 1929 Pompeiu problem: Corollary 1.2 applies Williams' classical 1976 equivalence to the same constructed domains, so this is one construction settling both, not two separate results.",
+    "ageNote": "Pompeiu posed the original integral-equation form in 1929; Schiffer's 1957 reformulation via Neumann eigenfunctions is the version that appears as Problem 80 on Yau's 1982 list. Williams proved the two formulations logically equivalent for simply connected domains in 1976.",
     "aiContribution": "ai-assisted",
     "significance": 53,
-    "significanceNote": "A flagship problem of spectral geometry for seven decades: Problem 80 on Yau's list, equivalent to the 1929 Pompeiu problem, with a partial-results literature running since the 1970s."
+    "significanceNote": "A flagship problem of spectral geometry for seven decades: Problem 80 on Yau's list, equivalent to the 1929 Pompeiu problem, with a partial-results literature running since the 1970s.",
+    "links": [
+      {
+        "label": "Lean formalization of Theorem 1.1 and Corollary 1.2",
+        "url": "https://github.com/jaumededios/Schiffer"
+      }
+    ]
   },
   {
     "slug": "schubitope-ehrhart-positivity",
