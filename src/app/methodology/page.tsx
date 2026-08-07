@@ -123,7 +123,23 @@ export default function MethodologyPage() {
           already proved (formalizing a 1963 proof is valuable, but it is not a
           problem no human had solved), empirical results such as cryptanalytic
           attacks with measured work factors, and heuristic or record-improving
-          constructions that do not resolve a stated question.
+          constructions that do not resolve a stated question. A proof that
+          merely reproves something already settled without AI is out too,
+          because it cannot be shown to be independent of the work it follows.
+        </p>
+        <p>
+          <strong className="text-[var(--ink)]">Concurrent independent proofs
+          are the exception to that last rule.</strong> When two proofs of the
+          same problem appear within weeks by demonstrably different methods,
+          and the authors state they worked independently, the later one is not
+          derivative work: it is ordinary mathematics, which has always
+          produced simultaneous discoveries. An AI-assisted proof in that
+          situation stays in the record, because a model genuinely contributed
+          to proving the thing. What such an entry may not do is imply a
+          priority it lacks, so it names the competing proof in its result
+          note, links it, and says plainly that the first proof of the problem
+          may not have been the AI-assisted one. Crouzeix&apos;s conjecture is
+          the worked example.
         </p>
       </Section>
 
