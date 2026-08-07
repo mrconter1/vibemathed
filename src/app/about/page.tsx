@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 
 const linkClass = "text-[var(--accent-blue)] hover:underline";
 
-const CARDS: { title: string; body: React.ReactNode }[] = [
+const CARDS: { title: string; body: React.ReactNode; wide?: boolean }[] = [
   {
     title: "What this is",
     body: (
@@ -97,6 +97,19 @@ const CARDS: { title: string; body: React.ReactNode }[] = [
       </>
     ),
   },
+  {
+    title: "How far back it reaches",
+    wide: true,
+    body: (
+      <>
+        The record starts well before the site did. Every month from November
+        2025 onward has been swept paper by paper, so the early months are thin
+        because disclosure itself was rare then, not because nobody looked. A
+        result only appears here if its authors said what the model did, which
+        is why the record thickens through 2026 rather than starting full.
+      </>
+    ),
+  },
 ];
 
 export default function AboutPage() {
@@ -117,7 +130,9 @@ export default function AboutPage() {
         {CARDS.map((c) => (
           <section
             key={c.title}
-            className="rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-4 leading-relaxed sm:px-5 sm:py-5"
+            className={`rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-4 leading-relaxed sm:px-5 sm:py-5 ${
+              c.wide ? "sm:col-span-2" : ""
+            }`}
           >
             <h2 className="font-serif text-base text-[var(--ink)]">{c.title}</h2>
             <p className="mt-1.5 text-sm text-[var(--ink-secondary)]">{c.body}</p>
