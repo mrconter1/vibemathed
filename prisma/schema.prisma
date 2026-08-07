@@ -87,7 +87,10 @@ model Problem {
   /// What the model did. Sparse, like `statement`.
   aiRole        String?
   /// How CHECKED the mathematics is: "lean-verified" | "expert-verified" |
-  /// "site-confirmed" | "unreviewed" | "contested". Orthogonal to
+  /// "site-confirmed" | "lean-checked" | "unreviewed" | "contested".
+  /// lean-verified requires the formal statement to be independently
+  /// anchored; lean-checked means the artifact compiles but nobody
+  /// independent audited the informal-to-formal correspondence. Orthogonal to
   /// `publication` - the old single ladder conflated the two.
   verification  String
   verificationNote String?

@@ -95,9 +95,10 @@ export interface LinkRef {
 // can live in an unrefereed preprint or a bare company announcement, and the
 // old single ladder conflated the two.
 export type VerificationStatus =
-  | "lean-verified" // formal proof machine-checked in Lean (strongest)
+  | "lean-verified" // kernel-checked AND the formal statement independently anchored
   | "expert-verified" // independently checked and endorsed by named domain experts
   | "site-confirmed" // erdosproblems.com's official status marks it solved (not Lean)
+  | "lean-checked" // artifact compiles, but statement fidelity is unaudited
   | "unreviewed" // nobody independent has checked the mathematics yet
   | "contested"; // actively disputed or partially walked back
 
@@ -351,6 +352,7 @@ const VERIFICATION_STATUSES: VerificationStatus[] = [
   "lean-verified",
   "expert-verified",
   "site-confirmed",
+  "lean-checked",
   "unreviewed",
   "contested",
 ];

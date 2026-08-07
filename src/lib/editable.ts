@@ -126,6 +126,7 @@ export const VERIFICATION_OPTIONS = [
   { value: "lean-verified", label: "Lean-verified" },
   { value: "expert-verified", label: "Independently expert-verified" },
   { value: "site-confirmed", label: "Site-confirmed" },
+  { value: "lean-checked", label: "Lean-checked, statement unaudited" },
   { value: "unreviewed", label: "Unreviewed" },
   { value: "contested", label: "Contested" },
 ];

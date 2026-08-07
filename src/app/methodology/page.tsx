@@ -45,11 +45,13 @@ export const metadata: Metadata = {
 /// rather than in display.ts because only this page needs the long form.
 const VERIFICATION_DETAIL: Record<VerificationStatus, string> = {
   "lean-verified":
-    "A formal proof machine-checked end to end by the Lean kernel: inside the formal statement, the argument has no gaps at all. What the kernel cannot check is the translation, whether that formal statement really is the problem as posed, so a human still has to confirm the two match. Entries checked modulo explicitly named literature inputs, or leaning on native_decide, say so in their verification note.",
+    "A formal proof machine-checked end to end by the Lean kernel, AND the formal statement independently anchored: the canonical tracker accepted the claim, the statement is pinned in a community-reviewed repository such as Formal Conjectures, or someone with no stake in the proof audited the informal-to-formal correspondence. Both halves are required, because the kernel checks the proof against the supplied statement and nothing can make it check the statement against the problem as posed. Entries checked modulo explicitly named literature inputs, or leaning on native_decide, say so in their verification note.",
   "expert-verified":
     "Checked and endorsed by named domain experts with no stake in the claim. Slower and much rarer than formalization, and it catches what a kernel cannot: a formal statement that drifted from the informal problem, a result already sitting in the literature, a proof that answers the neighbouring question. The authors checking their own work does not count, however expert they are, and that stays Unreviewed.",
   "site-confirmed":
     "Either the canonical community tracker accepted the claim - for Erdős problems, erdosproblems.com marks it solved - or this site reproduced the artifact itself: re-ran a finite certificate, re-derived a counterexample in exact arithmetic, rebuilt a formalization and audited which axioms its theorem really uses. The entry's verification note always says which of the two happened, and exactly what was run.",
+  "lean-checked":
+    "The Lean artifact compiles with no sorry and no stray axioms, but nobody independent has audited whether the formal statement faithfully expresses the original conjecture - typically because the same system produced both the proof and its formalization. A valid kernel check of an unaudited statement can still concern a nearby, weakened or otherwise unintended claim, and statement fidelity is exactly where an autonomous prover is most likely to fail silently. This tier used to be folded into Lean-verified; splitting them is what makes the top rung mean what it says.",
   unreviewed:
     "Nobody independent has checked the mathematics yet, whatever venue the claim lives in.",
   contested:

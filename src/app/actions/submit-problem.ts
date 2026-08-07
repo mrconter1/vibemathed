@@ -118,7 +118,7 @@ export async function submitProblem(values: SubmissionValues): Promise<SubmitRes
   // check, so ask for the note or a link (the primary source alone does not
   // count - a paper claiming a Lean proof is not the Lean proof).
   const claimedTier = String(data.verification ?? "");
-  if (claimedTier === "lean-verified" || claimedTier === "expert-verified") {
+  if (["lean-verified", "expert-verified", "lean-checked"].includes(claimedTier)) {
     const note = String(data.verificationNote ?? "").trim();
     const linkRows = Array.isArray((data.links as { create?: unknown[] })?.create)
       ? ((data.links as { create: unknown[] }).create.length as number)

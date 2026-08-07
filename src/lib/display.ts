@@ -87,6 +87,18 @@ export const VERIFICATION: Record<
   // rather than a separate badge - it applies to a handful of entries, and
   // each one's verification note says which case it is and what was run.
   "site-confirmed": { label: "Site-confirmed", color: "var(--accent-blue)", icon: "check" },
+  // A kernel check proves the proof matches the SUPPLIED formal statement; it
+  // cannot prove the statement matches the conjecture as posed. When nobody
+  // independent has audited that correspondence - typically because the same
+  // system produced both the proof and its formalization - the artifact earns
+  // this tier, not Lean-verified. The split exists because the two labels
+  // used to be one, which overstated exactly the thing an autonomous prover
+  // is most likely to get silently wrong (github.com/mrconter1/vibemathed/issues/2).
+  "lean-checked": {
+    label: "Lean-checked, statement unaudited",
+    color: "var(--accent-blue)",
+    icon: "info",
+  },
   unreviewed: { label: "Unreviewed", color: "var(--ink-muted)", icon: "info" },
   contested: { label: "Contested", color: "var(--status-critical)", icon: "alert" },
 };
