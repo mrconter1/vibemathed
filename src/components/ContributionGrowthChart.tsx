@@ -87,7 +87,7 @@ export function ContributionGrowthChart({ problems }: { problems: ChartProblem[]
     setHover(Math.min(Math.max(i, 0), range.length - 1));
   }
 
-  const active = isDesktop && hover !== null ? hover : null;
+  const active = isDesktop && hover !== null && hover < range.length ? hover : null;
 
   return (
     <div className="flex h-full flex-col">

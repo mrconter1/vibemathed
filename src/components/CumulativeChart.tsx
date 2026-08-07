@@ -63,7 +63,11 @@ function Plot({ data }: { data: PlotData }) {
     setHover(Math.min(Math.max(i, 0), range.length - 1));
   }
 
-  const active = interactive && hover !== null ? hover : null;
+  // Clamped against the CURRENT range: switching granularity (day -> month)
+  // shrinks range from ~340 buckets to ~13 without resetting a stale hover
+  // index, and range[active]/cumulative[active] going undefined fed straight
+  // into bucketTooltipLabel's key.split("-"), crashing the render.
+  const active = interactive && hover !== null && hover < range.length ? hover : null;
 
   return (
     <div className="relative" style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}` }}>
