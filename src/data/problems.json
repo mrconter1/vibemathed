@@ -1167,6 +1167,46 @@
     "significanceNote": "A conjecture posed independently by two groups around 1991 and a standard reference point in spectral extremal graph theory, with Tait and Tobin's asymptotic solution in JCTB."
   },
   {
+    "slug": "boppana-entropy-generalization",
+    "name": "A Generalization of Boppana's Entropy Inequality",
+    "shortName": "Boppana entropy",
+    "problemNumber": null,
+    "field": "Entropy inequalities",
+    "fieldGroup": "Combinatorics",
+    "resolution": "resolved",
+    "statement": "A generalization of Boppana's entropy inequality, of the kind used in union-closed-sets arguments, proved and formalized: the sharp form with the extremal constant characterized via the unique positive solution of an explicit equation.",
+    "posedBy": null,
+    "yearPosed": null,
+    "solveType": "proved",
+    "solveDate": "2026-01-27",
+    "model": "GPT-5.2 Pro, Harmonic Aristotle, Gemini 3 Pro",
+    "modelMaker": "OpenAI, Harmonic, Google DeepMind",
+    "humanCollaborators": [
+      "Boon Suan Ho"
+    ],
+    "aiRole": "\"Key steps in some proofs were generated with the assistance of GPT-5.2 pro. The result has also been formalized in Lean 4 using Harmonic Aristotle and Gemini 3 Pro Preview\" - with the formalization public.",
+    "verification": "lean-verified",
+    "verificationNote": "Formalized in Lean 4 (Aristotle plus Gemini); code public on GitHub. No independent review.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2601.19327",
+    "sourceName": "arXiv",
+    "aiContribution": "ai-co-developed",
+    "significance": 8,
+    "significanceNote": "Extends a named inequality from the union-closed-sets toolbox; specialist, but in a lineage other results depend on.",
+    "links": [
+      {
+        "label": "Lean 4 formalization (Aristotle + Gemini)",
+        "url": "https://github.com/boonsuan/entropy-inequality"
+      }
+    ]
+  },
+  {
     "slug": "bosonic-quantum-capacity-non-gaussian",
     "name": "Bosonic Quantum Communication Beyond the Thermal Threshold",
     "shortName": "Non-Gaussian bosonic capacity",
@@ -1427,6 +1467,45 @@
     "aiContribution": "ai-assisted",
     "significance": 15,
     "significanceNote": "A long-standing question of Brualdi in combinatorial matrix theory, standard background for anyone working with interchange classes of 0-1 matrices."
+  },
+  {
+    "slug": "bruhat-hypercube-intervals",
+    "name": "Large Hypercube Intervals in Bruhat Order",
+    "shortName": "Bruhat hypercubes",
+    "problemNumber": null,
+    "field": "Coxeter combinatorics",
+    "fieldGroup": "Combinatorics",
+    "resolution": "partial",
+    "statement": "How large can a Bruhat interval in $S_n$ that is a poset hypercube be? Using a permutation pattern suggested by AlphaEvolve, the authors exhibit hypercube intervals of dimension $O(n \\log n)$ for $n$ a power of 2, matching the largest possible dimension up to a constant - in the problem circle around the combinatorial invariance conjecture for Kazhdan-Lusztig polynomials.",
+    "posedBy": null,
+    "yearPosed": null,
+    "solveType": "proved",
+    "solveDate": "2026-01-03",
+    "model": "AlphaEvolve",
+    "modelMaker": "Google DeepMind",
+    "humanCollaborators": [
+      "Jordan Ellenberg",
+      "Nicolas Libedinsky",
+      "David Plaza",
+      "José Simental",
+      "Geordie Williamson"
+    ],
+    "aiRole": "AlphaEvolve, searching evolutionarily rather than exhaustively, \"produced a pattern which performed well for the n tested, and which we show works well for general n\" - the agent found the construction, the humans proved it works in general.",
+    "verification": "unreviewed",
+    "verificationNote": null,
+    "publication": "preprint",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2601.01235",
+    "sourceName": "arXiv",
+    "resultNote": "Asymptotically optimal for powers of 2; the exact extremal answer for general n stays open.",
+    "aiContribution": "ai-co-developed",
+    "significance": 10,
+    "significanceNote": "A question in the active problem circle around combinatorial invariance of Kazhdan-Lusztig polynomials, pursued by leading figures of the field."
   },
   {
     "slug": "canonical-closure-completeness-conp",
@@ -2031,6 +2110,42 @@
     "aiContribution": "ai-discovered",
     "significance": 35,
     "significanceNote": "Connes' rigidity conjecture is among the best-known open problems in von Neumann algebras, and W*-superrigidity for property (T) groups has organised a substantial part of that literature since the 1980s."
+  },
+  {
+    "slug": "courtade-kumar-coordinatewise",
+    "name": "Courtade and Kumar's Coordinate-wise Mutual Information Question",
+    "shortName": "Courtade-Kumar progress",
+    "problemNumber": null,
+    "field": "Boolean functions; information theory",
+    "fieldGroup": "Probability & statistics",
+    "resolution": "partial",
+    "statement": "The Courtade-Kumar conjecture (2014) posits that dictatorship functions maximize mutual information between a Boolean function's output and a noisy input. The paper resolves an open question posed by Courtade and Kumar themselves - a sharp bound of $1-H(\\alpha)$ on the sum of coordinate-wise mutual informations for arbitrary bias - and extends the proven high-noise range of the main conjecture via optimal entropy bounds.",
+    "posedBy": "Thomas Courtade, Gowtham Kumar",
+    "yearPosed": 2014,
+    "solveType": "proved",
+    "solveDate": "2026-01-14",
+    "model": "Gemini Deep Think (larger internal version)",
+    "modelMaker": "Google DeepMind",
+    "humanCollaborators": [
+      "Adel Javanmard",
+      "David P. Woodruff"
+    ],
+    "aiRole": "\"The results in this paper were obtained with significant interaction with a larger version of Google's Deep Think Gemini-based model. The authors verified the entire paper and take full responsibility.\" The acknowledgments thank the Deep Think team by name.",
+    "verification": "unreviewed",
+    "verificationNote": null,
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2601.09679",
+    "sourceName": "arXiv",
+    "resultNote": "Fully resolves the posed coordinate-wise question; the main Courtade-Kumar conjecture itself remains open outside the extended high-noise range.",
+    "aiContribution": "ai-co-developed",
+    "significance": 22,
+    "significanceNote": "The Courtade-Kumar conjecture is one of the best-known open problems in the analysis of Boolean functions, attacked steadily since 2014 across information theory and TCS."
   },
   {
     "slug": "covering-number-c-12-6-4",
@@ -6743,6 +6858,43 @@
     "significanceNote": "A numbered Erdos problem that an unusually dense reference trail on erdosproblems.com (16 sources), setting it above the typical entry in the catalog."
   },
   {
+    "slug": "erdos-707-sidon-perfect-difference",
+    "name": "Erdős Problem #707: Sidon Sets and Perfect Difference Sets",
+    "shortName": "Erdős #707 ($1000)",
+    "problemNumber": 707,
+    "field": "Combinatorial number theory",
+    "fieldGroup": "Number theory",
+    "resolution": "resolved",
+    "statement": "Erdős conjectured, in over a dozen papers spanning 1976 to 1997 and with a \\$1000 prize attached, that every finite Sidon set extends to a perfect difference set modulo $p^2+p+1$ for some prime $p$. Alexeev and Mixon establish that $\\{1,2,4,8\\}$ is a counterexample - and discovered along the way that Marshall Hall, Jr. had published a different counterexample three decades before Erdős first posed the problem, unnoticed by the community for half a century.",
+    "posedBy": "Paul Erdős",
+    "yearPosed": 1976,
+    "solveType": "disproved",
+    "solveDate": "2025-10-22",
+    "model": "ChatGPT (GPT-5)",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Boris Alexeev",
+      "Dustin G. Mixon"
+    ],
+    "aiRole": "The mathematics is the humans'; the paper is candid that LLMs failed at the two things they are usually praised for here - they never located Hall's paywalled prior solution, and \"even after we knew what exactly to prove, it couldn't help us close the gap.\" What ChatGPT did do: write the complete Lean formalization of both counterexamples (\"we decided to vibe code the whole proof... about a week... somehow it succeeded\"). Earlier versions of the paper listed ChatGPT and Lean as authors until arXiv policy required their removal.",
+    "verification": "lean-verified",
+    "verificationNote": "Both Hall's and the new counterexample are formalized and kernel-checked in Lean, with the formalization written by ChatGPT and audited by the authors; erdosproblems.com marks the problem disproved with the proof verified in Lean.",
+    "publication": "preprint",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2510.19804",
+    "sourceName": "arXiv",
+    "resultNote": "Hall's 1947 counterexample predates the problem itself; this paper's counterexample is independent, smaller, and Lean-certified.",
+    "ageNote": "Posed repeatedly from 1976 to 1997 as one of Erdős's favourite conjectures; unknowingly answered by Hall in 1947 in a throwaway sentence that even Guy, citing Hall's paper two sentences before stating the problem, failed to connect.",
+    "aiContribution": "ai-assisted",
+    "significance": 20,
+    "significanceNote": "A \\$1000 Erdős prize problem - among his highest bounties - posed in more than a dozen papers across two decades and described as one of his favourite conjectures."
+  },
+  {
     "slug": "erdos-709",
     "name": "Erdős Problem #709",
     "shortName": "Erdős #709",
@@ -6810,7 +6962,13 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
+    "links": [
+      {
+        "label": "Writeup of Aristotle's autonomous Lean proof (Barreto)",
+        "url": "https://arxiv.org/abs/2601.07421"
+      }
+    ]
   },
   {
     "slug": "erdos-729",
@@ -16962,6 +17120,40 @@
         "url": "https://github.com/steven-le-thien/vandermonde-snp"
       }
     ]
+  },
+  {
+    "slug": "vertex-minimal-paper-tori",
+    "name": "Vertex-Minimal Paper Tori",
+    "shortName": "Paper tori",
+    "problemNumber": null,
+    "field": "Polyhedral geometry",
+    "fieldGroup": "Geometry & topology",
+    "resolution": "resolved",
+    "statement": "A paper torus is an embedded polyhedral torus isometric to a flat torus. Schwartz proves no paper torus with 7 vertices exists and constructs one with 8, settling the minimum-vertex question in the flat-torus embedding tradition of Császár-torus combinatorics and the Lazarus-Tallerie universal triangulation.",
+    "posedBy": null,
+    "yearPosed": null,
+    "solveType": "proved",
+    "solveDate": "2025-07-20",
+    "model": "ChatGPT-4o, ChatGPT-5",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Richard Evan Schwartz"
+    ],
+    "aiRole": "Used for high-level idea discussion, error-finding, data formatting and program documentation across a heavily computer-assisted proof - plus one moment the author singles out: \"In a stroke of brilliance, it found on its own the expression for the denominator... I might not have arrived at that.\"",
+    "verification": "unreviewed",
+    "verificationNote": "Computer-assisted with exact integer arithmetic; all code public. No independent review.",
+    "publication": "preprint",
+    "resolutionMethod": "computation",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2507.14998",
+    "sourceName": "arXiv",
+    "aiContribution": "ai-assisted",
+    "significance": 10,
+    "significanceNote": "The minimum-vertex question for flat polyhedral tori sits in a documented lineage from the Császár torus through Lazarus-Tallerie, known within discrete geometry."
   },
   {
     "slug": "vinzant-phase-retrieval-injectivity",
