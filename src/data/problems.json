@@ -2590,6 +2590,41 @@
     "significanceNote": "A named conjecture on permanents open since the 1980s, advanced to the point where only small dimensions remain."
   },
   {
+    "slug": "dittert-s-conjecture-in-dimension-five",
+    "name": "Dittert's Conjecture in Dimension Five",
+    "shortName": "Dittert n=5",
+    "problemNumber": null,
+    "field": "Linear algebra; permanents; exact sum-of-squares certificates",
+    "fieldGroup": "Combinatorics",
+    "resolution": "candidate",
+    "statement": "The dimension-five case asks whether, for every nonnegative $5\\times5$ real matrix $A$ whose entries sum to $5$, the Dittert functional $\\Phi(A)=\\prod_i r_i+\\prod_j c_j-\\operatorname{per}(A)$ is uniquely maximized at $U_5=J_5/5$. The submitted artifact claims the stronger quantitative bound $$\\Phi(A)\\leq \\frac{1226}{625}-\\frac{1}{625}\\lVert A-U_5\\rVert_F^2,$$ which implies uniqueness.",
+    "posedBy": "Eberhard Dittert",
+    "yearPosed": 1983,
+    "solveType": "proved",
+    "solveDate": "2026-08-06",
+    "model": "GPT-5.6 Sol (Ultra)",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Arthur Moisés da Costa Borges"
+    ],
+    "aiRole": "Operating through OpenAI Codex, GPT-5.6 Sol with the Ultra reasoning-effort setting selected the problem after literature triage, developed the symmetry-reduced sum-of-squares approach, ran numerical discovery and rational recovery, produced the exact certificate and mechanically separate verifier, formalized the quantitative bound and equality characterization in Lean 4, audited the artifacts, and wrote the manuscript. Human mathematical supervision was minimal. Arthur Moisés da Costa Borges defined the broad objective, authorized execution and publication decisions, supplied factual metadata, and maintains the artifact, but did not derive or independently validate its technical content.",
+    "verification": "lean-verified",
+    "verificationNote": "The public artifact contains a Lean 4.30.0-rc1 formalization of the n=5 quantitative bound and equality characterization, with no sorry, admit, or user-declared axioms. Lean checks the included exact rational SOS witness directly. Large finite equalities use native_decide; the trusted base therefore includes Lean's native compiler and runtime, not the kernel alone. A separate Python/FLINT verifier checks 54/54 orbital identities, 425/425 kernel constraints, and 420/420 positive leading principal minors; deterministic generators reproduce the PSD witness and 41 Lean data modules. No independent specialist has yet checked the informal-to-formal correspondence, historical or novelty claims, or the overall argument. Treat this as a public AI-generated candidate, not an established or peer-reviewed result.",
+    "publication": "announcement",
+    "resolutionMethod": "computation",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://github.com/arthurborgesdev/dittert-conjecture-n5/tree/91920c401770b98b2050cff4296e602247d4bc24",
+    "sourceName": "Public GitHub research artifact (commit 91920c4)",
+    "resultNote": "Dimension 5 only; public AI-generated candidate with no independent specialist review.",
+    "aiContribution": "ai-discovered",
+    "significance": 15,
+    "significanceNote": "A named 1983 conjecture in permanent/matrix theory with a genuine multi-decade partial-results thread (Sasser, Pang's n>=17, this session's n=16), but a narrow specialist audience within combinatorial matrix theory."
+  },
+  {
     "slug": "divisible-rank-three-case-of-the-kajitani-ueno-miyano-conjecture",
     "name": "The Divisible Rank-Three Case of the Kajitani–Ueno–Miyano Conjecture",
     "shortName": "Divisible rank-three KUM",
@@ -14107,11 +14142,11 @@
       "Gonzalo Cao-Labora",
       "Jaume de Dios Pont"
     ],
-    "aiRole": "Models with coding harnesses were used in multiple parts of the research: numerically verifying the asymptotic estimates, producing first drafts of the proofs of the Bessel function estimates, and helping with exposition. The Lean4 verification of the proof was written by GPT 5.6 from an early draft of the paper. The novel construction strategy is the authors' own.",
-    "verification": "unreviewed",
-    "verificationNote": "A day-old preprint. The paper states that a Lean4 verification of the proof was written by GPT 5.6, but no public artifact is linked yet, and no independent expert review has appeared.",
+    "aiRole": "Models with coding harnesses were used in multiple parts of the research: numerically verifying the asymptotic estimates, producing first drafts of the proofs of the Bessel function estimates, and helping with exposition. \n\nThe Lean4 verification of the proof was written by GPT 5.6 from an early draft of the paper. The novel construction strategy is the authors' own.",
+    "verification": "lean-verified",
+    "verificationNote": "A day-old preprint. The paper states that a Lean4 verification of the proof was written by GPT 5.6, available at https://github.com/jaumededios/Schiffer. It solves the Pompeiu Problem challenge provided by https://github.com/google-deepmind/formal-conjectures/blob/main/FormalConjectures/Wikipedia/PompeiuProblem.lean",
     "publication": "preprint",
-    "resolutionMethod": "construction",
+    "resolutionMethod": "argument",
     "citations": null,
     "citationsPaper": null,
     "citationsSource": null,
@@ -14128,6 +14163,10 @@
       {
         "label": "Lean formalization of Theorem 1.1 and Corollary 1.2",
         "url": "https://github.com/jaumededios/Schiffer"
+      },
+      {
+        "label": "Pompeiu problem Wikipedia article",
+        "url": "https://en.wikipedia.org/wiki/Pompeiu_problem"
       }
     ]
   },
@@ -14714,7 +14753,7 @@
     "model": "GPT-5.6-Pro",
     "modelMaker": null,
     "humanCollaborators": [
-      "Craig Huneke"
+      "Son Pham & Craig Huneke"
     ],
     "aiRole": "Came up with the counterexample on shot. GPT-share chat for proof:\n\nhttps://chatgpt.com/c/6a6529a6-fb04-83ea-a397-a64ffed0b3d6",
     "verification": "expert-verified",
