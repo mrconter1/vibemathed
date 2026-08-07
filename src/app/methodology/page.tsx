@@ -300,6 +300,22 @@ export default function MethodologyPage() {
           , versioned in the repository; any wholesale rescore is documented
           there.
         </p>
+        <p>
+          One cluster gets a further, evidence-based pass rather than resting
+          on comparative judgment alone: the numbered Erdős problems, which
+          made up two large ties at the bottom of the scale. Erdős priced the
+          problems he cared most about himself, in dollars, and
+          erdosproblems.com records how much literature and discussion each
+          one has attracted - both are real per-problem signals, not
+          guesses. On 6 August 2026 every numbered entry was checked against
+          both: a documented prize or an unusually dense reference trail
+          moved a problem up within its band. This is promotion-only - a
+          thin page is evidence of nothing, not of insignificance - and the
+          large tie that remains after this check is stamped as examined
+          (each such entry&apos;s note says so explicitly) rather than left
+          as an unexamined default. A shared score should mean &quot;checked
+          and found comparable,&quot; never &quot;never looked.&quot;
+        </p>
       </Section>
 
       <Section title="Notability">
