@@ -2003,7 +2003,7 @@
     "problemNumber": null,
     "field": "Elementary number theory",
     "fieldGroup": "Number theory",
-    "resolution": "resolved",
+    "resolution": "retracted",
     "statement": "22 conjectures of Cohen about cyclic numbers (integers with $\\gcd(n, \\varphi(n)) = 1$) settled at once - 16 proved, 6 disproved - together with a complete resolution of a related OEIS problem on sequences whose running averages are Fibonacci numbers (Fried's Conjecture 2).",
     "posedBy": "Cohen (OEIS conjectures); Fried",
     "yearPosed": null,
@@ -2016,7 +2016,7 @@
     ],
     "aiRole": "\"All proofs in the paper were assisted by GPT-5\" - a blanket credit across 22 resolutions, with no individual attribution, so the lower tier applies.",
     "verification": "unreviewed",
-    "verificationNote": null,
+    "verificationNote": "Paper has been retracted from arXiv",
     "publication": "preprint",
     "resolutionMethod": "argument",
     "citations": null,
@@ -2286,6 +2286,50 @@
     "aiContribution": "ai-assisted",
     "significance": 7,
     "significanceNote": "A conjectural minimum distance proposed in the paper that introduced the codes; recent and specialized, though Reed-Muller codes give it wider context."
+  },
+  {
+    "slug": "crouzeix-s-conjecture",
+    "name": "Crouzeix's Conjecture",
+    "shortName": "Crouzeix's conjecture",
+    "problemNumber": null,
+    "field": "Matrix analysis",
+    "fieldGroup": "Analysis",
+    "resolution": "candidate",
+    "statement": "Crouzeix conjectured in 2004 that for every square complex matrix $A$ and every polynomial $p$, $\\lVert p(A)\\rVert \\leq 2 \\max_{z \\in W(A)} |p(z)|$, where $W(A)$ is the numerical range of $A$. Crouzeix proved a constant of 11.08 in 2007 and Crouzeix and Palencia lowered it to $1+\\sqrt{2}$ in 2017; the conjectured constant 2 is attained by $2\\times 2$ matrices. Lorist and Schwenninger prove the sharp bound by combining the double-layer potential machinery with a perturbation lemma for 2-dilations.",
+    "posedBy": "Michel Crouzeix",
+    "yearPosed": 2004,
+    "solveType": "proved",
+    "solveDate": "2026-08-04",
+    "model": "ChatGPT 5.6 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Emiel Lorist",
+      "Felix L. Schwenninger"
+    ],
+    "aiRole": "The paper's disclosure in full: \"ChatGPT 5.6 Pro by OpenAI was used to explore proof strategies for this note. The note was entirely written by the authors, who take full responsibility for the content.\" No individual lemma is attributed to the model, so the lower tier applies.",
+    "verification": "unreviewed",
+    "verificationNote": "A preprint days old, resolving a conjecture open since 2004. No independent expert review, no formalization, and a competing independent claim is outstanding (see the result note), so this is recorded as a candidate rather than a settled result.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 2,
+    "sourceUrl": "https://arxiv.org/abs/2608.03841",
+    "sourceName": "arXiv",
+    "renownNote": "English and Polish Wikipedia articles.",
+    "resultNote": "Concurrent independent proof: the authors note that during preparation of this note, a proof of the conjecture appeared independently in a July 2026 preprint of S. Jin (\"The numerical range is a 2-spectral set\", preprints.org), by a different, function-theoretic route. That work carries no AI disclosure known to us, so the first proof of Crouzeix's conjecture may not be an AI-assisted one; this entry records the AI-assisted proof, not a claim of priority.",
+    "ageNote": "Posed by Crouzeix in 2004, with a documented ladder of constants since: 11.08 (Crouzeix, 2007), $1+\\sqrt{2}$ (Crouzeix and Palencia, 2017), plus many special cases.",
+    "aiContribution": "ai-assisted",
+    "significance": 30,
+    "significanceNote": "A named 2004 conjecture at the centre of matrix analysis and operator theory, with two decades of partial results, a survey of its own and a Wikipedia article, but little known outside those fields.",
+    "links": [
+      {
+        "label": "Jin's concurrent independent proof (preprints.org, July 2026)",
+        "url": "https://www.preprints.org/manuscript/202607.1919"
+      }
+    ]
   },
   {
     "slug": "curto-minimal-fixed-points",
