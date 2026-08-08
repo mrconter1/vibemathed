@@ -45,6 +45,50 @@
     ]
   },
   {
+    "slug": "a-counterexample-to-han-s-conjecture",
+    "name": "Han's Conjecture",
+    "shortName": "Han's conjecture",
+    "problemNumber": null,
+    "field": "Homological algebra",
+    "fieldGroup": "Algebra",
+    "resolution": "resolved",
+    "statement": "For a finite-dimensional algebra $A$, finite global dimension forces $\\mathrm{HH}_n(A) = 0$ for all large $n$. Han conjectured the converse: eventual vanishing of Hochschild homology should detect homological smoothness. Disproved by an explicit finite-dimensional $\\mathbb{C}$-algebra with $\\mathrm{HH}_n(A) = 0$ for every $n \\geq 1$ and $\\mathrm{gldim}\\, A = \\infty$, built by transporting Krah's phantom into a singularity category via one-periodic folding.",
+    "posedBy": "Yang Han",
+    "yearPosed": 2006,
+    "solveType": "disproved",
+    "solveDate": "2026-07-31",
+    "model": "GPT-5.6 Sol Ultra",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Bochao Kong",
+      "Yeqin Liu",
+      "Yu Shen"
+    ],
+    "aiRole": "The paper's acknowledgment in full: \"The counterexample presented in this paper was discovered with the assistance of OpenAI's GPT-5.6 Sol Ultra model. All mathematical arguments and references were independently verified by the authors.\" In a counterexample paper the algebra is the whole result, so crediting the model with its discovery is a claim about the central object, not about support work. The hedge \"with the assistance of\" keeps this below the top tier.",
+    "verification": "unreviewed",
+    "verificationNote": "A preprint days old with no independent review. The surrounding evidence is unusually strong for something this new: two of the three authors disproved the differential-graded analogue of the same conjecture in December 2025, this paper extends that program, and the construction runs on named recent machinery (Krah's phantom from Inventiones 2024, Chen's partial-resolution theorem, the Wang-Arunachalam-Keller identification) rather than novel unpublished tools. That is provenance, not verification, and the tier reflects the difference.",
+    "publication": "preprint",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2608.00177",
+    "sourceName": "arXiv",
+    "resultNote": "The counterexample is an ordinary algebra concentrated in degree zero, with the strongest possible vanishing in positive degrees, so the phenomenon needs no grading or differential. Liu and Shen had already disproved the differential-graded version in December 2025 without any AI involvement; the classical case is the one that fell with a model in the loop.",
+    "ageNote": "Posed by Han in the Journal of the London Mathematical Society in 2006 and open since, with a dedicated survey and positive results for commutative, monomial, graded, Koszul, local and cellular algebras. Happel had asked the same question for Hochschild cohomology; Buchweitz, Green, Madsen and Solberg answered that negatively in 2005, but their self-injective examples have nonzero Hochschild homology in infinitely many degrees, so Han's homology version survived and sharpened into the question of whether homology detects smoothness where cohomology cannot.",
+    "aiContribution": "ai-co-developed",
+    "significance": 25,
+    "significanceNote": "A named conjecture of the representation theory of finite-dimensional algebras, open for twenty years, with its own survey article, and the surviving half of the Happel-Han pair after the cohomology version fell in 2005.",
+    "links": [
+      {
+        "label": "Liu and Shen's dg-version counterexample (December 2025, no AI involvement)",
+        "url": "https://arxiv.org/abs/2512.12460"
+      }
+    ]
+  },
+  {
     "slug": "a-counterexample-to-the-inverse-generator-problem-and-related-questions",
     "name": "The Inverse Generator Problem on Hilbert Spaces",
     "shortName": "Inverse generator problem",
