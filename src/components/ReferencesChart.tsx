@@ -328,18 +328,19 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
                     x={cx}
                     y={labelYBySlug.get(problem.slug) ?? cy - 12}
                     textAnchor={labelAnchor}
-                    // The halo (paint-order trick) is what un-cramps the
-                    // plot: labels sit over gridlines and neighbouring
-                    // points, and a paper-colored stroke behind the glyphs
-                    // buys legibility that 14px type was faking with size.
-                    style={{
-                      fontSize: 12,
-                      fill: "var(--ink-secondary)",
-                      paintOrder: "stroke",
-                      stroke: "var(--paper-raised)",
-                      strokeWidth: 3.5,
-                      strokeLinejoin: "round",
-                    }}
+                    // No halo. It used to paint a 3.5px paper-coloured stroke
+                    // behind the glyphs so labels stayed legible over
+                    // gridlines, which worked until Chrome's auto-dark got
+                    // hold of it: the browser re-maps fill and stroke
+                    // independently, so the backing turned into a hard bright
+                    // outline around every label.
+                    //
+                    // Cheap to drop, because only outliers are labelled and
+                    // outliers are by definition in the sparse corners of the
+                    // plot, where there is nothing behind the text anyway. The
+                    // fill steps up from --ink-secondary to --ink to carry the
+                    // legibility the stroke was contributing.
+                    style={{ fontSize: 12, fill: "var(--ink)" }}
                   >
                     {deTeX(problem.shortName)}
                   </text>
