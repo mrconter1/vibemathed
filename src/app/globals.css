@@ -63,7 +63,16 @@
      clears 4.97 there and 5.39 on the page. */
   --ink-muted: #938b78;
 
-  --hairline: #322d24;
+  /* Borders need more separation on dark than the ratio alone suggests. The
+     first pass used #322d24, which measures 1.34 against the page and 1.23
+     against raised surfaces: near-identical to the light theme's own hairline
+     (1.26 and 1.36), so on paper it looked like parity. It did not read like
+     parity. A dark field flattens a low-contrast edge in a way a bright one
+     does not, so card outlines, button borders and the header seam all went
+     mushy. This is 2.22 and 2.05, roughly 1.7x the separation, which is
+     visible without turning a hairline into a rule. Every border on the site
+     goes through this token, including the header's bottom edge. */
+  --hairline: #554e43;
 
   --mat: #6b6559;
   --mat-border: rgba(240, 235, 221, 0.18);
