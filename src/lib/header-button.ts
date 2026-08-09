@@ -14,10 +14,22 @@
 /// Display is left to the caller: most want `inline-flex`, but the signed-in
 /// shells take `viewer-in`, which supplies `display: flex` from CSS so the
 /// right variant can be chosen before hydration.
+/// The focus ring answers the keyboard only. Clicking or tapping one of these
+/// leaves the button focused, and the UA's default ring then sits on it until
+/// something else is clicked, which reads as a stuck toggle - especially on
+/// the theme button, where the thing you just pressed is also the thing whose
+/// state you are trying to read. `focus-visible` is the same rule the entry
+/// cards already use, and the site's other buttons already draw their ring
+/// this way.
+const FOCUS =
+  "focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 " +
+  "focus-visible:outline-[var(--accent-blue)]";
+
 export const HEADER_ICON =
   "h-7 w-7 shrink-0 items-center justify-center rounded-md border " +
   "border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-secondary)] " +
-  "sm:h-8 sm:w-8";
+  "sm:h-8 sm:w-8 " +
+  FOCUS;
 
 /// The hover treatment, separate because the pre-hydration shells are inert
 /// placeholders and must not appear interactive.
