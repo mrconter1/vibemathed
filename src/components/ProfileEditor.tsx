@@ -241,12 +241,17 @@ export function ProfileEditor({
       </fieldset>
 
       <fieldset className="mt-3">
+        {/* Worded for whichever provider signed you in. The columns behind
+            these two toggles are still named showGoogleName / showGoogleEmail
+            from when Google was the only option; they have always stored
+            "whatever the OAuth profile returned", so only the labels needed to
+            change when GitHub was added. */}
         <legend className="text-[11px] font-medium text-[var(--ink-secondary)]">
-          Google account
+          Sign-in account
         </legend>
         <p className="mt-0.5 text-[11px] leading-snug text-[var(--ink-muted)]">
-          Off by default: nothing from your Google account is shown unless you
-          turn it on here. Saves immediately.
+          Off by default: nothing from the account you sign in with is shown
+          unless you turn it on here. Saves immediately.
         </p>
         <div className="mt-1.5 space-y-1">
           <label className="flex items-center gap-2 text-xs text-[var(--ink-secondary)]">
@@ -256,7 +261,7 @@ export function ProfileEditor({
               onChange={(e) => toggleGoogle("name", e.target.checked)}
               className="accent-[var(--accent-blue)]"
             />
-            Show my Google name on this profile
+            Show my account name on this profile
           </label>
           <label className="flex items-center gap-2 text-xs text-[var(--ink-secondary)]">
             <input
@@ -265,7 +270,7 @@ export function ProfileEditor({
               onChange={(e) => toggleGoogle("email", e.target.checked)}
               className="accent-[var(--accent-blue)]"
             />
-            Show my Google email on this profile
+            Show my account email on this profile
           </label>
         </div>
       </fieldset>

@@ -154,7 +154,7 @@ export default async function UserPage({
         {(profile.googleName || profile.googleEmail) && (
           <p className="mt-1.5 text-sm text-[var(--ink-secondary)]">
             {[profile.googleName, profile.googleEmail].filter(Boolean).join(" · ")}
-            <span className="text-[var(--ink-muted)]"> (Google account, shared by choice)</span>
+            <span className="text-[var(--ink-muted)]"> (from their sign-in account, shared by choice)</span>
           </p>
         )}
         <p className="mt-1.5 text-sm text-[var(--ink-muted)]">
