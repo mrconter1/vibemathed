@@ -78,11 +78,28 @@ export default function SignInPage() {
           Either works. A shared verified email reaches the same account.
         </p>
 
-        <p className="mt-5 text-xs text-[var(--ink-muted)]">
-          <Link href="/" className="text-[var(--accent-blue)] hover:underline">
-            ← Back to all entries
-          </Link>
-        </p>
+        {/* Full width, matching the two provider buttons above it, but quieter:
+            no border and a muted label, so the card reads as two real choices
+            with a way out underneath rather than three equal options. */}
+        <Link
+          href="/"
+          className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-md px-4 py-2 text-xs text-[var(--ink-muted)] transition-colors hover:bg-[var(--paper)] hover:text-[var(--ink)]"
+        >
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+          >
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          Back to all entries
+        </Link>
       </main>
     </div>
   );
