@@ -398,6 +398,31 @@ select option::checkmark {
 }
 
 /*
+ * Same trick for the theme toggle's icon. Both glyphs ship in the HTML and
+ * CSS reveals the right one, keyed off the attribute the boot script has
+ * already written, so the icon is correct in the very first paint.
+ *
+ * The alternative was rendering neither until React could read the stored
+ * theme, which is what shipped first and which left a visibly empty button
+ * for a beat while the mail and bell beside it were drawn immediately.
+ *
+ * Light is the default, so the moon (meaning "switch to dark") is the one
+ * that shows without an attribute - the correct fallback for a first visit
+ * and for anyone without JavaScript.
+ */
+.theme-icon-sun {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme-icon-sun {
+  display: block;
+}
+
+:root[data-theme="dark"] .theme-icon-moon {
+  display: none;
+}
+
+/*
  * The pseudonym's first letter, carried as a custom property by the same
  * script so the avatar is not an empty disc for the first few frames. Falls
  * back to nothing rather than a placeholder glyph: an empty circle reads as
