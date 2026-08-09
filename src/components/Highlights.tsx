@@ -18,6 +18,7 @@
 
 import Link from "next/link";
 import { type ProblemWithVotes } from "@/lib/problems";
+import { AI_CONTRIBUTION } from "@/lib/display";
 import { Icon, type IconName } from "@/components/Icons";
 import { SolvedStamp } from "@/components/RelativeTime";
 import { TeX } from "@/components/TeX";
@@ -54,24 +55,28 @@ interface Row {
   /// a date at all.
   iso?: string;
   /// Marks the top AI-contribution tier: the model produced the central proof
-  /// or object. Rendered as a dot rather than an "AI" pill on purpose - every
-  /// entry in this record involves AI, so lettering that says AI on some rows
-  /// would imply the unmarked ones do not.
+  /// or object.
   aiDiscovered?: boolean;
 }
 
-/// The dot itself. Its own flex child rather than part of the name, because
-/// the name truncates: inside that span the badge is the first thing a narrow
-/// screen throws away, which is exactly backwards. `shrink-0` keeps it while
-/// the title gives way instead, and `self-center` sits it against the x-height
-/// of a baseline-aligned row without magic pixel offsets.
-function DiscoveredDot() {
+/// The badge. Its own flex child rather than part of the name, because the
+/// name truncates: inside that span the pill would be the first thing a narrow
+/// screen threw away, which is exactly backwards.
+///
+/// It shows the whole label wherever it fits and clips to "AI-discove..." when
+/// it does not, so the two shrink priorities matter. The title is the long,
+/// compressible text and gives way first; `shrink-[0.2]` lets the pill absorb
+/// roughly a fifth of the squeeze the title takes, so it stays whole down to
+/// narrow phones and only starts clipping under real pressure. `min-w-0` is
+/// what makes `truncate` work at all on a flex child, and `title` keeps the
+/// full label reachable once it clips.
+function DiscoveredPill({ label }: { label: string }) {
   return (
     <span
-      title="AI-discovered: the model produced the central proof or object"
-      className="inline-block h-1.5 w-1.5 shrink-0 self-center rounded-full bg-[var(--status-good)]"
+      title={`${label}: the model produced the central proof or object`}
+      className="min-w-0 shrink-[0.2] self-center truncate rounded-full bg-[color-mix(in_srgb,var(--status-good)_14%,transparent)] px-1.5 py-px text-[10px] font-medium text-[var(--status-good)]"
     >
-      <span className="sr-only">AI-discovered</span>
+      {label}
     </span>
   );
 }
@@ -188,10 +193,12 @@ export function Highlights({
                   className="group flex items-baseline justify-between gap-3"
                 >
                   <span className="flex min-w-0 items-baseline gap-1.5">
-                    <span className="truncate text-sm text-[var(--ink-secondary)] transition-colors group-hover:text-[var(--accent-blue)]">
+                    <span className="min-w-0 truncate text-sm text-[var(--ink-secondary)] transition-colors group-hover:text-[var(--accent-blue)]">
                       <TeX>{row.name}</TeX>
                     </span>
-                    {row.aiDiscovered && <DiscoveredDot />}
+                    {row.aiDiscovered && (
+                      <DiscoveredPill label={AI_CONTRIBUTION["ai-discovered"].pill ?? "AI-discovered"} />
+                    )}
                   </span>
                   <span className="shrink-0 font-mono text-[11px] text-[var(--ink-muted)]">
                     {row.iso ? (
