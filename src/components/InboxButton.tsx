@@ -16,6 +16,7 @@
 import Link from "next/link";
 import { Icon } from "@/components/Icons";
 import { useViewer } from "@/components/ViewerProvider";
+import { HEADER_ICON, HEADER_ICON_HOVER } from "@/lib/header-button";
 
 export function InboxButton() {
   const { loaded, signedIn, unreadInbox } = useViewer();
@@ -27,7 +28,7 @@ export function InboxButton() {
   if (!loaded) {
     return (
       <span
-        className="viewer-in h-8 w-8 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-secondary)]"
+        className={`viewer-in ${HEADER_ICON}`}
         aria-hidden
       >
         <Icon name="mail" size={15} />
@@ -42,7 +43,7 @@ export function InboxButton() {
       href="/inbox"
       aria-label={unreadInbox > 0 ? `Inbox (${unreadInbox} unread)` : "Inbox"}
       title="Inbox"
-      className="relative inline-flex h-8 w-8 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)]"
+      className={`relative inline-flex ${HEADER_ICON} ${HEADER_ICON_HOVER}`}
     >
       <Icon name="mail" size={15} />
       {unreadInbox > 0 && (

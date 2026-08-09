@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signOutEverywhere } from "@/app/actions/auth";
+import { HEADER_ICON, HEADER_ICON_HOVER } from "@/lib/header-button";
 import { clearViewerCache, useViewer } from "@/components/ViewerProvider";
 
 /// The colored initial standing in for an avatar in the DROPDOWN's identity
@@ -14,7 +15,7 @@ function AvatarInitial({ name }: { name: string }) {
   return (
     <span
       aria-hidden
-      className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--accent-blue)_14%,transparent)] text-base font-semibold uppercase text-[var(--accent-blue)]"
+      className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full sm:h-9 sm:w-9 bg-[color-mix(in_srgb,var(--accent-blue)_14%,transparent)] text-base font-semibold uppercase text-[var(--accent-blue)]"
     >
       {name.trim().charAt(0) || "?"}
     </span>
@@ -70,7 +71,7 @@ export function AuthMenu() {
       <>
         <span className="viewer-out contents">{signInLink}</span>
         <span
-          className="viewer-in h-8 w-8 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)]"
+          className={`viewer-in ${HEADER_ICON}`}
           aria-hidden
         >
           <span className="viewer-initial text-[13px] font-semibold uppercase text-[var(--ink-secondary)]" />
@@ -95,7 +96,7 @@ export function AuthMenu() {
         // The initial as a plain glyph in the same square as the envelope
         // and the bell: three controls, one treatment. The full name and the
         // colored avatar live in the dropdown.
-        className="relative inline-flex h-8 w-8 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)]"
+        className={`relative inline-flex ${HEADER_ICON} ${HEADER_ICON_HOVER}`}
         aria-label={`Account: ${name}`}
       >
         <span aria-hidden className="text-[13px] font-semibold uppercase">

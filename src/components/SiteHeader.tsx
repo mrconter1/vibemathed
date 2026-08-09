@@ -21,7 +21,7 @@ export function SiteHeader() {
           wraps to two lines on a phone; gap-x keeps the nav clear of the
           tagline on one line. Both were tight enough that the subtitle and
           the buttons read as one block. */}
-      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-7 gap-y-2 px-4 py-2.5 sm:flex-nowrap sm:gap-x-8 sm:px-8">
+      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-3 gap-y-1.5 px-4 py-2.5 sm:flex-nowrap sm:gap-x-8 sm:px-8">
         {/* The hover is the colour swap in globals.css, not an opacity fade.
             Dimming the whole block read as the header going away; trading the
             two halves reads as it answering. */}
@@ -38,7 +38,7 @@ export function SiteHeader() {
 
         <NavLinks />
 
-        <div className="order-2 ml-auto flex items-center gap-2 sm:order-3">
+        <div className="order-2 ml-auto flex items-center gap-1 sm:order-3 sm:gap-2">
           {/* Leftmost, and the only action here that everyone sees: a
               signed-out reader gets the plus and the sign-in button, which is
               the right order of discovery. */}

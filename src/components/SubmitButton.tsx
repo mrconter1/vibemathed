@@ -20,6 +20,7 @@
 // about the current route.
 
 import Link from "next/link";
+import { HEADER_ICON, HEADER_ICON_HOVER } from "@/lib/header-button";
 
 export function SubmitButton() {
   return (
@@ -28,7 +29,7 @@ export function SubmitButton() {
       title="Submit an entry"
       aria-label="Submit an entry"
       // Same 8x8 geometry as the mail, bell and theme buttons beside it.
-      className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)]"
+      className={`inline-flex ${HEADER_ICON} ${HEADER_ICON_HOVER}`}
     >
       <svg
         width="15"

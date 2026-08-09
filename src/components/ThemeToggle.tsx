@@ -14,6 +14,7 @@
 
 import { useEffect } from "react";
 import { THEME_COLOR, THEME_KEY } from "@/lib/theme";
+import { HEADER_ICON, HEADER_ICON_HOVER } from "@/lib/header-button";
 
 /// Keeps browser chrome (the mobile address bar) on the same colour as the
 /// page. The boot script does this too, but metadata order in <head> relative
@@ -56,7 +57,7 @@ export function ThemeToggle() {
       // it. This was h-9 w-9, copied from the account avatar, which is a
       // circular glyph rather than one of the square icon buttons and is
       // deliberately the larger of the two shapes.
-      className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)]"
+      className={`inline-flex ${HEADER_ICON} ${HEADER_ICON_HOVER}`}
     >
       {/* Both ship in the HTML and CSS reveals the right one, keyed off the
           attribute the boot script has already written. Rendering only the

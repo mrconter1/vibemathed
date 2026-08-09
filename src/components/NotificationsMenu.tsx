@@ -39,6 +39,7 @@ function writeCache(items: NotificationItem[]) {
   }
 }
 import { useViewer } from "@/components/ViewerProvider";
+import { HEADER_ICON, HEADER_ICON_HOVER } from "@/lib/header-button";
 
 export function NotificationsMenu() {
   const {
@@ -110,7 +111,7 @@ export function NotificationsMenu() {
   if (!loaded) {
     return (
       <span
-        className="viewer-in h-8 w-8 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-secondary)]"
+        className={`viewer-in ${HEADER_ICON}`}
         aria-hidden
       >
         <Icon name="bell" size={15} />
@@ -148,7 +149,7 @@ export function NotificationsMenu() {
           badge > 0 ? `Notifications (${badge} unread)` : "Notifications"
         }
         title="Notifications"
-        className="relative inline-flex h-8 w-8 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)]"
+        className={`relative inline-flex ${HEADER_ICON} ${HEADER_ICON_HOVER}`}
       >
         <Icon name="bell" size={15} />
         {badge > 0 && (
