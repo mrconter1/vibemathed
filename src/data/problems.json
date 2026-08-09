@@ -8997,6 +8997,44 @@
     ]
   },
   {
+    "slug": "fair-and-efficient-balanced-allocations-for-additive-valuations",
+    "name": "Balanced EF1 and fPO Allocations",
+    "shortName": "Balanced EF1 + fPO",
+    "problemNumber": null,
+    "field": "Fair division; algorithmic game theory",
+    "fieldGroup": "Algorithms & optimization",
+    "resolution": "resolved",
+    "statement": "Does every instance of indivisible goods with additive valuations admit a balanced allocation (any two bundles differing in size by at most one) that is simultaneously envy-free up to one good (EF1) and fractionally Pareto optimal (fPO)? Kawase et al. established existence only for personalized bivalued valuations or at most two valuation types. Proved in general, via the Knaster-Kuratowski-Mazurkiewicz lemma applied to a weighted-welfare duality framework plus a new price interlacing lemma.",
+    "posedBy": "Kawase et al.",
+    "yearPosed": 2026,
+    "solveType": "proved",
+    "solveDate": "2026-08-06",
+    "model": "GPT-5.6-Sol (via OpenAI Codex), Claude Fable 5",
+    "modelMaker": "OpenAI, Anthropic",
+    "humanCollaborators": [
+      "Benjamin Cookson",
+      "Nisarg Shah",
+      "Paritosh Verma"
+    ],
+    "aiRole": "The acknowledgement is unusually specific: \"All the mathematical proofs and counterexamples were derived by OpenAI Codex (GPT-5.6-Sol at Max effort) based on research directions, literature connections, proof and search strategies, and inspirations supplied by the authors.\" The authors verified every detail and simplified the exposition with both models, and retain responsibility.",
+    "verification": "unreviewed",
+    "verificationNote": "An arXiv preprint days old. The authors state they verified all the mathematics themselves, which is not independent review, and no formalization is reported.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2608.06325",
+    "sourceName": "arXiv",
+    "resultNote": "The paper records how the collaboration actually went: the authors first aimed at a counterexample showing EF1 and PO incompatible under matroid constraints, and when the model surfaced fundamental difficulties with that plan they redirected toward proving the positive result instead. The paper also extends the technique to category constraints and leaves a pseudopolynomial-time algorithm open.",
+    "ageNote": "The unconstrained EF1-plus-fPO guarantee goes back to Caragiannis et al.; the balanced version is the most restrictive open case of the matroid-constrained question, posed by Kawase et al. earlier in 2026.",
+    "aiContribution": "ai-discovered",
+    "significance": 10,
+    "significanceNote": "A specific open case from a 2026 paper, inside the heavily worked EF1-and-fPO literature of fair division; recent and specialist, but precisely stated and actively pursued."
+  },
+  {
     "slug": "feige-hypergraph-moore-bound",
     "name": "Feige's Hypergraph Moore-Bound Conjecture",
     "shortName": "Hypergraph Moore bound",
@@ -14318,6 +14356,52 @@
     "aiContribution": "ai-co-developed",
     "significance": 30,
     "significanceNote": "The low-degree method is the standard tool for arguing average-case hardness across high-dimensional statistics, inference and random optimization, and this conjecture is what licensed reading those bounds as evidence about polynomial time."
+  },
+  {
+    "slug": "polynomial-time-mimo-detection-at-the-maximum-likelihood-threshold",
+    "name": "Polynomial-Time MIMO Detection at the ML Threshold",
+    "shortName": "MIMO at the ML threshold",
+    "problemNumber": null,
+    "field": "Information theory; average-case complexity",
+    "fieldGroup": "Theoretical computer science",
+    "resolution": "candidate",
+    "statement": "In the square Gaussian binary MIMO model $y = \\sqrt{\\rho/N}\\,Hx^\\star + w$, exhaustive maximum-likelihood detection recovers $x^\\star$ once $\\rho > 2\\log N$, while sphere decoding at that threshold scale costs $\\exp\\{\\Theta(N/\\log N)\\}$. Whether any polynomial-time detector reaches the same first-order threshold, or whether a computational-statistical gap separates them, was open. The claim: rounded linear MMSE followed by steepest single-bit descent recovers $x^\\star$ with failure probability tending to zero, uniformly over every transmitted word, in $O(N^3)$ operations.",
+    "posedBy": null,
+    "yearPosed": null,
+    "solveType": "proved",
+    "solveDate": "2026-08-08",
+    "model": "GPT-5.6, Claude Fable 5",
+    "modelMaker": "OpenAI, Anthropic",
+    "humanCollaborators": [
+      "Dimitris Papailiopoulos"
+    ],
+    "aiRole": "The manuscript's footnote in full: \"The results in this paper were proved by GPT-5.6 and Claude Fable 5, which also drafted the initial manuscript. The author posed the problem, directed several rounds of proof simplification, verified all mathematical arguments, edited the manuscript, and takes full responsibility for its content.\" By the author's public account, Claude proposed the algorithm (signed LMMSE plus greedy bit flips) and GPT repaired and simplified the proof over several days of directed iteration.",
+    "verification": "unreviewed",
+    "verificationNote": "A 46-page manuscript posted to the author's own site and announced on X, days old, with no independent review and no formalization. The author states he checked every argument line by line over about five days, and he has published previously on polynomial-complexity ML detection, so the domain expertise is real; neither fact is independent scrutiny, which is why this is a candidate.",
+    "publication": "announcement",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://github.com/anadim/anadim.github.io/blob/master/MIMO_Detection.pdf",
+    "sourceName": "Author manuscript",
+    "resultNote": "An average-case claim about the Gaussian model, not a contradiction of the worst-case NP-hardness of integer least squares. If it holds, no computational-statistical gap separates polynomial-time detection from exhaustive maximum likelihood at first order in this model.",
+    "ageNote": "Optimum multiuser detection is NP-hard in the worst case (Verdu, 1989), but the Gaussian channel is more structured. Hassibi and Vikalo studied sphere-decoder expected complexity from 2001; Jalden and Ottersten showed in 2005 that it turns exponential in the growing-dimension limit; the first-order threshold for ML block recovery was identified by Hansen et al. in 2009 and stated explicitly by Hassibi et al. in 2014. The question this answers is the one those results leave behind, formulated by the author rather than inherited as a named conjecture.",
+    "aiContribution": "ai-discovered",
+    "significance": 18,
+    "significanceNote": "MIMO detection is a heavily studied problem with fifty years of literature and direct wireless-engineering stakes, and the computational-statistical gap question is a recognized one, but it was not a named conjecture with a standing attribution.",
+    "links": [
+      {
+        "label": "X.com",
+        "url": "https://x.com/DimitrisPapail/status/2086158118354887060"
+      },
+      {
+        "label": "Paper",
+        "url": "https://github.com/anadim/anadim.github.io/blob/master/MIMO_Detection.pdf"
+      }
+    ]
   },
   {
     "slug": "prim-dijkstra-manhattan-complexity",
