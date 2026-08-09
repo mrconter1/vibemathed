@@ -92,9 +92,84 @@ const RESOLUTION_DETAIL: Record<ResolutionStatus, string> = {
   retracted: "The claim was withdrawn or refuted after publication. Kept on record, not deleted.",
 };
 
+/// Anchor id from the heading text. The contents list and the sections both
+/// call this, so a link and its target cannot drift apart: there is no second
+/// place where an id is written down.
+function anchor(title: string): string {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+/// The page in three parts. Six of the nine sections define a label that
+/// appears on every entry, which is most of the page and was previously an
+/// undifferentiated run of headings; naming that group is what makes the
+/// shape legible.
+const CONTENTS: { group: string; titles: string[] }[] = [
+  {
+    group: "Scope",
+    titles: ["What belongs here", "Where entries come from"],
+  },
+  {
+    group: "What each label means",
+    titles: [
+      "Result and status",
+      "How much the AI did",
+      "The verification ladder",
+      "Significance",
+      "Notability",
+      "Years open",
+    ],
+  },
+  { group: "The data", titles: ["The dataset"] },
+];
+
+function Contents() {
+  return (
+    <nav
+      aria-label="On this page"
+      className="mt-6 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3.5"
+    >
+      <h2 className="text-xs font-medium text-[var(--ink)]">On this page</h2>
+      <div className="mt-2.5 grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-3">
+        {CONTENTS.map((part) => (
+          <div key={part.group}>
+            <p className="text-[10px] font-medium uppercase tracking-wide text-[var(--ink-muted)]">
+              {part.group}
+            </p>
+            <ul className="mt-1 space-y-0.5">
+              {part.titles.map((t) => (
+                <li key={t}>
+                  <a
+                    href={`#${anchor(t)}`}
+                    className="text-xs text-[var(--ink-secondary)] transition-colors hover:text-[var(--accent-blue)]"
+                  >
+                    {t}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </nav>
+  );
+}
+
+/// The label above the first section of each part, repeating the contents
+/// list's grouping in the body so the reader can see where they are without
+/// scrolling back up.
+function GroupLabel({ children }: { children: string }) {
+  return (
+    <p className="mt-10 border-b border-[var(--hairline)] pb-1.5 text-[10px] font-medium uppercase tracking-wide text-[var(--ink-muted)]">
+      {children}
+    </p>
+  );
+}
+
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="mt-8">
+    // scroll-mt clears the sticky header: without it a jump from the contents
+    // list parks the heading underneath the bar.
+    <section id={anchor(title)} className="mt-8 scroll-mt-20">
       <h2 className="font-serif text-xl text-[var(--ink)]">{title}</h2>
       <div className="mt-2 space-y-3 text-sm leading-relaxed text-[var(--ink-secondary)]">
         {children}
@@ -111,6 +186,10 @@ export default function MethodologyPage() {
         What qualifies for this record, where entries come from, and what every
         label on an entry means.
       </p>
+
+      <Contents />
+
+      <GroupLabel>Scope</GroupLabel>
 
       <Section title="What belongs here">
         <p>
@@ -155,6 +234,8 @@ export default function MethodologyPage() {
           primary source.
         </p>
       </Section>
+
+      <GroupLabel>What each label means</GroupLabel>
 
       <Section title="Result and status">
         <p>
@@ -357,6 +438,8 @@ export default function MethodologyPage() {
           footnote next to the age.
         </p>
       </Section>
+
+      <GroupLabel>The data</GroupLabel>
 
       <Section title="The dataset">
         <p>
