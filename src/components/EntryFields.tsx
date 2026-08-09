@@ -19,7 +19,7 @@ export interface RenderableField {
 // White, not a paper tone: a form field should read as a fillable well, and on
 // the cream page white is what marks "you type here".
 const controlClass =
-  "w-full rounded border border-[var(--hairline)] bg-white px-2.5 py-1.5 text-sm text-[var(--ink)] transition-colors hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]";
+  "w-full rounded border border-[var(--hairline)] bg-[var(--field)] px-2.5 py-1.5 text-sm text-[var(--ink)] transition-colors hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]";
 
 export function EntryFields({
   fields,

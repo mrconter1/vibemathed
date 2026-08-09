@@ -12,7 +12,7 @@ import { LINK_KINDS, inferLinkKind } from "@/lib/link-kinds";
 import type { LinkRef } from "@/lib/problems";
 
 const inputClass =
-  "w-full rounded border border-[var(--hairline)] bg-white px-2.5 py-1.5 text-sm text-[var(--ink)] transition-colors hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]";
+  "w-full rounded border border-[var(--hairline)] bg-[var(--field)] px-2.5 py-1.5 text-sm text-[var(--ink)] transition-colors hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]";
 
 function Plus() {
   return (

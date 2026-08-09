@@ -18,7 +18,7 @@ import { Icon } from "@/components/Icons";
 // that color, where it looked transparent. White plus a stronger shadow makes
 // it read as a solid layer above the page.
 const BUBBLE =
-  "pointer-events-none fixed z-50 w-64 -translate-x-1/2 whitespace-normal break-words rounded-md border border-[var(--hairline)] bg-white p-2.5 text-left text-xs font-normal normal-case leading-snug tracking-normal text-[var(--ink-secondary)] shadow-lg";
+  "pointer-events-none fixed z-50 w-64 -translate-x-1/2 whitespace-normal break-words rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] p-2.5 text-left text-xs font-normal normal-case leading-snug tracking-normal text-[var(--ink-secondary)] shadow-lg";
 
 /// Render a string with `**...**` segments bolded.
 export function renderBold(text: string): ReactNode[] {

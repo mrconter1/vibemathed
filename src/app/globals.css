@@ -23,6 +23,12 @@
 
   --hairline: #ddd6c4;
 
+  /* Form field interiors. White on the cream page, because white is what
+     marks "you type here" against paper. Behind a token because the literal
+     bg-white it replaces was invisible to the theme and turned every input on
+     the submit and edit forms into a floodlight in dark mode. */
+  --field: #ffffff;
+
   /* Kept for chart marks and small accents (was the page backdrop). */
   --mat: #86806f;
   --mat-border: rgba(20, 18, 12, 0.22);
@@ -73,6 +79,12 @@
      visible without turning a hairline into a rule. Every border on the site
      goes through this token, including the header's bottom edge. */
   --hairline: #554e43;
+
+  /* Darker than the page, not lighter. A dark form field should read as a
+     well cut into the surface: at #0e0c08 it sits below both the page
+     (#17150f) and the card it usually lives on (#201d16), while the hairline
+     still reads against it at 2.38 and body ink at 16.4. */
+  --field: #0e0c08;
 
   --mat: #6b6559;
   --mat-border: rgba(240, 235, 221, 0.18);
