@@ -14,8 +14,17 @@
 
 import { useState } from "react";
 import { useBeforePaint } from "@/lib/before-paint";
+import { THEME_COLOR, THEME_KEY } from "@/lib/theme";
 
-export const THEME_KEY = "vibemathed:theme";
+/// Keeps browser chrome (the mobile address bar) on the same colour as the
+/// page. The boot script does this too, but metadata order in <head> relative
+/// to that script is not guaranteed, so if the tag had not been emitted yet
+/// this is the pass that lands.
+function paintChrome(dark: boolean) {
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute("content", dark ? THEME_COLOR.dark : THEME_COLOR.light);
+}
 
 export function ThemeToggle() {
   // null until mounted: the server cannot know the stored choice, so rendering
@@ -29,7 +38,9 @@ export function ThemeToggle() {
   // keeps the repo's set-state-in-effect rule satisfied, which plain useEffect
   // does not.
   useBeforePaint(() => {
-    setDark(document.documentElement.dataset.theme === "dark");
+    const isDark = document.documentElement.dataset.theme === "dark";
+    setDark(isDark);
+    paintChrome(isDark);
   }, []);
 
   function toggle() {
@@ -41,6 +52,7 @@ export function ThemeToggle() {
       // Private mode or a full quota: the theme still applies for this page,
       // it just will not be remembered. Not worth surfacing.
     }
+    paintChrome(next);
     setDark(next);
   }
 

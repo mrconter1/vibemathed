@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 import { SITE_URL } from "@/lib/site";
+import { THEME_COLOR, THEME_KEY } from "@/lib/theme";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ScrollGuard } from "@/components/ScrollGuard";
@@ -87,11 +88,14 @@ export const metadata: Metadata = {
   },
 };
 
+// One value, not a prefers-color-scheme pair. The theme is an explicit stored
+// choice now, so keying browser chrome off the OS setting contradicts it: pick
+// dark on a light-set phone and the page goes dark while the address bar stays
+// cream. This ships the light colour as the static default and the boot script
+// below rewrites it to match the actual theme, which is the only mechanism that
+// can follow a choice the HTML cannot know.
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f3efe3" },
-    { media: "(prefers-color-scheme: dark)", color: "#201d17" },
-  ],
+  themeColor: THEME_COLOR.light,
 };
 
 export default function RootLayout({
@@ -150,7 +154,16 @@ export default function RootLayout({
             sticks instead of being overridden on every load. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem("vibemathed:theme");if(!t)t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;}catch(e){}`,
+            __html:
+              `try{var t=localStorage.getItem(${JSON.stringify(THEME_KEY)});` +
+              `if(!t)t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";` +
+              `document.documentElement.dataset.theme=t;` +
+              // Chrome colour too, if the tag has been emitted by now. Metadata
+              // order relative to this script is not guaranteed, so ThemeToggle
+              // repeats this on mount and the two together cover both orders.
+              `var m=document.querySelector('meta[name="theme-color"]');` +
+              `if(m)m.setAttribute("content",t==="dark"?${JSON.stringify(THEME_COLOR.dark)}:${JSON.stringify(THEME_COLOR.light)});` +
+              `}catch(e){}`,
           }}
         />
       </head>
