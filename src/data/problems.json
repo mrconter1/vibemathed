@@ -3997,8 +3997,14 @@
     "solveDate": "2026-04-09",
     "model": "OpenAI internal model",
     "modelMaker": null,
-    "humanCollaborators": [],
-    "aiRole": null,
+    "humanCollaborators": [
+      "Boris Alexeev",
+      "Moe Putterman",
+      "Mehtaab Sawhney",
+      "Mark Sellke",
+      "Gregory Valiant"
+    ],
+    "aiRole": "From \"Short proofs in combinatorics, probability and number theory II\": \"The proofs in this manuscript are due to an internal model at OpenAI... The role of the human authors was simply to digest the proofs and modify the write-ups for clarity and elegance.\" This is the one place in the paper where the humans changed the mathematics: the model's original proof gave the same family of example graphs but deduced colour-criticality from a presentation the authors reworked.",
     "verification": "site-confirmed",
     "verificationNote": "Marked solved by erdosproblems.com's official status. Solve credited via Terence Tao's AI-contributions wiki.",
     "publication": "announcement",
@@ -4012,7 +4018,13 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
+    "links": [
+      {
+        "label": "Short proofs II (Section 4)",
+        "url": "https://arxiv.org/abs/2604.06609"
+      }
+    ]
   },
   {
     "slug": "erdos-1092",
@@ -4164,8 +4176,14 @@
     "solveDate": "2026-04-09",
     "model": "OpenAI internal model",
     "modelMaker": null,
-    "humanCollaborators": [],
-    "aiRole": null,
+    "humanCollaborators": [
+      "Boris Alexeev",
+      "Moe Putterman",
+      "Mehtaab Sawhney",
+      "Mark Sellke",
+      "Gregory Valiant"
+    ],
+    "aiRole": "From \"Short proofs in combinatorics, probability and number theory II\": \"The proofs in this manuscript are due to an internal model at OpenAI... The role of the human authors was simply to digest the proofs and modify the write-ups for clarity and elegance.\" All five independent ChatGPT-5.4 Pro attempts also solved this one. The paper proves the finiteness for every fixed a, generalizing the a = 1 case that is Erdos's problem.",
     "verification": "lean-verified",
     "verificationNote": "Listed as solved on erdosproblems.com and the proof is verified in Lean. Solve credited via Terence Tao's AI-contributions wiki.",
     "publication": "announcement",
@@ -4179,7 +4197,13 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
+    "links": [
+      {
+        "label": "Short proofs II (Section 6)",
+        "url": "https://arxiv.org/abs/2604.06609"
+      }
+    ]
   },
   {
     "slug": "erdos-1148",
@@ -7021,6 +7045,10 @@
       {
         "label": "Follow-up: unbounded logarithmic limsup in problem 684",
         "url": "https://arxiv.org/abs/2604.23784"
+      },
+      {
+        "label": "Short proofs in combinatorics and number theory (Section 2): bound improved to 6.20219(log n)^2",
+        "url": "https://arxiv.org/abs/2603.29961"
       }
     ]
   },
@@ -7353,8 +7381,14 @@
     "solveDate": "2026-04-16",
     "model": "DeepMind prover agent",
     "modelMaker": null,
-    "humanCollaborators": [],
-    "aiRole": null,
+    "humanCollaborators": [
+      "Boris Alexeev",
+      "Moe Putterman",
+      "Mehtaab Sawhney",
+      "Mark Sellke",
+      "Gregory Valiant"
+    ],
+    "aiRole": "From \"Short proofs in combinatorics and number theory\": \"In each case, the proof is due entirely to an internal model at OpenAI. The role of the human authors was simply to digest the proofs and modify the write-ups for clarity and elegance.\" Priority note: this paper (31 March 2026) constructs the basis of order two with no syndetic split that Burr and Erdos asked for, which is this problem. The solve recorded here is dated 16 April 2026 and credited to a DeepMind prover agent, so the Lean-verified resolution appears to follow the earlier OpenAI-model proof rather than to be independent of it. Both are linked; the priority has not been adjudicated here.",
     "verification": "lean-verified",
     "verificationNote": "Listed as solved on erdosproblems.com and the proof is verified in Lean. Solve credited via Terence Tao's AI-contributions wiki.",
     "publication": "announcement",
@@ -7368,7 +7402,13 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
+    "links": [
+      {
+        "label": "Short proofs in combinatorics and number theory (Section 3), 31 March 2026",
+        "url": "https://arxiv.org/abs/2603.29961"
+      }
+    ]
   },
   {
     "slug": "erdos-750",
@@ -8216,8 +8256,14 @@
     "solveDate": "2026-04-09",
     "model": "OpenAI internal model",
     "modelMaker": null,
-    "humanCollaborators": [],
-    "aiRole": null,
+    "humanCollaborators": [
+      "Boris Alexeev",
+      "Moe Putterman",
+      "Mehtaab Sawhney",
+      "Mark Sellke",
+      "Gregory Valiant"
+    ],
+    "aiRole": "From \"Short proofs in combinatorics, probability and number theory II\": \"The proofs in this manuscript are due to an internal model at OpenAI... The role of the human authors was simply to digest the proofs and modify the write-ups for clarity and elegance.\" The authors also re-ran the public model: ChatGPT-5.4 Pro solved this problem in one of five independent attempts, by a similar route through a cyclic subgroup of a real elliptic curve, though slightly weaker in that it did not resolve the r = 3 case.",
     "verification": "site-confirmed",
     "verificationNote": "Marked solved by erdosproblems.com's official status. Solve credited via Terence Tao's AI-contributions wiki.",
     "publication": "announcement",
@@ -8231,7 +8277,13 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
+    "links": [
+      {
+        "label": "Short proofs II (Section 2)",
+        "url": "https://arxiv.org/abs/2604.06609"
+      }
+    ]
   },
   {
     "slug": "erdos-966",
@@ -8315,8 +8367,14 @@
     "solveDate": "2026-04-09",
     "model": "OpenAI internal model",
     "modelMaker": null,
-    "humanCollaborators": [],
-    "aiRole": null,
+    "humanCollaborators": [
+      "Boris Alexeev",
+      "Moe Putterman",
+      "Mehtaab Sawhney",
+      "Mark Sellke",
+      "Gregory Valiant"
+    ],
+    "aiRole": "From \"Short proofs in combinatorics, probability and number theory II\": \"The proofs in this manuscript are due to an internal model at OpenAI... The role of the human authors was simply to digest the proofs and modify the write-ups for clarity and elegance.\" The question is Erdos's, recorded as Problem 7.21 in Hayman's problem list before reaching the Erdos problems site.",
     "verification": "site-confirmed",
     "verificationNote": "Marked solved by erdosproblems.com's official status. Solve credited via Terence Tao's AI-contributions wiki.",
     "publication": "announcement",
@@ -8330,7 +8388,13 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 11,
-    "significanceNote": "A numbered Erdos problem that an unusually dense reference trail on erdosproblems.com (6 sources), setting it above the typical entry in the catalog."
+    "significanceNote": "A numbered Erdos problem that an unusually dense reference trail on erdosproblems.com (6 sources), setting it above the typical entry in the catalog.",
+    "links": [
+      {
+        "label": "Short proofs II (Section 3)",
+        "url": "https://arxiv.org/abs/2604.06609"
+      }
+    ]
   },
   {
     "slug": "erdos-990",
@@ -8347,8 +8411,14 @@
     "solveDate": "2026-04-09",
     "model": "OpenAI internal model",
     "modelMaker": null,
-    "humanCollaborators": [],
-    "aiRole": null,
+    "humanCollaborators": [
+      "Boris Alexeev",
+      "Moe Putterman",
+      "Mehtaab Sawhney",
+      "Mark Sellke",
+      "Gregory Valiant"
+    ],
+    "aiRole": "From \"Short proofs in combinatorics, probability and number theory II\": \"The proofs in this manuscript are due to an internal model at OpenAI... The role of the human authors was simply to digest the proofs and modify the write-ups for clarity and elegance.\"",
     "verification": "lean-verified",
     "verificationNote": "Listed as solved on erdosproblems.com and the proof is verified in Lean. Solve credited via Terence Tao's AI-contributions wiki.",
     "publication": "announcement",
@@ -8362,7 +8432,13 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline."
+    "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
+    "links": [
+      {
+        "label": "Short proofs II (Section 5)",
+        "url": "https://arxiv.org/abs/2604.06609"
+      }
+    ]
   },
   {
     "slug": "erdos-996",
@@ -8420,8 +8496,14 @@
     "solveDate": "2026-03-31",
     "model": "OpenAI internal model",
     "modelMaker": null,
-    "humanCollaborators": [],
-    "aiRole": null,
+    "humanCollaborators": [
+      "Boris Alexeev",
+      "Moe Putterman",
+      "Mehtaab Sawhney",
+      "Mark Sellke",
+      "Gregory Valiant"
+    ],
+    "aiRole": "From \"Short proofs in combinatorics and number theory\": \"In each case, the proof is due entirely to an internal model at OpenAI. The role of the human authors was simply to digest the proofs and modify the write-ups for clarity and elegance.\" This entry's solve is that paper's Theorem 4.1, proving that for every real alpha the sequence of fractional parts of alpha times the primes is not well-distributed.",
     "verification": "lean-verified",
     "verificationNote": "Listed as solved on erdosproblems.com and the proof is verified in Lean. Solve credited via Terence Tao's AI-contributions wiki.",
     "publication": "announcement",
@@ -8435,7 +8517,13 @@
     "sourceName": "erdosproblems.com",
     "aiContribution": "ai-discovered",
     "significance": 11,
-    "significanceNote": "A numbered Erdos problem that an unusually dense reference trail on erdosproblems.com (6 sources), setting it above the typical entry in the catalog."
+    "significanceNote": "A numbered Erdos problem that an unusually dense reference trail on erdosproblems.com (6 sources), setting it above the typical entry in the catalog.",
+    "links": [
+      {
+        "label": "Short proofs in combinatorics and number theory (Section 4)",
+        "url": "https://arxiv.org/abs/2603.29961"
+      }
+    ]
   },
   {
     "slug": "erdos-borwein-binary-blocks",
@@ -16197,82 +16285,6 @@
     "aiContribution": "ai-co-developed",
     "significance": 30,
     "significanceNote": "A conjecture of Shokurov, one of the central figures in the minimal model program, settled in low dimension for foliations."
-  },
-  {
-    "slug": "short-proofs-erdos-quintet",
-    "name": "Five Erdős Questions: Ordinary Lines, Exponential Sums, Critical Graphs, Discrepancy, Prime Values",
-    "shortName": "Erdős quintet (OpenAI)",
-    "problemNumber": null,
-    "field": "Combinatorics, probability and number theory",
-    "fieldGroup": "Combinatorics",
-    "resolution": "resolved",
-    "statement": "A quintet of proofs of questions posed by Erdős: ordinary lines in planar point sets, sequences with uniformly small exponential sums, $K_4$-free 4-critical graphs with few chords in any cycle, a counterexample to a fewnomial version of the Erdős-Turán discrepancy bound, and a finiteness theorem for integers $n$ with $n - ak^2$ prime for all admissible $k$.",
-    "posedBy": "Paul Erdős",
-    "yearPosed": null,
-    "solveType": "proved",
-    "solveDate": "2026-04-08",
-    "model": "Internal OpenAI model",
-    "modelMaker": "OpenAI",
-    "humanCollaborators": [
-      "Boris Alexeev",
-      "Moe Putterman",
-      "Mehtaab Sawhney",
-      "Mark Sellke",
-      "Gregory Valiant"
-    ],
-    "aiRole": "\"Each proof is due to an internal model at OpenAI\"; the human authors verified and rewrote for clarity, following the same protocol as the first paper in the series.",
-    "verification": "unreviewed",
-    "verificationNote": null,
-    "publication": "preprint",
-    "resolutionMethod": "argument",
-    "citations": null,
-    "citationsPaper": null,
-    "citationsSource": null,
-    "citationsUrl": null,
-    "renownLangs": 0,
-    "sourceUrl": "https://arxiv.org/abs/2604.06609",
-    "sourceName": "arXiv",
-    "aiContribution": "ai-discovered",
-    "significance": 15,
-    "significanceNote": "Five documented Erdős questions in one paper, including the ordinary lines and discrepancy problems, which carry more literature than the typical numbered entry."
-  },
-  {
-    "slug": "short-proofs-erdos-triplet",
-    "name": "Three Erdős Questions: Prime Factors of Binomials, Basis Splitting, Well-Distribution",
-    "shortName": "Erdős triplet (OpenAI)",
-    "problemNumber": null,
-    "field": "Combinatorics and number theory",
-    "fieldGroup": "Combinatorics",
-    "resolution": "resolved",
-    "statement": "A triplet of short proofs, each answering a question raised by Erdős: the small prime factors of $\\binom{n}{k}$, whether an additive basis can be split into two pieces whose self-sums both have bounded gaps, and whether $\\{\\alpha p\\}$ is well-distributed in the sense of Hlawka and Petersen.",
-    "posedBy": "Paul Erdős",
-    "yearPosed": null,
-    "solveType": "proved",
-    "solveDate": "2026-03-31",
-    "model": "Internal OpenAI model",
-    "modelMaker": "OpenAI",
-    "humanCollaborators": [
-      "Boris Alexeev",
-      "Moe Putterman",
-      "Mehtaab Sawhney",
-      "Mark Sellke",
-      "Gregory Valiant"
-    ],
-    "aiRole": "\"In each case, the proof is due entirely to an internal model at OpenAI. The role of the human authors was simply to digest the proofs and modify the write-ups for clarity and elegance.\" The authors also report replication attempts with the public Pro model: one of the three was reproduced, one had a similar solution, one was not solved.",
-    "verification": "unreviewed",
-    "verificationNote": null,
-    "publication": "preprint",
-    "resolutionMethod": "argument",
-    "citations": null,
-    "citationsPaper": null,
-    "citationsSource": null,
-    "citationsUrl": null,
-    "renownLangs": 0,
-    "sourceUrl": "https://arxiv.org/abs/2603.29961",
-    "sourceName": "arXiv",
-    "aiContribution": "ai-discovered",
-    "significance": 13,
-    "significanceNote": "Three documented Erdős questions, each of typical numbered-problem standing, bundled in one paper; scored slightly above the single-problem baseline."
   },
   {
     "slug": "signed-bar-conjecture",
