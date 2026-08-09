@@ -12,11 +12,7 @@
 // no sanitizer to get wrong - the text simply never reaches the DOM as HTML.
 
 import katex from "katex";
-
-// Only absolute http(s) URLs are linkified, so `javascript:` can never appear.
-const URL_RE = /\bhttps?:\/\/[^\s<>"']+/g;
-// Trailing punctuation that is almost always sentence punctuation, not the URL.
-const TRAILING_PUNCT_RE = /[.,;:!?)\]]+$/;
+import { linkifyEscaped } from "@/lib/linkify";
 
 function escapeHtml(s: string): string {
   return s
@@ -24,20 +20,6 @@ function escapeHtml(s: string): string {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
-}
-
-/// Turns bare URLs into links. Runs on ALREADY-ESCAPED text, so the href cannot
-/// break out of its attribute.
-function linkify(escaped: string): string {
-  return escaped.replace(URL_RE, (url) => {
-    const match = url.match(TRAILING_PUNCT_RE);
-    const tail = match ? match[0] : "";
-    const href = tail ? url.slice(0, -tail.length) : url;
-    return (
-      `<a href="${href}" target="_blank" rel="nofollow noopener noreferrer"` +
-      ` class="text-[var(--accent-blue)] hover:underline">${href}</a>${tail}`
-    );
-  });
 }
 
 function renderMath(tex: string, display: boolean): string {
@@ -59,7 +41,7 @@ export function renderCommentHtml(text: string): string {
           if (part.startsWith("$") && part.endsWith("$") && part.length > 2) {
             return renderMath(part.slice(1, -1), false);
           }
-          return linkify(escapeHtml(part)).replace(/\n/g, "<br />");
+          return linkifyEscaped(escapeHtml(part)).replace(/\n/g, "<br />");
         })
         .join("");
       return inner ? `<p>${inner}</p>` : "";

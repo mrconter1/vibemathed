@@ -230,7 +230,7 @@ export default async function ProblemPage({
 
         {p.statement && (
           <p className="math-prose mt-5 text-base leading-relaxed text-[var(--ink-secondary)]">
-            <TeX>{p.statement}</TeX>
+            <TeX linkify>{p.statement}</TeX>
           </p>
         )}
 
@@ -269,7 +269,7 @@ export default async function ProblemPage({
           <section id="result-note" className="mt-6 scroll-mt-24">
             <h2 className="font-serif text-lg text-[var(--ink)]">What was actually shown</h2>
             <p className="math-prose mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
-              <TeX>{p.resultNote}</TeX>
+              <TeX linkify>{p.resultNote}</TeX>
             </p>
           </section>
         )}
@@ -278,7 +278,7 @@ export default async function ProblemPage({
           <section className="mt-6">
             <h2 className="font-serif text-lg text-[var(--ink)]">What the AI did</h2>
             <p className="math-prose mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
-              <TeX>{p.aiRole}</TeX>
+              <TeX linkify>{p.aiRole}</TeX>
             </p>
           </section>
         )}
@@ -287,7 +287,7 @@ export default async function ProblemPage({
           <section className="mt-6">
             <h2 className="font-serif text-lg text-[var(--ink)]">Verification</h2>
             <p className="math-prose mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
-              <TeX>{p.verificationNote}</TeX>
+              <TeX linkify>{p.verificationNote}</TeX>
             </p>
           </section>
         )}
@@ -301,7 +301,7 @@ export default async function ProblemPage({
               Claim issue
             </h2>
             <p className="math-prose mt-1.5 text-sm leading-relaxed text-[var(--ink-secondary)]">
-              <TeX>{p.claimIssueNote}</TeX>
+              <TeX linkify>{p.claimIssueNote}</TeX>
             </p>
           </section>
         )}

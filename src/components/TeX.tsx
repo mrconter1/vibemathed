@@ -1,4 +1,5 @@
 import katex from "katex";
+import { linkifyEscaped } from "@/lib/linkify";
 
 // Server-rendered math. This is a server component, so KaTeX runs at build time
 // and the rendered markup ships in the static HTML - no client JS, no flash of
@@ -21,7 +22,11 @@ function escapeHtml(s: string): string {
 /// Exported so server components can hand pre-rendered math to *client*
 /// components (the entry cards) without pulling KaTeX into the browser bundle -
 /// which is the whole point of doing this at build time.
-export function texToHtml(children: string): string {
+/// `linkify` turns bare URLs in the prose into anchors. Opt-in rather than
+/// always-on: this same function renders entry TITLES, which the list draws
+/// inside a stretched <a>, and an anchor nested in an anchor is invalid HTML.
+/// Prose fields ask for it; titles do not.
+export function texToHtml(children: string, opts?: { linkify?: boolean }): string {
   const parts = children.split(/(\$\$[^$]+\$\$|\$[^$]+\$)/g);
   return parts
     .map((part) => {
@@ -31,13 +36,14 @@ export function texToHtml(children: string): string {
       if (part.startsWith("$") && part.endsWith("$") && part.length > 2) {
         return render(part.slice(1, -1), false);
       }
-      return escapeHtml(part);
+      const escaped = escapeHtml(part);
+      return opts?.linkify ? linkifyEscaped(escaped) : escaped;
     })
     .join("");
 }
 
-export function TeX({ children }: { children: string }) {
-  return <span dangerouslySetInnerHTML={{ __html: texToHtml(children) }} />;
+export function TeX({ children, linkify }: { children: string; linkify?: boolean }) {
+  return <span dangerouslySetInnerHTML={{ __html: texToHtml(children, { linkify }) }} />;
 }
 
 // Plain-text fallback for contexts that must not contain markup or "$" - meta
