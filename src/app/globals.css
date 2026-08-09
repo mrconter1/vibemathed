@@ -409,6 +409,17 @@ select option::checkmark {
   display: none;
 }
 
+/* Same switch for a block-level signed-in variant. `.viewer-in` resolves to
+   display:flex, which is right for a header button and wrong for the submit
+   form it now also guards. */
+.viewer-in-block {
+  display: none;
+}
+
+:root[data-viewer="in"] .viewer-in-block {
+  display: block;
+}
+
 /*
  * Same trick for the theme toggle's icon. Both glyphs ship in the HTML and
  * CSS reveals the right one, keyed off the attribute the boot script has

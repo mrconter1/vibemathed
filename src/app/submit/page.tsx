@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SubmitForm } from "@/components/SubmitForm";
+import { SubmitGate } from "@/components/SubmitGate";
 
 export const metadata: Metadata = {
   title: "Submit an entry",
@@ -20,7 +21,16 @@ export default function SubmitPage() {
         goes live, and the published entry credits you by pseudonym.
       </p>
 
-      <div className="mt-6">
+      {/* Both ship; CSS picks, keyed off the data-viewer attribute the boot
+          script writes before first paint. The gate is the default because no
+          attribute means unknown, and showing a stranger the sign-in prompt is
+          the cheaper mistake: a signed-in reader sees it for one frame, where
+          the reverse would let someone start typing into a form they cannot
+          submit. Same mechanism as the header's two account variants. */}
+      <div className="viewer-out mt-6">
+        <SubmitGate />
+      </div>
+      <div className="viewer-in-block mt-6">
         <SubmitForm />
       </div>
     </main>
