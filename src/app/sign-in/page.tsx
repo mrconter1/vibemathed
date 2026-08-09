@@ -25,50 +25,21 @@ export default function SignInPage() {
     <div className="flex min-h-[60vh] items-center justify-center px-4 py-10 sm:px-8">
       <main className="w-full max-w-md rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-6 py-8 sm:px-8">
         <h1 className="font-serif text-2xl text-[var(--ink)]">Sign in</h1>
-        <p className="mt-3 text-sm leading-relaxed text-[var(--ink-secondary)]">
-          It takes one click and needs nothing but a Google or GitHub account.
-          Once signed in you can:
+        <p className="mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
+          Signing in lets you vote, comment with math support, and correct
+          entries. Every change is recorded in the entry&apos;s changelog.
         </p>
 
-        <ul className="mt-3 space-y-1.5 text-sm text-[var(--ink-secondary)]">
-          <li className="flex gap-2">
-            <span aria-hidden className="text-[var(--accent-blue)]">•</span>
-            <span>
-              <strong className="font-medium text-[var(--ink)]">Vote</strong> entries
-              up or down
-            </span>
-          </li>
-          <li className="flex gap-2">
-            <span aria-hidden className="text-[var(--accent-blue)]">•</span>
-            <span>
-              <strong className="font-medium text-[var(--ink)]">Comment</strong> on
-              any entry, with math support
-            </span>
-          </li>
-          <li className="flex gap-2">
-            <span aria-hidden className="text-[var(--accent-blue)]">•</span>
-            <span>
-              <strong className="font-medium text-[var(--ink)]">Correct</strong>{" "}
-              entries - every change is recorded in that entry&apos;s changelog
-            </span>
-          </li>
-        </ul>
+        <p className="mt-3 text-xs leading-relaxed text-[var(--ink-muted)]">
+          You stay pseudonymous. You get a random display name like{" "}
+          <span className="font-mono text-[var(--ink-secondary)]">
+            BraveMongoose492
+          </span>
+          , changeable at any time, and that is all anyone sees. Nothing from the
+          account you sign in with is ever shown.
+        </p>
 
-        <div className="mt-5 rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] p-3">
-          <h2 className="text-xs font-medium text-[var(--ink)]">
-            You stay pseudonymous
-          </h2>
-          <p className="mt-1.5 text-xs leading-relaxed text-[var(--ink-secondary)]">
-            You are given a random display name like{" "}
-            <span className="font-mono text-[var(--ink)]">BraveMongoose492</span>, and
-            that is the only thing shown publicly - on your comments and beside any
-            edit you make. The real name, email and profile picture on the account
-            you sign in with are never displayed anywhere on the site. You can
-            change your display name at any time.
-          </p>
-        </div>
-
-        <form action={signInWithGoogle} className="mt-6">
+        <form action={signInWithGoogle} className="mt-5">
           <button type="submit" className={BUTTON}>
             <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden>
               <path
@@ -103,9 +74,8 @@ export default function SignInPage() {
           </button>
         </form>
 
-        <p className="mt-4 text-xs leading-relaxed text-[var(--ink-muted)]">
-          Either works, and both reach the same account if they share a verified
-          email address.
+        <p className="mt-3 text-xs text-[var(--ink-muted)]">
+          Either works. A shared verified email reaches the same account.
         </p>
 
         <p className="mt-5 text-xs text-[var(--ink-muted)]">
