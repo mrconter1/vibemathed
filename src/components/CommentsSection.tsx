@@ -8,7 +8,7 @@
 // re-rendered HTML for a comment, so edits show their math immediately without
 // a page reload and without shipping KaTeX to the browser.
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import {
   addComment,
@@ -24,6 +24,15 @@ const primaryBtn =
   "rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 py-1.5 text-xs text-[var(--ink)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)] disabled:opacity-40";
 const quietBtn =
   "rounded-md px-2 py-1 text-xs text-[var(--ink-muted)] transition-colors hover:text-[var(--ink)] disabled:opacity-40";
+
+/// The ten that actually get used under a result. No search, no categories,
+/// no picker library: typing ":" is a shortcut for people who already know
+/// what they want, and a grid of 1800 emoji would be slower than the keyboard.
+///
+/// Stored and rendered as plain Unicode. The comment renderer escapes only
+/// & < > " and leaves every other character alone, so these survive the round
+/// trip untouched, including the ZWJ and variation-selector sequences.
+const EMOJI = ["👍", "🎉", "🔥", "👏", "🤯", "🤔", "😂", "🙌", "✅", "❤️"];
 
 function Composer({
   initial,
@@ -43,6 +52,9 @@ function Composer({
   autoFocus?: boolean;
 }) {
   const [text, setText] = useState(initial ?? "");
+  // Open only while the caret sits directly after a just-typed ":".
+  const [picker, setPicker] = useState(false);
+  const taRef = useRef<HTMLTextAreaElement>(null);
   const empty = text.trim().length === 0;
   const tooLong = text.trim().length > COMMENT_MAX_LENGTH;
 
@@ -50,13 +62,43 @@ function Composer({
     if (empty || tooLong) return;
     const ok = await onSubmit(text);
     if (ok) setText("");
+    setPicker(false);
+  }
+
+  /// Swaps the ":" that opened the picker for the emoji, then puts the caret
+  /// after it. Without restoring the caret the reader is dumped at the end of
+  /// the box, which is wrong whenever they were editing mid-sentence.
+  function insertEmoji(emoji: string) {
+    const ta = taRef.current;
+    const caret = ta?.selectionStart ?? text.length;
+    const before = text.slice(0, caret);
+    // The colon is immediately behind the caret when the picker is open, but
+    // guard anyway: a stale open state must not eat an unrelated character.
+    const start = before.endsWith(":") ? caret - 1 : caret;
+    const next = text.slice(0, start) + emoji + text.slice(caret);
+    setText(next);
+    setPicker(false);
+    const at = start + emoji.length;
+    requestAnimationFrame(() => {
+      ta?.focus();
+      ta?.setSelectionRange(at, at);
+    });
   }
 
   return (
-    <div>
+    <div className="relative">
       <textarea
+        ref={taRef}
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={(e) => {
+          const v = e.target.value;
+          // Insertion only: deleting back onto a ":" should not spring the
+          // picker open under the reader's cursor.
+          const typed = v.length > text.length;
+          setText(v);
+          setPicker(typed && v.slice(0, e.target.selectionStart).endsWith(":"));
+        }}
+        onBlur={() => setPicker(false)}
         autoFocus={autoFocus}
         placeholder="Add a comment. Math works: wrap it in $…$ or $$…$$."
         aria-label="Comment"
@@ -67,8 +109,45 @@ function Composer({
             e.preventDefault();
             void submit();
           }
+          // Escape dismisses the picker without disturbing the text, and
+          // without bubbling out to close a surrounding dialog.
+          if (e.key === "Escape" && picker) {
+            e.preventDefault();
+            e.stopPropagation();
+            setPicker(false);
+          }
         }}
       />
+
+      {picker && (
+        <div
+          role="listbox"
+          aria-label="Insert emoji"
+          // Sits under the box rather than at the caret: measuring a caret's
+          // pixel position in a textarea means cloning it into a mirror div,
+          // which is a lot of machinery for a ten-item row.
+          className="absolute left-1 top-full z-30 -mt-1 flex gap-0.5 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-1 shadow-lg"
+        >
+          {EMOJI.map((e) => (
+            <button
+              key={e}
+              type="button"
+              role="option"
+              aria-selected={false}
+              aria-label={`Insert ${e}`}
+              // mousedown, not click: the textarea's blur would close the
+              // picker first and the click would land on nothing.
+              onMouseDown={(ev) => {
+                ev.preventDefault();
+                insertEmoji(e);
+              }}
+              className="rounded-md px-1.5 py-1 text-base leading-none transition-colors hover:bg-[color-mix(in_srgb,var(--accent-blue)_12%,transparent)]"
+            >
+              {e}
+            </button>
+          ))}
+        </div>
+      )}
       <div className="mt-2 flex flex-wrap items-center gap-2">
         <button
           type="button"
