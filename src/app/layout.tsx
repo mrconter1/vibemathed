@@ -149,14 +149,20 @@ export default function RootLayout({
             than having no dark mode at all.
 
             Runs synchronously in <head>, so the attribute is set before the
-            body renders. A stored choice always wins; only its absence falls
-            back to the system preference, so picking light on a dark-set OS
-            sticks instead of being overridden on every load. */}
+            body renders.
+
+            Light is the default, and the OS preference is deliberately not
+            consulted. The site is a cream paper surface and that is what it
+            is meant to look like; a dark-set laptop should not decide that a
+            first-time reader sees the other one. Dark is a choice, and once
+            made it is stored and always wins. Anything other than the two
+            known values falls back to light, so a corrupted or hand-edited
+            key cannot leave the page unstyled. */}
         <script
           dangerouslySetInnerHTML={{
             __html:
               `try{var t=localStorage.getItem(${JSON.stringify(THEME_KEY)});` +
-              `if(!t)t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";` +
+              `if(t!=="dark"&&t!=="light")t="light";` +
               `document.documentElement.dataset.theme=t;` +
               // Chrome colour too, if the tag has been emitted by now. Metadata
               // order relative to this script is not guaranteed, so ThemeToggle
