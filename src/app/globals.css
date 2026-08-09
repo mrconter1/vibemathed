@@ -158,6 +158,24 @@ html {
   scrollbar-width: none;
   mask-image: linear-gradient(to bottom, black calc(100% - 28px), transparent);
 }
+
+/*
+ * While the document is scrolling, this container stops being scrollable, so
+ * a page scroll that happens to pass under the cursor is not handed to it
+ * mid-gesture. See ScrollGuard.tsx for why and for how the flag is set.
+ *
+ * Free of layout cost: the scrollbar here is already hidden, so toggling
+ * overflow changes nothing on screen, and scrollTop survives, so the feed
+ * stays exactly where it was left.
+ *
+ * Scroll chaining is deliberately left alone (no overscroll-behavior:
+ * contain). Reaching the end of the feed should continue the page, because
+ * the alternative is being stuck in the feed, which is the same complaint in
+ * the opposite direction.
+ */
+html[data-scrolling] .fade-scroll {
+  overflow-y: hidden;
+}
 .fade-scroll::-webkit-scrollbar {
   display: none;
 }

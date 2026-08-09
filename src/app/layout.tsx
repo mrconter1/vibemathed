@@ -6,6 +6,7 @@ import "./globals.css";
 import { SITE_URL } from "@/lib/site";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { ScrollGuard } from "@/components/ScrollGuard";
 import { ViewerProvider } from "@/components/ViewerProvider";
 
 // What Google shows. Title: brand + the plain-language topic, under 60 chars
@@ -158,6 +159,8 @@ export default function RootLayout({
             they have voted once, and the header plus every vote control reads
             from it. */}
         <ViewerProvider>
+          {/* Sets html[data-scrolling] while the page moves; see ScrollGuard. */}
+          <ScrollGuard />
           <SiteHeader />
           {/* A flex column so a page's <main> can flex-1 itself and center its
               content in the leftover viewport height (the About page does). */}
