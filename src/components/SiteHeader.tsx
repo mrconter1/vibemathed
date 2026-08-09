@@ -3,6 +3,7 @@ import { AuthMenu } from "@/components/AuthMenu";
 import { InboxButton } from "@/components/InboxButton";
 import { NavLinks } from "@/components/NavLinks";
 import { NotificationsMenu } from "@/components/NotificationsMenu";
+import { SubmitButton } from "@/components/SubmitButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 /// Persistent site chrome. Sticky and translucent on the same paper surface as
@@ -38,6 +39,10 @@ export function SiteHeader() {
         <NavLinks />
 
         <div className="order-2 ml-auto flex items-center gap-2 sm:order-3">
+          {/* Leftmost, and the only action here that everyone sees: a
+              signed-out reader gets the plus and the sign-in button, which is
+              the right order of discovery. */}
+          <SubmitButton />
           {/* Both render nothing for signed-out visitors. Mail before the
               bell: it is the more personal of the two. */}
           <InboxButton />

@@ -6,10 +6,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+// Submit deliberately absent: it is an action, not a section, and lives as
+// the plus button in the header's action cluster.
 const LINKS = [
   { href: "/", label: "Entries" },
   { href: "/stats", label: "Stats" },
-  { href: "/submit", label: "Submit" },
   { href: "/about", label: "About" },
 ] as const;
 
