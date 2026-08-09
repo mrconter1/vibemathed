@@ -12,11 +12,13 @@ import {
   SOLVE_TYPE,
   VERIFICATION,
 } from "@/lib/display";
+import { formatCommentDate } from "@/lib/comment-render";
 import { toEditableValues } from "@/lib/editable";
 import { groupLinksByKind } from "@/lib/link-kinds";
 import { SITE_URL } from "@/lib/site";
 import { Icon, type IconName } from "@/components/Icons";
 import { Changelog } from "@/components/Changelog";
+import { RelativeTime } from "@/components/RelativeTime";
 import { CommentsSection } from "@/components/CommentsSection";
 import { EditEntryDialog } from "@/components/EditEntryDialog";
 import { ReportEntryDialog } from "@/components/ReportEntryDialog";
@@ -374,6 +376,16 @@ export default async function ProblemPage({
             >
               {p.submittedBy}
             </Link>
+            {/* When it arrived. Safe to show here and only here: `addedAt` is
+                row creation, and for the curated baseline every row was seeded
+                within the same few seconds, so that timestamp is insertion
+                order rather than information. This block renders only for
+                community submissions, where the row really was created when
+                the entry was sent in. */}
+            <span className="text-[var(--ink-muted)]">
+              {" on "}
+              <RelativeTime iso={p.addedAt} fallback={formatCommentDate(new Date(p.addedAt))} />
+            </span>
           </p>
         )}
 
