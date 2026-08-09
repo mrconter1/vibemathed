@@ -169,12 +169,15 @@ export function FilterPanel({
           })}
 
           <div className="mt-5 flex items-center justify-between border-t border-[var(--hairline)] pt-3">
+            {/* Same pill as the chip row's, so the two clears read as one
+                control in two places rather than two different affordances. */}
             <button
               type="button"
               onClick={() => facets.forEach((f) => onChange(f.key, "all"))}
               disabled={activeCount === 0}
-              className="text-xs text-[var(--accent-blue)] hover:underline disabled:pointer-events-none disabled:opacity-40"
+              className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-[var(--hairline)] bg-[var(--paper)] px-2.5 py-1 text-xs font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-orange)] hover:text-[var(--accent-orange)] disabled:pointer-events-none disabled:opacity-40"
             >
+              <Icon name="close" size={11} />
               Clear filters
             </button>
             <button

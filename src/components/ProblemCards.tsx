@@ -910,6 +910,11 @@ export function ProblemCards({
               </button>
             );
           })}
+          {/* A pill, like the chips it sits beside, but deliberately not a
+              blue one: the chips are blue because each is an active filter,
+              and a blue "Clear all" would read as one more of them rather
+              than the thing that removes them. Neutral until hovered, then
+              orange, which is the site's colour for an undoing action. */}
           <button
             onClick={() => {
               touch();
@@ -923,9 +928,11 @@ export function ProblemCards({
               setPublicationFilter("all");
               setMethodFilter("all");
             }}
-            className="ml-1 text-xs text-[var(--accent-blue)] hover:underline"
+            aria-label="Clear all filters"
+            className="ml-0.5 inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-[var(--hairline)] bg-[var(--paper-raised)] px-2.5 py-1 text-xs font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-orange)] hover:text-[var(--accent-orange)]"
           >
-            Clear
+            <Icon name="close" size={11} />
+            Clear all
           </button>
         </div>
       )}
