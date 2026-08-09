@@ -16,12 +16,9 @@
 // traffic for them to be non-empty - for now that signal lives in the list's
 // sort control.
 
-import Link from "next/link";
 import { type ProblemWithVotes } from "@/lib/problems";
-import { AI_CONTRIBUTION } from "@/lib/display";
 import { Icon, type IconName } from "@/components/Icons";
-import { SolvedStamp } from "@/components/RelativeTime";
-import { TeX } from "@/components/TeX";
+import { HighlightList, type PreviewRow } from "@/components/HighlightPreview";
 
 const MONTHS = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -44,42 +41,32 @@ function formatSolveDate(d: string, refYear: string): string {
   return year === refYear ? stamp : `${stamp} ${year}`;
 }
 
-interface Row {
-  slug: string;
-  name: string;
-  /// The value this column ranks on, shown beside the name.
-  detail: string;
-  /// Set only where `detail` is a solve date precise enough to age: the
-  /// timestamp the client recomputes "14 hours ago" from. Absent on
-  /// month-only and year-only solve dates, and on columns whose detail is not
-  /// a date at all.
-  iso?: string;
-  /// Marks the top AI-contribution tier: the model produced the central proof
-  /// or object.
-  aiDiscovered?: boolean;
+/// One row, plus the fields the desktop hover card shows. Ten rows total, so
+/// the extra payload is negligible - unlike the stats page, where projecting
+/// full problems into a client component cost most of a megabyte.
+type Row = PreviewRow;
+
+/// Builds a row from a problem, given the column's ranking detail.
+function toRow(p: ProblemWithVotes, detail: string, iso?: string): Row {
+  return {
+    slug: p.slug,
+    name: p.shortName,
+    detail,
+    iso,
+    aiDiscovered: p.aiContribution === "ai-discovered",
+    fullName: p.name,
+    field: p.field ?? p.fieldGroup,
+    // Clamped here rather than in the card: the whole statement would ride the
+    // RSC payload for a card that line-clamps to three lines anyway.
+    statement: p.statement ? p.statement.slice(0, 220) : null,
+    model: p.model,
+    verification: p.verification,
+    resolution: p.resolution,
+    significance: p.significance ?? null,
+    solved: p.solveDate,
+  };
 }
 
-/// The badge. Its own flex child rather than part of the name, because the
-/// name truncates: inside that span the pill would be the first thing a narrow
-/// screen threw away, which is exactly backwards.
-///
-/// It shows the whole label wherever it fits and clips to "AI-discove..." when
-/// it does not, so the two shrink priorities matter. The title is the long,
-/// compressible text and gives way first; `shrink-[0.2]` lets the pill absorb
-/// roughly a fifth of the squeeze the title takes, so it stays whole down to
-/// narrow phones and only starts clipping under real pressure. `min-w-0` is
-/// what makes `truncate` work at all on a flex child, and `title` keeps the
-/// full label reachable once it clips.
-function DiscoveredPill({ label }: { label: string }) {
-  return (
-    <span
-      title={`${label}: the model produced the central proof or object`}
-      className="min-w-0 shrink-[0.2] self-center truncate rounded-full bg-[color-mix(in_srgb,var(--status-good)_14%,transparent)] px-1.5 py-px text-[10px] font-medium text-[var(--status-good)]"
-    >
-      {label}
-    </span>
-  );
-}
 
 interface Column {
   icon: IconName;
@@ -99,16 +86,16 @@ function buildColumns(all: ProblemWithVotes[], rows: number): Column[] {
     .slice(0, rows);
   // The newest solve sets the reference year for the whole column.
   const refYear = recent[0]?.solveDate.slice(0, 4) ?? "";
-  const justSolved = recent.map((p) => ({
-    slug: p.slug,
-    name: p.shortName,
-    detail: formatSolveDate(p.solveDate, refYear),
-    // Only a full "YYYY-MM-DD" can be aged. A solve recorded as "2026-06" is
-    // a month, and treating it as the first of that month would invent a
-    // precision the record does not have.
-    iso: p.solveDate.length === 10 ? `${p.solveDate}T00:00:00Z` : undefined,
-    aiDiscovered: p.aiContribution === "ai-discovered",
-  }));
+  const justSolved = recent.map((p) =>
+    toRow(
+      p,
+      formatSolveDate(p.solveDate, refYear),
+      // Only a full "YYYY-MM-DD" can be aged. A solve recorded as "2026-06" is
+      // a month, and treating it as the first of that month would invent a
+      // precision the record does not have.
+      p.solveDate.length === 10 ? `${p.solveDate}T00:00:00Z` : undefined,
+    ),
+  );
 
   // The week's best, by how much mathematics cared about the problem before
   // it fell. A rolling seven days rather than the calendar week: on a Monday
@@ -139,12 +126,7 @@ function buildColumns(all: ProblemWithVotes[], rows: number): Column[] {
         b.solveDate.localeCompare(a.solveDate),
     )
     .slice(0, rows)
-    .map((p) => ({
-      slug: p.slug,
-      name: p.shortName,
-      detail: `${p.significance}/100`,
-      aiDiscovered: p.aiContribution === "ai-discovered",
-    }));
+    .map((p) => toRow(p, `${p.significance}/100`));
 
   return [
     { icon: "spark", title: "Just solved", hint: "Most recent results", rows: justSolved },
@@ -182,35 +164,7 @@ export function Highlights({
           </h3>
           <p className="mt-0.5 text-[11px] text-[var(--ink-muted)]">{col.hint}</p>
 
-          <ul className="mt-2.5">
-            {col.rows.map((row) => (
-              <li
-                key={row.slug}
-                className="border-t border-[var(--hairline)] py-2 first:border-t-0 first:pt-0 last:pb-0"
-              >
-                <Link
-                  href={`/problem/${row.slug}`}
-                  className="group flex items-baseline justify-between gap-3"
-                >
-                  <span className="flex min-w-0 items-baseline gap-1.5">
-                    <span className="min-w-0 truncate text-sm text-[var(--ink-secondary)] transition-colors group-hover:text-[var(--accent-blue)]">
-                      <TeX>{row.name}</TeX>
-                    </span>
-                    {row.aiDiscovered && (
-                      <DiscoveredPill label={AI_CONTRIBUTION["ai-discovered"].pill ?? "AI-discovered"} />
-                    )}
-                  </span>
-                  <span className="shrink-0 font-mono text-[11px] text-[var(--ink-muted)]">
-                    {row.iso ? (
-                      <SolvedStamp iso={row.iso} date={row.detail} />
-                    ) : (
-                      row.detail
-                    )}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <HighlightList rows={col.rows} />
         </section>
       ))}
     </div>
