@@ -116,6 +116,20 @@ function Fact({ label, children }: { label: string; children: React.ReactNode })
   );
 }
 
+/// "8 Aug 2026" from an ISO timestamp. Deliberately not RelativeTime: this
+/// sits in a dense metadata row where "3 days ago" would need re-reading
+/// against the solve date next to it, and unlike the feed these dates are
+/// mostly weeks old, where the absolute form is the more useful one.
+function formatAddedDate(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getUTCDate()} ${MONTHS_SHORT[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+}
+
+const MONTHS_SHORT = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+
 function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string | null }) {
   const st = SOLVE_TYPE[p.solveType];
   // The primary source counts as a link. For 265 of the entries it IS the
@@ -372,6 +386,12 @@ function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string
                 >
                   {p.submittedBy}
                 </Link>
+                {/* Only alongside a submitter, never on its own. `addedAt` is
+                    row creation, and the curated baseline was seeded within
+                    the same few seconds, so on those entries it records when
+                    the database was filled rather than anything about the
+                    entry. Beside a pseudonym it means what it looks like. */}
+                &nbsp;on&nbsp;{formatAddedDate(p.addedAt)}
               </span>
             )}
 

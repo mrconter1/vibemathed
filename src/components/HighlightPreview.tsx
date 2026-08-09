@@ -71,8 +71,15 @@ export function HighlightList({ rows }: { rows: PreviewRow[] }) {
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  /// Flips the card to the other side of the cursor near an edge, so it never
-  /// hangs off screen or forces the page to scroll.
+  /// Sits above the cursor, always. Anchoring to one side means the card
+  /// appears in the same place every time, so the eye knows where to look
+  /// instead of tracking a box that alternates above and below depending on
+  /// how far down the row sits.
+  ///
+  /// Horizontal still flips near the right edge, because the alternative is a
+  /// card hanging off screen. Vertical falls back below the cursor only when
+  /// there is genuinely no room above, which on these two columns means the
+  /// viewport is shorter than the card.
   function place(clientX: number, clientY: number) {
     const el = cardRef.current;
     if (!el) return;
@@ -81,10 +88,8 @@ export function HighlightList({ rows }: { rows: PreviewRow[] }) {
       clientX + PAD + w > window.innerWidth - EDGE
         ? Math.max(EDGE, clientX - PAD - w)
         : clientX + PAD;
-    const y =
-      clientY + PAD + h > window.innerHeight - EDGE
-        ? Math.max(EDGE, clientY - PAD - h)
-        : clientY + PAD;
+    const above = clientY - PAD - h;
+    const y = above >= EDGE ? above : Math.min(clientY + PAD, window.innerHeight - EDGE - h);
     el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
   }
 
@@ -139,9 +144,9 @@ export function HighlightList({ rows }: { rows: PreviewRow[] }) {
         <div
           ref={cardRef}
           aria-hidden
-          className="pointer-events-none fixed left-0 top-0 z-50 w-72 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-3 shadow-lg"
+          className="pointer-events-none fixed left-0 top-0 z-50 w-60 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-2.5 shadow-lg"
         >
-          <p className="font-serif text-sm leading-snug text-[var(--ink)]">
+          <p className="font-serif text-[13px] leading-snug text-[var(--ink)]">
             <TeX>{active.fullName}</TeX>
           </p>
           {active.field && (
@@ -149,12 +154,12 @@ export function HighlightList({ rows }: { rows: PreviewRow[] }) {
           )}
 
           {active.statement && (
-            <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-[var(--ink-secondary)]">
+            <p className="mt-1.5 line-clamp-2 text-[11px] leading-relaxed text-[var(--ink-secondary)]">
               <TeX>{active.statement}</TeX>
             </p>
           )}
 
-          <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+          <div className="mt-2 flex flex-wrap items-center gap-1">
             <Pill
               label={VERIFICATION[active.verification].label}
               color={VERIFICATION[active.verification].color}
@@ -167,7 +172,7 @@ export function HighlightList({ rows }: { rows: PreviewRow[] }) {
             )}
           </div>
 
-          <dl className="mt-2.5 space-y-1 border-t border-[var(--hairline)] pt-2 text-[11px]">
+          <dl className="mt-2 space-y-0.5 border-t border-[var(--hairline)] pt-1.5 text-[10px]">
             <div className="flex justify-between gap-3">
               <dt className="shrink-0 text-[var(--ink-muted)]">Model</dt>
               <dd className="truncate text-right text-[var(--ink-secondary)]">
