@@ -15268,8 +15268,8 @@
       "Karthik Natarajan"
     ],
     "aiRole": "The abstract credits the counterexample to GPT-5.5 Pro in its first sentence. The authors add that earlier attempts with free tiers of ChatGPT and Claude made no progress, which is a useful data point on where the capability threshold sat. They are refuting their own conjecture.",
-    "verification": "unreviewed",
-    "verificationNote": "The refutation is an explicit counterexample, so it is a finite check. Short arXiv note, not peer-reviewed.",
+    "verification": "lean-checked",
+    "verificationNote": "The refutation is an explicit counterexample, so it is a finite check. Short arXiv note, not peer-reviewed.\n\nA Lean 4 / Mathlib formalization of the counterexample was contributed in August 2026 by its author, produced with Codex. Curator source audit: all 579 lines read, with no sorry, admit, native_decide, unsafe declaration, user-declared axiom, implemented_by or partial def anywhere in the file; finite checks go through kernel decide and rational identities through norm_num, both proof-producing, and Mathlib is pinned to an exact revision on toolchain v4.33.0-rc2, so the build is reproducible. The curator has not compiled it, and the artifact is the work of the same person who reported it, so it is not third-party corroboration.\n\nWhat the formalization does and does not settle is worth stating exactly. Its final theorem is a seven-part conjunction certifying the witness and its bounds: the three-atom distribution attains the target marginals with expected coverage 4, no distribution exceeds 4, the product distribution is pairwise feasible, every pairwise-feasible distribution is bounded by 479/160, and 4 divided by 479/160 is 640/479, which exceeds 4/3. Both bounds are universally quantified rather than spot-checked. What the file never states is the Ramachandra-Natarajan conjecture itself, so the step from this instance to the conjecture being refuted remains informal and rests on the conjectured bound really being 4/3. That is the difference between a kernel-checked artifact and an audited claim, and it is why this sits on the unaudited Lean rung rather than above it.",
     "publication": "preprint",
     "resolutionMethod": "construction",
     "citations": null,
@@ -15281,7 +15281,13 @@
     "sourceName": "arXiv:2606.19663 - Counterexample to a conjecture on the pairwise independent correlation gap using AI",
     "aiContribution": "ai-discovered",
     "significance": 7,
-    "significanceNote": "A conjecture the same authors published in 2025; recent and narrow, but explicitly stated in the literature."
+    "significanceNote": "A conjecture the same authors published in 2025; recent and narrow, but explicitly stated in the literature.",
+    "links": [
+      {
+        "label": "Lean 4 / Mathlib formalization of the counterexample (Codex, author-contributed)",
+        "url": "https://github.com/Olangu/pairwise-correlation-gap-lean"
+      }
+    ]
   },
   {
     "slug": "ramsey-hypergraph-hn-bound",
