@@ -3,6 +3,7 @@ import { AuthMenu } from "@/components/AuthMenu";
 import { InboxButton } from "@/components/InboxButton";
 import { NavLinks } from "@/components/NavLinks";
 import { NotificationsMenu } from "@/components/NotificationsMenu";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 /// Persistent site chrome. Sticky and translucent on the same paper surface as
 /// the page - the site is one continuous sheet, not a bar floating above a card.
@@ -41,6 +42,10 @@ export function SiteHeader() {
               bell: it is the more personal of the two. */}
           <InboxButton />
           <NotificationsMenu />
+          {/* Left of the account button, and unlike the two above it renders
+              for signed-out visitors too: reading in the dark is not a
+              privilege of having an account. */}
+          <ThemeToggle />
           <AuthMenu />
         </div>
       </div>

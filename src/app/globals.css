@@ -1,11 +1,15 @@
 @import "tailwindcss";
 
 /*
- * One fixed theme - deliberately not a light/dark pair. The whole site is a
- * single continuous paper surface (the old design floated a paper card on a
- * darker mat, which broke the page into header / gap / box). Panels and cards
- * lift off the page with the raised surface + hairlines, never with shadows.
- * See dataviz skill palette.md for where --accent-* and --status-* come from.
+ * The whole site is a single continuous paper surface (the old design floated
+ * a paper card on a darker mat, which broke the page into header / gap / box).
+ * Panels and cards lift off the page with the raised surface + hairlines,
+ * never with shadows. See dataviz skill palette.md for where --accent-* and
+ * --status-* come from.
+ *
+ * Two themes, and every colour in the site goes through these tokens, so the
+ * dark pair below is the entire implementation. Nothing hard-codes a hex
+ * outside this block, which is why adding dark mode touched no component.
  */
 :root {
   color-scheme: light;
@@ -29,6 +33,47 @@
   --status-good: #0ca30c;
   --status-warning: #c98500;
   --status-critical: #d03b3b;
+}
+
+/*
+ * Dark theme. Warm rather than neutral: the light theme is cream paper, and a
+ * cold grey counterpart would read as a different site rather than the same
+ * one at night, so the darks keep a brown cast and the inks stay off-white.
+ *
+ * Accents and status colours are lightened, not reused. The light-theme blue
+ * (#2a78d6) and green (#0ca30c) are chosen for contrast against cream and
+ * fall to roughly 3:1 against a near-black page, which fails body text. These
+ * are the same hues raised in lightness until they clear 4.5:1.
+ *
+ * Applied by [data-theme], set on <html> by the boot script in layout.tsx
+ * before first paint. Deliberately NOT a prefers-color-scheme media query:
+ * the choice is explicit and stored, so the system preference seeds it once
+ * and never overrides a decision the reader has made.
+ */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --paper: #17150f;
+  --paper-raised: #201d16;
+
+  --ink: #f0ebdd;
+  --ink-secondary: #bdb5a2;
+  /* Lifted from the obvious #8b8371 (the light theme's muted, inverted), which
+     measured 4.47 against the raised surface and missed AA by a hair. This
+     clears 4.97 there and 5.39 on the page. */
+  --ink-muted: #938b78;
+
+  --hairline: #322d24;
+
+  --mat: #6b6559;
+  --mat-border: rgba(240, 235, 221, 0.18);
+
+  --accent-blue: #6aa5e8;
+  --accent-orange: #f08a5c;
+
+  --status-good: #45c245;
+  --status-warning: #e0a53a;
+  --status-critical: #e56a6a;
 }
 
 @theme inline {

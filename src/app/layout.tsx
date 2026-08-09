@@ -138,6 +138,20 @@ export default function RootLayout({
             __html: `try{var v=JSON.parse(localStorage.getItem("vibemathed:viewer")||"null");if(v&&v.signedIn){var d=document.documentElement,p=(v.pseudonym||"").trim();d.dataset.viewer="in";d.style.setProperty("--viewer-initial",JSON.stringify(p.charAt(0).toUpperCase()||"?"));}}catch(e){}`,
           }}
         />
+        {/* Theme, before first paint. Every page here is statically generated,
+            so the HTML cannot know the reader's choice: without this the page
+            paints cream and snaps to dark once React hydrates, which is worse
+            than having no dark mode at all.
+
+            Runs synchronously in <head>, so the attribute is set before the
+            body renders. A stored choice always wins; only its absence falls
+            back to the system preference, so picking light on a dark-set OS
+            sticks instead of being overridden on every load. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem("vibemathed:theme");if(!t)t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;}catch(e){}`,
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col">
         {/* One provider for the whole app: it fetches who the viewer is and how
