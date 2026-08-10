@@ -17,6 +17,7 @@
 // sort control.
 
 import { type ProblemWithVotes } from "@/lib/problems";
+import { RESOLUTION } from "@/lib/display";
 import { Icon, type IconName } from "@/components/Icons";
 import { HighlightList, type PreviewRow } from "@/components/HighlightPreview";
 
@@ -54,6 +55,14 @@ function toRow(p: ProblemWithVotes, detail: string, iso?: string): Row {
     detail,
     iso,
     aiDiscovered: p.aiContribution === "ai-discovered",
+    // Shown INSTEAD of the AI pill when set, never beside it: one marker per
+    // row keeps the line readable on a phone, and if an entry is only a
+    // partial result then that is the thing a reader needs to know first.
+    status:
+      p.resolution === "resolved"
+        ? null
+        : { label: RESOLUTION[p.resolution].pill ?? RESOLUTION[p.resolution].label,
+            color: RESOLUTION[p.resolution].color },
     fullName: p.name,
     field: p.field ?? p.fieldGroup,
     // Clamped here rather than in the card: the whole statement would ride the
@@ -76,10 +85,25 @@ interface Column {
 }
 
 function buildColumns(all: ProblemWithVotes[], rows: number): Column[] {
-  // Highlights celebrate outcomes, so only fully resolved entries qualify - a
-  // candidate under review or a retracted claim must not headline "Just
-  // solved" or count as having fallen.
+  // "Just solved" is about outcomes, so only fully resolved entries qualify: a
+  // candidate under review or a retracted claim must not headline it or count
+  // as having fallen.
   const problems = all.filter((p) => p.resolution === "resolved");
+
+  // "This week" ranks by how much the problem mattered, and excluding partial
+  // results there hid the biggest thing that has happened to this record. The
+  // zeta critical-line bound is the most significant entry in the catalog and
+  // was invisible on the front page, because improving a bound on the Riemann
+  // hypothesis is a partial result by definition. So are the Tuza degree-seven
+  // proof and most record ladders: the more famous the problem, the likelier
+  // that real progress on it is partial rather than total.
+  //
+  // Candidates and variants stay out. Those are claims whose standing is in
+  // question, where partial describes how much of the problem fell, not how
+  // much to believe it.
+  const notable = all.filter(
+    (p) => p.resolution === "resolved" || p.resolution === "partial",
+  );
 
   const recent = [...problems]
     .sort((a, b) => b.solveDate.localeCompare(a.solveDate))
@@ -113,12 +137,13 @@ function buildColumns(all: ProblemWithVotes[], rows: number): Column[] {
   // useful one regardless: after a quiet stretch a clock-based week empties
   // out and the column reads as though nothing has been solved, when what
   // actually happened is that nothing was solved THIS week specifically.
-  const newest = recent[0]?.solveDate ?? "";
+  const newest =
+    [...notable].sort((a, b) => b.solveDate.localeCompare(a.solveDate))[0]?.solveDate ?? "";
   const weekAgo = newest
     ? new Date(`${newest.slice(0, 10)}T00:00:00Z`).getTime() - 7 * 86400000
     : 0;
   const cutoff = newest ? new Date(weekAgo).toISOString().slice(0, 10) : "";
-  const thisWeek = problems
+  const thisWeek = notable
     .filter((p) => p.significance != null && p.solveDate >= cutoff)
     .sort(
       (a, b) =>
