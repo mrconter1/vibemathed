@@ -31,11 +31,6 @@ export interface PreviewRow {
   detail: string;
   iso?: string;
   aiDiscovered?: boolean;
-  /// Set when the entry is not fully resolved. Takes the row's single pill
-  /// slot, displacing the AI marker: a reader scanning "This week" has to be
-  /// able to see that the top line is partial progress, and one pill is all
-  /// the room a row has on a phone.
-  status?: { label: string; color: string } | null;
 
   /// Everything below is preview-only.
   fullName: string;
@@ -126,25 +121,14 @@ export function HighlightList({ rows }: { rows: PreviewRow[] }) {
                 <span className="min-w-0 truncate text-sm text-[var(--ink-secondary)] transition-colors group-hover:text-[var(--accent-blue)]">
                   <TeX>{row.name}</TeX>
                 </span>
-                {row.status ? (
-                  <span
-                    title={RESOLUTION[row.resolution].label}
-                    className="min-w-0 shrink-[0.2] self-center truncate rounded-full px-1.5 py-px text-[10px] font-medium"
-                    style={{
-                      color: row.status.color,
-                      background: `color-mix(in srgb, ${row.status.color} 14%, transparent)`,
-                    }}
-                  >
-                    {row.status.label}
-                  </span>
-                ) : row.aiDiscovered ? (
+                {row.aiDiscovered && (
                   <span
                     title={`${AI_CONTRIBUTION["ai-discovered"].pill}: the model produced the central proof or object`}
                     className="min-w-0 shrink-[0.2] self-center truncate rounded-full bg-[color-mix(in_srgb,var(--status-good)_14%,transparent)] px-1.5 py-px text-[10px] font-medium text-[var(--status-good)]"
                   >
                     {AI_CONTRIBUTION["ai-discovered"].pill}
                   </span>
-                ) : null}
+                )}
               </span>
               <span className="shrink-0 font-mono text-[11px] text-[var(--ink-muted)]">
                 {row.iso ? <SolvedStamp iso={row.iso} date={row.detail} /> : row.detail}
