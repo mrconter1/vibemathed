@@ -147,7 +147,16 @@ export function inferLinkKind(url: string, label = ""): LinkKind {
   // Someone else's result is a claim about provenance that no URL can carry,
   // so it has to come from the label and it has to be checked first: an
   // "independent proof, arXiv:..." is not simply a paper.
-  if (/\bindependent(ly)?\b|\bsecond proof\b|\bthird\b.*\bproof\b/.test(l)) {
+  //
+  // "Independent" has to be doing provenance work, not just appearing. It is
+  // also an ordinary word in mathematics, and matching it bare filed a paper
+  // called "Counterexample to a conjecture on the pairwise independent
+  // correlation gap" as somebody else's proof of the same thing.
+  if (
+    /\bindependent(ly)?\s+(proof|proven|proved|work|result|solution|verification|confirmation|derivation)\b/.test(l) ||
+    /\b(proof|solution|result)\b[^.]{0,40}\bindependent(ly)?\b/.test(l) ||
+    /\bsecond proof\b|\bthird\b.*\bproof\b/.test(l)
+  ) {
     return "independent";
   }
 
@@ -187,7 +196,10 @@ export function inferLinkKind(url: string, label = ""): LinkKind {
     // Label first, because a lab serves its announcements and its PDFs from
     // one domain and nothing in the URL separates them - "Anthropic's
     // announcement" and "Claude's paper (Anthropic)" are both anthropic.com.
-    if (/\bannounc(e|es|ed|ement|ing)\b|\bblog post\b|\bpress release\b/.test(l)) {
+    // "Blog" bare rather than "blog post": the label the catalog actually
+    // carries is "Terence Tao's blog", and a mathematician's blog is where
+    // they announce things.
+    if (/\bannounc(e|es|ed|ement|ing)\b|\bblogs?\b|\bpress release\b/.test(l)) {
       return "announcement";
     }
     // The research-blog paths of the labs the catalog actually cites, for the
@@ -214,12 +226,18 @@ export function inferLinkKind(url: string, label = ""): LinkKind {
   // discussion rule so an article whose title contains "question" or "problem"
   // is not read as somebody asking one.
   if (/\bwikipedia\.org/.test(u)) return "wikipedia";
+  // A preprint server is decisive before the discussion rule gets a look. Its
+  // terms are ordinary English that math titles use constantly, and matching
+  // them on an arXiv link filed "On a question of Mauri and Moraga" and "A
+  // question on klt type varieties of Han and Jiang" as forum threads. By
+  // here every rule that could legitimately beat a paper host - the explicit
+  // Lean, transcript, problem-record and Wikipedia labels - has already run.
+  if (paperHost) return "paper";
   // Plural included deliberately: "Copilot threads" fell through to `other`
   // without it.
   if (/mathoverflow|\bthreads?\b|\bforums?\b|\bdiscussions?\b|\bquestions?\b/.test(both)) {
     return "discussion";
   }
-  if (paperHost) return "paper";
   if (/github\.com|gitlab|\bcode\b|\brepo(sitory)?\b|\bscripts?\b|\.py\b|verif(ier|ication suite)/.test(both)) {
     return "code";
   }

@@ -14,7 +14,7 @@ import {
 } from "@/lib/display";
 import { formatCommentDate } from "@/lib/comment-render";
 import { toEditableValues } from "@/lib/editable";
-import { groupLinksByKind } from "@/lib/link-kinds";
+import { groupLinksByKind, inferLinkKind } from "@/lib/link-kinds";
 import { SITE_URL } from "@/lib/site";
 import { Icon, type IconName } from "@/components/Icons";
 import { Changelog } from "@/components/Changelog";
@@ -310,58 +310,65 @@ export default async function ProblemPage({
           <h2 className="font-serif text-lg text-[var(--ink)]">
             {(p.links ?? []).length > 0 ? "Sources" : "Source"}
           </h2>
-          <p className="mt-2 text-sm">
-            <a
-              href={p.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="break-words text-[var(--accent-blue)] hover:underline"
-            >
-              {p.sourceName}
-            </a>
-          </p>
           {/* Grouped by what each link IS, not the order they were added.
               A dozen links used to be one undifferentiated list where the
               Lean proof, the paper and somebody else's independent proof all
               read the same; the kind carries that now, so the label is free
-              to say only what is specific to this one. */}
-          {(p.links ?? []).length > 0 && (
-            <ul className="mt-2.5 space-y-1.5 text-sm">
-              {groupLinksByKind(p.links ?? []).map(({ spec, links }) => (
-                <li key={spec.value} className="flex gap-2">
-                  <span
-                    className="mt-0.5 shrink-0 text-[var(--ink-muted)]"
-                    title={spec.help}
-                    aria-hidden
-                  >
-                    <Icon name={spec.icon as IconName} size={14} />
+              to say only what is specific to this one.
+
+              The primary source is in this list too, though it is a column on
+              Problem rather than a row in the links table. It used to render
+              as a bare line above the list: the same kind of thing as the
+              links, drawn in a different idiom, which made an entry look like
+              it had two paper slots and no rule for which one to use. It gets
+              typed by the same inference the links do, and being the citation
+              shows as weight rather than as a block of its own. */}
+          <ul className="mt-2.5 space-y-1.5 text-sm">
+            {groupLinksByKind([
+              {
+                url: p.sourceUrl,
+                label: p.sourceName,
+                kind: inferLinkKind(p.sourceUrl, p.sourceName),
+                primary: true,
+              },
+              ...(p.links ?? []).map((l) => ({ ...l, primary: false })),
+            ]).map(({ spec, links }) => (
+              <li key={spec.value} className="flex gap-2">
+                <span
+                  className="mt-0.5 shrink-0 text-[var(--ink-muted)]"
+                  title={spec.help}
+                  aria-hidden
+                >
+                  <Icon name={spec.icon as IconName} size={14} />
+                </span>
+                <span className="min-w-0">
+                  <span className="mr-2 text-[11px] uppercase tracking-wide text-[var(--ink-muted)]">
+                    {spec.label}
                   </span>
-                  <span className="min-w-0">
-                    <span className="mr-2 text-[11px] uppercase tracking-wide text-[var(--ink-muted)]">
-                      {spec.label}
+                  {links.map((l, i) => (
+                    <span key={l.url}>
+                      {i > 0 && (
+                        <span aria-hidden className="text-[var(--hairline)]">
+                          {" · "}
+                        </span>
+                      )}
+                      <a
+                        href={l.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={l.primary ? "Primary source: the entry's citation" : undefined}
+                        className={`break-words text-[var(--accent-blue)] hover:underline${
+                          l.primary ? " font-medium" : ""
+                        }`}
+                      >
+                        {l.label || spec.label}
+                      </a>
                     </span>
-                    {links.map((l, i) => (
-                      <span key={l.url}>
-                        {i > 0 && (
-                          <span aria-hidden className="text-[var(--hairline)]">
-                            {" · "}
-                          </span>
-                        )}
-                        <a
-                          href={l.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="break-words text-[var(--accent-blue)] hover:underline"
-                        >
-                          {l.label || spec.label}
-                        </a>
-                      </span>
-                    ))}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
+                  ))}
+                </span>
+              </li>
+            ))}
+          </ul>
         </section>
 
         {/* Contributor credit. Deliberately readable rather than a muted
