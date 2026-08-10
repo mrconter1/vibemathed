@@ -36,6 +36,7 @@ export type IconName =
   | "branch" // someone else's proof of the same thing
   | "transcript" // a model session or provenance note
   | "bookmark" // the canonical problem record
+  | "megaphone" // the lab's or author's announcement of the result
   | "link"; // anything else
 
 const PATHS: Record<IconName, React.ReactNode> = {
@@ -88,6 +89,12 @@ const PATHS: Record<IconName, React.ReactNode> = {
   bookmark: (
     <>
       <path d="M4 2.5h8v11l-4-3-4 3z" strokeLinejoin="round" />
+    </>
+  ),
+  megaphone: (
+    <>
+      <path d="M3 6.2h2.4L11 3v10L5.4 9.8H3z" strokeLinejoin="round" />
+      <path d="M13.2 6.2a3.2 3.2 0 010 3.6" strokeLinecap="round" />
     </>
   ),
   link: (

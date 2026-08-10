@@ -17,6 +17,7 @@ export type LinkKind =
   | "lean-statement"
   | "code"
   | "transcript"
+  | "announcement"
   | "problem-record"
   | "wikipedia"
   | "discussion"
@@ -81,32 +82,39 @@ export const LINK_KINDS: LinkKindSpec[] = [
     rank: 6,
   },
   {
+    value: "announcement",
+    label: "Announcement",
+    help: "The lab's or author's public announcement of the result",
+    icon: "megaphone",
+    rank: 7,
+  },
+  {
     value: "problem-record",
     label: "Problem record",
     help: "The canonical entry for the problem itself",
     icon: "bookmark",
-    rank: 7,
+    rank: 8,
   },
   {
     value: "wikipedia",
     label: "Wikipedia",
     help: "The encyclopedia article for the problem",
     icon: "globe",
-    rank: 8,
+    rank: 9,
   },
   {
     value: "discussion",
     label: "Discussion",
     help: "A thread, question or forum post",
     icon: "bubble",
-    rank: 9,
+    rank: 10,
   },
   {
     value: "other",
     label: "Other",
     help: "Anything else",
     icon: "link",
-    rank: 10,
+    rank: 11,
   },
 ];
 
@@ -162,6 +170,32 @@ export function inferLinkKind(url: string, label = ""): LinkKind {
   // A note ABOUT the model's involvement, before the word "note" below can
   // claim it as a write-up.
   if (/provenance|ai[- ]use|\bprompt\b/.test(l)) return "transcript";
+
+  // The lab's or the author's public announcement of the result. Has to beat
+  // both the paper rule and the discussion rule: a post on a research blog is
+  // not the write-up, and an author posting their own theorem is not a thread
+  // somebody started.
+  //
+  // Gated on the link being a web page first. An announcement is something you
+  // read in a browser, and both halves of this guard were earned by the dry
+  // run over the existing catalog: `ulam.ai/research/erdos856-final.pdf` is
+  // the write-up itself and matched a research-blog path, and an arXiv paper
+  // labelled "concurrent human proof ... crediting Ryu's announcement" matched
+  // on a word that described something the paper is not.
+  const isWebPage = !/\.pdf$/.test(u) && !paperHost;
+  if (isWebPage) {
+    // Label first, because a lab serves its announcements and its PDFs from
+    // one domain and nothing in the URL separates them - "Anthropic's
+    // announcement" and "Claude's paper (Anthropic)" are both anthropic.com.
+    if (/\bannounc(e|es|ed|ement|ing)\b|\bblog post\b|\bpress release\b/.test(l)) {
+      return "announcement";
+    }
+    // The research-blog paths of the labs the catalog actually cites, for the
+    // links whose label does not say what they are.
+    if (/(deepmind\.google|anthropic\.com|openai\.com)\/(research|index|news|blog)\//.test(u)) {
+      return "announcement";
+    }
+  }
 
   // What the label calls it beats where it is hosted. Eleven of the OpenAI
   // links are labelled "Manuscripts (ten-proofs paper)" and eleven more
