@@ -9423,6 +9423,43 @@
     "significanceNote": "The finite field restriction problem, posed by Mockenhaupt and Tao as a model for Euclidean restriction, where the exponent is the standard measure of progress."
   },
   {
+    "slug": "finite-generation-for-klt-generalized-pairs",
+    "name": "Finite Generation for klt Generalized Pairs",
+    "shortName": "klt generalized pairs",
+    "problemNumber": null,
+    "field": "Birational geometry",
+    "fieldGroup": "Algebra",
+    "resolution": "resolved",
+    "statement": "The BCHM theorem makes the log canonical ring of a projective klt pair finitely generated. Generalized pairs, introduced by Birkar and Zhang, add an auxiliary nef part and have become a central tool in birational geometry, so it is natural to ask whether finite generation survives. It does not: Liu and Wang construct a smooth projective klt generalized pair whose generalized log canonical ring is not a finitely generated algebra.",
+    "posedBy": "Yoshinori Gongyo",
+    "yearPosed": 2023,
+    "solveType": "disproved",
+    "solveDate": "2026-08-04",
+    "model": "GPT-5.6-sol-ultra, Fable 5, Danus",
+    "modelMaker": "OpenAI, Anthropic, Rethlas",
+    "humanCollaborators": [
+      "Jihao Liu",
+      "Yanze Wang"
+    ],
+    "aiRole": "Stated in the abstract, which is unusual: \"The main result of this paper is obtained by generative AI, particularly GPT-5.6-sol-ultra, Fable 5, and the Danus system.\" Remark 1.5 adds that Danus is a specialised agent built on the Rethlas system, and that human verification and polishing were done afterwards.",
+    "verification": "unreviewed",
+    "verificationNote": "A preprint days old, with no independent review. The claim is an explicit construction rather than an existence argument, so it is checkable by anyone who works in the area.",
+    "publication": "preprint",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2608.03258",
+    "sourceName": "arXiv",
+    "resultNote": "The paper records how stuck this was: the first author had discussed the question with Caucher Birkar, Osamu Fujino, Christopher D. Hacon, Junpeng Jiao, Vladimir Lazic and Lingyao Xie, and writes that despite a general feeling that a negative answer was likely, no precise counterexample could be found. The authors also note that, given the limitations of generative AI, they may have missed related literature and welcome corrections.",
+    "ageNote": "Traced to a research summary in Gongyo's 2023 annual report. Gongyo and Takayama had since proved finite generation for klt generalized pairs in many special cases, which sharpened the general question rather than settling it.",
+    "aiContribution": "ai-discovered",
+    "significance": 22,
+    "significanceNote": "Asks whether the BCHM finite generation theorem, one of the landmark results of modern birational geometry, extends to generalized pairs. Only three years old, which caps it, but leading figures in the field had tried it without success."
+  },
+  {
     "slug": "first-proof-q8-polyhedral-lagrangians",
     "name": "First Proof Question 8: Smoothing Polyhedral Lagrangians",
     "shortName": "First Proof Q8",
@@ -10404,6 +10441,53 @@
     "aiContribution": "ai-assisted",
     "significance": 15,
     "significanceNote": "Hadwiger-Debrunner numbers sit in the classical (p,q)-problem tradition solved by Alon and Kleitman, and their growth rates are actively tracked in discrete geometry."
+  },
+  {
+    "slug": "half-collinear-graviton-vertices-as-weighted-root-cone-enumerators",
+    "name": "Matrix-Tree Obstruction for Half-Collinear Graviton Vertices",
+    "shortName": "Graviton root cones",
+    "problemNumber": null,
+    "field": "Scattering amplitudes; directed spanning trees",
+    "fieldGroup": "Mathematical physics",
+    "resolution": "partial",
+    "statement": "In the half-collinear single-minus graviton recursion of Guevara, Lupsasca, Skinner, Strominger and Weil, the multipoint vertex weights depend on global cut tests, which blocks a direct matrix-tree formula outside a restricted decay region. The paper's footnote 4 states the obstruction and its conclusion leaves the general simplification to future work. This result identifies those cut tests as exactly positive-flow conditions, making each retarded vertex a weighted enumerator of directed spanning-tree root cones containing a kinematic netflow vector, so the directed Matrix-Tree Theorem applies whenever the feasible trees form a complete arborescence family.",
+    "posedBy": "Alfredo Guevara, Alexandru Lupsasca, David Skinner, Andrew Strominger, Kevin Weil",
+    "yearPosed": 2026,
+    "solveType": "proved",
+    "solveDate": "2026-08-09",
+    "model": "OpenAI Codex (GPT-5 family)",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "James Peebles",
+      "James Kehoe"
+    ],
+    "aiRole": "From the submission: under human direction, OpenAI Codex proposed the root-cone interpretation, developed the proof, wrote the exact enumeration and verification programs, found the non-decay five-point chamber identity, and drafted the manuscript. A separate model acting as referee reconstructed the published recursion and re-derived the principal claims with fresh code.",
+    "verification": "lean-checked",
+    "verificationNote": "The conceptual cut, flow and root-cone equivalence is formalized in Lean 4 with no sorry and no custom axioms; principal declarations are guarded by assert_no_sorry with axioms printed, and CI runs lake build --wfail plus leanchecker. Curator check: the linked run completed successfully and the 293-line formalization contains no sorry, admit or native_decide and declares no axioms of its own.\n\nThe label covers the formalized core only. The chamber counts, determinant identities, realizability count and five-point formula are exact-code checked, not Lean-checked. Nobody independent has audited the informal-to-formal correspondence, and no domain expert has endorsed the result. The work is self-published rather than submitted to a venue.",
+    "publication": "announcement",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://github.com/jimpeebles/graviton-root-cones/releases/tag/v0.3.0",
+    "sourceName": "Author repository",
+    "resultNote": "Answers the obstruction rather than the whole question: it says exactly when the Matrix-Tree Theorem can be applied and classifies the chambers, and gives a compact five-graviton formula outside the decay region. Simplifying the general solution, which is what the source paper left to future work, remains open.",
+    "ageNote": "Posed in March 2026 and answered in August, so this is a five-month-old question rather than a standing one.",
+    "aiContribution": "ai-discovered",
+    "significance": 8,
+    "significanceNote": "A specific technical obstruction stated in one March 2026 paper, in an active corner of amplitudes research with prominent authors, but only months old and narrow in reach.",
+    "links": [
+      {
+        "label": "Repository",
+        "url": "https://github.com/jimpeebles/graviton-root-cones"
+      },
+      {
+        "label": "Passing verification workflow",
+        "url": "https://github.com/jimpeebles/graviton-root-cones/actions/runs/31339397929"
+      }
+    ]
   },
   {
     "slug": "hall-ho-heat-flow-conjecture",
