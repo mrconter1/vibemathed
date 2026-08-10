@@ -378,8 +378,17 @@ export function decodeLinks(raw: string): LinkRef[] {
 /// Validates the submitted link rows. Rows left completely blank are dropped
 /// (the editor always keeps one empty row available), but a half-filled row
 /// is an error rather than silent data loss.
+///
+/// `primaryUrl` is the entry's own source. A link may not repeat it: the
+/// source is the citation and the links are everything else, and without the
+/// rule there are two homes for "the paper" and no way to choose between
+/// them. Two entries had drifted into listing the same PDF twice, which
+/// rendered as a paper line above a Paper bucket containing the same paper.
+/// Rejected rather than silently dropped, because the submitter chose to type
+/// it and deserves to be told which rule it broke.
 export function parseLinks(
   raw: string,
+  primaryUrl?: string,
 ): { ok: true; value: LinkRef[] } | { ok: false; error: string } {
   const rows = decodeLinks(raw).filter((l) => l.label.trim() || l.url.trim());
   if (rows.length > MAX_LINKS) {
@@ -397,6 +406,17 @@ export function parseLinks(
         ok: false,
         error: `Link URL must start with http:// or https:// ("${url.slice(0, 40)}").`,
       };
+    }
+    if (primaryUrl && sameDocument(url, primaryUrl)) {
+      return {
+        ok: false,
+        error:
+          "That link is already the entry's primary source. The source is the citation; " +
+          "list only the other material here.",
+      };
+    }
+    if (value.some((v) => sameDocument(v.url, url))) {
+      return { ok: false, error: `That link is listed twice ("${label}").` };
     }
     // An unrecognised or missing kind is not an error: the picker offers a
     // fixed list, so anything else came from an older draft or a hand-built
@@ -423,4 +443,23 @@ export function isHttpUrl(v: string): boolean {
   } catch {
     return false;
   }
+}
+
+/// A URL reduced to the document it points at, for deciding whether two links
+/// are the same source.
+///
+/// Exact string comparison is not enough. The same paper reaches the catalog
+/// as `arxiv.org/abs/2608.06538` and `arxiv.org/pdf/2608.06538v2`, with and
+/// without a trailing slash, and with a tracking query on the end.
+function documentKey(url: string): string {
+  let s = url.trim().toLowerCase().replace(/[#?].*$/, "").replace(/\/+$/, "");
+  s = s.replace(/^https?:\/\//, "").replace(/^www\./, "");
+  const arxiv = s.match(/arxiv\.org\/(?:abs|pdf)\/(\d{4}\.\d{4,5})/);
+  if (arxiv) return `arxiv:${arxiv[1]}`;
+  return s.replace(/\.pdf$/, "");
+}
+
+/// Whether two URLs point at the same document.
+export function sameDocument(a: string, b: string): boolean {
+  return documentKey(a) === documentKey(b);
 }

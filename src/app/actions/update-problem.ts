@@ -10,6 +10,7 @@ import {
   isHttpUrl,
   isValidSolveDate,
   parseLinks,
+  sameDocument,
   type EditableValues,
   type FieldSpec,
 } from "@/lib/editable";
@@ -180,6 +181,24 @@ export async function updateProblem(
 
   if (changes.length === 0) {
     return { ok: true, changed: 0 };
+  }
+
+  // A link may not repeat the primary source. Checked here rather than inside
+  // parseField because either side can be the one that moved - an edit can
+  // add the link or retarget the source - and only the merged result knows
+  // whether they now collide. Enforced only when the edit touched one of the
+  // two, so an unrelated change to an entry is never blocked by it.
+  if (nextLinks !== null || data.sourceUrl !== undefined) {
+    const primaryUrl = (data.sourceUrl as string | undefined) ?? current.sourceUrl;
+    const clash = (nextLinks ?? current.links).find((l) => sameDocument(l.url, primaryUrl));
+    if (clash) {
+      return {
+        ok: false,
+        error:
+          `"${clash.label}" is the same document as the primary source. The source is the ` +
+          "citation; list only the other material as links.",
+      };
+    }
   }
 
   // Moving an entry up or down the trust ladder, moving it through the

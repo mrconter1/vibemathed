@@ -48,6 +48,11 @@ export async function submitProblem(values: SubmissionValues): Promise<SubmitRes
     }
   }
 
+  // Read straight off the submitted values rather than out of `data`: the
+  // links field may be validated before sourceUrl has been coerced into it,
+  // and the duplicate check needs the primary whichever order the specs run in.
+  const primaryUrl = (values.sourceUrl ?? "").trim();
+
   // Validate and coerce every field against its spec.
   const data: Record<string, unknown> = {};
   for (const spec of SUBMISSION_FIELDS) {
@@ -94,7 +99,7 @@ export async function submitProblem(values: SubmissionValues): Promise<SubmitRes
         data[spec.key] = raw.split(",").map((s) => s.trim()).filter(Boolean);
         break;
       case "links": {
-        const parsed = parseLinks(raw);
+        const parsed = parseLinks(raw, primaryUrl);
         if (!parsed.ok) return { ok: false, error: parsed.error };
         // Nested create - links are their own table, not a column.
         data[spec.key] = {
