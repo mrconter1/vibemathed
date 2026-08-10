@@ -13607,6 +13607,71 @@
     "significanceNote": "From the quantum-graph existence program of Krenn's catalog."
   },
   {
+    "slug": "more-than-67-of-riemann-zeta-zeros-are-on-the-critical-line",
+    "name": "The Proportion of Zeta Zeros on the Critical Line",
+    "shortName": "Zeta zeros on the line",
+    "problemNumber": null,
+    "field": "Analytic number theory",
+    "fieldGroup": "Number theory",
+    "resolution": "partial",
+    "statement": "The Riemann hypothesis asserts that every nontrivial zero of the zeta function lies on the critical line. Short of proving it, the standard measure of progress is the proportion of zeros known unconditionally to lie there: Selberg established a positive proportion, Levinson reached a third in 1974, Conrey two fifths in 1989, and the record had crept to about 41.6%. This proves at least $\\tfrac32 - \\tfrac1{\\sqrt2}\\cot\\tfrac1{\\sqrt2} = 67.25\\ldots\\%$ of zeros are simple and on the line, and that at least 0.83625 of zeros are distinct.",
+    "posedBy": "Bernhard Riemann (1859) for the hypothesis; the proportion ladder runs from Hardy and Selberg through Levinson and Conrey",
+    "yearPosed": null,
+    "solveType": "proved",
+    "solveDate": "2026-08-10",
+    "model": "Claude (unreleased research version)",
+    "modelMaker": "Anthropic",
+    "humanCollaborators": [
+      "Jarred Sumner",
+      "Levent Alpöge",
+      "Ralph Furman",
+      "Eric Easley"
+    ],
+    "aiRole": "Claude was asked to take a real stab at the Riemann hypothesis, with the mathematical choices left to it, and the bound improvement came out as a byproduct of failing at that. It generated and discarded roughly 650 ideas in a first session; in a second it coordinated about 60 subagents which ran some 2,400 shell commands, wrote hundreds of scripts, checked numerically against known zeros and refereed one another. Two subagents developed the key ideas, thirteen fed them, thirty tried and failed, thirteen validated, two drafted the paper. Roughly 31 million output tokens across two Claude Code sessions.\n\nThe decisive step was combining the unconditional pair-correlation work of Baluyot, Goldston, Suriajaya and Turnage-Butterbaugh with a 2000 paper of Bombieri, treating the whole function space at once with the quadratic form allowed to be non-diagonal rather than splitting it. Claude also proposed writing the result up, checked 54 arXiv papers for prior art, and recommended that a human number theorist validate it.",
+    "verification": "lean-checked",
+    "verificationNote": "A sorry-free Lean 4 / Mathlib formalization accompanies the paper, and the headline statements are built from Mathlib's own riemannZeta and analyticOrderAt with the corresponding counting functions, rather than from an assumed form of the result. Curator check: the repository is real and substantial, 329 Lean files, Apache licensed to Anthropic.\n\nHeld at the unaudited rung rather than promoted, for a specific reason. Building on Mathlib primitives is real statement anchoring and reduces drift, but the assembly of those primitives into the proportion claim is the paper's own, and that assembly is exactly what nobody independent has audited. The same organisation produced the proof and the formalization.\n\nOn human review: two Anthropic mathematicians studied and validated the work, and Brian Conrey and Dan Goldston examined the paper on short notice. That is meaningful scrutiny but not the top verification rung, which asks for named experts with no stake who endorse the claim. The announcement reports examination rather than endorsement, and Goldston is an author of the prior work the result builds on.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf",
+    "sourceName": "Claude's paper (Anthropic)",
+    "resultNote": "An unconditional record, not a resolution: the Riemann hypothesis is untouched, and Anthropic states it does not expect these techniques to lead to a proof of it. The improvement is large, from about 41.6% to 67.25%, and the constant is closed form.",
+    "ageNote": "Deliberately no single posed-year, so the entry cannot claim an age it has not earned. The Riemann hypothesis dates to 1859, but this result does not resolve it. What it advances is the unconditional proportion bound, a programme running from Hardy in 1914 and Selberg in 1942 through Levinson's one third in 1974 and Conrey's two fifths in 1989, and the specific pair-correlation machinery it uses is more recent still. Dating this to 1859 would overstate it by a century.",
+    "aiContribution": "ai-discovered",
+    "significance": 68,
+    "significanceNote": "The unconditional proportion of zeros on the critical line is the standard yardstick for progress toward the Riemann hypothesis, with a fifty-year record ladder through Levinson and Conrey. Scored above the Jacobian conjecture at 65 because of what it is attached to, and far below the Riemann hypothesis at 100 because a proportion bound is not the hypothesis.",
+    "links": [
+      {
+        "label": "Preprint",
+        "url": "https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf"
+      },
+      {
+        "label": "Lean repository",
+        "url": "https://github.com/anthropics/zeta-23-lean"
+      },
+      {
+        "label": "Transcript",
+        "url": "https://www-cdn.anthropic.com/8a0d1add3c637b858a9a181e98c40e9548c3f44f.pdf"
+      },
+      {
+        "label": "Anthropic's informal note stating the proof concisely",
+        "url": "https://www-cdn.anthropic.com/23455459f8832d06bb175cc0f88d019aed962ef8.pdf"
+      },
+      {
+        "label": "How the argument was found: Claude's account of its own two runs",
+        "url": "https://www-cdn.anthropic.com/d7f3ecf1d01392d887f8bc974ca187e2a121b1ed.pdf"
+      },
+      {
+        "label": "Anthropic's announcement",
+        "url": "https://www.anthropic.com/research/riemann-zeta"
+      }
+    ]
+  },
+  {
     "slug": "mossel-peres-multivariable-bernoulli-factory",
     "name": "Mossel-Peres Multivariable Bernoulli Factory Claim",
     "shortName": "Bernoulli factories",
