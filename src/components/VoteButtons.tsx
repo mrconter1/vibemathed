@@ -23,9 +23,9 @@ function applyVote(
   return { up: Math.max(0, u), down: Math.max(0, d) };
 }
 
-function Arrow({ dir }: { dir: "up" | "down" }) {
+function Arrow({ dir, size }: { dir: "up" | "down"; size: number }) {
   return (
-    <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
       <path d={dir === "up" ? "M8 3l5.5 8H2.5L8 3z" : "M8 13L2.5 5h11L8 13z"} />
     </svg>
   );
@@ -36,15 +36,11 @@ export function VoteButtons({
   upvotes,
   downvotes,
   size = "sm",
-  stacked = false,
 }: {
   slug: string;
   upvotes: number;
   downvotes: number;
   size?: "sm" | "lg";
-  /// Stack the pair vertically below `sm`. Cards only - see the comment at
-  /// the button row.
-  stacked?: boolean;
 }) {
   const { signedIn, loaded, votes, setVote } = useViewer();
   const mine = votes[slug] ?? null;
@@ -84,12 +80,22 @@ export function VoteButtons({
     });
   }
 
-  const pad = size === "lg" ? "px-2.5 py-1.5 text-sm" : "px-2 py-1 text-xs";
+  // Icon over count rather than side by side, so the button is a square
+  // (min-height = min-width) at any count width normally reaches, instead of
+  // a pill that only happens to be as tall as its icon. `min-w` rather than a
+  // fixed `w`: a count that grows past two digits widens the button instead
+  // of clipping, and that trade only bites entries popular enough for it to
+  // be a good problem to have. Sized to match the 34x34 Report/Edit icon
+  // buttons this sits beside on the entry page, so the whole control corner
+  // reads as one family of squares rather than a square pair next to a pill.
+  const dims = size === "lg" ? "min-h-[34px] min-w-[34px] px-1.5 py-1" : "min-h-[27px] min-w-[27px] px-1 py-0.5";
+  const iconSize = size === "lg" ? 12 : 10;
+  const countText = size === "lg" ? "text-[11px]" : "text-[10px]";
   // Styling lives in classes, not inline styles - inline styles always beat
   // hover classes, which is why these buttons used to have no hover feedback.
   // The hover wash is a translucent ink mix so it reads on both surfaces
   // (paper on the entry page, raised paper on cards).
-  const base = `inline-flex items-center gap-1 rounded border transition-colors tabular-nums ${pad} disabled:opacity-50`;
+  const base = `inline-flex flex-col items-center justify-center gap-0.5 rounded-md border font-medium leading-none transition-colors tabular-nums ${dims} disabled:opacity-50`;
   const inactive =
     "border-[var(--hairline)] text-[var(--ink-secondary)] hover:border-[var(--ink-muted)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)]";
 
@@ -98,17 +104,10 @@ export function VoteButtons({
 
   return (
     <div className="inline-flex flex-col items-start gap-1">
-      {/* `stacked` is for the cards only: on a phone the pair sits in a narrow
-          column beside the title, and side by side it squeezes the heading.
-          The entry page keeps them in a row, where they line up with the edit
-          and flag icons at a matched height. */}
-      <div
-        className={
-          stacked
-            ? "inline-flex flex-col items-stretch gap-1 sm:flex-row sm:items-center sm:gap-1.5"
-            : "inline-flex items-center gap-1.5"
-        }
-      >
+      {/* Always a row. A square pair is narrow enough - about 60px at `sm` -
+          that cards no longer need the vertical stack the old wide pill pair
+          once did to avoid squeezing the title next to it. */}
+      <div className="inline-flex items-center gap-1">
         <button
           type="button"
           onClick={() => cast("up")}
@@ -122,8 +121,8 @@ export function VoteButtons({
               : inactive
           }`}
         >
-          <Arrow dir="up" />
-          {up}
+          <Arrow dir="up" size={iconSize} />
+          <span className={countText}>{up}</span>
         </button>
         <button
           type="button"
@@ -138,8 +137,8 @@ export function VoteButtons({
               : inactive
           }`}
         >
-          <Arrow dir="down" />
-          {down}
+          <Arrow dir="down" size={iconSize} />
+          <span className={countText}>{down}</span>
         </button>
       </div>
 
