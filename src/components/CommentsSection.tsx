@@ -17,6 +17,7 @@ import {
 } from "@/app/actions/comments";
 import { COMMENT_MAX_LENGTH, type CommentView } from "@/lib/comments";
 import { useViewer } from "@/components/ViewerProvider";
+import { Icon } from "@/components/Icons";
 
 const textareaClass =
   "w-full min-h-[96px] resize-y rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 py-2 text-sm leading-relaxed text-[var(--ink)] transition-colors placeholder:text-[var(--ink-muted)] hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]";
@@ -24,6 +25,16 @@ const primaryBtn =
   "rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 py-1.5 text-xs text-[var(--ink)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)] disabled:opacity-40";
 const quietBtn =
   "rounded-md px-2 py-1 text-xs text-[var(--ink-muted)] transition-colors hover:text-[var(--ink)] disabled:opacity-40";
+/// Edit is an icon, not a word, so it reads at a glance without competing
+/// with the author name and timestamp already on this line.
+const editIconBtn =
+  "inline-flex h-6 w-6 items-center justify-center rounded-md border border-[var(--hairline)] text-[var(--ink-muted)] transition-colors hover:border-[var(--ink-muted)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] disabled:opacity-40";
+/// Delete keeps its word - unlike Edit, a bare trash icon here would be read
+/// too quickly, and this is the one action on a comment that cannot be undone.
+/// Bordered like a real button rather than the quiet text link it used to be,
+/// so it does not read as just another piece of comment metadata.
+const deleteBtn =
+  "inline-flex items-center rounded-md border border-[var(--hairline)] px-2 py-1 text-xs text-[var(--ink-muted)] transition-colors hover:border-[var(--status-critical)] hover:text-[var(--status-critical)] disabled:opacity-40";
 
 /// The ten that actually get used under a result. No search, no categories,
 /// no picker library: typing ":" is a shortcut for people who already know
@@ -239,14 +250,20 @@ function Comment({
         {comment.edited && <span className="text-[var(--ink-muted)]">· edited</span>}
         {mine && !editing && (
           <span className="ml-auto flex items-center gap-1">
-            <button type="button" className={quietBtn} onClick={() => setEditing(true)}>
-              Edit
+            <button
+              type="button"
+              className={editIconBtn}
+              onClick={() => setEditing(true)}
+              title="Edit comment"
+              aria-label="Edit comment"
+            >
+              <Icon name="pencil" size={12} />
             </button>
             {confirmDelete ? (
               <>
                 <button
                   type="button"
-                  className="rounded-md px-2 py-1 text-xs text-[var(--status-critical)] transition-colors hover:underline disabled:opacity-40"
+                  className={deleteBtn}
                   disabled={busy}
                   onClick={remove}
                 >
@@ -264,7 +281,7 @@ function Comment({
             ) : (
               <button
                 type="button"
-                className={quietBtn}
+                className={deleteBtn}
                 onClick={() => setConfirmDelete(true)}
               >
                 Delete
