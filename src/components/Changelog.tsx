@@ -70,7 +70,11 @@ export function Changelog({ activity }: { activity: ActivityView[] }) {
 
   return (
     <details className="mt-10 rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3">
-      <summary className="cursor-pointer text-sm text-[var(--ink-secondary)] transition-colors hover:text-[var(--ink)]">
+      {/* select-none on the toggle only - a double-click to spam it open and
+          shut would otherwise select "Changelog" or the count next to it.
+          The list below is a sibling, outside this element, so it keeps
+          normal text selection. */}
+      <summary className="cursor-pointer select-none text-sm text-[var(--ink-secondary)] transition-colors hover:text-[var(--ink)]">
         Changelog
         <span className="ml-2 text-xs text-[var(--ink-muted)]">
           {activity.length} {activity.length === 1 ? "change" : "changes"}
