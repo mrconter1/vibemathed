@@ -26,15 +26,19 @@ const primaryBtn =
 const quietBtn =
   "rounded-md px-2 py-1 text-xs text-[var(--ink-muted)] transition-colors hover:text-[var(--ink)] disabled:opacity-40";
 /// Edit is an icon, not a word, so it reads at a glance without competing
-/// with the author name and timestamp already on this line.
+/// with the author name and timestamp already on this line. `ink-secondary`,
+/// not `ink-muted` - muted is the token for metadata (the timestamp right
+/// next to this), and using it on the button too was why it read as more
+/// metadata rather than a control. The border gets the same bump so the
+/// button's outline doesn't fade into the row along with its icon.
 const editIconBtn =
-  "inline-flex h-6 w-6 items-center justify-center rounded-md border border-[var(--hairline)] text-[var(--ink-muted)] transition-colors hover:border-[var(--ink-muted)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] disabled:opacity-40";
+  "inline-flex h-6 w-6 items-center justify-center rounded-md border border-[var(--ink-muted)] text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] disabled:opacity-40";
 /// Delete keeps its word - unlike Edit, a bare trash icon here would be read
 /// too quickly, and this is the one action on a comment that cannot be undone.
 /// Bordered like a real button rather than the quiet text link it used to be,
 /// so it does not read as just another piece of comment metadata.
 const deleteBtn =
-  "inline-flex items-center rounded-md border border-[var(--hairline)] px-2 py-1 text-xs text-[var(--ink-muted)] transition-colors hover:border-[var(--status-critical)] hover:text-[var(--status-critical)] disabled:opacity-40";
+  "inline-flex items-center rounded-md border border-[var(--ink-muted)] px-2 py-1 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--status-critical)] hover:text-[var(--status-critical)] disabled:opacity-40";
 
 /// The ten that actually get used under a result. No search, no categories,
 /// no picker library: typing ":" is a shortcut for people who already know
