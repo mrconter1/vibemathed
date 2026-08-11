@@ -147,6 +147,18 @@ model Problem {
   sourceUrl  String
   sourceName String
 
+  /// Free text from the submitter to the reviewer, fixed at submission like
+  /// `solveType` and `problemNumber` - not one of EDITABLE_FIELDS, so nobody
+  /// edits it afterwards and it never appears on the published entry.
+  ///
+  /// Every other note field on this model becomes part of the entry itself:
+  /// `resultNote` is a public qualifier, `claimIssueNote` renders as a visible
+  /// flag. This one exists because a submitter can hold information that
+  /// belongs to neither category - "the catalog already has a related entry",
+  /// "I could not find a DOI" - context for the review, not content about the
+  /// mathematics. Shown only in /admin/submissions and the pending preview.
+  submitterNote String?
+
   status        ProblemStatus @default(published)
   /// When a curator approved or rejected this submission, and the message
   /// they left for the submitter. The message reaches the submitter through

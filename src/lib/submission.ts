@@ -13,7 +13,7 @@
 
 import { EDITABLE_FIELDS, type EditableKey, type FieldSpec } from "@/lib/editable";
 
-export type SubmissionKey = EditableKey | "solveType" | "problemNumber";
+export type SubmissionKey = EditableKey | "solveType" | "problemNumber" | "submitterNote";
 
 export type SubmissionFieldSpec = Omit<FieldSpec, "key"> & { key: SubmissionKey };
 
@@ -35,13 +35,29 @@ const PROBLEM_NUMBER_FIELD: SubmissionFieldSpec = {
   help: "If this is a numbered Erdős problem. Blank otherwise.",
 };
 
-/// The submission form: name and short name first, then the two fields fixed at
-/// creation, then everything an editor could later change.
+/// For the reviewer, not the entry. A submitter who already knows about a
+/// related or overlapping entry - a duplicate, a weaker prior result, an
+/// attribution question - had nowhere to say so: `aiRole` is about the model,
+/// `resultNote` publishes, and everything else on the form is a fact about
+/// the mathematics. Never shown on the published entry and not editable
+/// afterwards; if it matters to a reader, the reviewer moves it into a field
+/// that publishes (typically `resultNote`) rather than leaving it here.
+const SUBMITTER_NOTE_FIELD: SubmissionFieldSpec = {
+  key: "submitterNote",
+  label: "Anything else worth knowing",
+  kind: "textarea",
+  maxLength: 1000,
+  help: "For the reviewer, not the entry - a duplicate you noticed, a related result, anything that doesn't fit above. Not published.",
+};
+
+/// The submission form: name and short name first, then the three fields
+/// fixed at creation, then everything an editor could later change.
 export const SUBMISSION_FIELDS: SubmissionFieldSpec[] = [
   ...EDITABLE_FIELDS.slice(0, 2), // name, shortName
   PROBLEM_NUMBER_FIELD,
   SOLVE_TYPE_FIELD,
   ...EDITABLE_FIELDS.slice(2),
+  SUBMITTER_NOTE_FIELD,
 ];
 
 /// The form in four parts, not one list of 32 fields.
@@ -81,7 +97,18 @@ export const SUBMISSION_GROUPS: SubmissionGroup[] = [
   {
     title: "Context",
     help: "Helpful but not essential - a reviewer can fill or correct any of it.",
-    keys: ["fieldGroup", "field", "resolution", "resolutionMethod", "posedBy", "yearPosed", "humanCollaborators", "links", "resultNote"],
+    keys: [
+      "fieldGroup",
+      "field",
+      "resolution",
+      "resolutionMethod",
+      "posedBy",
+      "yearPosed",
+      "humanCollaborators",
+      "links",
+      "resultNote",
+      "submitterNote",
+    ],
   },
   {
     title: "Rarely needed",

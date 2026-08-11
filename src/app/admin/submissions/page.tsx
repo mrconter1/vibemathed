@@ -54,6 +54,7 @@ async function Queue() {
       statement: true,
       sourceUrl: true,
       sourceName: true,
+      submitterNote: true,
       createdAt: true,
       submittedBy: { select: { pseudonym: true } },
     },
@@ -72,6 +73,7 @@ async function Queue() {
     statementHtml: r.statement ? texToHtml(r.statement) : null,
     sourceUrl: r.sourceUrl,
     sourceName: r.sourceName,
+    submitterNote: r.submitterNote,
     submittedBy: resolveSnapshot(r.submittedBy?.pseudonym ?? null, r.submittedBy !== null),
     // Raw pseudonym for the profile link; null when there is no account to
     // link (the display name then renders unlinked).

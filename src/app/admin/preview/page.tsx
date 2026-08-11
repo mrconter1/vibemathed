@@ -67,6 +67,13 @@ async function Preview({
   });
   if (!row) notFound();
   const p = toProblem(row);
+  // Outside PROBLEM_SELECT and MathProblem on purpose: this note is never
+  // supposed to publish, and keeping it out of the shared shape is what makes
+  // that true by construction rather than by every future caller remembering
+  // to omit it.
+  const submitterNote = (
+    await prisma.problem.findUnique({ where: { slug }, select: { submitterNote: true } })
+  )?.submitterNote;
   const age = ageAtSolve(p);
   const v = VERIFICATION[p.verification];
 
@@ -168,6 +175,17 @@ async function Preview({
             </p>
           </section>
         ) : null,
+      )}
+
+      {submitterNote && (
+        <section className="mt-6 rounded-md border border-[color-mix(in_srgb,var(--accent-blue)_45%,transparent)] bg-[color-mix(in_srgb,var(--accent-blue)_6%,transparent)] px-4 py-3">
+          <h3 className="font-serif text-lg text-[var(--ink)]">
+            Note from the submitter <span className="text-xs font-sans text-[var(--ink-muted)]">(not published)</span>
+          </h3>
+          <p className="math-prose mt-1.5 text-sm leading-relaxed text-[var(--ink-secondary)]">
+            <TeX>{submitterNote}</TeX>
+          </p>
+        </section>
       )}
 
       <section className="mt-6">
