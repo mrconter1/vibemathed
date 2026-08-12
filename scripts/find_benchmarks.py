@@ -15,17 +15,24 @@ series:
   2. an AI gate, so that a new benchmark for protein folding software does
      not arrive alongside the language-model ones.
 
-What survives is then SCORED rather than merely listed, because "interesting"
-has a shape worth naming. The single strongest signal is headroom: a
-benchmark whose best model already scores 95% tells you nothing next year,
-while one where the frontier scores 8% is a live research target for as long
-as that lasts. Everything else - naming frontier models, publishing a human
-baseline, controlling for contamination, sheer size, shipping the artifact -
-is secondary to that.
+What survives is then SCORED on four named axes, because "interesting" is
+not one thing:
 
-Scores are heuristics over title and abstract. They are a triage order, NOT a
-verdict: the report prints the evidence for every point it awards so the
-ranking can be argued with, and the top of the list still has to be read.
+  novelty  - measures something nothing measured before (a claimed first, an
+             argued gap in existing benchmarks), not a harder rerun;
+  design   - cleverness of mechanism: verifiable or execution-based grading,
+             renewable task generation, contamination defeated by
+             construction, process-level evaluation. Leaning on
+             LLM-as-a-judge costs a point; replacing it earns one;
+  utility  - real data, real stakes, tasks deployment actually faces;
+  headroom - the frontier fails it. Still a signal, no longer the dominant
+             one: a clever, novel, useful benchmark at 60% beats a routine
+             QA set at 8%.
+
+Ties break towards papers positive on more axes. Scores are heuristics over
+title and abstract. They are a triage order, NOT a verdict: the report
+prints the evidence for every point it awards so the ranking can be argued
+with, and the top of the list still has to be read.
 
 Usage:
   python scripts/find_benchmarks.py                     # last 30 days, top 10
@@ -74,10 +81,13 @@ BENCH_NOUN = (
 # "we introduce X, a benchmark" / "we release the FooBench benchmark" /
 # "X: a benchmark for ...". The window between verb and noun is deliberately
 # short - at 200 characters this matched papers that introduced a *method*
-# and evaluated it on a benchmark two clauses later.
+# and evaluated it on a benchmark two clauses later, and even at 80 it let
+# through a fine-tuning method paper whose sentence mentioned safety
+# benchmarks in passing (DataRx, caught in the 2026-08 run). 60 keeps the
+# noun in the object position of the release verb.
 RELEASE_RE = re.compile(
     r"\b(?:we\s+)?(?:introduce|present|propose|release|construct|curate|"
-    r"develop|build|contribute|open-?source|publish)\b[^.]{0,80}?" + BENCH_NOUN,
+    r"develop|build|contribute|open-?source|publish)\b[^.]{0,60}?" + BENCH_NOUN,
     re.I,
 )
 # The other common shape, in titles: "SomeBench: A Benchmark for ..."
@@ -132,6 +142,59 @@ ARTIFACT_RE = re.compile(
     r"(https?://\S*(?:github|huggingface|hf\.co|zenodo|osf\.io|codalab)\S*)", re.I)
 SATURATED_RE = re.compile(
     r"\b(?:saturat\w+|near[- ]?ceiling|solved\b|surpass(?:es|ed)?\s+human)\b", re.I)
+
+# ---- the four curation axes. Each regex is one signal; the evidence line it
+# ---- prints is the argument for the point it awards.
+
+# NOVELTY: does the paper argue a measurement gap, or claim a first?
+FIRST_RE = re.compile(
+    r"\bfirst\s+(?:[a-z-]+\s+){0,3}?(?:benchmark|evaluation|testbed|dataset|"
+    r"systematic (?:study|evaluation)|to (?:measure|evaluate|test))\b", re.I)
+GAP_RE = re.compile(
+    r"\b(?:existing|current|prior|previous|conventional|traditional)\s+"
+    r"(?:benchmarks?|evaluations?|datasets?)\s[^.]{0,90}?"
+    r"(?:fail|do(?:es)? not|don't|rarely|seldom|overlook|ignore|lack|miss|"
+    r"under-?(?:measure|explore|estimate)|leave|cannot|struggle|fall short|"
+    r"neglect|limited)|"
+    r"\bno (?:existing|prior|dedicated|such)\s+(?:benchmark|dataset|evaluation)|"
+    r"\bblind spot\b|\bremains? (?:unexplored|unmeasured|untested|poorly understood)",
+    re.I)
+
+# DESIGN (cleverness): how does the benchmark grade, and does it stay fresh?
+VERIFIABLE_RE = re.compile(
+    r"\b(?:execution[- ]based|executable|programmatically verif\w+|"
+    r"verifiable (?:rewards?|answers?|metrics?|by construction)|"
+    r"(?:unit|regression|maintainer(?:'s)?) tests|"
+    r"gold answers? (?:are )?(?:computed|derived|executed)|"
+    r"formal(?:ly)? verif\w+|proof check\w+|exact[- ]match verif\w+|"
+    r"deterministic (?:grading|scoring|evaluation))\b", re.I)
+RENEWABLE_RE = re.compile(
+    r"\b(?:benchmark generator|procedurally generat\w+|synthesi[sz]ed answer-first|"
+    r"dynamically generat\w+|renewable|continuously updat\w+|auto-?generat\w+ tasks|"
+    r"parameteri[sz]ed (?:tasks|templates)|arbitrar(?:y|ily) (?:many|renewable))\b", re.I)
+PROCESS_RE = re.compile(
+    r"\b(?:step-?level|process-?level|per-?turn|turn-?level|fine-?grained "
+    r"(?:diagnos\w+|evaluation|analysis)|reasoning process|intermediate steps?|"
+    r"error attribut\w+|failure (?:taxonomy|attribution|localization))\b", re.I)
+JUDGE_RE = re.compile(r"\bLLM[- ]as[- ]a[- ]judge\b", re.I)
+JUDGE_REPLACED_RE = re.compile(
+    r"\b(?:replac\w+|instead of|avoid\w*|without|rather than|mov\w+ (?:away|beyond))"
+    r"[^.]{0,60}\bjudge\b|\bjudge\b[^.]{0,60}"
+    r"\b(?:subjectiv|inconsisten|unreliab|replac)", re.I)
+
+# UTILITY: is the data real and the task one deployment actually faces?
+REAL_RE = re.compile(
+    r"\b(?:real[- ]world|real user|production|deployed|in the wild|"
+    r"mined from|authentic|clinical records?|patient|industrial|"
+    r"live (?:repositories|systems?|database)|actual (?:usage|deployments?))\b", re.I)
+STAKES_RE = re.compile(
+    r"\b(?:safety[- ]critical|high[- ]stakes|medical|clinical|healthcare|triage|"
+    r"security|vulnerab\w+|malware|legal|law\b|financial|finance|"
+    r"misinformation|harmful)\b", re.I)
+HUMAN_COST_RE = re.compile(
+    r"\b(?:takes? (?:human|expert)s?[^.]{0,40}(?:hours?|days?)|"
+    r"(?:median|average) of[^.]{0,25}(?:hours?|days?)|"
+    r"(?:hours?|days?) of (?:human|expert|manual) (?:work|effort|labor))\b", re.I)
 
 
 def fetch(url: str, timeout: int = 60) -> str:
@@ -237,73 +300,129 @@ def is_benchmark_release(title: str, abstract: str) -> bool:
 
 
 def score(p: dict) -> dict:
-    """Rank by how much the benchmark is likely to still matter in a year.
+    """Rank by four named axes: novelty, design, utility, headroom.
 
-    Headroom dominates deliberately. A benchmark the frontier already clears
-    is a historical record; one it fails is a research target.
+    The axes exist because "interesting" is not one thing. NOVELTY asks
+    whether the paper measures something nothing measured before, or just
+    ships a harder version of an old test. DESIGN is cleverness of mechanism:
+    verifiable grading, renewable task generation, contamination defeated by
+    construction rather than by filtering. UTILITY asks whether the data is
+    real and the task one deployment actually faces. HEADROOM keeps its old
+    role - a benchmark the frontier already clears is a historical record -
+    but no longer dominates: a clever, novel, useful benchmark at 60% beats
+    a routine QA set at 8%.
+
+    Every point carries its evidence string, because the score is a reading
+    order and not a verdict.
     """
     blob = f"{p['title']}. {p['abstract']}"
-    pts: list[tuple[int, str]] = []
+    pts: list[tuple[str, int, str]] = []  # (axis, value, evidence)
 
+    # ---- novelty
+    if FIRST_RE.search(blob):
+        pts.append(("novelty", 2, f'claims a first: "{FIRST_RE.search(blob).group(0)}"'))
+    if GAP_RE.search(blob):
+        gap = re.sub(r"\s+", " ", GAP_RE.search(blob).group(0))[:90]
+        pts.append(("novelty", 2, f'argues a measurement gap: "{gap}"'))
+
+    # ---- design
+    if VERIFIABLE_RE.search(blob):
+        pts.append(("design", 3,
+                    f'verifiable grading: "{VERIFIABLE_RE.search(blob).group(0)}"'))
+    if RENEWABLE_RE.search(blob):
+        pts.append(("design", 2,
+                    f'renewable by construction: "{RENEWABLE_RE.search(blob).group(0)}"'))
+    if CONTAM_RE.search(blob):
+        pts.append(("design", 2, "addresses contamination / held-out or fresh data"))
+    if PROCESS_RE.search(blob):
+        pts.append(("design", 1,
+                    f'grades the process, not just the answer: "{PROCESS_RE.search(blob).group(0)}"'))
+    if JUDGE_RE.search(blob):
+        if JUDGE_REPLACED_RE.search(blob):
+            pts.append(("design", 1, "replaces LLM-as-a-judge with something firmer"))
+        else:
+            pts.append(("design", -1, "relies on LLM-as-a-judge scoring"))
+    if HUMAN_BASE_RE.search(blob):
+        pts.append(("design", 1, "reports a human or expert baseline"))
+
+    # ---- utility
+    if REAL_RE.search(blob):
+        pts.append(("utility", 2, f'real data or setting: "{REAL_RE.search(blob).group(0)}"'))
+    if STAKES_RE.search(blob):
+        pts.append(("utility", 1, f'high-stakes domain: "{STAKES_RE.search(blob).group(0)}"'))
+    if HUMAN_COST_RE.search(blob):
+        pts.append(("utility", 2,
+                    f'tasks carry real human cost: "{HUMAN_COST_RE.search(blob).group(0)}"'))
+    if EXPERT_RE.search(blob):
+        pts.append(("utility", 1, "expert-written or research-level tasks"))
+    if ARTIFACT_RE.search(blob):
+        pts.append(("utility", 1, "links a public artifact"))
+    sz = SIZE_RE.search(blob)
+    if sz:
+        pts.append(("utility", 1, f"stated size: {sz.group(0)}"))
+
+    # ---- headroom
     low = LOW_SCORE_RE.search(blob)
     if low:
         v = float(low.group(1))
         if v <= 10:
-            pts.append((5, f"frontier scores only {low.group(1)}% - very large headroom"))
+            pts.append(("headroom", 4, f"frontier scores only {low.group(1)}% - very large headroom"))
         elif v <= 30:
-            pts.append((4, f"frontier scores only {low.group(1)}% - large headroom"))
+            pts.append(("headroom", 3, f"frontier scores only {low.group(1)}% - large headroom"))
         else:
-            pts.append((2, f"frontier scores only {low.group(1)}%"))
+            pts.append(("headroom", 1, f"frontier scores only {low.group(1)}%"))
     else:
         best = [float(m.group(1)) for m in ANY_SCORE_RE.finditer(blob)]
         best = [b for b in best if b <= 100]
         if best and min(best) <= 40:
-            pts.append((2, f"reported scores as low as {min(best):g}%"))
+            pts.append(("headroom", 1, f"reported scores as low as {min(best):g}%"))
         elif best and max(best) >= 90:
-            pts.append((-2, f"reported scores up to {max(best):g}% - little headroom"))
-
+            pts.append(("headroom", -2, f"reported scores up to {max(best):g}% - little headroom"))
     if SATURATED_RE.search(blob):
-        pts.append((-2, "describes saturation or human parity"))
+        pts.append(("headroom", -2, "describes saturation or human parity"))
     if FRONTIER_RE.search(blob):
         names = sorted({m.group(0) for m in FRONTIER_RE.finditer(blob)})[:4]
-        pts.append((2, "evaluates named frontier models: " + ", ".join(names)))
-    if HUMAN_BASE_RE.search(blob):
-        pts.append((2, "reports a human or expert baseline"))
-    if CONTAM_RE.search(blob):
-        pts.append((2, "addresses contamination / uses held-out or fresh data"))
-    if EXPERT_RE.search(blob):
-        pts.append((2, "expert-written or research-level tasks"))
-    sz = SIZE_RE.search(blob)
-    if sz:
-        pts.append((1, f"stated size: {sz.group(0)}"))
-    if ARTIFACT_RE.search(blob):
-        pts.append((1, "links a public artifact"))
-    if COINED_RE.search(p["title"]):
-        pts.append((1, f"named benchmark: {COINED_RE.search(p['title']).group(0)}"))
-    if len(p["categories"]) >= 3:
-        pts.append((1, "cross-listed across three or more categories"))
+        pts.append(("headroom", 1, "evaluates named frontier models: " + ", ".join(names)))
 
-    return {"score": sum(v for v, _ in pts), "why": [w for _, w in pts]}
+    axes = {"novelty": 0, "design": 0, "utility": 0, "headroom": 0}
+    for axis, v, _ in pts:
+        axes[axis] += v
+    return {
+        "score": sum(axes.values()),
+        "axes": axes,
+        "why": [f"[{a}] {w}" for a, _, w in pts],
+    }
+
+
+def spread(p: dict) -> int:
+    """How many axes the paper scores positive on. Used as the tie-breaker:
+    at equal totals, strong-on-three-axes beats spiking one axis, because
+    the axes were chosen to be independent reasons to care."""
+    return sum(1 for v in p["axes"].values() if v > 0)
 
 
 def report(papers: list[dict], args, window: tuple[str, str]) -> None:
-    ranked = sorted(papers, key=lambda p: (-p["score"], p["created"]))
+    ranked = sorted(papers, key=lambda p: (-p["score"], -spread(p), p["created"]))
     shown = ranked if args.all else ranked[: args.top]
     print(f"# Benchmark releases on arXiv, {window[0]} to {window[1]}\n")
     print(f"_{len(papers)} benchmark-release papers found across "
           f"{', '.join(ARXIV_CATEGORIES)}; showing "
           f"{'all' if args.all else f'the top {len(shown)} by score'}._\n")
-    print("_Score is a heuristic over title and abstract, weighted towards "
-          "headroom (a benchmark the frontier already clears ages badly). "
-          "It is a reading order, not a verdict - the evidence for every "
-          "point is listed so it can be argued with._\n")
+    print("_Scored on four axes - novelty (measures something new), design "
+          "(verifiable, renewable, contamination-proof mechanisms), utility "
+          "(real data, real stakes) and headroom (the frontier fails it). "
+          "Ties break towards papers positive on more axes. The score is a "
+          "reading order, not a verdict - every point prints its evidence "
+          "so the ranking can be argued with._\n")
     for i, p in enumerate(shown, 1):
         auth = ", ".join(p["authors"][:3]) + (" et al." if len(p["authors"]) > 3 else "")
+        ax = p["axes"]
         print(f"## {i}. {p['title']}")
         print(f"- arXiv:{p['id']} ({p['primary']}, submitted {p['created']}) - "
               f"https://arxiv.org/abs/{p['id']}")
         print(f"- {auth}")
-        print(f"- **score {p['score']}**")
+        print(f"- **score {p['score']}** (novelty {ax['novelty']}, design {ax['design']}, "
+              f"utility {ax['utility']}, headroom {ax['headroom']})")
         for w in p["why"]:
             print(f"  - {w}")
         abstract = p["abstract"]
