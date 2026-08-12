@@ -229,17 +229,23 @@ async function main() {
           type: d.action === "approve" ? "approved" : "rejected",
         },
       }),
-      prisma.directMessage.create({
-        data: {
-          userId: p.submittedById,
-          senderId: admin.id,
-          senderName: admin.pseudonym ?? null,
-          kind: "decision",
-          reason: d.reason,
-          body: d.message,
-          problemId: p.id,
-        },
-      }),
+      // sendDirectMessage skips delivery when there is no account behind the
+      // submission; the same guard belongs here rather than a non-null cast.
+      ...(p.submittedById
+        ? [
+            prisma.directMessage.create({
+              data: {
+                userId: p.submittedById,
+                senderId: admin.id,
+                senderName: admin.pseudonym ?? null,
+                kind: "decision",
+                reason: d.reason,
+                body: d.message,
+                problemId: p.id,
+              },
+            }),
+          ]
+        : []),
     ]);
     console.log(`    APPLIED\n`);
   }
