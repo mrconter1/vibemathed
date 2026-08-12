@@ -10789,6 +10789,64 @@
     "significanceNote": "A Grothendieck question open for sixty years, known through arithmetic geometry."
   },
   {
+    "slug": "hadamard-matrix-of-order-668",
+    "name": "Hadamard Matrix of Order 668",
+    "shortName": "Hadamard 668",
+    "problemNumber": null,
+    "field": "Combinatorial design theory",
+    "fieldGroup": "Combinatorics",
+    "resolution": "candidate",
+    "statement": "There exists a Hadamard matrix of order $668$: a matrix\n\n$$\nH\\in\\{-1,1\\}^{668\\times668}\n$$\n\nsuch that\n\n$$\nHH^{\\mathsf T}=668I_{668}.\n$$\n\nEquivalently, the $668$ rows of $H$ are pairwise orthogonal.",
+    "posedBy": "Raymond Paley",
+    "yearPosed": 1933,
+    "solveType": "proved",
+    "solveDate": "2026-08-12",
+    "model": "Claude (version undisclosed)",
+    "modelMaker": "Anthropic",
+    "humanCollaborators": [
+      "Levent Alpöge",
+      "Philippe Voinov",
+      "Saul Reynolds-Haertle"
+    ],
+    "aiRole": "The announcement is a bare string of 23,828 plus and minus signs with no accompanying text, so it carries no disclosure of its own. Epoch AI's record of it credits a team of three humans working with Claude, and the submission names Levent Alpöge (the poster), Philippe Voinov and Saul Reynolds-Haertle. Which mathematical, computational or search steps came from Claude is not stated anywhere, and no model version is given. The tier is therefore set at the floor the methodology prescribes for an unspecific disclosure rather than at what the framing suggests.",
+    "verification": "unreviewed",
+    "verificationNote": "Partially reproduced by this site on 12 August 2026, with the entry's own claim the part that did not reproduce. The announcement is a single X long-post holding 23,828 characters of \"+\" and \"-\" and nothing else: no prose, no code, no separators. Epoch AI describes it as posted in the form of a puzzle and says it encodes matrices for every previously-open admissible order below 2000, which explains why its length is not a multiple of 668. Decoding it here succeeded in part. Three consecutive Goethals-Seidel quadruples sit at offsets 1376, 2268 and 3400, and the matrices they generate were built explicitly and checked in exact integer arithmetic: all entries in {-1,+1} and H H^T equal to nI exactly, for n = 892, 1132 and 1244. All three of those orders were previously open, so the announcement demonstrably contains genuine new Hadamard matrices, and the odds of a random sign string satisfying the Goethals-Seidel autocorrelation condition even once are negligible. Order 668 was not located. Every offset in the string was scanned for each of the four standard seed shapes - a Goethals-Seidel or Williamson quadruple of four circulants of order 167, a two-circulant core or Legendre pair of length 333, base sequences of total length 334, and a negacyclic quadruple - and none occurs anywhere. That absence is expected rather than suspicious: had order 668 been a classical quadruple of this kind it would have been found decades ago, which is exactly why it was the smallest open case. Roughly 19,000 of the 23,828 characters remain undecoded here. So: the announcement is real and contains verified new matrices, the specific order-668 claim is unverified, and no independent expert review or published construction exists.",
+    "publication": "announcement",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://x.com/__alpoge__/status/2087504785952182273",
+    "sourceName": "Hadamard Matrix of Order 668",
+    "renownNote": "The Hadamard conjecture has a Wikipedia article; order 668 as a specific target does not, but it is tracked by name on Epoch AI's FrontierMath open-problem list, TheoremDB and EmergentMind, and is standard background in combinatorial design theory.",
+    "resultNote": "Claimed construction of the smallest previously unresolved Hadamard order; the general Hadamard conjecture remains open. The same announcement is reported to cover every previously-open admissible order below 2000, and this site independently confirmed three of them - orders 892, 1132 and 1244 - by exact arithmetic. Order 668 itself has not been extracted from the announcement by anyone publicly, including here.",
+    "ageNote": "The Hadamard conjecture dates to Paley in 1933. Order 668 became the smallest open admissible order in 2004, when Kharaghani and Tayfeh-Rezaie settled order 428; before that the record fell in 1985.",
+    "claimIssueNote": "The announcement cannot be checked as posted. It is an undocumented sign string with no construction, code or prose attached, and the order-668 seed is not present in any standard encoding, so the central claim of this entry rests on the author's word plus Epoch AI's provisional record. Epoch itself hedges twice, marking the solve as AI-attributed only provisionally and noting it is unclear whether the result is an improved search or a general construction. Other trackers (TheoremDB, EmergentMind) still list order 668 as open, though their records predate the announcement.",
+    "aiContribution": "ai-assisted",
+    "significance": 30,
+    "significanceNote": "Order 668 has been the smallest open case of the Hadamard conjecture since order 428 was settled in 2004, and it is a named target in the design-theory literature and a listed FrontierMath open problem. Scored as one hard instance of a famous 1933 conjecture rather than the conjecture itself, which would sit far higher; placed level with a well-tracked specialist problem and below the household combinatorics conjectures.",
+    "links": [
+      {
+        "label": "Epoch AI - FrontierMath open problem (records the solve)",
+        "url": "https://epoch.ai/frontiermath/open-problems/hadamard"
+      },
+      {
+        "label": "Eliahou, A 64-modular Hadamard matrix of order 668 (2025)",
+        "url": "https://ajc.maths.uq.edu.au/pdf/93/ajc_v93_p422.pdf"
+      },
+      {
+        "label": "Recent Legendre-pair work on order 668",
+        "url": "https://arxiv.org/abs/2607.20765"
+      },
+      {
+        "label": "TheoremDB record for order 668",
+        "url": "https://theoremdb.org/statements/hadamard-order-668/"
+      }
+    ]
+  },
+  {
     "slug": "hadwiger-debrunner-line-arrangements",
     "name": "General Position for Planar Line Arrangements and $HD_2(p,3)$",
     "shortName": "Hadwiger-Debrunner bound",
@@ -15363,6 +15421,57 @@
     "aiContribution": "ai-co-developed",
     "significance": 15,
     "significanceNote": "The invariant-set proportion is a documented question of permutation combinatorics with a real literature from Łuczak-Pyber through Eberhard-Ford-Green."
+  },
+  {
+    "slug": "petersen-coloring-conjecture",
+    "name": "Petersen Coloring Conjecture",
+    "shortName": "Petersen Coloring",
+    "problemNumber": null,
+    "field": "Graph theory",
+    "fieldGroup": "Combinatorics",
+    "resolution": "resolved",
+    "statement": "Jaeger conjectured that every bridgeless cubic graph $G$ admits a Petersen coloring: a map $\\varphi\\colon E(G)\\to E(P)$ into the edges of the Petersen graph $P$ such that, for every vertex $v$ of $G$, the three edges at $v$ are sent to three edges meeting at a common vertex of $P$. Equivalently, by Jaeger's theorem, every bridgeless cubic graph has a normal 5-edge-coloring. The conjecture implies both the Berge-Fulkerson conjecture and the 5-cycle-double-cover conjecture. False: there is an explicit simple connected bridgeless cubic graph on $112$ vertices, of girth five and edge- and vertex-connectivity three, with no Petersen coloring.",
+    "posedBy": "François Jaeger",
+    "yearPosed": 1985,
+    "solveType": "disproved",
+    "solveDate": "2026-08-08",
+    "model": "ChatGPT",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Bryce Putman"
+    ],
+    "aiRole": "The paper's \"Computational provenance and responsibility\" section states in full: \"OpenAI language-model systems were used extensively in the discovery, computational search, verification, and preparation of this work. The author reviewed the final claims and artifacts and accepts responsibility for the contents.\" No product name, model version or division of labour is given, so which of discovery, search, verification and write-up the model actually carried is not recoverable from the paper. The catalog records the model as ChatGPT because that is this catalog's convention for an unnamed OpenAI system; the paper itself names none.",
+    "verification": "site-confirmed",
+    "verificationNote": "Reproduced by this site on 12 August 2026, independently of the paper's certificates. The 112-vertex graph was rebuilt from the edge table in the paper's own appendix, and the SHA-256 digest of its normalized sorted edge list reproduces the digest in Theorem 1.1 exactly, which pins the object under review to the one the paper claims. Every property in that theorem re-derived here: 112 vertices, 168 edges, simple, cubic, connected, bridgeless, girth five, edge-connectivity three, vertex-connectivity three. Non-existence of a Petersen coloring was then re-proved with a CNF encoding written here from the definition - each edge carries one of the 15 edges of the Kneser graph KG(5,2), each vertex selects one of the 10 target stars, the three edges at a vertex land in that star and are pairwise distinct - and solved with CaDiCaL via PySAT. The result is UNSAT, so no Petersen coloring exists. This is a different route from the paper's: it re-derives the unsatisfiability rather than replaying the shipped DRAT certificates, and the encoding was written without reference to the paper's encoder, though it independently came out at the same 3640 variables. The controls matter as much as the result. K4, K3,3, the 3-cube, the prism, the Desargues graph and the Petersen graph itself were all put through the same encoder and all came back satisfiable. The Petersen graph control is the important one, since it is a snark, so a coloring found for it rules out the encoder having quietly tested 3-edge-colorability instead. As a further consistency check the graph was confirmed not 3-edge-colorable, which it must not be: every 3-edge-colorable cubic graph has a Petersen coloring, so any counterexample has to be a snark. What has not been checked here: the second, D3-symmetric counterexample H, the normal-5-edge-coloring formulation (equivalent by Jaeger's theorem, which the paper proves), and the shipped DRAT proofs themselves. arXiv preprint, four days old at review, not peer-reviewed and with no independent expert commentary yet.",
+    "publication": "preprint",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2608.10012",
+    "sourceName": "arXiv",
+    "renownNote": "No Wikipedia article of its own, but it is a listed Open Problem Garden problem, standard background in the snark and cubic-graph literature, and the subject of a continuing stream of papers on normal edge-colorings.",
+    "resultNote": "The implication runs one way: the Petersen coloring conjecture implies Berge-Fulkerson and the 5-cycle-double-cover conjecture, so refuting it leaves both of those open. The paper does not claim 112 is minimum, and it supplies a second, nonisomorphic D3-symmetric 112-vertex counterexample. Combined with a theorem of Ma, Mattiolo, Steffen and Wolf, one counterexample yields infinitely many.",
+    "ageNote": "Posed by Jaeger in 1985, in 'On five-edge-colorings of cubic graphs and nowhere-zero flow problems'; often cited as 1988 via his nowhere-zero flow survey. Open for 41 years, and verified by computer for all bridgeless cubic graphs up to 34 vertices, so a 112-vertex counterexample is well clear of the searched range.",
+    "aiContribution": "ai-co-developed",
+    "significance": 40,
+    "significanceNote": "Jaeger's conjecture is one of the central conjectures on cubic graphs: the Open Problem Garden entry calls it an extraordinary conjecture, and it implies both the Berge-Fulkerson conjecture and the 5-cycle-double-cover conjecture, with a substantial literature on normal edge-colorings and sublinear approximations built around it. Placed above a well-tracked specialist conjecture and below the cycle double cover conjecture itself (55), which is more widely known outside the area.",
+    "links": [
+      {
+        "label": "Zenodo artifact record v1.1.0 (CNFs, DRAT certificates, hashes)",
+        "url": "https://doi.org/10.5281/zenodo.21845291"
+      },
+      {
+        "label": "Open Problem Garden: Petersen coloring conjecture",
+        "url": "http://www.openproblemgarden.org/op/petersen_coloring_conjecture"
+      },
+      {
+        "label": "Ma, Mattiolo, Steffen, Wolf - Sets of r-graphs that color all r-graphs",
+        "url": "https://doi.org/10.1007/s00493-025-00144-4"
+      }
+    ]
   },
   {
     "slug": "planar-berenstein-conjecture",
