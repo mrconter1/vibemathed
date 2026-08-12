@@ -47,17 +47,20 @@ export function ChartCard({
 
   return (
     <div
-      className={`group relative min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5 ${className ?? ""}`}
+      className={`relative min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5 ${className ?? ""}`}
     >
-      {/* Hover-revealed so it does not crowd the chart legends that live in
-          the same corner; desktop only, since the overlay is pointless on a
-          phone where the card already spans the screen. */}
+      {/* Always visible while the chart is collapsed: hover-revealing it hid
+          the only affordance that says the chart can be opened at all, which
+          is worse than the crowding it was avoiding next to the legends. It
+          stays muted so it reads as chrome rather than data, and stays
+          desktop-only, since the overlay is pointless on a phone where the
+          card already spans the screen. */}
       <button
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Expand chart"
         title="Expand"
-        className="absolute right-2 top-2 z-10 hidden h-6 w-6 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-muted)] opacity-0 transition-opacity hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)] focus-visible:opacity-100 group-hover:opacity-100 lg:inline-flex"
+        className="absolute right-2 top-2 z-10 hidden h-6 w-6 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-muted)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)] lg:inline-flex"
       >
         <Icon name="expand" size={12} />
       </button>

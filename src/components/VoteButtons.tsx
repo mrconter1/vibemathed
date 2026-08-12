@@ -89,6 +89,12 @@ export function VoteButtons({
   // buttons this sits beside on the entry page, so the whole control corner
   // reads as one family of squares rather than a square pair next to a pill.
   const dims = size === "lg" ? "min-h-[34px] min-w-[34px] px-1.5 py-1" : "min-h-[27px] min-w-[27px] px-1 py-0.5";
+  // The gap between the two arrows has to match the gap the entry page puts
+  // between this pair and the Report/Edit icons beside it, or the four squares
+  // read as a tight pair next to a loose pair instead of one evenly spaced
+  // row. `lg` is the entry-page size and so tracks that page's `gap-1.5`;
+  // cards keep the tighter `gap-1`, where these buttons stand alone.
+  const rowGap = size === "lg" ? "gap-1.5" : "gap-1";
   const iconSize = size === "lg" ? 12 : 10;
   const countText = size === "lg" ? "text-[11px]" : "text-[10px]";
   // Styling lives in classes, not inline styles - inline styles always beat
@@ -107,7 +113,7 @@ export function VoteButtons({
       {/* Always a row. A square pair is narrow enough - about 60px at `sm` -
           that cards no longer need the vertical stack the old wide pill pair
           once did to avoid squeezing the title next to it. */}
-      <div className="inline-flex items-center gap-1">
+      <div className={`inline-flex items-center ${rowGap}`}>
         <button
           type="button"
           onClick={() => cast("up")}
