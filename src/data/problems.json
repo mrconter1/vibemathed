@@ -202,6 +202,61 @@
     "significanceNote": "Posed by Rudin, Schapire and Daubechies; cited across boosting theory."
   },
   {
+    "slug": "albertson-berman-induced-forest-conjecture",
+    "name": "Albertson–Berman Induced Forest Conjecture",
+    "shortName": "Albertson–Berman",
+    "problemNumber": null,
+    "field": "Graph theory",
+    "fieldGroup": "Combinatorics",
+    "resolution": "resolved",
+    "statement": "Albertson and Berman conjectured that for every simple planar graph $G$ on $n$ vertices, the largest vertex set inducing a forest has size at least $n/2$. The standing lower bound since the same year has been Borodin's $2n/5$, from his acyclic five-colour theorem. False: there is an explicit $31$-vertex simple $3$-connected maximal planar graph $T$ whose largest induced forest has exactly $15$ vertices, and an infinite family $M_k$ on $31k$ vertices with induced-forest number exactly $15k$, giving the ratio $15/31 < 1/2$ even for triangulations of minimum degree five.",
+    "posedBy": "Michael O. Albertson, David M. Berman",
+    "yearPosed": 1979,
+    "solveType": "disproved",
+    "solveDate": "2026-08-11",
+    "model": "GPT-5.6 Sol",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Heejae Jung"
+    ],
+    "aiRole": "The paper's \"Acknowledgments and AI disclosure\" section states that the two-terminal gadget \"was discovered, and substantial parts of the proof strategy were developed, through interaction with OpenAI GPT-5.6 Sol\", while the author \"selected the research problem, directed the computational search and subsequent proof development, and checked the resulting mathematical arguments and computational certificates\". GPT-5.6 Sol also assisted in preparing the manuscript and the verification code.",
+    "verification": "site-confirmed",
+    "verificationNote": "Reproduced by this site on 12 August 2026. The refutation is a single finite object, so it is checkable outright rather than on trust. We rebuilt the 31-vertex seed T from the paper's own definitions - the 14-vertex gadget's cyclic neighbour lists, the pentagonal-bipyramid base, the decorated rim edges 01 and 23, the stated vertex labelling, and the two completion edges 6-12 and 6-20 - without running the author's code. That yields a simple 3-connected planar graph with 31 vertices and 87 = 3n-6 edges, hence a triangulation, with the paper's degree multiset 4^1 5^17 6^6 7^7. Its maximum induced forest was then computed exactly by two independent algorithms: an ILP with lazy cycle-elimination cuts, and a branch-and-bound minimum feedback vertex set with no LP involved. Both give a(T) = 15, equivalently a minimum feedback vertex set of exactly 16, against the 15.5 the conjecture requires. We separately brute-forced the two finite inputs to the symbolic argument - the terminal profile (6,6,6,5) over all 2^12 internal subsets, and beta = 3 over all 2^7 subsets of the seven-vertex core - and confirmed that J plus the edge bf is the icosahedral graph, that the paper's 15-vertex witness induces the stated path, and that M_k for k = 2..5 is planar on 31k vertices with 93k-6 edges, minimum degree five, and every seed induced. Worth noting what the author's shipped verifier does not do: it certifies the gadget embedding, the profile, beta and the sphere certificates, but it never computes a(T) or a(M_k) and says so. That computation is the one this site supplied. The preprint is not peer-reviewed, is not on arXiv, and no independent expert has reviewed it; site-confirmed here means the counterexample is finite and we checked it ourselves, not that the community has weighed in.",
+    "publication": "preprint",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://zenodo.org/records/21883880",
+    "sourceName": "Zenodo - A 15/31 Family of Maximal Planar Graphs Disproving the Albertson-Berman Conjecture",
+    "renownNote": "No Wikipedia article, but the conjecture appears on both Bojan Mohar's and Douglas West's open-problem pages for planar graphs and is cited by name in the current literature.",
+    "resultNote": "The ratio 15/31 is not claimed to be optimal, and the paper makes no claim that 31 vertices is the smallest possible counterexample. The construction produces separating triangles by design, so it says nothing about the 4-connected case.",
+    "ageNote": "Posed in 1979 and open for 47 years. A paper on the same quantity, Makarov's Large induced forests in planar multigraphs, still described the conjecture as open in its revision of 9 August 2026, two days before this preprint appeared.",
+    "aiContribution": "ai-co-developed",
+    "significance": 30,
+    "significanceNote": "A named 1979 conjecture carried on the standard open-problem pages for planar graphs (Bojan Mohar's list, Douglas West's list), with a continuing literature on partial cases - girth 4 and 5, triangle-free, bipartite, 2-outerplanar, multigraphs - and a gap between the conjectured n/2 and Borodin's 2n/5 that stood for 47 years. Placed above a specialist named conjecture such as Simon's extendable shellability (25) because it is older and more widely tracked, and well below a household problem such as the cycle double cover conjecture (55).",
+    "links": [
+      {
+        "label": "Preprint PDF",
+        "url": "https://zenodo.org/records/21883880/files/Disproving_the_Albertson_Berman_Conjecture.pdf"
+      },
+      {
+        "label": "Author's verification script",
+        "url": "https://zenodo.org/records/21883880/files/verify_stronger_ab_family.py"
+      },
+      {
+        "label": "Mohar's open problem list: induced forests in planar graphs",
+        "url": "https://www.sfu.ca/~mohar/Problems/P0208InducedForestPlanar.html"
+      },
+      {
+        "label": "Makarov, Large induced forests in planar multigraphs - calls the conjecture open, revised 9 Aug 2026",
+        "url": "https://arxiv.org/abs/2601.04637"
+      }
+    ]
+  },
+  {
     "slug": "aluffi-chen-marcolli-real-rootedness",
     "name": "The Aluffi-Chen-Marcolli Real-Rootedness Conjecture",
     "shortName": "M(0,n) real-rootedness",
