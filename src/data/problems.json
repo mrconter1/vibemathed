@@ -3227,6 +3227,54 @@
     ]
   },
   {
+    "slug": "dihedral-and-cyclic-ramsey-numbers-of-the-alternating-3-path",
+    "name": "Dihedral and cyclic Ramsey numbers of the alternating 3-path",
+    "shortName": "R_dih(P₃ᵃˡᵗ, K_b) = 2b−1",
+    "problemNumber": null,
+    "field": "Permutational Ramsey theory",
+    "fieldGroup": "Combinatorics",
+    "resolution": "resolved",
+    "statement": "$R_{\\mathrm{dih}}(P_3^{\\mathrm{alt}}, K_b) = R_{\\mathrm{cyc}}(P_3^{\\mathrm{alt}}, K_b) = 2b - 1$ for all $b \\in \\mathbb{N}$ — the $a = 3$ slice of Conjecture 4.9 (Damnjanović–Đorđević, arXiv:2607.06817) and Conjecture 4.23 (Bašić–Damnjanović–Stevanović–Stošić, arXiv:2604.16188).",
+    "posedBy": "Damnjanović–Đorđević (Conj 4.9); Bašić–Damnjanović–Stevanović–Stošić (Conj 4.23)",
+    "yearPosed": 2026,
+    "solveType": "proved",
+    "solveDate": "2026-08-12",
+    "model": "Claude Fable",
+    "modelMaker": "Anthropic",
+    "humanCollaborators": [],
+    "aiRole": "The model produced the proof (the $\\mathrm{Dih}(3) = \\mathrm{Sym}(3)$ collapse, the Chvátal reduction, the cyclic corollary), the Lean 4 formalization, and the Python verification script autonomously. Human direction was limited to initiation and operational supervision.",
+    "verification": "site-confirmed",
+    "verificationNote": "Reproduced by this site on 13 August 2026. The Lean development was compiled here with the pinned toolchain (leanprover/lean4 v4.12.0, installed for the purpose; the file depends on Lean core only, no Mathlib, which is what makes an independent build cheap). It builds clean with exit 0, and its own #print axioms output shows all five main theorems - theoremB_lowerBound, theoremB_lowerBound_all_groups, lemma2_blockWitness, lemma3_dih3_eq_sym3 and noMonoCopy_completeGraph_reduce - depending on exactly propext, Classical.choice and Quot.sound. No Lean.ofReduceBool appears, so no native_decide is hiding behind the result, and with comments stripped the source has zero sorry, zero admit, zero axiom declarations and zero native_decide, its 23 decide calls being kernel-reduced. The submission's claim on this point is accurate; note that a naive grep contradicts it only because those words appear in the file's own documentation. The accompanying Python checker also runs as described: Dih(3) built by generator closure has order 6 and equals Sym(3), against Dih(4) at order 8 of 24; lower-bound witnesses are valid for b = 2..8; and b = 3 is settled exhaustively over all 1,024 colourings of K5. The upper bound for general b is not formalized anywhere and is a citation to Chvatal's 1977 tree-complete-graph theorem, which gives R(T, K_n) = (|T|-1)(n-1)+1 and hence 2b-1 for the three-vertex path; that step is standard and its arithmetic checks out. Two things this site could not confirm. The claimed DRAT-certified SAT recomputation for b = 2..7 is not backed by the published package: the repository has ten files and contains no CNF, no DRAT certificate and no solver log. And there is no human peer review - this is a self-submission of AI-produced work whose adversarial review was carried out by AI agents inside the producing pipeline, so nothing here has been read by an independent mathematician.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://github.com/ZestyWombat854/dihedral-ramsey",
+    "sourceName": "GitHub repo (preprint + Lean proof + Python checker)",
+    "resultNote": "The a = 3 slice is settled outright, which is why this is Resolved rather than Partial; the parent conjectures - Damnjanovic-Djordjevic Conjecture 4.9 and Basic-Damnjanovic-Stevanovic-Stosic Conjecture 4.23, both asserting 1 + (a-1)(b-1) for all a - remain open for every a >= 4, and the note is explicit that the upper bound for a >= 4 is the hard part. By the authors' own accounting the genuinely new content is the all-b closed form and its proof, particularly for the dihedral value which the companion paper never tabulates; the cyclic arithmetic for b = 3..8 already existed as computed SAT cells. The mathematics is a reduction rather than a search: Dih(3) = Sym(3) collapses dihedral embeddability to ordinary containment, after which Chvatal 1977 applies, with a block-partition construction supplying the matching lower bound for every connected pattern and every permutation group.",
+    "ageNote": "Both conjectures are from 2026 - Damnjanovic and Djordjevic posted arXiv:2607.06817 on 7 July 2026 and the companion Basic-Damnjanovic-Stevanovic-Stosic paper is arXiv:2604.16188 - so the a = 3 slice fell about five weeks after the conjecture was stated. This is among the shortest gaps in the catalog between a conjecture being posed and a piece of it being closed.",
+    "aiContribution": "ai-discovered",
+    "significance": 5,
+    "significanceNote": "Small, and the preprint says so itself. This closes one slice (a = 3) of a conjecture stated about five weeks earlier, and it closes it by a group coincidence plus a citation: Dih(3) happens to equal Sym(3), so the permutational condition collapses to ordinary subgraph containment and Chvatal's 1977 theorem finishes it. The note is candid that the cyclic values for b = 3..8 were already tabulated by Basic et al. and that what is new is the closed form rather than the numbers. Scored near the bottom of the spine, with the machine-generated Graffiti conjectures, and below the Erdos problem entries at 10, which are decades-old human problems rather than weeks-old ones.",
+    "links": [
+      {
+        "label": "Evidence repository: preprint, Lean proof, Python checker",
+        "url": "https://github.com/ZestyWombat854/dihedral-ramsey"
+      },
+      {
+        "label": "Damnjanovic and Djordjevic, Computation of small reflective and dihedral Ramsey numbers (Conjecture 4.9)",
+        "url": "https://arxiv.org/abs/2607.06817"
+      },
+      {
+        "label": "Basic, Damnjanovic, Stevanovic and Stosic (Conjecture 4.23)",
+        "url": "https://arxiv.org/abs/2604.16188"
+      }
+    ]
+  },
+  {
     "slug": "dimer-constant-cubic-lattice",
     "name": "The Dimer Constant of the Cubic Lattice",
     "shortName": "Dimer constant of Z^3",
@@ -18351,6 +18399,65 @@
     "aiContribution": "ai-assisted",
     "significance": 20,
     "significanceNote": "Extends a classical maximum-entropy theorem from binary to ternary alphabets, a case that had stayed open."
+  },
+  {
+    "slug": "teschner-s-bondage-number-conjecture",
+    "name": "Teschner's Bondage-Number Conjecture",
+    "shortName": "Teschner bondage conjecture",
+    "problemNumber": null,
+    "field": "Graph theory — domination theory",
+    "fieldGroup": "Combinatorics",
+    "resolution": "resolved",
+    "statement": "Teschner conjectured that every finite simple graph $G$ with at least one edge satisfies $b(G) \\leq \\frac{3}{2}\\Delta(G)$, where $b(G)$ is the bondage number and $\\Delta(G)$ is the maximum degree. Yavari gives a connected cubic bipartite graph on 18 vertices with $b(G)=5$. Since $\\Delta(G)=3$, this gives $b(G)=5 > \\frac{3}{2}\\Delta(G)=\\frac{9}{2}$, providing a counterexample and disproving the conjecture.",
+    "posedBy": "Ulrich Teschner",
+    "yearPosed": 1995,
+    "solveType": "disproved",
+    "solveDate": "2026-08-10",
+    "model": "GPT-5.6 Sol Max",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Yousof Yavari"
+    ],
+    "aiRole": "According to the author's disclosure and the publicly shared ChatGPT transcript, GPT-5.6 Sol Max was prompted to solve Teschner's conjecture and found an explicit counterexample. The resulting manuscript gives an 18-vertex connected cubic bipartite graph with bondage number 5, together with an exact finite certificate establishing the claimed bondage number. Yavari subsequently checked and wrote up the result.",
+    "verification": "site-confirmed",
+    "verificationNote": "Reproduced in full by this site on 13 August 2026. The counterexample is a single 18-vertex graph, so the claim is finite and was checked exhaustively rather than sampled. The edge list was transcribed from equation (3.1) of the preprint and every quantity recomputed independently, without reading or running the author's own verifier. Confirmed: the graph is connected, cubic and bipartite with the stated parts, on 18 vertices and 27 distinct edges, so Delta(G) = 3; its domination number is 6 by exhaustive search over vertex subsets in increasing size; and it has exactly 297 minimum dominating sets, which is the count the paper states, arrived at here independently. For the lower bound, all 20,853 edge subsets of size at most four (27 + 351 + 2925 + 17,550) were tested by the bundle criterion, and every single one leaves at least one minimum dominating set intact, so b(G) >= 5. For the upper bound, deleting the five edges 0-6, 0-10, 0-16, 1-8 and 1-11 raises the domination number to 7, and that was recomputed from scratch on the reduced graph rather than inferred from the criterion, so b(G) <= 5. Therefore b(G) = 5 > 4.5 = (3/2)Delta(G) and Teschner's conjecture is false. The lower-bound enumeration is the entire mathematical content of the claim, so this constitutes a complete independent check. Caveats that remain: the preprint is two days old, is hosted on figshare rather than arXiv, and has no peer review; the author's acknowledgements name Eric Hou (UBC) as an independent verifier, but that is a private check recorded in the paper, not a public endorsement by a domination-theory specialist.",
+    "publication": "preprint",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://doi.org/10.6084/m9.figshare.33198777",
+    "sourceName": "A Counterexample to Teschner's Bondage-Number Conjecture",
+    "renownNote": "No Wikipedia article of its own; the conjecture appears in the Wikipedia article on the bondage number, which still described it as open when checked on 13 August 2026, and is stated as an open problem in Xu's 2013 survey.",
+    "resultNote": "Teschner's universal bound b(G) <= (3/2)Delta(G) is false: the 18-vertex cubic bipartite graph has b(G) = 5 against a bound of 4.5. What survives is the restricted statement Teschner actually proved, that the bound holds for graphs of domination number at most three, and Gagarin and Zverovich's 2013 result that it holds for almost all graphs. The counterexample does not suggest a replacement bound, and the correct general upper bound for b(G) in terms of Delta(G) remains open.",
+    "ageNote": "Fink, Jacobson, Kinch and Roberts introduced the bondage number in 1990 and conjectured b(G) <= Delta(G) + 1; Teschner disproved that in 1993 and proposed the weaker (3/2)Delta(G) bound in his 1995 Australasian Journal of Combinatorics paper, having proved it for domination number at most three. Open for 31 years.",
+    "aiContribution": "ai-discovered",
+    "significance": 15,
+    "significanceNote": "A named conjecture in domination theory, posed by Teschner in 1995 and carried as an open problem in Xu's 2013 bondage-number survey and on Wikipedia's bondage number article. Real and long-standing, but firmly within a specialist subfield: there is no Wikipedia article for the conjecture itself, and the surrounding literature is a corner of graph theory rather than a mainstream target. Scored with the resolved specialist problems near 15, well below the named conjectures with their own broad literature such as Albertson-Berman (30).",
+    "links": [
+      {
+        "label": "Yavari, A Counterexample to Teschner's Bondage-Number Conjecture (figshare preprint)",
+        "url": "https://doi.org/10.6084/m9.figshare.33198777"
+      },
+      {
+        "label": "ChatGPT conversation in which the counterexample was produced",
+        "url": "https://chatgpt.com/share/6a7a08fe-9fd8-83e8-b3b4-392282dc501a"
+      },
+      {
+        "label": "Xu, On Bondage Numbers of Graphs: A Survey with Some Comments (2013)",
+        "url": "https://doi.org/10.1155/2013/595210"
+      },
+      {
+        "label": "Gagarin and Zverovich, The bondage number of graphs on topological surfaces and Teschner's conjecture (2013)",
+        "url": "https://doi.org/10.1016/j.disc.2012.11.005"
+      },
+      {
+        "label": "Wikipedia: Bondage number",
+        "url": "https://en.wikipedia.org/wiki/Bondage_number"
+      }
+    ]
   },
   {
     "slug": "thakur-carlitz-wieferich-conjecture",
