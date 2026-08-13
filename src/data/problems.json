@@ -7,7 +7,7 @@
     "field": null,
     "fieldGroup": "Combinatorics",
     "resolution": "partial",
-    "statement": "For a single-source unsplittable flow, find the optimal universal additive constant $C$ s.t. every feasible fractional flow $x$ with arc costs $c$ should admit an unsplittable routing $y$ with $c^\\top y \\le c^\\top x$ and $y_a \\le x_a + C \\cdot D$ on every arc. We provide several new results on $C$:\n\n— record lower bound for planar instances (against known ceiling 2):\n$$C >= \\frac{58676765987259}{50000000000000} = 1.17353531974518;$$\n\n— local envelope ladder (proved): $E(2) = 1$, $E(3) = 9/8$, $E(4) = (299 - 41*\\sqrt{41})/32 = 1.13974707\\ldots$, attained by the counterexamples from our previous work; record constants of our previous work are now exact local envelopes of the general theory;\n\n— global results: every exact-two-path instance with rows touching at most three terminals satisfies $C <= 2$ (first unconditional constant for an unbounded class); interaction arity m gives $\\lceil\\lfloor 3m/2\\rfloor /2\\rceil \\cdot D$;\n\n— classes closed exactly: out-trees 0; two-layer hubs 1; outerplanar two-exit interval spines 1 (sharp); series-parallel $\\le 1$;\n\n— band merger constant $K* >= 2.5652\\ldots$ (twice the general lower bound $1.2826\\ldots$).",
+    "statement": "For a single-source unsplittable flow, find the optimal universal additive constant $C$ s.t. every feasible fractional flow $x$ with arc costs $c$ should admit an unsplittable routing $y$ with $c^\\top y \\le c^\\top x$ and $y_a \\le x_a + C \\cdot D$ on every arc. We provide several new results on $C$: (1) record lower bound for planar instances (against known ceiling 2):\n$$C \\ge \\frac{58676765987259}{50000000000000} = 1.17353531974518;$$\n(2) local envelope ladder (proved): $E(2) = 1$, $E(3) = 9/8$, $E(4) = (299 - 41\\cdot\\sqrt{41})/32 = 1.13974707\\ldots$, attained by the counterexamples from our previous work; record constants of our previous work are now exact local envelopes of the general theory;\n(3) global results: every exact-two-path instance with rows touching at most three terminals satisfies $C \\le 2$ (first unconditional constant for an unbounded class); interaction arity m gives $\\lceil\\lfloor 3m/2\\rfloor /2\\rceil \\cdot D$;\n(4) classes closed exactly: out-trees 0; two-layer hubs 1; outerplanar two-exit interval spines 1 (sharp); series-parallel $\\le 1$;\n(5) band merger constant $K^* \\ge 2.5652\\ldots$ (twice the general lower bound $1.2826\\ldots$).",
     "posedBy": "Dinitz, Garg, Goemans",
     "yearPosed": 1999,
     "solveType": "proved",
@@ -35,6 +35,13 @@
       {
         "label": "Zenodo preprint",
         "url": "https://zenodo.org/records/21922203"
+      }
+    ],
+    "relations": [
+      {
+        "to": "1-28249-lower-bound-and-partial-upper-bounds-for-cost-preserving-single-source-u",
+        "kind": "continues",
+        "note": "Part III of the same programme. Part II's 1.28249 record lower bound becomes an exact local envelope of the general theory built here."
       }
     ]
   },
@@ -80,6 +87,13 @@
       {
         "label": "Paper I's Zenodo record",
         "url": "https://zenodo.org/records/21701162"
+      }
+    ],
+    "relations": [
+      {
+        "to": "dinitz-garg-goemans-unsplittable-flow",
+        "kind": "builds-on",
+        "note": "The optimal-constant question this entry attacks is exactly what the Dinitz-Garg-Goemans disproof left open."
       }
     ]
   },
@@ -2626,6 +2640,13 @@
       {
         "label": "Reasoning walkthroughs (PDF)",
         "url": "https://cdn.openai.com/pdf/reasoning-walkthroughs.pdf"
+      }
+    ],
+    "relations": [
+      {
+        "to": "connes-rigidity-icc-property-t",
+        "kind": "generalizes",
+        "note": "The full rigidity conjecture, of which the other entry settles the ICC property (T) case - independently and concurrently, per that paper."
       }
     ]
   },
@@ -9457,6 +9478,13 @@
         "label": "Complete proof corpus and claim ledger (v0.3.0)",
         "url": "https://github.com/matthewprotti/planar-ssuf-four-terminal-bound/tree/v0.3.0/research/fixed_gadget_scenario_cover"
       }
+    ],
+    "relations": [
+      {
+        "to": "dinitz-garg-goemans-unsplittable-flow",
+        "kind": "related",
+        "note": "A scenario-count ladder on one fixed four-terminal planar gadget, in the same cost-preserving unsplittable-flow setting the disproof opened up."
+      }
     ]
   },
   {
@@ -15699,6 +15727,13 @@
       {
         "label": "Mazur's original proof of Sendov's conjecture, the underlying argument",
         "url": "https://proofatlas.ai/formalizations/sendov-conjecture/"
+      }
+    ],
+    "relations": [
+      {
+        "to": "sendov-s-conjecture",
+        "kind": "same-work",
+        "note": "Both fall to Tao's digestion of Mazur's argument: the interior form of Sendov's conjecture resolves Phelps-Rodriguez in full generality."
       }
     ]
   },

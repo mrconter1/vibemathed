@@ -23,7 +23,13 @@ async function main() {
   const rows = await prisma.problem.findMany({
     where: { status: "published" },
     orderBy: { slug: "asc" },
-    include: { links: { select: { label: true, url: true }, orderBy: { position: "asc" } } },
+    include: {
+      links: { select: { label: true, url: true }, orderBy: { position: "asc" } },
+      relationsFrom: {
+        select: { kind: true, note: true, to: { select: { slug: true } } },
+        orderBy: { position: "asc" },
+      },
+    },
   });
 
   const out = rows.map((p) => {
@@ -66,6 +72,9 @@ async function main() {
     if (p.significance !== null) entry.significance = p.significance;
     if (p.significanceNote !== null) entry.significanceNote = p.significanceNote;
     if (Array.isArray(p.links) && p.links.length > 0) entry.links = p.links;
+    if (p.relationsFrom.length > 0) {
+      entry.relations = p.relationsFrom.map((r) => ({ to: r.to.slug, kind: r.kind, note: r.note }));
+    }
     return entry;
   });
 

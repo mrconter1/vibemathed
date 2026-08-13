@@ -40,6 +40,54 @@ function tokenize(input: string): string[] {
     .filter((t) => t.length > 2 && !NOISE.has(t));
 }
 
+/// Search for the relation picker: name-or-shortName substring match over
+/// published entries, excluding the entry being edited (an entry cannot
+/// relate to itself, so offering it is offering a mistake).
+///
+/// Different ranking from `findSimilarEntries` on purpose: the duplicate
+/// check keeps only the strongest tier because near-misses teach submitters
+/// to ignore the panel, while a picker should show everything plausible and
+/// let the person choose.
+export async function searchEntriesForRelation(
+  query: string,
+  excludeSlug: string,
+): Promise<SimilarEntry[]> {
+  const text = query.trim();
+  if (text.length < 3) return [];
+
+  const tokens = tokenize(text).slice(0, 4);
+  const terms = tokens.length > 0 ? tokens : [text.toLowerCase()];
+
+  try {
+    const rows = await prisma.problem.findMany({
+      where: {
+        status: "published",
+        slug: { not: excludeSlug },
+        OR: terms.flatMap((t) => [
+          { name: { contains: t, mode: "insensitive" as const } },
+          { shortName: { contains: t, mode: "insensitive" as const } },
+          { slug: { contains: t } },
+        ]),
+      },
+      select: { slug: true, name: true, shortName: true, solveDate: true },
+      take: 40,
+    });
+
+    return rows
+      .map((r) => {
+        const hay = `${r.name} ${r.shortName} ${r.slug}`.toLowerCase();
+        const hits = terms.filter((t) => hay.includes(t)).length;
+        return { row: r, hits };
+      })
+      .sort((a, b) => b.hits - a.hits || a.row.name.length - b.row.name.length)
+      .slice(0, 8)
+      .map(({ row }) => ({ slug: row.slug, name: row.name, solveDate: row.solveDate }));
+  } catch (error) {
+    console.error("searchEntriesForRelation failed", error);
+    return [];
+  }
+}
+
 export async function findSimilarEntries(query: string): Promise<SimilarEntry[]> {
   const text = query.trim();
   if (text.length < MIN_QUERY) return [];

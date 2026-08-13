@@ -243,6 +243,13 @@ export interface MathProblem {
    * baseline; the database always stores an array (empty by default).
    */
   links?: LinkRef[];
+  /**
+   * OUTGOING typed relations to other entries, by target slug - "continues
+   * Part II", "the same work resolves both". Incoming ones are not stored
+   * here: a relation is one directed row rendered from both sides (see
+   * src/lib/relation-kinds.ts), and this entry owns only the edges it drew.
+   */
+  relations?: { to: string; kind: string; note: string }[];
 }
 
 /// The windows offered for time-sensitive sorting. All are ROLLING windows
@@ -448,6 +455,21 @@ export function assertProblem(value: unknown, index: number): MathProblem {
       );
     if (!ok) {
       throw new Error(`${where}: "links" must be an array of { label, url } when present`);
+    }
+  }
+  if (p.relations !== undefined) {
+    const ok =
+      Array.isArray(p.relations) &&
+      p.relations.every(
+        (r) =>
+          typeof r === "object" &&
+          r !== null &&
+          typeof (r as { to: unknown }).to === "string" &&
+          typeof (r as { kind: unknown }).kind === "string" &&
+          typeof (r as { note: unknown }).note === "string",
+      );
+    if (!ok) {
+      throw new Error(`${where}: "relations" must be an array of { to, kind, note } when present`);
     }
   }
   if (!VERIFICATION_STATUSES.includes(p.verification as VerificationStatus)) {

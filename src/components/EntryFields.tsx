@@ -6,11 +6,12 @@
 
 import type { ReactNode } from "react";
 import { LinkRows } from "@/components/LinkRows";
+import { RelationRows } from "@/components/RelationRows";
 
 export interface RenderableField {
   key: string;
   label: string;
-  kind: "text" | "textarea" | "number" | "list" | "url" | "choice" | "links";
+  kind: "text" | "textarea" | "number" | "list" | "url" | "choice" | "links" | "relations";
   required?: boolean;
   help?: string;
   options?: { value: string; label: string }[];
@@ -27,6 +28,7 @@ export function EntryFields({
   onChange,
   idPrefix,
   renderAfter,
+  ownSlug,
 }: {
   fields: RenderableField[];
   values: Record<string, string>;
@@ -37,13 +39,18 @@ export function EntryFields({
   /// this component knowing anything about duplicates; the edit dialog passes
   /// nothing and renders exactly as before.
   renderAfter?: (key: string) => ReactNode;
+  /// The entry being edited, so the relation picker can exclude it from its
+  /// search results. Absent on the submission form, which has no slug yet -
+  /// and no relations field either.
+  ownSlug?: string;
 }) {
   return (
     <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
       {fields.map((spec) => {
         const id = `${idPrefix}-${spec.key}`;
-        // Link rows need the full row for their label + URL + remove button.
-        const wide = spec.kind === "textarea" || spec.kind === "links";
+        // Link and relation rows need the full row for their controls.
+        const wide =
+          spec.kind === "textarea" || spec.kind === "links" || spec.kind === "relations";
         const value = values[spec.key] ?? "";
 
         return (
@@ -60,6 +67,13 @@ export function EntryFields({
               <LinkRows
                 id={id}
                 value={value}
+                onChange={(next) => onChange(spec.key, next)}
+              />
+            ) : spec.kind === "relations" ? (
+              <RelationRows
+                id={id}
+                value={value}
+                ownSlug={ownSlug ?? ""}
                 onChange={(next) => onChange(spec.key, next)}
               />
             ) : spec.kind === "textarea" ? (

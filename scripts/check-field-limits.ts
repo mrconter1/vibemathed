@@ -19,6 +19,7 @@
 import { readFileSync } from "node:fs";
 import { CURATOR_FIELDS, EDITABLE_FIELDS } from "../src/lib/editable";
 import { MESSAGE_MAX } from "../src/lib/messages";
+import { RELATION_KIND_MAX, RELATION_NOTE_MAX } from "../src/lib/relation-kinds";
 
 const SCHEMA = "prisma/schema.prisma";
 
@@ -29,6 +30,8 @@ const EXTRA: [string, string, number][] = [
   ["Problem", "submitterNote", 1000],
   ["Problem", "reviewMessage", MESSAGE_MAX],
   ["ProblemLink", "label", 120],
+  ["ProblemRelation", "kind", RELATION_KIND_MAX],
+  ["ProblemRelation", "note", RELATION_NOTE_MAX],
 ];
 
 /// Column name -> declared @db.String(n), per model.

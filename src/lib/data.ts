@@ -23,6 +23,7 @@ import {
   type ActivityView,
   type SiteActivityView,
 } from "@/lib/activity";
+import { relationKind } from "@/lib/relation-kinds";
 import { relativeFallback } from "@/lib/relative-time";
 import {
   formatCommentDate,
@@ -90,6 +91,15 @@ export const PROBLEM_SELECT = {
     select: { label: true, url: true, kind: true },
     orderBy: { position: "asc" },
   },
+  // Outgoing only, in the { to, kind, note } shape the edit form carries.
+  // The dialog MUST seed from this: an editor seeded empty would read as
+  // "remove every relation" on the next unrelated save. The entry page's
+  // display needs both directions plus target metadata, which is a separate
+  // per-entry query (`getRelations`) rather than a join on every list row.
+  relationsFrom: {
+    select: { kind: true, note: true, to: { select: { slug: true } } },
+    orderBy: { position: "asc" },
+  },
   upvotes: true,
   downvotes: true,
   submittedBy: { select: { pseudonym: true } },
@@ -141,6 +151,7 @@ export function toProblem(r: ProblemRow): ProblemWithVotes {
     sourceUrl: r.sourceUrl,
     sourceName: r.sourceName,
     links: r.links.map((l) => ({ label: l.label, url: l.url, kind: l.kind })),
+    relations: r.relationsFrom.map((x) => ({ to: x.to.slug, kind: x.kind, note: x.note })),
     upvotes: r.upvotes,
     downvotes: r.downvotes,
     score: r.upvotes - r.downvotes,
@@ -267,6 +278,72 @@ export async function getProblemBySlug(
     select: PROBLEM_SELECT,
   });
   return row ? toProblem(row) : null;
+}
+
+/// One row of an entry's "Related entries" block, direction already resolved:
+/// `label` is the kind's forward or inverse reading depending on which side
+/// this entry is, so the component never thinks about direction at all.
+export interface RelationView {
+  label: string;
+  kind: string;
+  slug: string;
+  shortName: string;
+  /// Pre-rendered with texToHtml - names carry $...$ and the hover card is a
+  /// client component, which must not ship KaTeX.
+  nameHtml: string;
+  note: string;
+  solveDate: string;
+  significance: number | null;
+  resolution: string;
+}
+
+/// Both directions of an entry's typed relations, display-ready.
+///
+/// Cached under the entry's own tag: an edit to a relation updates BOTH
+/// sides' `problem-<slug>` tags (see update-problem.ts), so this drops
+/// exactly when either end changes.
+export async function getRelations(slug: string): Promise<RelationView[]> {
+  "use cache";
+  cacheTag("problems", `problem-${slug}`);
+  cacheLife("minutes");
+
+  const TARGET = {
+    slug: true,
+    shortName: true,
+    name: true,
+    solveDate: true,
+    significance: true,
+    resolution: true,
+    status: true,
+  } as const;
+
+  const rows = await prisma.problemRelation.findMany({
+    where: { OR: [{ from: { slug } }, { to: { slug } }] },
+    select: { kind: true, note: true, position: true, from: { select: TARGET }, to: { select: TARGET } },
+    orderBy: [{ position: "asc" }, { createdAt: "asc" }],
+  });
+
+  const out: RelationView[] = [];
+  for (const r of rows) {
+    const outgoing = r.from.slug === slug;
+    const other = outgoing ? r.to : r.from;
+    // A relation to an entry that later unpublished must not render a dead
+    // link. The row survives (the entry may come back); the display skips it.
+    if (other.status !== "published") continue;
+    const spec = relationKind(r.kind);
+    out.push({
+      label: (outgoing ? spec?.forward : spec?.inverse) ?? r.kind,
+      kind: r.kind,
+      slug: other.slug,
+      shortName: other.shortName,
+      nameHtml: texToHtml(other.name),
+      note: r.note,
+      solveDate: other.solveDate,
+      significance: other.significance,
+      resolution: other.resolution,
+    });
+  }
+  return out;
 }
 
 /// The discussion on one entry, oldest first.

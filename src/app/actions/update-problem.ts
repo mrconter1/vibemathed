@@ -14,6 +14,7 @@ import {
   type EditableValues,
   type FieldSpec,
 } from "@/lib/editable";
+import { parseRelations, relationKind, type RelationRef } from "@/lib/relation-kinds";
 import type { LinkRef } from "@/lib/problems";
 
 export type UpdateResult =
@@ -21,15 +22,19 @@ export type UpdateResult =
   | { ok: false; error: string };
 
 /// The database value a form string maps to.
-type Parsed = string | number | string[] | LinkRef[] | null;
+type Parsed = string | number | string[] | LinkRef[] | RelationRef[] | null;
 
-function parseField(spec: FieldSpec, raw: string): { ok: true; value: Parsed } | { ok: false; error: string } {
+function parseField(
+  spec: FieldSpec,
+  raw: string,
+  ownSlug: string,
+): { ok: true; value: Parsed } | { ok: false; error: string } {
   const v = raw.trim();
 
   if (v === "") {
     if (spec.required) return { ok: false, error: `${spec.label} cannot be empty.` };
-    // The links column is JSON and always holds an array, never JSON null.
-    return { ok: true, value: spec.kind === "list" || spec.kind === "links" ? [] : null };
+    const emptyArray = spec.kind === "list" || spec.kind === "links" || spec.kind === "relations";
+    return { ok: true, value: emptyArray ? [] : null };
   }
 
   if (spec.maxLength && v.length > spec.maxLength) {
@@ -62,6 +67,8 @@ function parseField(spec: FieldSpec, raw: string): { ok: true; value: Parsed } |
       };
     case "links":
       return parseLinks(v);
+    case "relations":
+      return parseRelations(v, ownSlug);
     case "text":
     case "textarea":
       if (spec.key === "solveDate" && !isValidSolveDate(v)) {
@@ -77,14 +84,19 @@ function display(value: unknown): string | null {
   if (Array.isArray(value)) {
     if (value.length === 0) return null;
     return value
-      .map((v) =>
-        typeof v === "object" && v !== null && "url" in v
+      .map((v) => {
+        if (typeof v === "object" && v !== null && "url" in v) {
           // The kind is part of what a link IS, so retyping one without
           // touching its label or URL is a real edit and has to register as a
           // change - otherwise the diff sees nothing and drops it.
-          ? `${(v as LinkRef).kind ?? "other"}: ${(v as LinkRef).label} | ${(v as LinkRef).url}`
-          : String(v),
-      )
+          return `${(v as LinkRef).kind ?? "other"}: ${(v as LinkRef).label} | ${(v as LinkRef).url}`;
+        }
+        if (typeof v === "object" && v !== null && "to" in v) {
+          const r = v as RelationRef;
+          return `${r.kind} -> ${r.to} (${r.note})`;
+        }
+        return String(v);
+      })
       .join(", ");
   }
   const s = String(value);
@@ -144,17 +156,30 @@ export async function updateProblem(
       sourceUrl: true,
       sourceName: true,
       links: { select: { label: true, url: true, kind: true }, orderBy: { position: "asc" } },
+      relationsFrom: {
+        select: { toId: true, kind: true, note: true, to: { select: { slug: true } } },
+        orderBy: { position: "asc" },
+      },
     },
   });
   if (!current) {
     return { ok: false, error: "That entry no longer exists." };
   }
 
+  // The outgoing edges in the same { to, kind, note } shape the form carries,
+  // so the diff below compares like with like.
+  const currentRelations: RelationRef[] = current.relationsFrom.map((r) => ({
+    to: r.to.slug,
+    kind: r.kind,
+    note: r.note,
+  }));
+
   const data: Record<string, Parsed> = {};
   const changes: { field: string; oldValue: string | null; newValue: string | null }[] = [];
-  // Links live in their own table, so they are collected separately and
-  // rewritten wholesale rather than assigned onto the problem row.
+  // Links and relations live in their own tables, so they are collected
+  // separately and rewritten wholesale rather than assigned onto the row.
   let nextLinks: LinkRef[] | null = null;
+  let nextRelations: RelationRef[] | null = null;
 
   const writable = isAdmin(session.user.email)
     ? [...EDITABLE_FIELDS, ...CURATOR_FIELDS]
@@ -164,15 +189,20 @@ export async function updateProblem(
     const raw = values[spec.key];
     if (raw === undefined) continue;
 
-    const parsed = parseField(spec, raw);
+    const parsed = parseField(spec, raw, slug);
     if (!parsed.ok) return { ok: false, error: parsed.error };
 
-    const before = display(current[spec.key as keyof typeof current]);
+    const before =
+      spec.kind === "relations"
+        ? display(currentRelations)
+        : display(current[spec.key as keyof typeof current]);
     const after = display(parsed.value);
     if (before === after) continue;
 
     if (spec.kind === "links") {
       nextLinks = parsed.value as LinkRef[];
+    } else if (spec.kind === "relations") {
+      nextRelations = parsed.value as RelationRef[];
     } else {
       data[spec.key] = parsed.value;
     }
@@ -199,6 +229,62 @@ export async function updateProblem(
           "citation; list only the other material as links.",
       };
     }
+  }
+
+  // Relations need the database to finish validating: the target must be a
+  // real published entry, and the same edge must not already exist drawn from
+  // the other side. Resolved here into the ids the write needs.
+  let relationRows: { toId: string; kind: string; note: string; position: number }[] | null = null;
+  const affectedSlugs: string[] = [];
+  if (nextRelations !== null) {
+    const targets = await prisma.problem.findMany({
+      where: { slug: { in: nextRelations.map((r) => r.to) }, status: "published" },
+      select: { id: true, slug: true },
+    });
+    const bySlug = new Map(targets.map((t) => [t.slug, t.id]));
+    for (const r of nextRelations) {
+      if (!bySlug.has(r.to)) {
+        return { ok: false, error: `No published entry with the slug "${r.to}".` };
+      }
+    }
+    // A symmetric edge drawn from the other entry is the SAME relation, and a
+    // directed kind between the same pair in both directions is a
+    // contradiction ("A continues B" and "B continues A") - refused either
+    // way, with a message that says where the existing edge lives.
+    const reverse = await prisma.problemRelation.findFirst({
+      where: {
+        toId: current.id,
+        fromId: { in: targets.map((t) => t.id) },
+        kind: { in: nextRelations.map((r) => r.kind) },
+      },
+      select: { kind: true, from: { select: { slug: true, name: true } } },
+    });
+    if (reverse && nextRelations.some((r) => r.kind === reverse.kind && bySlug.get(r.to))) {
+      const collides = nextRelations.find(
+        (r) => r.kind === reverse.kind && r.to === reverse.from.slug,
+      );
+      if (collides) {
+        const spec = relationKind(reverse.kind);
+        return {
+          ok: false,
+          error:
+            `"${reverse.from.name}" already draws this ${spec?.forward ?? reverse.kind} ` +
+            "relation to this entry. A relation shows on both entries; edit it from that one.",
+        };
+      }
+    }
+    relationRows = nextRelations.map((r, position) => ({
+      toId: bySlug.get(r.to)!,
+      kind: r.kind,
+      note: r.note,
+      position,
+    }));
+    // Both sides of every touched edge render the relation, so both caches
+    // must drop: the new targets, and any old targets an edge was removed
+    // from.
+    affectedSlugs.push(
+      ...new Set([...nextRelations.map((r) => r.to), ...currentRelations.map((r) => r.to)]),
+    );
   }
 
   // Moving an entry up or down the trust ladder, moving it through the
@@ -234,6 +320,14 @@ export async function updateProblem(
                 },
               }
             : {}),
+          ...(relationRows
+            ? {
+                relationsFrom: {
+                  deleteMany: {},
+                  create: relationRows,
+                },
+              }
+            : {}),
         },
       }),
       prisma.problemActivity.createMany({
@@ -257,6 +351,9 @@ export async function updateProblem(
   updateTag(`problem-${slug}`);
   updateTag(`activity-${slug}`);
   updateTag("activity");
+  // A relation renders on both of its entries, so the other side's page must
+  // drop too - its content changed without any edit of its own.
+  for (const s of affectedSlugs) updateTag(`problem-${s}`);
 
   return { ok: true, changed: changes.length };
 }

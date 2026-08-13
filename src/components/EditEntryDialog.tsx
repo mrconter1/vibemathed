@@ -134,6 +134,7 @@ export function EditEntryDialog({
                   setValues((v) => ({ ...v, [key]: value }) as EditableValues)
                 }
                 idPrefix="edit"
+                ownSlug={slug}
               />
             </div>
 

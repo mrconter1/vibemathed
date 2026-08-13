@@ -46,6 +46,10 @@ export async function GET() {
     sourceUrl: p.sourceUrl,
     sourceName: p.sourceName,
     links: p.links ?? [],
+    // Outgoing typed edges to other entries, by slug. One direction only:
+    // a relation is a single directed row, so mirroring it here would make
+    // every edge appear twice in the dataset.
+    relations: p.relations ?? [],
     submittedBy: p.submittedBy,
     upvotes: p.upvotes,
     downvotes: p.downvotes,

@@ -37,6 +37,7 @@
 // same edit (see `update-problem.ts`), and every change is in the changelog.
 
 import { inferLinkKind, isLinkKind } from "@/lib/link-kinds";
+import { encodeRelations } from "@/lib/relation-kinds";
 import { FIELD_GROUPS, type LinkRef, type MathProblem } from "@/lib/problems";
 
 export type EditableKey =
@@ -70,6 +71,7 @@ export type EditableKey =
   | "sourceUrl"
   | "sourceName"
   | "links"
+  | "relations"
   | "renownLangs"
   | "renownNote"
   | "significanceNote";
@@ -82,7 +84,10 @@ export type FieldKind =
   | "url"
   | "choice"
   /// One link per line, "Label | https://url". Parsed by `parseLinks`.
-  | "links";
+  | "links"
+  /// Typed edges to other entries, JSON rows of { to, kind, note }. Parsed by
+  /// `parseRelations` in src/lib/relation-kinds.ts.
+  | "relations";
 
 export interface FieldSpec {
   key: EditableKey;
@@ -299,6 +304,12 @@ export const EDITABLE_FIELDS: FieldSpec[] = [
     kind: "links",
     help: "Beyond the primary source: Lean repositories, independent proofs of the same theorem, verifiers, community records.",
   },
+  {
+    key: "relations",
+    label: "Related entries",
+    kind: "relations",
+    help: "Typed connections to other catalog entries - a series, the same work resolving both, a special case. Each needs a short note saying why; it shows when a reader hovers the link. Plain text, no math.",
+  },
 ];
 
 /// Fields only a curator may write. Same shape as the rest, kept apart so the
@@ -358,6 +369,13 @@ export function toEditableValues(source: Pick<MathProblem, EditableKey>): Editab
       // Carried through the string-keyed form values as JSON; the row editor
       // parses and re-serializes it, and `parseLinks` validates on the server.
       out[spec.key] = encodeLinks(source.links ?? []);
+      continue;
+    }
+    if (spec.kind === "relations") {
+      // Same JSON transport as links; `parseRelations` validates on the
+      // server. Only the OUTGOING edges - incoming ones belong to the other
+      // entry's edit dialog.
+      out[spec.key] = encodeRelations(source.relations ?? []);
       continue;
     }
     const value = source[spec.key];

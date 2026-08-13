@@ -87,9 +87,39 @@ async function main() {
     created += 1;
   }
 
+  // Relations are a second pass: an edge's target must exist before the edge,
+  // and the loop above only guarantees that once it has finished. Replaced
+  // wholesale per entry, like links, so re-seeding stays idempotent. An edge
+  // whose target is not in the baseline (a community-submitted entry on a
+  // fresh database) is skipped with a warning rather than failing the seed.
+  let edges = 0;
+  for (const p of problems) {
+    if (!p.relations?.length) continue;
+    const from = await prisma.problem.findUnique({ where: { slug: p.slug }, select: { id: true } });
+    if (!from) continue;
+    const targets = await prisma.problem.findMany({
+      where: { slug: { in: p.relations.map((r) => r.to) } },
+      select: { id: true, slug: true },
+    });
+    const bySlug = new Map(targets.map((t) => [t.slug, t.id]));
+    const rows = p.relations.flatMap((r, position) => {
+      const toId = bySlug.get(r.to);
+      if (!toId) {
+        console.warn(`  skipping relation ${p.slug} -> ${r.to}: target not in this database`);
+        return [];
+      }
+      return [{ toId, kind: r.kind, note: r.note, position }];
+    });
+    await prisma.problem.update({
+      where: { id: from.id },
+      data: { relationsFrom: { deleteMany: {}, create: rows } },
+    });
+    edges += rows.length;
+  }
+
   const total = await prisma.problem.count();
   console.log(
-    `Seed complete: ${created} created, ${updated} refreshed, ${total} problems in database.`,
+    `Seed complete: ${created} created, ${updated} refreshed, ${edges} relations, ${total} problems in database.`,
   );
 }
 

@@ -198,6 +198,8 @@ model Problem {
   links      ProblemLink[]
   reports    ProblemReport[]
   messages   DirectMessage[]
+  relationsFrom ProblemRelation[] @relation("RelationFrom")
+  relationsTo   ProblemRelation[] @relation("RelationTo")
 
   @@index([status])
   @@index([solveDate])
@@ -229,6 +231,37 @@ model ProblemLink {
   position  Int     @default(0)
 
   @@index([problemId])
+}
+
+/// A typed edge between two entries - "Part III continues Part II", "the same
+/// work resolves both". ONE directed row rendered from both sides: the `from`
+/// entry shows the kind's forward label, the `to` entry its inverse (see
+/// src/lib/relation-kinds.ts). Owned, for editing, by the `from` side: an
+/// entry's edit dialog manages its outgoing rows, and the incoming ones are
+/// edited from the other entry - which is what keeps ownership unambiguous
+/// while both pages render the edge.
+///
+/// `note` is the required why: it renders in the hover card next to the
+/// target's name, and a relation without a stated reason is exactly the
+/// noise that makes relation graphs useless. Plain text, never math - it
+/// shows in a client-side bubble, which cannot run KaTeX.
+model ProblemRelation {
+  id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fromId String  @db.Uuid
+  from   Problem @relation("RelationFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  toId   String  @db.Uuid
+  to     Problem @relation("RelationTo", fields: [toId], references: [id], onDelete: Cascade)
+  /// One of RELATION_KINDS in src/lib/relation-kinds.ts.
+  kind   String  @db.String(30)
+  note   String  @db.String(200)
+  /// Display order among the `from` entry's outgoing relations, 0-based.
+  position Int   @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@unique([fromId, toId, kind])
+  @@index([fromId])
+  @@index([toId])
 }
 
 model ProblemVote {

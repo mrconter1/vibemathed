@@ -52,11 +52,16 @@ const SUBMITTER_NOTE_FIELD: SubmissionFieldSpec = {
 
 /// The submission form: name and short name first, then the three fields
 /// fixed at creation, then everything an editor could later change.
+///
+/// Relations are NOT offered here: the picker excludes the entry being
+/// edited, and a submission has no slug yet to exclude. Anyone who wants
+/// to relate their new entry can do it from the entry page the moment it
+/// publishes, like any other edit.
 export const SUBMISSION_FIELDS: SubmissionFieldSpec[] = [
   ...EDITABLE_FIELDS.slice(0, 2), // name, shortName
   PROBLEM_NUMBER_FIELD,
   SOLVE_TYPE_FIELD,
-  ...EDITABLE_FIELDS.slice(2),
+  ...EDITABLE_FIELDS.slice(2).filter((f) => f.kind !== "relations"),
   SUBMITTER_NOTE_FIELD,
 ];
 

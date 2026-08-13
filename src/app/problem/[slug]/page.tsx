@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getActivity, getComments, getProblemBySlug } from "@/lib/data";
+import { getActivity, getComments, getProblemBySlug, getRelations } from "@/lib/data";
 import { ageAtSolve, type ProblemWithVotes } from "@/lib/problems";
 import {
   AI_CONTRIBUTION,
@@ -21,6 +21,7 @@ import { Changelog } from "@/components/Changelog";
 import { RelativeTime } from "@/components/RelativeTime";
 import { CommentsSection } from "@/components/CommentsSection";
 import { EditEntryDialog } from "@/components/EditEntryDialog";
+import { RelatedEntries } from "@/components/RelatedEntries";
 import { ReportEntryDialog } from "@/components/ReportEntryDialog";
 import { StatusIcon } from "@/components/StatusIcon";
 import { TeX, deTeX } from "@/components/TeX";
@@ -84,12 +85,13 @@ export default async function ProblemPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  // All three reads in parallel - comments and activity do not depend on the
-  // problem row, and a missing slug just returns empty lists from them.
-  const [p, comments, activity] = await Promise.all([
+  // All four reads in parallel - none depends on another, and a missing slug
+  // just returns empty lists from the secondary ones.
+  const [p, comments, activity, relations] = await Promise.all([
     getProblemBySlug(slug),
     getComments(slug),
     getActivity(slug),
+    getRelations(slug),
   ]);
   if (!p) notFound();
   const age = ageAtSolve(p);
@@ -370,6 +372,11 @@ export default async function ProblemPage({
             ))}
           </ul>
         </section>
+
+        {/* Typed edges to other catalog entries, both directions, with the
+            why-they-connect note in a hover card. Renders nothing when the
+            entry has no relations, which is most of the catalog. */}
+        <RelatedEntries relations={relations} />
 
         {/* Contributor credit. Deliberately readable rather than a muted
             footnote: the person who brought this entry in gets named, here and
