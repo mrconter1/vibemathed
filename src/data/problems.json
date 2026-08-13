@@ -3229,7 +3229,7 @@
   {
     "slug": "dihedral-and-cyclic-ramsey-numbers-of-the-alternating-3-path",
     "name": "Dihedral and cyclic Ramsey numbers of the alternating 3-path",
-    "shortName": "R_dih(P₃ᵃˡᵗ, K_b) = 2b−1",
+    "shortName": "Alternating 3-path Ramsey numbers",
     "problemNumber": null,
     "field": "Permutational Ramsey theory",
     "fieldGroup": "Combinatorics",
@@ -3244,7 +3244,7 @@
     "humanCollaborators": [],
     "aiRole": "The model produced the proof (the $\\mathrm{Dih}(3) = \\mathrm{Sym}(3)$ collapse, the Chvátal reduction, the cyclic corollary), the Lean 4 formalization, and the Python verification script autonomously. Human direction was limited to initiation and operational supervision.",
     "verification": "site-confirmed",
-    "verificationNote": "Reproduced by this site on 13 August 2026. The Lean development was compiled here with the pinned toolchain (leanprover/lean4 v4.12.0, installed for the purpose; the file depends on Lean core only, no Mathlib, which is what makes an independent build cheap). It builds clean with exit 0, and its own #print axioms output shows all five main theorems - theoremB_lowerBound, theoremB_lowerBound_all_groups, lemma2_blockWitness, lemma3_dih3_eq_sym3 and noMonoCopy_completeGraph_reduce - depending on exactly propext, Classical.choice and Quot.sound. No Lean.ofReduceBool appears, so no native_decide is hiding behind the result, and with comments stripped the source has zero sorry, zero admit, zero axiom declarations and zero native_decide, its 23 decide calls being kernel-reduced. The submission's claim on this point is accurate; note that a naive grep contradicts it only because those words appear in the file's own documentation. The accompanying Python checker also runs as described: Dih(3) built by generator closure has order 6 and equals Sym(3), against Dih(4) at order 8 of 24; lower-bound witnesses are valid for b = 2..8; and b = 3 is settled exhaustively over all 1,024 colourings of K5. The upper bound for general b is not formalized anywhere and is a citation to Chvatal's 1977 tree-complete-graph theorem, which gives R(T, K_n) = (|T|-1)(n-1)+1 and hence 2b-1 for the three-vertex path; that step is standard and its arithmetic checks out. Two things this site could not confirm. The claimed DRAT-certified SAT recomputation for b = 2..7 is not backed by the published package: the repository has ten files and contains no CNF, no DRAT certificate and no solver log. And there is no human peer review - this is a self-submission of AI-produced work whose adversarial review was carried out by AI agents inside the producing pipeline, so nothing here has been read by an independent mathematician.",
+    "verificationNote": "Reproduced by this site on 13 August 2026. The Lean development builds clean (exit 0) with the pinned toolchain (lean4 v4.12.0, core only, no Mathlib). Its own #print axioms output shows all five main theorems — theoremB_lowerBound, theoremB_lowerBound_all_groups, lemma2_blockWitness, lemma3_dih3_eq_sym3, noMonoCopy_completeGraph_reduce — depending on exactly propext, Classical.choice and Quot.sound. No Lean.ofReduceBool, so no native_decide behind the result; with comments stripped the source has zero sorry, admit, axiom declarations and native_decide, and its 23 decide calls are kernel-reduced. A naive grep contradicts this only because those words appear in the file's own documentation. The Python checker runs as described: Dih(3) has order 6 and equals Sym(3) (against Dih(4) at 8 of 24), lower-bound witnesses are valid for b = 2..8, and b = 3 is settled exhaustively over all 1,024 colourings of K5. The upper bound for general b is not formalized; it cites Chvatal 1977, R(T, K_n) = (|T|-1)(n-1)+1, giving 2b-1 for the three-vertex path — standard, and the arithmetic checks out. Two things unconfirmed: the claimed DRAT-certified SAT recomputation for b = 2..7 has no CNF, certificate or solver log in the ten-file repository; and there is no human peer review, this being a self-submission of AI-produced work reviewed by AI agents inside the producing pipeline.",
     "publication": "preprint",
     "resolutionMethod": "argument",
     "citations": null,
@@ -3254,7 +3254,7 @@
     "renownLangs": 0,
     "sourceUrl": "https://github.com/ZestyWombat854/dihedral-ramsey",
     "sourceName": "GitHub repo (preprint + Lean proof + Python checker)",
-    "resultNote": "The a = 3 slice is settled outright, which is why this is Resolved rather than Partial; the parent conjectures - Damnjanovic-Djordjevic Conjecture 4.9 and Basic-Damnjanovic-Stevanovic-Stosic Conjecture 4.23, both asserting 1 + (a-1)(b-1) for all a - remain open for every a >= 4, and the note is explicit that the upper bound for a >= 4 is the hard part. By the authors' own accounting the genuinely new content is the all-b closed form and its proof, particularly for the dihedral value which the companion paper never tabulates; the cyclic arithmetic for b = 3..8 already existed as computed SAT cells. The mathematics is a reduction rather than a search: Dih(3) = Sym(3) collapses dihedral embeddability to ordinary containment, after which Chvatal 1977 applies, with a block-partition construction supplying the matching lower bound for every connected pattern and every permutation group.",
+    "resultNote": "The a = 3 slice is settled outright; the parent conjectures, asserting 1 + (a-1)(b-1) for all a, remain open for every a >= 4, where the upper bound is the hard part.",
     "ageNote": "Both conjectures are from 2026 - Damnjanovic and Djordjevic posted arXiv:2607.06817 on 7 July 2026 and the companion Basic-Damnjanovic-Stevanovic-Stosic paper is arXiv:2604.16188 - so the a = 3 slice fell about five weeks after the conjecture was stated. This is among the shortest gaps in the catalog between a conjecture being posed and a piece of it being closed.",
     "aiContribution": "ai-discovered",
     "significance": 5,
@@ -15549,6 +15549,61 @@
       {
         "label": "Ma, Mattiolo, Steffen, Wolf - Sets of r-graphs that color all r-graphs",
         "url": "https://doi.org/10.1007/s00493-025-00144-4"
+      }
+    ]
+  },
+  {
+    "slug": "phelps-rodriguez-conjecture",
+    "name": "Phelps–Rodriguez Conjecture",
+    "shortName": "Phelps–Rodriguez Conj.",
+    "problemNumber": null,
+    "field": "Complex analysis",
+    "fieldGroup": "Analysis",
+    "resolution": "resolved",
+    "statement": "Let $p$ be a complex polynomial of degree $n\\ge2$ whose zeros all lie in the closed unit disk. For every zero $a$ of $p$, there is a critical point $\\zeta$ satisfying $|\\zeta-a|<1$, except when $|a|=1$ and $p$ is a nonzero scalar multiple of $z^n-a^n$.",
+    "posedBy": "Dean Phelps, Rene S. Rodriguez",
+    "yearPosed": 1972,
+    "solveType": "proved",
+    "solveDate": "2026-08-12",
+    "model": "GPT-5.6 Pro, Claude Opus 5",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Lech Mazur",
+      "Terence Tao"
+    ],
+    "aiRole": "Two models in two roles. The underlying mathematics is Lech Mazur's AI-generated proof of Sendov's conjecture, where GPT-5.6 Pro carried the discovery and derivation. Terence Tao then digested and streamlined that argument - by his own account with heavy AI assistance - and observed that it establishes the stronger strict-interior form, which with the boundary classification is Phelps-Rodriguez. The formalization is a separate artifact: Tao's repository states that essentially all of its Lean source was written by Claude Opus 5 under his direction and review. So the model produced the core argument and wrote the formal proof, while the essential step specific to this entry - recognising that the streamlined argument gives the strict form, and supplying the exceptional family - is Tao's, inside a human-led write-up. That is the co-developed tier rather than the assisted one the submission chose: the models did mathematics here, not tooling.",
+    "verification": "lean-verified",
+    "verificationNote": "Audited by this site on 13 August 2026, which is what lifts this above the submitter's conservative Lean-checked classification. The gap the submitter correctly identified was that nobody had checked the correspondence between Tao's formal statement and the historical conjecture, so that check was performed. Sendov.phelps_rodriguez in Sendov/Conjecture.lean reads: for n >= 2 and p of natDegree n with every root in the closed unit disk and p(a) = 0, either there is a critical point with the norm of (zeta - a) strictly below 1, or the norm of a is 1 and p = C c * (X^n - C (a^n)) for some nonzero c. That is exactly Phelps-Rodriguez, exceptional family included, with no weakening; and it is not vacuous, since natDegree = n with n >= 2 forces p to be nonzero, which the proof derives rather than assumes. All 80 first-party Lean files were then downloaded and audited with comments stripped: zero admit, zero axiom declarations, zero native_decide, and 124 decide calls, all kernel-reduced. The repository's only two sorry occurrences sit in Challenge.lean, which nothing imports - it is a deliberate statement-of-record that leaves both theorems open for a reader to check against - so they are outside the proof path. On the build, the repository's four GitHub Actions runs all report failure, which is misleading and worth stating plainly: reading the job steps shows the leanprover/lean-action build step completed successfully on the latest commit, and the failing step is docgen-action, documentation generation. That makes the kernel check third-party evidenced on GitHub's runners rather than resting on the author's machine. Not independently reviewed by another mathematician: the repository says so itself, and Tao is both the author of the digestion and the director of the formalization.",
+    "publication": "announcement",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://terrytao.wordpress.com/2026/08/12/a-digestion-of-the-proof-of-sendovs-conjecture/",
+    "sourceName": "A digestion of the proof of Sendov’s conjecture",
+    "resultNote": "Phelps-Rodriguez implies Sendov, so this entry records the stronger of the pair; the companion Sendov entry records the weaker statement and Mazur's original formalization, which proved Sendov but never stated the equality classification. The exceptional family is genuinely attained rather than an artefact of the proof: for p = z^n - 1 and a = 1 the only critical point is the origin, at distance exactly 1. Both conjectures fell out of one argument, and the strict form was not the announced target - Tao's digestion of Mazur's proof turned out to establish it, which is how a 1972 conjecture was resolved as a by-product of resolving a 1959 one.",
+    "ageNote": "Posed by Phelps and Rodriguez in 1972 as the sharp form of the Ilieff-Sendov question, and open for 54 years. It was resolved on 12 August 2026, the same day as Sendov's conjecture itself and by the same argument.",
+    "aiContribution": "ai-co-developed",
+    "significance": 30,
+    "significanceNote": "A named 1972 conjecture that is strictly stronger than Sendov's: it upgrades the distance-one bound to a strict inequality and classifies every case of equality. Less famous than Sendov itself, which is scored 40 here and carries Wikipedia articles in four languages, but it is the sharp form of the same question and had stood 54 years. Scored below Sendov and level with the well-tracked named conjectures, since it inherits Sendov's setting rather than opening a new one.",
+    "links": [
+      {
+        "label": "Tao, A digestion of the proof of Sendov's conjecture (12 Aug 2026)",
+        "url": "https://terrytao.wordpress.com/2026/08/12/a-digestion-of-the-proof-of-sendovs-conjecture/"
+      },
+      {
+        "label": "teorth/sendov - Lean formalization; Sendov.phelps_rodriguez in Sendov/Conjecture.lean",
+        "url": "https://github.com/teorth/sendov"
+      },
+      {
+        "label": "Challenge.lean - the statement of record, Mathlib-only, no definitions of its own",
+        "url": "https://github.com/teorth/sendov/blob/master/Challenge.lean"
+      },
+      {
+        "label": "Mazur's original proof of Sendov's conjecture, the underlying argument",
+        "url": "https://proofatlas.ai/formalizations/sendov-conjecture/"
       }
     ]
   },
