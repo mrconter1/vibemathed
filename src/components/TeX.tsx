@@ -28,16 +28,26 @@ function escapeHtml(s: string): string {
 /// Prose fields ask for it; titles do not.
 export function texToHtml(children: string, opts?: { linkify?: boolean }): string {
   const parts = children.split(/(\$\$[^$]+\$\$|\$[^$]+\$)/g);
+  const isDisplay = (p: string) => p.startsWith("$$") && p.endsWith("$$") && p.length > 4;
   return parts
-    .map((part) => {
-      if (part.startsWith("$$") && part.endsWith("$$") && part.length > 4) {
-        return render(part.slice(2, -2), true);
-      }
+    .map((part, i) => {
+      if (isDisplay(part)) return render(part.slice(2, -2), true);
       if (part.startsWith("$") && part.endsWith("$") && part.length > 2) {
         return render(part.slice(1, -1), false);
       }
-      const escaped = escapeHtml(part);
-      return opts?.linkify ? linkifyEscaped(escaped) : escaped;
+      // Newlines are meaningful here, and used to vanish: HTML collapses them,
+      // so a statement written as a list rendered as one run-on paragraph.
+      // Thirteen statements, ten AI-role notes and eight verification notes
+      // were affected. A blank line yields two breaks, which reads as a
+      // paragraph gap without nesting a <p> inside the <p> these render in.
+      //
+      // KaTeX display math is already a block, so a newline touching one would
+      // add a second gap - those get dropped rather than doubled.
+      let text = part;
+      if (isDisplay(parts[i - 1] ?? "")) text = text.replace(/^\n/, "");
+      if (isDisplay(parts[i + 1] ?? "")) text = text.replace(/\n$/, "");
+      const escaped = escapeHtml(text);
+      return (opts?.linkify ? linkifyEscaped(escaped) : escaped).replace(/\n/g, "<br>");
     })
     .join("");
 }
@@ -73,6 +83,9 @@ export function deTeX(s: string): string {
   let out = s.replace(/\$\$?([^$]+)\$\$?/g, "$1");
   for (const [re, rep] of REPLACEMENTS) out = out.replace(re, rep);
   return out
+    // A literal newline in a meta description or an OG tag is not a line
+    // break, it is a broken tag.
+    .replace(/\s*\n\s*/g, " ")
     .replace(/[{}]/g, "")
     .replace(/\\[a-zA-Z]+/g, "")
     .replace(/\s{2,}/g, " ")
