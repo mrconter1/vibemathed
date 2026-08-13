@@ -30,9 +30,16 @@ export function SiteHeader() {
             Vibe<span className="wordmark-accent text-[var(--accent-blue)]">Mathed</span>
           </span>
           {/* The one-line site definition, carried by every page now that the
-              home hero is gone. */}
-          <span className="block text-[10px] leading-tight tracking-wide text-[var(--ink-muted)]">
-            Math problems solved by AI
+              home hero is gone.
+
+              "with AI", not "by AI". The catalog's bottom tier is ai-assisted,
+              where a model built the search tooling or checked the proofs and
+              a human did the mathematics - "by" claims authorship the entries
+              themselves do not, which a reader called out as dishonest and was
+              right to. "with" covers the whole ladder from ai-assisted to
+              ai-discovered without overstating any rung of it. */}
+          <span className="block text-[9px] leading-tight tracking-wide text-[var(--ink-muted)]">
+            Math problems solved with AI
           </span>
         </Link>
 

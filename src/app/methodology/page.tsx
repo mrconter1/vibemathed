@@ -27,7 +27,7 @@ import { StatusIcon } from "@/components/StatusIcon";
 // cannot drift from what the UI actually shows.
 
 const DESCRIPTION =
-  "How VibeMathed decides what counts as a math problem solved by AI, and how every entry's status and verification level are classified.";
+  "How VibeMathed decides what counts as a math problem solved with AI, and how every entry's status and verification level are classified.";
 
 export const metadata: Metadata = {
   title: "Methodology",

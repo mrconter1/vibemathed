@@ -81,7 +81,7 @@ export async function GET() {
     <title>VibeMathed</title>
     <link>${SITE_URL}</link>
     <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml" />
-    <description>Math problems solved by AI. A community-curated record of problems no human had settled, proved or disproved with a model in the loop.</description>
+    <description>Math problems solved with AI. A community-curated record of problems no human had settled, proved or disproved with a model in the loop.</description>
     <language>en</language>
     <lastBuildDate>${items[0] ? pubDate(items[0].solveDate) : new Date().toUTCString()}</lastBuildDate>
 ${body}

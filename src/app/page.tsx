@@ -159,7 +159,7 @@ export default async function Home() {
       {/* No hero prose: the header tagline carries the one-line definition,
           the About page carries the paragraph, and the overview grid opens
           the page. The h1 stays for structure and search, invisibly. */}
-      <h1 className="sr-only">Math problems solved by AI</h1>
+      <h1 className="sr-only">Math problems solved with AI</h1>
 
       {/* Overview grid. On desktop: four stat tiles across the top, two larger
           highlight cards below them, and the activity feed occupying the right

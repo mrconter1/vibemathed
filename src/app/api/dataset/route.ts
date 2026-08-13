@@ -54,7 +54,7 @@ export async function GET() {
 
   return Response.json(
     {
-      title: "VibeMathed - math problems solved by AI",
+      title: "VibeMathed - math problems solved with AI",
       url: "https://vibemathed.com",
       license: "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)",
       methodology: "https://vibemathed.com/methodology",

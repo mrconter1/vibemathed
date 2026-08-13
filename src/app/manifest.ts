@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "VibeMathed",
     short_name: "VibeMathed",
-    description: "Tracking math problems solved by AI models.",
+    description: "Tracking math problems solved with AI models.",
     start_url: "/",
     display: "standalone",
     background_color: "#f3efe3",
