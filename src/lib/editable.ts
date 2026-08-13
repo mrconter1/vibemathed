@@ -99,6 +99,12 @@ export interface FieldSpec {
   maxLength?: number;
   /// For `choice` fields. The server validates against exactly these values.
   options?: { value: string; label: string }[];
+  /// No "$" allowed: this field renders in plain-text surfaces (browser
+  /// tabs, RSS, search, pickers, hover cards) where $...$ shows as raw
+  /// LaTeX source. Enforced by both the edit and submission parsers, and
+  /// EntryFields warns live while typing. Math in these fields is written
+  /// in ASCII notation instead: L^p, n=5, H_125.
+  plainText?: boolean;
 }
 
 /// Resolution statuses - what happened to the problem itself. Editable for the
@@ -153,14 +159,23 @@ export const RESOLUTION_METHOD_OPTIONS = [
 ];
 
 export const EDITABLE_FIELDS: FieldSpec[] = [
-  { key: "name", label: "Name", kind: "text", required: true, maxLength: 200 },
+  {
+    key: "name",
+    label: "Name",
+    kind: "text",
+    required: true,
+    maxLength: 200,
+    plainText: true,
+    help: "Plain text - write math in ASCII (L^p, n=5), not $...$. Titles appear in browser tabs, feeds and search, where LaTeX shows as source.",
+  },
   {
     key: "shortName",
     label: "Short name",
     kind: "text",
     required: true,
     maxLength: 60,
-    help: "Compact label used on chart axes and narrow layouts.",
+    plainText: true,
+    help: "Compact label used on chart axes and narrow layouts. Plain text, like the name.",
   },
   {
     key: "fieldGroup",

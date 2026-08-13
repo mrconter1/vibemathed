@@ -15,6 +15,8 @@ export interface RenderableField {
   required?: boolean;
   help?: string;
   options?: { value: string; label: string }[];
+  /// "$" is refused by the server; warn live while typing instead of at save.
+  plainText?: boolean;
 }
 
 // White, not a paper tone: a form field should read as a fillable well, and on
@@ -106,6 +108,16 @@ export function EntryFields({
                 onChange={(e) => onChange(spec.key, e.target.value)}
                 className={`${controlClass} mt-1`}
               />
+            )}
+
+            {/* Live version of the server's plain-text rule, so nobody types
+                a full LaTeX title and learns at save time that titles don't
+                render math. */}
+            {spec.plainText && value.includes("$") && (
+              <p className="mt-1 text-[11px] leading-snug text-[var(--status-warning)]">
+                {spec.label} is plain text and can&apos;t render math - write L^p or n=5
+                instead of $...$. The statement field is where $math$ renders.
+              </p>
             )}
 
             {renderAfter?.(spec.key)}

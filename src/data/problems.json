@@ -2723,7 +2723,7 @@
   },
   {
     "slug": "covering-number-c-12-6-4",
-    "name": "The Covering Number $C(12,6,4)$",
+    "name": "The Covering Number C(12,6,4)",
     "shortName": "Covering number C(12,6,4)",
     "problemNumber": null,
     "field": "Design theory",
@@ -3037,7 +3037,7 @@
   {
     "slug": "davenport-constant-heisenberg-125",
     "name": "The Small Davenport Constant of the Heisenberg Group of Order 125",
-    "shortName": "Davenport, $H_{125}$",
+    "shortName": "Davenport, H_125",
     "problemNumber": null,
     "field": "Additive Combinatorics, Zero-Sum Theory",
     "fieldGroup": "Combinatorics",
@@ -3310,7 +3310,7 @@
     "renownLangs": 0,
     "sourceUrl": "https://github.com/ZestyWombat854/dihedral-ramsey",
     "sourceName": "GitHub repo (preprint + Lean proof + Python checker)",
-    "resultNote": "The a = 3 slice is settled outright; the parent conjectures, asserting 1 + (a-1)(b-1) for all a, remain open for every a >= 4, where the upper bound is the hard part.",
+    "resultNote": "The a = 3 slice is settled outright. The parent conjecture's dihedral side has since been resolved for every a >= 4 as well (see the related entry), so Conjecture 4.9's claim 1 + (a-1)(b-1) now stands proved for all a >= 3; the trivial a = 1, 2 cases and the cyclic analogue for a >= 4 remain formally unaddressed.",
     "ageNote": "Both conjectures are from 2026 - Damnjanovic and Djordjevic posted arXiv:2607.06817 on 7 July 2026 and the companion Basic-Damnjanovic-Stevanovic-Stosic paper is arXiv:2604.16188 - so the a = 3 slice fell about five weeks after the conjecture was stated. This is among the shortest gaps in the catalog between a conjecture being posed and a piece of it being closed.",
     "aiContribution": "ai-discovered",
     "significance": 5,
@@ -3327,6 +3327,52 @@
       {
         "label": "sat/ - regenerated CNFs, DRAT certificates, witnesses and solver logs (commit 01a50c7)",
         "url": "https://github.com/ZestyWombat854/dihedral-ramsey/tree/01a50c7/sat"
+      }
+    ]
+  },
+  {
+    "slug": "dihedral-ramsey-numbers-of-the-alternating-a-path-versus-k-b-for-every-a-4-1-a-1",
+    "name": "Dihedral Ramsey numbers of the alternating a-path versus K_b, for every a >= 4: 1 + (a-1)(b-1)",
+    "shortName": "R_dih(P_a^alt, K_b) = 1+(a−1)(b−1), a≥4",
+    "problemNumber": null,
+    "field": "Permutational Ramsey theory",
+    "fieldGroup": "Combinatorics",
+    "resolution": "resolved",
+    "statement": "$R_{\\mathrm{dih}}(P_a^{\\mathrm{alt}}, K_b) = 1 + (a-1)(b-1)$ for all $a \\geq 4$, $b \\geq 1$ — the $a \\geq 4$ slice of Conjecture 4.9 (Damnjanović–Đorđević, arXiv:2607.06817). Combined with the $a = 3$ case (see sibling entry), this resolves Conjecture 4.9 in full for $a \\geq 3$.",
+    "posedBy": "Damnjanović–Đorđević (Conj 4.9)",
+    "yearPosed": 2026,
+    "solveType": "proved",
+    "solveDate": "2026-08-13",
+    "model": "Claude Fable",
+    "modelMaker": "Anthropic",
+    "humanCollaborators": [],
+    "aiRole": "The proof was produced by a sealed, multi-agent research process: independently-launched Claude agents across three rounds, convergent results cross-validated. Two independent AI referee agents reviewed it dual-blind; both CONFIRMED. Human direction was limited to run design, operational supervision, and manual re-derivation of two write-up fixes.",
+    "verification": "site-confirmed",
+    "verificationNote": "Reproduced by this site on 13 August 2026, working from the pinned statement alone - the proof's machinery, both referee reports and the shipped CNFs were not consulted by the checker. Confirmed independently: the orbit anchor ($|Dih(a)$-orbit of $P_a^{alt}| = a$ for a = 3..14); the Ramsey value at nine (a,b) cells in both directions - a good coloring exists at $n = (a-1)(b-1)$ and none at $n+1$ - exhaustively over every 2-coloring at (4,2), (5,2), (6,2), (7,2) and (4,3), and via an independently written CNF encoding solved with CaDiCaL at (8,2), (5,3), (6,3) and (4,4); and the proof's load-bearing inequality, the Aggregate Sum Theorem, by a third implementation built from the P/Q definitions rather than the recursion, over all 33,868 labeled graphs on up to six vertices - zero violations, minimum slack 0, so the bound is tight. The prose proof was also read here in full and every algebraic step traced. Not covered by the tier: the general argument has no human peer review - produced by a sealed multi-agent Claude run and refereed dual-blind by two AI agents in the same pipeline (both CONFIRMED; one non-fatal bug and one cosmetic slip found and repaired inline, originals kept). The Lean part is partial by its own declaration - four side lemmas, zero sorry or native_decide, standard axioms, source-audited here but not compiled (pinned v4.30.0 + Mathlib, no CI runs). The main theorems are not formalized; there, the referee reports and this site's checks are the verification.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://github.com/ZestyWombat854/alternating-path-ramsey",
+    "sourceName": "GitHub repo (proof + referee reports + verification code + partial Lean formalization)",
+    "resultNote": "The dihedral case only, for every $a \\ge 4$ and $b \\ge 1$; the substance is the upper bound, which the source paper's own computations could not reach. Together with the sibling a = 3 entry this proves Conjecture 4.9's claim $1+(a-1)(b-1)$ for all $a \\ge 3$; the conjecture's trivial a = 1, 2 cases are unaddressed by either entry, and the cyclic analogue $R_{cyc}(P_a^{alt}, K_b)$ for $a \\ge 4$ remains open. The engine is a self-contained inequality of independent interest: for any graph on a linearly ordered vertex set, the alternating-path reach statistics satisfy $\\sum_m [P(m)+Q(m)] \\ge 2|E(G)|$, from which the theorem falls out by averaging and a pivot decomposition.",
+    "aiContribution": "ai-discovered",
+    "significance": 8,
+    "significanceNote": "Resolves the dihedral side of a conjecture posed five weeks earlier in a single paper with no independent citations yet - a young question in a niche new area, permutational Ramsey theory. Above the a = 3 slice (5), which fell to a group coincidence plus a citation, because this is the general theorem with a genuinely new combinatorial inequality behind it; below the Erdos entries at 10, which are decades-old problems with real literatures.",
+    "links": [
+      {
+        "label": "Damnjanovic and Djordjevic, Computation of small reflective and dihedral Ramsey numbers (Conjecture 4.9)",
+        "url": "https://arxiv.org/abs/2607.06817"
+      }
+    ],
+    "relations": [
+      {
+        "to": "dihedral-and-cyclic-ramsey-numbers-of-the-alternating-3-path",
+        "kind": "continues",
+        "note": "The a >= 4 slice of the same Conjecture 4.9, proved five days later by a general argument; together the two entries close the conjecture's dihedral claim for every a >= 3."
       }
     ]
   },
@@ -3693,7 +3739,7 @@
   {
     "slug": "double-covers-discrete-box",
     "name": "New Bounds for Double Covers of the Discrete Box",
-    "shortName": "Double covers of $\\{0,1,2\\}^d$",
+    "shortName": "Double covers of {0,1,2}^d",
     "problemNumber": null,
     "field": "Extremal Combinatorics, Covering Problems",
     "fieldGroup": "Combinatorics",
@@ -3833,7 +3879,7 @@
   },
   {
     "slug": "e-log-concavity-chromatic-quasisymmetric",
-    "name": "$e$-Log-Concavity of Chromatic Quasisymmetric Functions",
+    "name": "e-Log-Concavity of Chromatic Quasisymmetric Functions",
     "shortName": "e-log-concavity",
     "problemNumber": null,
     "field": "Algebraic combinatorics",
@@ -7625,7 +7671,7 @@
   {
     "slug": "erdos-707-sidon-perfect-difference",
     "name": "Erdős Problem #707: Sidon Sets and Perfect Difference Sets",
-    "shortName": "Erdős #707 ($1000)",
+    "shortName": "Erdős #707 (1000-dollar prize)",
     "problemNumber": 707,
     "field": "Combinatorial number theory",
     "fieldGroup": "Number theory",
@@ -10114,7 +10160,7 @@
   },
   {
     "slug": "fulek-l3-linear-extremal-bound",
-    "name": "Fulek's Question on the Extremal Function of $L_3$",
+    "name": "Fulek's Question on the Extremal Function of L_3",
     "shortName": "Forbidden 0-1 matrices",
     "problemNumber": null,
     "field": "Extremal combinatorics",
@@ -10647,7 +10693,7 @@
   },
   {
     "slug": "ghasemi-kopparty-sparse-decoding-polynomials",
-    "name": "Ghasemi-Kopparty Problem on Sparse $S$-Decoding Polynomials",
+    "name": "Ghasemi-Kopparty Problem on Sparse S-Decoding Polynomials",
     "shortName": "Sparse S-decoding polynomials",
     "problemNumber": null,
     "field": "Computational complexity",
@@ -11046,7 +11092,7 @@
   },
   {
     "slug": "hadwiger-debrunner-line-arrangements",
-    "name": "General Position for Planar Line Arrangements and $HD_2(p,3)$",
+    "name": "General Position for Planar Line Arrangements and HD_2(p,3)",
     "shortName": "Hadwiger-Debrunner bound",
     "problemNumber": null,
     "field": "Discrete geometry",
@@ -11267,7 +11313,7 @@
   {
     "slug": "hessian-conjecture-five-variable-counterexample",
     "name": "A Five-Variable Counterexample to the Hessian Conjecture",
-    "shortName": "Hessian conjecture, $n=5$",
+    "shortName": "Hessian conjecture, n=5",
     "problemNumber": null,
     "field": "Affine Algebraic Geometry, Polynomial Maps",
     "fieldGroup": "Algebra",
@@ -12028,7 +12074,7 @@
   },
   {
     "slug": "k-antichains-unit-cube",
-    "name": "Conjecture on $k$-Antichains in the Unit Cube",
+    "name": "Conjecture on k-Antichains in the Unit Cube",
     "shortName": "k-antichains",
     "problemNumber": null,
     "field": "Combinatorics",
@@ -12422,7 +12468,7 @@
   {
     "slug": "kirby-4-37-irreducible-projective-plane",
     "name": "The Kinoshita Conjecture and Kirby Problem 4.37",
-    "shortName": "Irreducible projective plane in $S^4$",
+    "shortName": "Irreducible projective plane in S^4",
     "problemNumber": null,
     "field": "4-manifold topology",
     "fieldGroup": "Geometry & topology",
@@ -16058,8 +16104,8 @@
   },
   {
     "slug": "primariness-lp-l1",
-    "name": "Primariness of the Mixed-Norm Space $L_p(L_1)$",
-    "shortName": "Primariness of $L_p(L_1)$",
+    "name": "Primariness of the Mixed-Norm Space L_p(L_1)",
+    "shortName": "Primariness of L_p(L_1)",
     "problemNumber": null,
     "field": "Banach Space Decomposition Theory",
     "fieldGroup": "Analysis",
@@ -18197,7 +18243,7 @@
   },
   {
     "slug": "strichartz-tse-radon-nikodym-integrability",
-    "name": "Strichartz-Tse $L^p$-Integrability on the Sierpinski Gasket",
+    "name": "Strichartz-Tse L^p-Integrability on the Sierpinski Gasket",
     "shortName": "Sierpinski energy densities",
     "problemNumber": null,
     "field": "Fractal analysis",
@@ -18415,7 +18461,7 @@
   {
     "slug": "symmetrically-colored-k-ap-bound",
     "name": "Improved Bound for Colorings Without Symmetrically Colored k-APs",
-    "shortName": "Symmetric $k$-AP colorings",
+    "shortName": "Symmetric k-AP colorings",
     "problemNumber": null,
     "field": "Additive Combinatorics, Ramsey Theory",
     "fieldGroup": "Combinatorics",
@@ -18450,8 +18496,8 @@
   },
   {
     "slug": "t-edge-balanced-existence",
-    "name": "Existence of $t$-Edge-Balanced Graphs for $t \\ge 3$",
-    "shortName": "$t$-edge-balanced graphs",
+    "name": "Existence of t-Edge-Balanced Graphs for t ≥ 3",
+    "shortName": "t-edge-balanced graphs",
     "problemNumber": null,
     "field": "Design theory",
     "fieldGroup": "Combinatorics",

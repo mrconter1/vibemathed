@@ -41,6 +41,13 @@ function parseField(
     return { ok: false, error: `${spec.label} is too long (max ${spec.maxLength}).` };
   }
 
+  if (spec.plainText && v.includes("$")) {
+    return {
+      ok: false,
+      error: `${spec.label} is plain text: write math in ASCII (L^p, n=5) rather than $...$, which renders as raw LaTeX in tabs, feeds and search.`,
+    };
+  }
+
   switch (spec.kind) {
     case "choice": {
       const allowed = (spec.options ?? []).map((o) => o.value);

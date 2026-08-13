@@ -68,6 +68,12 @@ export async function submitProblem(values: SubmissionValues): Promise<SubmitRes
     if (spec.maxLength && raw.length > spec.maxLength) {
       return { ok: false, error: `${spec.label} is too long (max ${spec.maxLength}).` };
     }
+    if (spec.plainText && raw.includes("$")) {
+      return {
+        ok: false,
+        error: `${spec.label} is plain text: write math in ASCII (L^p, n=5) rather than $...$, which renders as raw LaTeX in tabs, feeds and search.`,
+      };
+    }
 
     switch (spec.kind) {
       case "choice": {
