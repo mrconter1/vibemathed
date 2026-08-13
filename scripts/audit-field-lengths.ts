@@ -23,9 +23,9 @@ const LIMITS = new Map<string, number>();
 for (const spec of [...EDITABLE_FIELDS, ...CURATOR_FIELDS]) {
   if (spec.maxLength) LIMITS.set(spec.key, spec.maxLength);
 }
-// Not on any spec list, so not covered by the form at all - see the gaps
-// section at the bottom of the report.
-const UNSPECCED = ["significanceNote", "submitterNote", "reviewMessage"] as const;
+// Text columns no field spec covers, because they are not entry content: the
+// submitter's private note to the reviewer and the curator's decision message.
+const UNSPECCED = ["submitterNote", "reviewMessage"] as const;
 
 interface Finding {
   slug: string;
@@ -85,7 +85,7 @@ async function main() {
     for (const key of UNSPECCED) {
       const v = row[key];
       if (typeof v !== "string") continue;
-      const limit = key === "reviewMessage" ? MESSAGE_MAX : key === "submitterNote" ? 1000 : 400;
+      const limit = key === "reviewMessage" ? MESSAGE_MAX : 1000;
       if (v.length <= limit) continue;
       unspecced.push({
         slug: p.slug,
@@ -123,9 +123,7 @@ async function main() {
   for (const s of linkIssues) console.log(`  ${s}`);
   console.log();
 
-  console.log("=== FIELDS WITH NO FORM LIMIT AT ALL\n");
-  console.log("  significanceNote, significance: on no spec list, so no cap anywhere.");
-  console.log("  Measured below against 400, the ageNote cap, as the nearest comparable.\n");
+  console.log("=== NON-ENTRY TEXT (submitter note, decision message)\n");
   const byField2 = new Map<string, Finding[]>();
   for (const f of unspecced) byField2.set(f.field, [...(byField2.get(f.field) ?? []), f]);
   for (const [field, list] of byField2) {

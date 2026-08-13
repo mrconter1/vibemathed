@@ -71,7 +71,8 @@ export type EditableKey =
   | "sourceName"
   | "links"
   | "renownLangs"
-  | "renownNote";
+  | "renownNote"
+  | "significanceNote";
 
 export type FieldKind =
   | "text"
@@ -267,11 +268,17 @@ export const EDITABLE_FIELDS: FieldSpec[] = [
     help: "What the figure covers and where it came from, e.g. an aggregate across several results. Hover-bubble text, so plain text only - no math.",
   },
   {
+    // Renamed from "Result qualifier", and the cap went 200 -> 1000, because
+    // the field had outgrown both. It began as a one-line caveat for results
+    // that are not cleanly proved or disproved, but the entry page gives it
+    // its own section headed "What was actually shown", and curators write it
+    // that way: 31 of 204 stored values were over the old 200, several past
+    // 600. The limit was describing a field that no longer existed.
     key: "resultNote",
-    label: "Result qualifier",
-    kind: "text",
-    maxLength: 200,
-    help: "Short caveat for results that aren't cleanly proved/disproved.",
+    label: "What was actually shown",
+    kind: "textarea",
+    maxLength: 1000,
+    help: "What the result does and does not settle: the caveat, the scope, what stays open. Math works: $inline$ or $$display$$.",
   },
   {
     key: "ageNote",
@@ -310,6 +317,17 @@ export const CURATOR_FIELDS: FieldSpec[] = [
     kind: "textarea",
     maxLength: 300,
     help: "What the count leaves out, when it needs saying.",
+  },
+  {
+    // Was on no spec list at all, so nothing capped it and the longest stored
+    // value had reached 1072 characters. Curator-only for the same reason
+    // `renownLangs` is: it scores the entry, and the people whose entries it
+    // scores must not write it.
+    key: "significanceNote",
+    label: "Significance note",
+    kind: "textarea",
+    maxLength: 600,
+    help: "Why the score is what it is, against the anchor ladder. Hover-bubble text, so plain text only - no math.",
   },
 ];
 
