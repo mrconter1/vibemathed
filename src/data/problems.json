@@ -12854,7 +12854,13 @@
     "resultNote": "The key step is a lower bound on the truncated imbalance sum, which yields every Erdos-Gallai inequality for the sorted imbalance list; a parity computation finishes it.",
     "aiContribution": "ai-discovered",
     "significance": 10,
-    "significanceNote": "A specialist graph-theory conjecture with a small but real literature descending from Albertson's irregularity of a graph."
+    "significanceNote": "A specialist graph-theory conjecture with a small but real literature descending from Albertson's irregularity of a graph.",
+    "links": [
+      {
+        "label": "Imbalance conjecture",
+        "url": "https://en.wikipedia.org/wiki/Imbalance_conjecture"
+      }
+    ]
   },
   {
     "slug": "kuperberg-six-cylinder",
@@ -17075,6 +17081,65 @@
     "aiContribution": "ai-co-developed",
     "significance": 35,
     "significanceNote": "The central open question of the graph streaming model, cited across theoretical computer science for two decades, and the reason the model's flagship problem stayed unresolved."
+  },
+  {
+    "slug": "sendov-s-conjecture",
+    "name": "Sendov's Conjecture",
+    "shortName": "Sendov's Conj.",
+    "problemNumber": null,
+    "field": "Complex analysis",
+    "fieldGroup": "Analysis",
+    "resolution": "resolved",
+    "statement": "Let $p$ be a complex polynomial of degree $n \\ge 2$ whose zeros all lie in the closed unit disk. Then for every zero $a$ of $p$, there exists a critical point $\\zeta$ of $p$ such that $|\\zeta-a| \\le 1$.\n\nThis is the standard Sendov statement and exactly matches the theorem Mazur formalized.",
+    "posedBy": "Blagovest Sendov",
+    "yearPosed": 1959,
+    "solveType": "proved",
+    "solveDate": "2026-08-05",
+    "model": "GPT-5.6 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Lech Mazur"
+    ],
+    "aiRole": "GPT-5.6 Pro contributed substantially to the discovery and derivation of the proof, including mathematical exploration, proof development, exact computational testing, and adversarial auditing. Lech Mazur directed the research workflow, selected and reconciled model outputs, and authored the resulting manuscript. A separate Lean 4 development proves the exact statement of Sendov's conjecture.",
+    "verification": "lean-verified",
+    "verificationNote": "Independently verified twice over, and this site audited the formal artifact itself on 13 August 2026. The decisive external check is Terence Tao's post of 12 August 2026, \"A digestion of the proof of Sendov's conjecture\": he writes that \"Lech Mazur was able to use an AI tool to resolve Sendov's conjecture for all n >= 2\", reports formalizing the entire argument in Lean himself at about 15,000 lines against the original's roughly 90,000, and concludes that the argument \"resolves both the Sendov conjecture and the Phelps-Rodriguez conjecture in full generality\". Tao proved the sufficiently-large-degree case in 2020, so this is expert verification by the person best placed to give it, and it is what carries the tier here. Separately, this site downloaded and audited Mazur's Lean package. The definition SendovConjecture in Sendov/Statement.lean is exactly the conjecture, correctly quantified over every nonzero complex polynomial of degree at least two and every zero, declared once and shadowed nowhere. Across all 1,160 first-party Lean files there are zero sorry, zero admit and zero custom axiom declarations, and - the one that matters for an autonomous prover - zero uses of native_decide; the 1,117 decide calls are kernel-checked. The recorded axiom profile is exactly propext, Classical.choice and Quot.sound. All 1,160 file hashes in the published evidence record match the downloaded bundle byte for byte, as does Theorem.lean against its pinned artifact hash. What this site could not check is the build itself: the published bundle ships no lakefile and no lake-manifest, and excludes Mathlib, so it cannot be recompiled as distributed. ProofAtlas's own evidence file is candid about the same gap, recording buildTranscriptRecorded false, collectionProvenanceRecorded false and a publication review status of accountable_review_not_recorded. That internal status is not what this entry rests on; Tao's independent digestion and independent formalization are.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 4,
+    "sourceUrl": "https://www.proofatlas.ai/papers/sendov-conjecture/SENDOV_CONJECTURE_PROOF_AUGUST_5_2026.pdf",
+    "sourceName": "A Computer-Assisted Proof of Sendov's Conjecture",
+    "renownNote": "Wikipedia articles in English, German, French and Yoruba. The article still described the conjecture as open in general when checked on 13 August 2026, the day after Tao's digestion appeared.",
+    "resultNote": "Sendov's conjecture is resolved for every degree n >= 2, closing a gap that had stood since 1959: degrees up to eight were settled piecemeal between 1969 and 1999, and Tao's 2020 result covered all sufficiently large degrees without ever specifying the threshold, leaving the middle range open. Tao's digestion establishes the stronger interior form of the statement, which resolves the Phelps-Rodriguez conjecture in full generality as a consequence - a second conjecture falling out of the same argument, and one that likely merits its own entry. Two independent Lean developments now exist: Mazur's original at roughly 90,000 lines and Tao's streamlined version at about 15,000.",
+    "ageNote": "Sendov described the conjecture to Nikola Obreshkov in 1959, and it was misattributed to Ljubomir Iliev in 1967; sources variously date it 1958, 1959 or 1962. Open for 67 years. Degrees below nine were settled between 1969 and 1999 (Meir-Sharma, Brown, Borcea, Brown-Xiang), and Tao proved it for all sufficiently high degrees in 2020, leaving the unbounded middle range that this result closes.",
+    "aiContribution": "ai-discovered",
+    "significance": 40,
+    "significanceNote": "A named conjecture from 1959 with a Wikipedia article in four languages, a 67-year history of partial results, and enough standing that Terence Tao wrote a paper on the large-degree case in 2020 and a full digestion of the solution in 2026. Placed level with the Erdos unit distance problem: a genuinely famous problem within its area and recognisable outside it, below the household conjectures such as cycle double cover (55) and well above the specialist named conjectures around 25 to 30. The Phelps-Rodriguez corollary adds to the case rather than being scored here.",
+    "links": [
+      {
+        "label": "Terence Tao, A digestion of the proof of Sendov's conjecture (12 Aug 2026)",
+        "url": "https://terrytao.wordpress.com/2026/08/12/a-digestion-of-the-proof-of-sendovs-conjecture/"
+      },
+      {
+        "label": "ProofAtlas formalization page: exact theorem, evidence and build record",
+        "url": "https://proofatlas.ai/formalizations/sendov-conjecture/"
+      },
+      {
+        "label": "Mazur's Lean package, checked source bundle (1,160 files, ~93k lines)",
+        "url": "https://proofatlas.ai/papers/sendov-conjecture/SENDOV_CONJECTURE_PROOF_PUBLIC_BUNDLE_2026-08-05.zip"
+      },
+      {
+        "label": "Tao, Sendov's conjecture for sufficiently high degree polynomials (2020)",
+        "url": "https://arxiv.org/abs/2012.04125"
+      },
+      {
+        "label": "Wikipedia: Sendov's conjecture",
+        "url": "https://en.wikipedia.org/wiki/Sendov%27s_conjecture"
+      }
+    ]
   },
   {
     "slug": "separable-jacobian-conjecture-characteristic-two",
