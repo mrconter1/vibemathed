@@ -87,6 +87,15 @@ export function InfoTip({ content, label }: { content: ReactNode; label: string 
 }
 
 /// A "*" next to a value that reveals a caveat on hover or focus.
+///
+/// `text` is PLAIN TEXT plus `**bold**`, and deliberately not TeX. This is a
+/// client component - the hover bubble needs state and a portal - while `TeX`
+/// is a server component, which is the whole reason KaTeX never reaches the
+/// browser. Rendering math here would mean pre-rendering it server-side and
+/// threading the HTML through the card payload for every entry, on a page that
+/// already lazy-loads statements to keep that payload down. So the three
+/// fields that land here (significanceNote, ageNote, solveCostNote) use
+/// Unicode - write "π/2", not "$\pi/2$", which renders its delimiters.
 export function StarNote({ text }: { text: string }) {
   const { open, pos, ref, show, hide } = useBubble();
   return (

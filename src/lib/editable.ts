@@ -264,7 +264,7 @@ export const EDITABLE_FIELDS: FieldSpec[] = [
     label: "Cost note",
     kind: "text",
     maxLength: 300,
-    help: "What the figure covers and where it came from, e.g. an aggregate across several results.",
+    help: "What the figure covers and where it came from, e.g. an aggregate across several results. Hover-bubble text, so plain text only - no math.",
   },
   {
     key: "resultNote",
@@ -273,7 +273,13 @@ export const EDITABLE_FIELDS: FieldSpec[] = [
     maxLength: 200,
     help: "Short caveat for results that aren't cleanly proved/disproved.",
   },
-  { key: "ageNote", label: "Age footnote", kind: "text", maxLength: 400 },
+  {
+    key: "ageNote",
+    label: "Age footnote",
+    kind: "text",
+    maxLength: 400,
+    help: "Shown in a hover bubble, so plain text only - write π/2, not $\\pi/2$. Math renders in the statement and the prose notes, not here.",
+  },
   { key: "citations", label: "Citations", kind: "number", help: "Looked-up count, or blank." },
   { key: "citationsPaper", label: "Cited paper", kind: "text", maxLength: 300 },
   { key: "citationsSource", label: "Citation source", kind: "text", maxLength: 120 },
