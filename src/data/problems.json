@@ -1,5 +1,44 @@
 [
   {
+    "slug": "1-17353-planar-lower-bound-and-exact-local-envelopes-for-cost-preserving-single-",
+    "name": "1.17353 planar lower bound and exact local envelopes for cost-preserving single-source unsplittable flow",
+    "shortName": "1.17353 planar bound and exact local envelopes for SSUFs",
+    "problemNumber": null,
+    "field": null,
+    "fieldGroup": "Combinatorics",
+    "resolution": "partial",
+    "statement": "For a single-source unsplittable flow, find the optimal universal additive constant $C$ s.t. every feasible fractional flow $x$ with arc costs $c$ should admit an unsplittable routing $y$ with $c^\\top y \\le c^\\top x$ and $y_a \\le x_a + C \\cdot D$ on every arc. We provide several new results on $C$:\n\n— record lower bound for planar instances (against known ceiling 2):\n$$C >= \\frac{58676765987259}{50000000000000} = 1.17353531974518;$$\n\n— local envelope ladder (proved): $E(2) = 1$, $E(3) = 9/8$, $E(4) = (299 - 41*\\sqrt{41})/32 = 1.13974707\\ldots$, attained by the counterexamples from our previous work; record constants of our previous work are now exact local envelopes of the general theory;\n\n— global results: every exact-two-path instance with rows touching at most three terminals satisfies $C <= 2$ (first unconditional constant for an unbounded class); interaction arity m gives $\\lceil\\lfloor 3m/2\\rfloor /2\\rceil \\cdot D$;\n\n— classes closed exactly: out-trees 0; two-layer hubs 1; outerplanar two-exit interval spines 1 (sharp); series-parallel $\\le 1$;\n\n— band merger constant $K* >= 2.5652\\ldots$ (twice the general lower bound $1.2826\\ldots$).",
+    "posedBy": "Dinitz, Garg, Goemans",
+    "yearPosed": 1999,
+    "solveType": "proved",
+    "solveDate": "2026-08-13",
+    "model": "GPT-5.6 Sol, Claude Fable 5, Claude Opus 5",
+    "modelMaker": "OpenAI, Anthropic",
+    "humanCollaborators": [],
+    "aiRole": "Like the previous parts (https://vibemathed.com/problem/1-28249-lower-bound-and-partial-upper-bounds-for-cost-preserving-single-source-u), this work was written in close collaboration with GPT~5.6~Sol, Claude Fable~5, and Claude Opus~5, which contributed proofs, failed routes, adversarial reviews, code for the verification campaign, and more. This time, I cannot claim that it was a single tour de force by the models like the original counterexample by Rybin; it was a long journey with a lot of human involvement, but the key ideas were provided by the LLMs. I have personally verified and edited this work in its entirety, and all errors are mine.",
+    "verification": "site-confirmed",
+    "verificationNote": "Reproduced by this site on 13 August 2026 from a clean clone, in two parts. First the repository's own suite: all fourteen verifiers in verify/run_all.sh pass, exit 0. Those cover Parts I and II only, so the headline planar record was rebuilt here independently. Reading only the raw arc list, a depth-first search rediscovers exactly two source-to-terminal paths for each of the six terminals; the fractional arc loads recompute exactly on all 21 arcs; all 64 routing overloads recompute exactly in rational arithmetic; the cost rule fits all 64 of the certificate's own cost deltas; 42 routings come out cost-preserving as claimed; and the minimum overload over those 42 is $58676765987259/50000000000000$, exactly the record. Planarity was checked independently too, by Euler ($V=16$, $E=21$, $F=7$) and by networkx. The envelope constant was derived symbolically from the stated quartic rather than read off: $t^*=(7-\\sqrt{41})/4$ is the unique critical point in $(0,2-\\sqrt3)$, giving $E(4)=(299-41\\sqrt{41})/32$. The 2,015-cell closure ledger is internally complete: five forms of 403, family counts summing to 2,015, every cell on one of nine solver-free lemmas. Not checked: the mixture characterization, the network-matrix total-unimodularity theorem and the tree-path four-colouring theorem, conventional proofs in an unreviewed preprint with no independent expert review. The tier records this site's reproduction of the certificates; the structural theory remains unreviewed.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://github.com/snikolenko/unsplittable-flows",
+    "sourceName": "Unsplittable flows repository",
+    "resultNote": "Part III of a series, and the first unconditional positive results in it. Settled exactly: the local envelope ladder $E(2)=1$, $E(3)=9/8$ and $E(4)=(299-41\\sqrt{41})/32=1.13974707\\ldots$, which recasts the earlier record constants as exact envelopes of the general theory rather than isolated instances, plus exact constants for four classes - out-trees 0, two-layer hubs 1, outerplanar two-exit interval spines 1 (sharp), series-parallel at most 1. Improved but not settled: the planar lower bound rises to $1.17353531974518$ against the known ceiling 2, and every exact-two-path instance whose rows touch at most three terminals satisfies $C\\le2$, the first unconditional constant for an unbounded class. The universal question is untouched - it reduces here to a single factor-two merger statement with certified wall $K^*\\ge2.5652\\ldots$, twice the refined general lower bound $1.28260069\\ldots$.",
+    "aiContribution": "ai-co-developed",
+    "significance": 15,
+    "significanceNote": "The residual optimal-constant question left open by the Dinitz-Garg-Goemans disproof, scored level with Part II of the same series. Specialist, but rooted in a well-known 1999 conjecture, and this instalment adds the first unconditional positive results rather than another record. Held at 15 because the universal constant is still open and the exact answers are for restricted classes.",
+    "links": [
+      {
+        "label": "Zenodo preprint",
+        "url": "https://zenodo.org/records/21922203"
+      }
+    ]
+  },
+  {
     "slug": "1-28249-lower-bound-and-partial-upper-bounds-for-cost-preserving-single-source-u",
     "name": "1.28249... Lower Bound and Partial Upper Bounds for Cost-Preserving Single-Source Unsplittable Flows",
     "shortName": "Common-Point Interval Systems for SSUF",
@@ -77,7 +116,7 @@
     "sourceUrl": "https://arxiv.org/abs/2608.00177",
     "sourceName": "arXiv",
     "resultNote": "The counterexample is an ordinary algebra concentrated in degree zero, with the strongest possible vanishing in positive degrees, so the phenomenon needs no grading or differential. Liu and Shen had already disproved the differential-graded version in December 2025 without any AI involvement; the classical case is the one that fell with a model in the loop.",
-    "ageNote": "Posed by Han in the Journal of the London Mathematical Society in 2006 and open since, with a dedicated survey and positive results for commutative, monomial, graded, Koszul, local and cellular algebras. Happel had asked the same question for Hochschild cohomology; Buchweitz, Green, Madsen and Solberg answered that negatively in 2005, but their self-injective examples have nonzero Hochschild homology in infinitely many degrees, so Han's homology version survived and sharpened into the question of whether homology detects smoothness where cohomology cannot.",
+    "ageNote": "Posed by Han in the J. London Math. Soc. in 2006 and open since, with a dedicated survey and positive results for commutative, monomial, graded, Koszul, local and cellular algebras. Happel asked the same for Hochschild cohomology; Buchweitz, Green, Madsen and Solberg answered that negatively in 2005, but their examples have nonzero homology in infinitely many degrees, so Han's survived.",
     "aiContribution": "ai-co-developed",
     "significance": 25,
     "significanceNote": "A named conjecture of the representation theory of finite-dimensional algebras, open for twenty years, with its own survey article, and the surviving half of the Happel-Han pair after the cohomology version fell in 2005.",
@@ -166,7 +205,7 @@
     "sourceUrl": "https://arxiv.org/abs/2608.06272",
     "sourceName": "arXiv",
     "resultNote": "One finite-dimensional construction settles three related questions. Besides the inverse generator problem, it gives a generator whose Cayley transforms satisfy the ordinary Kreiss resolvent condition but are neither strongly Kreiss bounded nor power bounded, and it shows the Crank-Nicolson scheme is unstable in operator norm both over long times at fixed step size and under mesh refinement at fixed final time.",
-    "ageNote": "Posed by deLaubenfels in 1988, with a documented ladder since: positive for sectorial operators of angle less than $\\pi/2$, positive on Hilbert spaces for contractive semigroups by Lumer-Phillips, counterexamples on Banach spaces going back to Komatsu, and Gomilko-Zwart-Tomilov producing Hilbert-space generators with slow but unbounded growth. The Hilbert-space case with a bounded semigroup stayed open until this paper.",
+    "ageNote": "Posed by deLaubenfels in 1988, with a documented ladder since: positive for sectorial operators of angle below π/2, positive on Hilbert spaces for contractive semigroups by Lumer-Phillips, counterexamples on Banach spaces back to Komatsu, and Gomilko-Zwart-Tomilov producing Hilbert-space generators with slow unbounded growth. The bounded-semigroup Hilbert case stayed open until this paper.",
     "aiContribution": "ai-assisted",
     "significance": 22,
     "significanceNote": "A named 1988 problem of semigroup theory with a 38-year ladder of partial results, motivated from numerical analysis, control theory and functional calculus, but read within those communities only."
@@ -223,7 +262,7 @@
     ],
     "aiRole": "The paper's \"Acknowledgments and AI disclosure\" section states that the two-terminal gadget \"was discovered, and substantial parts of the proof strategy were developed, through interaction with OpenAI GPT-5.6 Sol\", while the author \"selected the research problem, directed the computational search and subsequent proof development, and checked the resulting mathematical arguments and computational certificates\". GPT-5.6 Sol also assisted in preparing the manuscript and the verification code.",
     "verification": "site-confirmed",
-    "verificationNote": "Reproduced by this site on 12 August 2026. The refutation is a single finite object, so it is checkable outright rather than on trust. We rebuilt the 31-vertex seed T from the paper's own definitions - the 14-vertex gadget's cyclic neighbour lists, the pentagonal-bipyramid base, the decorated rim edges 01 and 23, the stated vertex labelling, and the two completion edges 6-12 and 6-20 - without running the author's code. That yields a simple 3-connected planar graph with 31 vertices and 87 = 3n-6 edges, hence a triangulation, with the paper's degree multiset 4^1 5^17 6^6 7^7. Its maximum induced forest was then computed exactly by two independent algorithms: an ILP with lazy cycle-elimination cuts, and a branch-and-bound minimum feedback vertex set with no LP involved. Both give a(T) = 15, equivalently a minimum feedback vertex set of exactly 16, against the 15.5 the conjecture requires. We separately brute-forced the two finite inputs to the symbolic argument - the terminal profile (6,6,6,5) over all 2^12 internal subsets, and beta = 3 over all 2^7 subsets of the seven-vertex core - and confirmed that J plus the edge bf is the icosahedral graph, that the paper's 15-vertex witness induces the stated path, and that M_k for k = 2..5 is planar on 31k vertices with 93k-6 edges, minimum degree five, and every seed induced. Worth noting what the author's shipped verifier does not do: it certifies the gadget embedding, the profile, beta and the sphere certificates, but it never computes a(T) or a(M_k) and says so. That computation is the one this site supplied. The preprint is not peer-reviewed, is not on arXiv, and no independent expert has reviewed it; site-confirmed here means the counterexample is finite and we checked it ourselves, not that the community has weighed in.",
+    "verificationNote": "Reproduced here on 12 August 2026. The refutation is a single finite object, so it is checkable outright rather than on trust. The 31-vertex seed $T$ was rebuilt from the paper's own definitions - the 14-vertex gadget's cyclic neighbour lists, the pentagonal-bipyramid base, the decorated rim edges, the stated labelling and the two completion edges - without running the author's code. That yields a simple 3-connected planar graph on 31 vertices with $87 = 3n-6$ edges, hence a triangulation, with the paper's degree multiset $4^1 5^{17} 6^6 7^7$. Its maximum induced forest was then computed exactly by two independent algorithms: an ILP with lazy cycle-elimination cuts, and a branch-and-bound minimum feedback vertex set with no LP involved. Both give $a(T) = 15$, equivalently a minimum feedback vertex set of exactly 16, against the 15.5 the conjecture requires. The two finite inputs to the symbolic argument were separately brute-forced - the terminal profile $(6,6,6,5)$ over all $2^{12}$ internal subsets, and $\\beta = 3$ over all $2^7$ subsets of the core - and $M_k$ for $k = 2..5$ confirmed planar on $31k$ vertices with $93k-6$ edges, minimum degree five, every seed induced. Worth noting what the shipped verifier does not do: it certifies the gadget embedding, the profile, $\\beta$ and the sphere certificates, but never computes $a(T)$ or $a(M_k)$, and says so. That computation is the one this site supplied. Not peer-reviewed, not on arXiv, no independent expert review.",
     "publication": "preprint",
     "resolutionMethod": "construction",
     "citations": null,
@@ -1602,10 +1641,6 @@
     "significanceNote": "Borsuk's conjecture is a famous named problem with a Wikipedia article and a 90-year history; the conjecture itself was already refuted by Kahn-Kalai in 1993, so what this entry records is the current record for the smallest failing dimension, 64 to 63, a serious but incremental step on a well-known question (the record has moved six times since 1993). Scored level with the Hadamard order-668 construction: both are the current record instance of a famous conjecture rather than the conjecture itself.",
     "links": [
       {
-        "label": "Grinsztajn's proof note, exact verifier and DIMACS certificates (first solve, May 2026)",
-        "url": "https://github.com/maaxgrin/borsuk-63-counterexample"
-      },
-      {
         "label": "Tao's optimization-problems ledger, constant 28a - credits the 63 bound to Grinsztajn",
         "url": "https://teorth.github.io/optimizationproblems/constants/28a.html"
       },
@@ -2769,7 +2804,7 @@
     "sourceName": "arXiv",
     "renownNote": "English and Polish Wikipedia articles.",
     "resultNote": "Concurrent independent proof: the authors note that during preparation of this note, a proof of the conjecture appeared independently in a July 2026 preprint of S. Jin (\"The numerical range is a 2-spectral set\", preprints.org), by a different, function-theoretic route. That work carries no AI disclosure known to us, so the first proof of Crouzeix's conjecture may not be an AI-assisted one; this entry records the AI-assisted proof, not a claim of priority.",
-    "ageNote": "Posed by Crouzeix in 2004, with a documented ladder of constants since: 11.08 (Crouzeix, 2007), $1+\\sqrt{2}$ (Crouzeix and Palencia, 2017), plus many special cases.",
+    "ageNote": "Posed by Crouzeix in 2004, with a documented ladder of constants since: 11.08 (Crouzeix, 2007), 1 + √2 (Crouzeix and Palencia, 2017), plus many special cases.",
     "aiContribution": "ai-assisted",
     "significance": 30,
     "significanceNote": "A named 2004 conjecture at the centre of matrix analysis and operator theory, with two decades of partial results, a survey of its own and a Wikipedia article, but little known outside those fields.",
@@ -3244,7 +3279,7 @@
     "humanCollaborators": [],
     "aiRole": "The model produced the proof (the $\\mathrm{Dih}(3) = \\mathrm{Sym}(3)$ collapse, the Chvátal reduction, the cyclic corollary), the Lean 4 formalization, and the Python verification script autonomously. Human direction was limited to initiation and operational supervision.",
     "verification": "site-confirmed",
-    "verificationNote": "Reproduced by this site on 13 August 2026. The Lean development builds clean (exit 0) with the pinned toolchain (lean4 v4.12.0, core only, no Mathlib). Its own #print axioms output shows all five main theorems — theoremB_lowerBound, theoremB_lowerBound_all_groups, lemma2_blockWitness, lemma3_dih3_eq_sym3, noMonoCopy_completeGraph_reduce — depending on exactly propext, Classical.choice and Quot.sound. No Lean.ofReduceBool, so no native_decide behind the result; with comments stripped the source has zero sorry, admit, axiom declarations and native_decide, and its 23 decide calls are kernel-reduced. A naive grep contradicts this only because those words appear in the file's own documentation. The Python checker runs as described: Dih(3) has order 6 and equals Sym(3) (against Dih(4) at 8 of 24), lower-bound witnesses are valid for b = 2..8, and b = 3 is settled exhaustively over all 1,024 colourings of K5. The upper bound for general b is not formalized; it cites Chvatal 1977, R(T, K_n) = (|T|-1)(n-1)+1, giving 2b-1 for the three-vertex path — standard, and the arithmetic checks out. The SAT claim was unconfirmed at review time and substantiated the same day: the submitter published the certificates at commit 01a50c7 and this site re-checked them. The DRAT files were not replayed, since replaying a shipped proof is the weaker check; instead all twelve published CNFs were re-solved here with CaDiCaL via PySAT, and every verdict matches the submitter's kissat logs - satisfiable at n = 2b-2 and unsatisfiable at n = 2b-1 for each b = 2..7, which is R_dih(P3alt, K_b) = 2b-1 on the raw dihedral encoding. The six satisfiable instances also had their published witnesses substituted back clause by clause, and all satisfy; and the b = 3 legs agree with this site's own exhaustive enumeration from the original review, which anchors the submitter's encoder against a computation made independently of it. The certificates are regenerated rather than the review-time originals, disclosed unprompted by the submitter, which costs nothing here because the verdicts were re-derived from the instances rather than read off the files. Still unconfirmed: there is no human peer review, this being a self-submission of AI-produced work reviewed by AI agents inside the producing pipeline.",
+    "verificationNote": "Reproduced here on 13 August 2026. The Lean development builds clean (exit 0) on the pinned toolchain (v4.12.0, core only, no Mathlib), and #print axioms shows all five main theorems depending on exactly propext, Classical.choice and Quot.sound. No Lean.ofReduceBool; with comments stripped the source has zero sorry, admit, axiom declarations and native_decide, and its 23 decide calls are kernel-reduced. A naive grep says otherwise only because those words appear in the file's own docs. The Python checker runs as described: Dih(3) has order 6 and equals Sym(3), and the lower-bound witnesses hold for b = 2..8. The general upper bound is not formalized; it cites Chvatal 1977, whose arithmetic holds. The SAT claim, unconfirmed at review, was substantiated the same day at commit 01a50c7. The DRAT files were not replayed, since replaying a shipped proof is the weaker check; instead all twelve CNFs were re-solved here with CaDiCaL, every verdict matching their kissat logs - satisfiable at $n=2b-2$, unsatisfiable at $n=2b-1$, for b = 2..7. The six satisfiable instances had their witnesses re-substituted clause by clause and all satisfy, and the b = 3 legs agree with this site's own exhaustive enumeration, anchoring their encoder against an independent computation. The certificates are regenerated rather than the originals, disclosed unprompted, which costs nothing here. Still unconfirmed: no human peer review, this being a self-submission reviewed by AI agents in-pipeline.",
     "publication": "preprint",
     "resolutionMethod": "argument",
     "citations": null,
@@ -3258,12 +3293,8 @@
     "ageNote": "Both conjectures are from 2026 - Damnjanovic and Djordjevic posted arXiv:2607.06817 on 7 July 2026 and the companion Basic-Damnjanovic-Stevanovic-Stosic paper is arXiv:2604.16188 - so the a = 3 slice fell about five weeks after the conjecture was stated. This is among the shortest gaps in the catalog between a conjecture being posed and a piece of it being closed.",
     "aiContribution": "ai-discovered",
     "significance": 5,
-    "significanceNote": "Small, and the preprint says so itself. This closes one slice (a = 3) of a conjecture stated about five weeks earlier, and it closes it by a group coincidence plus a citation: Dih(3) happens to equal Sym(3), so the permutational condition collapses to ordinary subgraph containment and Chvatal's 1977 theorem finishes it. The note is candid that the cyclic values for b = 3..8 were already tabulated by Basic et al. and that what is new is the closed form rather than the numbers. Scored near the bottom of the spine, with the machine-generated Graffiti conjectures, and below the Erdos problem entries at 10, which are decades-old human problems rather than weeks-old ones.",
+    "significanceNote": "Small, and the preprint says so itself. This closes one slice (a = 3) of a conjecture stated about five weeks earlier, and it closes it by a group coincidence plus a citation: Dih(3) happens to equal Sym(3), so the permutational condition collapses to ordinary subgraph containment and Chvatal's 1977 theorem finishes it. The note is candid that the cyclic values for b = 3..8 were already tabulated by Basic et al., and that what is new is the closed form, not the numbers. Scored near the bottom of the spine, below the Erdos entries at 10, which are decades-old rather than weeks-old.",
     "links": [
-      {
-        "label": "Evidence repository: preprint, Lean proof, Python checker",
-        "url": "https://github.com/ZestyWombat854/dihedral-ramsey"
-      },
       {
         "label": "Damnjanovic and Djordjevic, Computation of small reflective and dihedral Ramsey numbers (Conjecture 4.9)",
         "url": "https://arxiv.org/abs/2607.06817"
@@ -5083,7 +5114,7 @@
     "sourceUrl": "https://www.erdosproblems.com/1201",
     "sourceName": "erdosproblems.com/1201",
     "resultNote": "As Tao notes on the problem page, the claim establishes natural LOWER density at least 1-eta but not that the natural density exists, so the problem as stated remains technically open",
-    "ageNote": "Erdős proved the $n^{1/2-\\epsilon}$ version in a 1976 paper and conjectured the strengthening there; catalogued from his 1980 problem list.",
+    "ageNote": "Erdős proved the n^(1/2 - ε) version in a 1976 paper and conjectured the strengthening there; catalogued from his 1980 problem list.",
     "aiContribution": "ai-co-developed",
     "significance": 10,
     "significanceNote": "A numbered problem from the Erdos catalog: real and documented, with a specialist audience. Checked against erdosproblems.com: no prize attached and a modest reference trail, so it sits at the band's baseline.",
@@ -10198,6 +10229,70 @@
     "significanceNote": "The central classification program of time-frequency analysis since Gröchenig-Stöckler 2013, with a sustained literature, little known outside harmonic analysis."
   },
   {
+    "slug": "gamow-liquid-drop-minimizer-conjecture",
+    "name": "Gamow liquid-drop minimizer conjecture",
+    "shortName": "Liquid-drop minimizers",
+    "problemNumber": null,
+    "field": "Calculus of variations and geometric measure theory",
+    "fieldGroup": "Analysis",
+    "resolution": "resolved",
+    "statement": "For a measurable set $\\Omega\\subset\\mathbb R^3$, let\n$$\\mathcal E(\\Omega)=P(\\Omega)+\\frac12\\iint_{\\Omega\\times\\Omega}\\frac{dx\\,dy}{|x-y|},$$\nwhere $P$ is De Giorgi perimeter, and set\n$$V_*=5\\frac{2-2^{2/3}}{2^{2/3}-1}\\approx3.51.$$\nThe conjecture asks for the complete fixed-volume minimization picture. Chodosh and Gianocca prove that, for every $0<V\\le V_*$, balls of volume $V$ uniquely minimize $\\mathcal E$ among all measurable $\\Omega$ with $|\\Omega|=V$, up to translation and null sets; for $V>V_*$, no minimizer exists. Consequently,\n$$\\inf_{0<|\\Omega|<\\infty}\\frac{\\mathcal E(\\Omega)}{|\\Omega|}=3\\left(\\frac{9\\pi}{5}\\right)^{1/3}=\\frac92\\left(\\frac{8\\pi}{15}\\right)^{1/3},$$\nwith equality exactly for translates, modulo null sets, of the ball of volume $5/2$, equivalently radius $(15/(8\\pi))^{1/3}$.",
+    "posedBy": "George Gamow (the functional, c. 1930); the sharp-threshold conjecture stated in the modern liquid-drop literature",
+    "yearPosed": null,
+    "solveType": "proved",
+    "solveDate": "2026-08-12",
+    "model": "ChatGPT 5.6 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Otis Chodosh",
+      "Matilde Gianocca"
+    ],
+    "aiRole": "The paper's AI-usage statement says that ChatGPT 5.6 Pro obtained the mathematical results over a series of chats without significant assistance from the authors. The fundamental proof strategy remained close to the model's output. Otis Chodosh and Matilde Gianocca then checked and reworked the proof and wrote the manuscript; they state that the article contains no AI-written text.",
+    "verification": "unreviewed",
+    "verificationNote": "Checked here on 13 August 2026, the day after the preprint appeared. The AI-usage statement was confirmed verbatim in two places, the arXiv listing comment and the paper's own opening section. The LaTeX source was retrieved and the quantitative content rederived rather than trusted. The threshold came out independently from comparing one ball against two of half the volume as their separation grows, which favours splitting exactly when $V > 5(1-2^{1/3})/(2^{-2/3}-1)$ - the paper's $5(2-2^{2/3})/(2^{2/3}-1) \\approx 3.5121$ after clearing radicals. The constant $|B_1|P(B_1)/D(B_1)=5$ checks against $D(B_R)=16\\pi^2R^5/15$. The corollary does minimise at $V=5/2$ with value $3(9\\pi/5)^{1/3}$, and the alternative form $\\frac92(8\\pi/15)^{1/3}$, which the submitter added and the paper does not state, is genuinely equal to it - both cube to $48.6\\pi$. The identities the argument turns on expand as claimed, as do $2^{-2/3}(V_*+10)=V_*+5$ and the closing $1024<1296$ on $[6,8]$. Every cited source is real, with a resolving DOI. What was NOT checked is the capacitary estimate and the distributional Bochner lemma under it, which is where the new mathematics lives. The manuscript is one day old and unrefereed, and the authors checking their own reworked proof is not independent verification, so the tier stays Unreviewed.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2608.11517",
+    "sourceName": "No compromise in the liquid drop model",
+    "renownNote": "No Wikipedia article for this problem. Wikipedia's liquid drop model article covers the nuclear-physics concept rather than the minimization conjecture, so it does not count under the notability rule.",
+    "resultNote": "The complete fixed-volume picture, closing a gap that partial results had narrowed from both ends without meeting: balls uniquely minimize for every volume up to V_* = 3.51..., and above it no minimizer exists at all. Before this the best minimality range was V <= 1 (Chodosh-Ruohoniemi, 2025) and the best nonexistence bound V >= 7.5 (Schulz, posted two days earlier), so the open middle ran from 1 to 7.5. Frank-Nam had already proved existence up to V_*, and the new proof uses it; the fresh content is uniqueness of the ball across the whole range and nonexistence immediately above the threshold. A corollary settles the minimal binding energy question of Frank-Lieb: the infimum of E(Omega)/|Omega| is 3(9pi/5)^(1/3), attained exactly at balls of volume 5/2. The mechanism is a capacitary estimate that sharpens an Agostiniani-Mazzieri monotonicity formula using Gauss-Bonnet, an improvement the authors note applies only to this particular weight and only in three dimensions.",
+    "ageNote": "Gamow introduced the functional around 1930 - the paper says 1928 while the reference it gives is his 1930 Proc. R. Soc. A paper. The sharp-threshold conjecture is a modern formulation with no canonical posing: the authors say only that it has appeared in several places, citing Choksi-Peletier (2011), Frank-Lieb (2015) and Frank-Nam (2021). Year posed is left empty rather than guessed at.",
+    "aiContribution": "ai-discovered",
+    "significance": 35,
+    "significanceNote": "The central open problem of the liquid-drop literature: the sharp threshold between existence and nonexistence of fixed-volume minimizers, with uniqueness of the ball below it. Not eponymous, and with no Wikipedia article. What lifts it above a single-subfield problem is reach - tracked across calculus of variations, mathematical physics and geometric analysis at once, with a 2017 Notices of the AMS survey for a general audience and a partial-results literature carrying Lieb, Otto, Figalli and Maggi. Hence level with Polya for Neumann balls (35) rather than HRT (33), below the eponymous band.",
+    "links": [
+      {
+        "label": "Frank-Lieb (2015), source of the minimal binding energy question",
+        "url": "https://doi.org/10.1137/15M1010658"
+      },
+      {
+        "label": "Chodosh and Ruohoniemi, On minimizers in the liquid drop model (CPAM 2025) - previous best minimality range, V <= 1",
+        "url": "https://doi.org/10.1002/cpa.22229"
+      },
+      {
+        "label": "Frank-Nam, Existence and nonexistence in the liquid drop model (2021) - existence up to V_*, used by the proof",
+        "url": "https://doi.org/10.1007/s00526-021-02072-9"
+      },
+      {
+        "label": "Frank-Killip-Nam, Nonexistence of large nuclei (2016) - the V > 8 bound the nonexistence proof reduces to",
+        "url": "https://doi.org/10.1007/s11005-016-0860-8"
+      },
+      {
+        "label": "Agostiniani-Mazzieri, Monotonicity formulas in potential theory (2020) - the estimate the capacitary argument sharpens",
+        "url": "https://doi.org/10.1007/s00526-019-1665-2"
+      },
+      {
+        "label": "Schulz, An improved nonexistence bound for the liquid drop model (2026) - the V >= 7.5 bound, two days earlier",
+        "url": "https://arxiv.org/abs/2608.09000"
+      }
+    ]
+  },
+  {
     "slug": "gao-huo-ma-consecutive-cycle-lengths",
     "name": "Gao-Huo-Ma Question on Cycle Lengths in Critical Graphs",
     "shortName": "Consecutive cycle lengths",
@@ -10886,7 +10981,7 @@
     ],
     "aiRole": "The announcement itself is a bare sign string, but Alpoge's thread carries a credit line: \"weekend fun w @tehwalris, Saul Reynolds-Haertle, and of course claude:)) i only claim bad suggestions!!\" - which corroborates the three named collaborators (@tehwalris is Philippe Voinov) and confirms Claude was part of the working group, with Alpoge playfully disclaiming the good ideas. Which mathematical, computational or search steps were Claude's is still not stated anywhere, and no model version is given, so the tier stays at the floor the methodology prescribes for an unspecific disclosure.",
     "verification": "site-confirmed",
-    "verificationNote": "Fully reproduced by this site on 12 August 2026, in two passes. The announcement is a single X long-post holding 23,828 characters of \"+\" and \"-\": no prose, no separators. The first pass scanned the raw string for standard seed shapes and found three consecutive Goethals-Seidel quadruples (orders 892, 1132, 1244), verified exactly, but no order-668 seed - correctly, it turns out, because the payload is not a seed list. The key the first pass missed is that Alpoge's own reply to the post is a decoder: a sed-obfuscated shell script whose header table declares twelve records and five builder routines. This site reimplemented the reply's sed transformation in Python, read the decoded script before executing anything (it is pure sed/sh text manipulation - no network, writes only under /tmp), and ran it on the payload. It emits twelve sign blocks. The decoder's own header table independently names the four Goethals-Seidel orders the raw scan had already found, cross-validating both decodings. Every block was then checked in exact integer arithmetic: entries in {-1,+1} and H H^T = nI on the nose, for n = 668, 716, 892, 1132, 1244, 1388, 1436, 1676, 1772, 1916, 1948 and 1964 - which is all twelve previously-open admissible orders below 2000, exactly as the thread claims. The order-668 matrix in particular has diagonal 668 everywhere and maximum absolute off-diagonal entry 0. The submitter reports an equivalent independent reproduction; theirs and ours were done separately. No independent expert review or published write-up exists yet, and site-confirmed here records this site's own exact-arithmetic reproduction, not community acceptance.",
+    "verificationNote": "Fully reproduced here on 12 August 2026, in two passes. The announcement is a single X long-post holding 23,828 characters of \"+\" and \"-\": no prose, no separators. The first pass scanned the raw string for seed shapes and found three Goethals-Seidel quadruples (orders 892, 1132, 1244), verified exactly, but no order-668 seed - correctly, since the payload is not a seed list. What it missed is that Alpoge's own reply to the post is a decoder: a sed-obfuscated shell script declaring twelve records and five builder routines. This site reimplemented the sed transformation in Python, read the decoded script before executing anything (pure sed/sh, no network, writes only under /tmp), and ran it. It emits twelve sign blocks, and its header table independently names the four orders the raw scan had already found, cross-validating both decodings. Every block was then checked in exact integer arithmetic: entries in $\\{-1,+1\\}$ and $HH^T = nI$ on the nose, for $n$ = 668, 716, 892, 1132, 1244, 1388, 1436, 1676, 1772, 1916, 1948 and 1964 - all twelve previously-open admissible orders below 2000, exactly as the thread claims. The order-668 matrix has diagonal 668 everywhere and maximum absolute off-diagonal entry 0. The submitter reports an equivalent reproduction, done separately from this one. No independent expert review or published write-up exists yet, so site-confirmed records this site's own exact-arithmetic reproduction, not community acceptance.",
     "publication": "announcement",
     "resolutionMethod": "construction",
     "citations": null,
@@ -12036,7 +12131,7 @@
     "sourceUrl": "https://arxiv.org/abs/2607.13401",
     "sourceName": "arXiv:2607.13401 - Total variation cutoff for Kac's walk on the sphere",
     "resultNote": "the conjectured cutoff location of 2n log n is wrong",
-    "ageNote": "Kac introduced the walk in 1956; the $2n\\log n$ cutoff location was the standing conjecture that this work overturns.",
+    "ageNote": "Kac introduced the walk in 1956; the 2n log n cutoff location was the standing conjecture that this work overturns.",
     "aiContribution": "ai-co-developed",
     "significance": 20,
     "significanceNote": "Kac's walk is a standard model in the mixing-time literature and its cutoff location had a specific conjectured value that this determines and refutes."
@@ -14275,7 +14370,7 @@
     "sourceUrl": "https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf",
     "sourceName": "Claude's paper (Anthropic)",
     "resultNote": "An unconditional record, not a resolution: the Riemann hypothesis is untouched, and Anthropic states it does not expect these techniques to lead to a proof of it. The improvement is large, from about 41.6% to 67.25%, and the constant is closed form.",
-    "ageNote": "Deliberately no single posed-year, so the entry cannot claim an age it has not earned. The Riemann hypothesis dates to 1859, but this result does not resolve it. What it advances is the unconditional proportion bound, a programme running from Hardy in 1914 and Selberg in 1942 through Levinson's one third in 1974 and Conrey's two fifths in 1989, and the specific pair-correlation machinery it uses is more recent still. Dating this to 1859 would overstate it by a century.",
+    "ageNote": "Deliberately no single posed-year, so the entry cannot claim an age it has not earned. The Riemann hypothesis dates to 1859, but this result does not resolve it. What it advances is the unconditional proportion bound, a programme running from Hardy in 1914 and Selberg in 1942 through Levinson's one third in 1974 and Conrey's two fifths in 1989. Dating this to 1859 would overstate it by a century.",
     "aiContribution": "ai-discovered",
     "significance": 68,
     "significanceNote": "The unconditional proportion of zeros on the critical line is the standard yardstick for progress toward the Riemann hypothesis, with a fifty-year record ladder through Levinson and Conrey. Scored above the Jacobian conjecture at 65 because of what it is attached to, and far below the Riemann hypothesis at 100 because a proportion bound is not the hypothesis.",
@@ -15525,7 +15620,7 @@
     ],
     "aiRole": "The paper's \"Computational provenance and responsibility\" section states in full: \"OpenAI language-model systems were used extensively in the discovery, computational search, verification, and preparation of this work. The author reviewed the final claims and artifacts and accepts responsibility for the contents.\" No product name, model version or division of labour is given, so which of discovery, search, verification and write-up the model actually carried is not recoverable from the paper. The catalog records the model as ChatGPT because that is this catalog's convention for an unnamed OpenAI system; the paper itself names none.",
     "verification": "site-confirmed",
-    "verificationNote": "Reproduced by this site on 12 August 2026, independently of the paper's certificates. The 112-vertex graph was rebuilt from the edge table in the paper's own appendix, and the SHA-256 digest of its normalized sorted edge list reproduces the digest in Theorem 1.1 exactly, which pins the object under review to the one the paper claims. Every property in that theorem re-derived here: 112 vertices, 168 edges, simple, cubic, connected, bridgeless, girth five, edge-connectivity three, vertex-connectivity three. Non-existence of a Petersen coloring was then re-proved with a CNF encoding written here from the definition - each edge carries one of the 15 edges of the Kneser graph KG(5,2), each vertex selects one of the 10 target stars, the three edges at a vertex land in that star and are pairwise distinct - and solved with CaDiCaL via PySAT. The result is UNSAT, so no Petersen coloring exists. This is a different route from the paper's: it re-derives the unsatisfiability rather than replaying the shipped DRAT certificates, and the encoding was written without reference to the paper's encoder. It arrives at the same 3640 variables, which is forced by the problem shape, but at 31,360 clauses against the paper's 68,324, so the two are genuinely different formulations of the same question rather than the same one twice. The solve took about nine minutes, and was run twice in separate processes with identical results. The controls matter as much as the result. K4, K3,3, the 3-cube, the prism, the Desargues graph and the Petersen graph itself were all put through the same encoder and all came back satisfiable. The Petersen graph control is the important one, since it is a snark, so a coloring found for it rules out the encoder having quietly tested 3-edge-colorability instead. As a further consistency check the graph was confirmed not 3-edge-colorable, which it must not be: every 3-edge-colorable cubic graph has a Petersen coloring, so any counterexample has to be a snark. What has not been checked here: the second, D3-symmetric counterexample H, the normal-5-edge-coloring formulation (equivalent by Jaeger's theorem, which the paper proves), and the shipped DRAT proofs themselves. arXiv preprint, four days old at review, not peer-reviewed and with no independent expert commentary yet.",
+    "verificationNote": "Reproduced here on 12 August 2026, independently of the paper's certificates. The 112-vertex graph was rebuilt from the appendix edge table, and the SHA-256 of its normalized sorted edge list reproduces the digest in Theorem 1.1 exactly, pinning the object under review to the one claimed. Every property in that theorem was rederived: 112 vertices, 168 edges, simple, cubic, connected, bridgeless, girth five, connectivity three. Non-existence of a Petersen coloring was then re-proved with a CNF encoding written here from the definition - each edge carries one of the 15 edges of $KG(5,2)$, each vertex selects one of the 10 target stars, the three edges at a vertex land in that star and are pairwise distinct - and solved with CaDiCaL via PySAT. UNSAT. That re-derives the unsatisfiability rather than replaying the shipped DRAT certificates, and the encoder was written without reference to the paper's: the same 3640 variables, forced by the problem shape, but 31,360 clauses against their 68,324. It ran twice in separate processes with identical results. Six controls - $K_4$, $K_{3,3}$, the 3-cube, the prism, Desargues and the Petersen graph itself - all came back satisfiable through the same encoder. Petersen is the important one, being a snark: a coloring for it rules out the encoder having quietly tested 3-edge-colorability. Not checked: the second $D_3$-symmetric counterexample, the normal-5-edge-coloring formulation, and the DRAT proofs. Four-day-old arXiv preprint, unrefereed.",
     "publication": "preprint",
     "resolutionMethod": "construction",
     "citations": null,
@@ -15577,7 +15672,7 @@
     ],
     "aiRole": "Two models in two roles. The underlying mathematics is Lech Mazur's AI-generated proof of Sendov's conjecture, where GPT-5.6 Pro carried the discovery and derivation. Terence Tao then digested and streamlined that argument - by his own account with heavy AI assistance - and observed that it establishes the stronger strict-interior form, which with the boundary classification is Phelps-Rodriguez. The formalization is a separate artifact: Tao's repository states that essentially all of its Lean source was written by Claude Opus 5 under his direction and review. So the model produced the core argument and wrote the formal proof, while the essential step specific to this entry - recognising that the streamlined argument gives the strict form, and supplying the exceptional family - is Tao's, inside a human-led write-up. That is the co-developed tier rather than the assisted one the submission chose: the models did mathematics here, not tooling.",
     "verification": "lean-verified",
-    "verificationNote": "Audited by this site on 13 August 2026, which is what lifts this above the submitter's conservative Lean-checked classification. The gap the submitter correctly identified was that nobody had checked the correspondence between Tao's formal statement and the historical conjecture, so that check was performed. Sendov.phelps_rodriguez in Sendov/Conjecture.lean reads: for n >= 2 and p of natDegree n with every root in the closed unit disk and p(a) = 0, either there is a critical point with the norm of (zeta - a) strictly below 1, or the norm of a is 1 and p = C c * (X^n - C (a^n)) for some nonzero c. That is exactly Phelps-Rodriguez, exceptional family included, with no weakening; and it is not vacuous, since natDegree = n with n >= 2 forces p to be nonzero, which the proof derives rather than assumes. All 80 first-party Lean files were then downloaded and audited with comments stripped: zero admit, zero axiom declarations, zero native_decide, and 124 decide calls, all kernel-reduced. The repository's only two sorry occurrences sit in Challenge.lean, which nothing imports - it is a deliberate statement-of-record that leaves both theorems open for a reader to check against - so they are outside the proof path. On the build, the repository's four GitHub Actions runs all report failure, which is misleading and worth stating plainly: reading the job steps shows the leanprover/lean-action build step completed successfully on the latest commit, and the failing step is docgen-action, documentation generation. That makes the kernel check third-party evidenced on GitHub's runners rather than resting on the author's machine. Not independently reviewed by another mathematician: the repository says so itself, and Tao is both the author of the digestion and the director of the formalization.",
+    "verificationNote": "Audited here on 13 August 2026, which is what lifts this above the submitter's conservative Lean-checked classification. The gap they identified was that nobody had checked the correspondence between Tao's formal statement and the historical conjecture, so that check was performed. Sendov.phelps_rodriguez in Sendov/Conjecture.lean reads: for $n \\ge 2$ and $p$ of natDegree $n$ with every root in the closed unit disk and $p(a)=0$, either some critical point has $|\\zeta - a| < 1$, or $|a| = 1$ and $p = c(X^n - a^n)$ for some nonzero $c$. That is exactly Phelps-Rodriguez, exceptional family included, with no weakening; and it is not vacuous, since natDegree $= n$ with $n \\ge 2$ forces $p \\ne 0$, which the proof derives rather than assumes. All 80 first-party files were audited with comments stripped: zero admit, zero axiom declarations, zero native_decide, and 124 decide calls, all kernel-reduced. The only two sorry occurrences sit in Challenge.lean, which nothing imports, so they are outside the proof path. On the build, all four GitHub Actions runs report failure, which is misleading: reading the job steps shows the leanprover/lean-action build succeeded on the latest commit, and the failing step is docgen-action, documentation generation. That makes the kernel check third-party evidenced rather than resting on the author's machine. Not independently reviewed by another mathematician: the repository says so, and Tao both wrote the digestion and directed the formalization.",
     "publication": "announcement",
     "resolutionMethod": "argument",
     "citations": null,
@@ -15593,10 +15688,6 @@
     "significance": 30,
     "significanceNote": "A named 1972 conjecture that is strictly stronger than Sendov's: it upgrades the distance-one bound to a strict inequality and classifies every case of equality. Less famous than Sendov itself, which is scored 40 here and carries Wikipedia articles in four languages, but it is the sharp form of the same question and had stood 54 years. Scored below Sendov and level with the well-tracked named conjectures, since it inherits Sendov's setting rather than opening a new one.",
     "links": [
-      {
-        "label": "Tao, A digestion of the proof of Sendov's conjecture (12 Aug 2026)",
-        "url": "https://terrytao.wordpress.com/2026/08/12/a-digestion-of-the-proof-of-sendovs-conjecture/"
-      },
       {
         "label": "teorth/sendov - Lean formalization; Sendov.phelps_rodriguez in Sendov/Conjecture.lean",
         "url": "https://github.com/teorth/sendov"
@@ -15878,7 +15969,7 @@
     "sourceUrl": "https://github.com/anadim/anadim.github.io/blob/master/MIMO_Detection.pdf",
     "sourceName": "Author manuscript",
     "resultNote": "An average-case claim about the Gaussian model, not a contradiction of the worst-case NP-hardness of integer least squares. If it holds, no computational-statistical gap separates polynomial-time detection from exhaustive maximum likelihood at first order in this model.",
-    "ageNote": "Optimum multiuser detection is NP-hard in the worst case (Verdu, 1989), but the Gaussian channel is more structured. Hassibi and Vikalo studied sphere-decoder expected complexity from 2001; Jalden and Ottersten showed in 2005 that it turns exponential in the growing-dimension limit; the first-order threshold for ML block recovery was identified by Hansen et al. in 2009 and stated explicitly by Hassibi et al. in 2014. The question this answers is the one those results leave behind, formulated by the author rather than inherited as a named conjecture.",
+    "ageNote": "Optimum multiuser detection is NP-hard in the worst case (Verdu, 1989), but the Gaussian channel is more structured. Jalden and Ottersten showed in 2005 that sphere-decoder complexity turns exponential as dimension grows, and the ML block-recovery threshold was identified by Hansen et al. in 2009. This answers what those leave behind - a question the author formulated, not an inherited conjecture.",
     "aiContribution": "ai-discovered",
     "significance": 18,
     "significanceNote": "MIMO detection is a heavily studied problem with fifty years of literature and direct wireless-engineering stakes, and the computational-statistical gap question is a recognized one, but it was not a named conjecture with a standing attribution.",
@@ -16373,7 +16464,7 @@
     ],
     "aiRole": "The abstract credits the counterexample to GPT-5.5 Pro in its first sentence. The authors add that earlier attempts with free tiers of ChatGPT and Claude made no progress, which is a useful data point on where the capability threshold sat. They are refuting their own conjecture.",
     "verification": "lean-checked",
-    "verificationNote": "The refutation is an explicit counterexample, so it is a finite check. Short arXiv note, not peer-reviewed.\n\nA Lean 4 / Mathlib formalization of the counterexample was contributed in August 2026 by its author, produced with Codex. Curator source audit: all 579 lines read, with no sorry, admit, native_decide, unsafe declaration, user-declared axiom, implemented_by or partial def anywhere in the file; finite checks go through kernel decide and rational identities through norm_num, both proof-producing, and Mathlib is pinned to an exact revision on toolchain v4.33.0-rc2, so the build is reproducible. The curator has not compiled it, and the artifact is the work of the same person who reported it, so it is not third-party corroboration.\n\nWhat the formalization does and does not settle is worth stating exactly. Its final theorem is a seven-part conjunction certifying the witness and its bounds: the three-atom distribution attains the target marginals with expected coverage 4, no distribution exceeds 4, the product distribution is pairwise feasible, every pairwise-feasible distribution is bounded by 479/160, and 4 divided by 479/160 is 640/479, which exceeds 4/3. Both bounds are universally quantified rather than spot-checked. What the file never states is the Ramachandra-Natarajan conjecture itself, so the step from this instance to the conjecture being refuted remains informal and rests on the conjectured bound really being 4/3. That is the difference between a kernel-checked artifact and an audited claim, and it is why this sits on the unaudited Lean rung rather than above it.",
+    "verificationNote": "The refutation is an explicit counterexample, so it is a finite check. Short arXiv note, not peer-reviewed.\n\nA Lean 4 / Mathlib formalization of the counterexample was contributed in August 2026 by its author, produced with Codex. Curator source audit: all 579 lines read, with no sorry, admit, native_decide, unsafe declaration, user-declared axiom, implemented_by or partial def anywhere; finite checks go through kernel decide and rational identities through norm_num, and Mathlib is pinned to an exact revision on toolchain v4.33.0-rc2. The curator has not compiled it, and it is the work of the same person who reported the result, so it is not third-party corroboration.\n\nWhat the formalization does and does not settle is worth stating exactly. Its final theorem is a seven-part conjunction certifying the witness and its bounds: the three-atom distribution attains the target marginals with expected coverage 4, no distribution exceeds 4, the product distribution is pairwise feasible, every pairwise-feasible distribution is bounded by $479/160$, and $4 \\div (479/160) = 640/479 > 4/3$. Both bounds are universally quantified rather than spot-checked. What the file never states is the Ramachandra-Natarajan conjecture itself, so the step from this instance to the conjecture being refuted stays informal and rests on the conjectured bound really being $4/3$. That is the difference between a kernel-checked artifact and an audited claim, and why this sits on the unaudited Lean rung.",
     "publication": "preprint",
     "resolutionMethod": "construction",
     "citations": null,
@@ -17209,7 +17300,7 @@
     ],
     "aiRole": "GPT-5.6 Pro contributed substantially to the discovery and derivation of the proof, including mathematical exploration, proof development, exact computational testing, and adversarial auditing. Lech Mazur directed the research workflow, selected and reconciled model outputs, and authored the resulting manuscript. A separate Lean 4 development proves the exact statement of Sendov's conjecture.",
     "verification": "lean-verified",
-    "verificationNote": "Independently verified twice over, and this site audited the formal artifact itself on 13 August 2026. The decisive external check is Terence Tao's post of 12 August 2026, \"A digestion of the proof of Sendov's conjecture\": he writes that \"Lech Mazur was able to use an AI tool to resolve Sendov's conjecture for all n >= 2\", reports formalizing the entire argument in Lean himself at about 15,000 lines against the original's roughly 90,000, and concludes that the argument \"resolves both the Sendov conjecture and the Phelps-Rodriguez conjecture in full generality\". Tao proved the sufficiently-large-degree case in 2020, so this is expert verification by the person best placed to give it, and it is what carries the tier here. Separately, this site downloaded and audited Mazur's Lean package. The definition SendovConjecture in Sendov/Statement.lean is exactly the conjecture, correctly quantified over every nonzero complex polynomial of degree at least two and every zero, declared once and shadowed nowhere. Across all 1,160 first-party Lean files there are zero sorry, zero admit and zero custom axiom declarations, and - the one that matters for an autonomous prover - zero uses of native_decide; the 1,117 decide calls are kernel-checked. The recorded axiom profile is exactly propext, Classical.choice and Quot.sound. All 1,160 file hashes in the published evidence record match the downloaded bundle byte for byte, as does Theorem.lean against its pinned artifact hash. What this site could not check is the build itself: the published bundle ships no lakefile and no lake-manifest, and excludes Mathlib, so it cannot be recompiled as distributed. ProofAtlas's own evidence file is candid about the same gap, recording buildTranscriptRecorded false, collectionProvenanceRecorded false and a publication review status of accountable_review_not_recorded. That internal status is not what this entry rests on; Tao's independent digestion and independent formalization are.",
+    "verificationNote": "Independently verified twice over, and this site audited the formal artifact itself on 13 August 2026. The decisive external check is Terence Tao's post of 12 August 2026, \"A digestion of the proof of Sendov's conjecture\": he writes that \"Lech Mazur was able to use an AI tool to resolve Sendov's conjecture for all $n \\ge 2$\", reports formalizing the whole argument in Lean himself at about 15,000 lines against the original's roughly 90,000, and concludes that it resolves both the Sendov and Phelps-Rodriguez conjectures in full generality. Tao proved the large-degree case in 2020, so this is expert verification by the person best placed to give it, and it carries the tier. Separately, this site audited Mazur's Lean package. SendovConjecture in Sendov/Statement.lean is exactly the conjecture, correctly quantified and shadowed nowhere. Across all 1,160 first-party files there are zero sorry, zero admit, zero custom axiom declarations and - the one that matters for an autonomous prover - zero native_decide; the 1,117 decide calls are kernel-checked, and the axiom profile is exactly propext, Classical.choice and Quot.sound. All 1,160 file hashes match the published evidence record byte for byte. What could not be checked is the build: the bundle ships no lakefile or manifest and excludes Mathlib, so it cannot be recompiled as distributed, a gap ProofAtlas's own evidence file is candid about. This entry rests not on that internal status but on Tao's independent digestion.",
     "publication": "preprint",
     "resolutionMethod": "argument",
     "citations": null,
@@ -17323,13 +17414,7 @@
     "ageNote": "Posed by Seymour around 1990 as a strengthening of Dean's conjecture for tournaments, and open for some 36 years. Fisher settled the tournament case in 1996.",
     "aiContribution": "ai-discovered",
     "significance": 30,
-    "significanceNote": "Seymour's second neighborhood conjecture is a well-known problem in digraph theory, open since around 1990 and the subject of a continuing literature - Fisher's tournament theorem, the minimum-outdegree results of Kaneko and Locke, and a decade of dense-case work by Fidler-Yuster, Ghazal and Dara-Francis-Jacob-Narayanan. Scored for the problem rather than this increment, level with the other well-tracked named conjectures and below the household ones.",
-    "links": [
-      {
-        "label": "arXiv:2608.11530",
-        "url": "https://arxiv.org/abs/2608.11530"
-      }
-    ]
+    "significanceNote": "Seymour's second neighborhood conjecture is a well-known problem in digraph theory, open since around 1990 and the subject of a continuing literature - Fisher's tournament theorem, the minimum-outdegree results of Kaneko and Locke, and a decade of dense-case work by Fidler-Yuster, Ghazal and Dara-Francis-Jacob-Narayanan. Scored for the problem rather than this increment, level with the other well-tracked named conjectures and below the household ones."
   },
   {
     "slug": "seymour-second-neighborhood-outdegree-7",
@@ -18183,7 +18268,7 @@
     "sourceName": "arXiv:2605.00816 - On the largest sum-free subset of the lattice cube",
     "aiContribution": "ai-co-developed",
     "significance": 30,
-    "significanceNote": "A long-standing density question with two independent posings and a slot in Green's list of 100 open problems; the cases $d = 2$ and $d = 3,4$ were each separate papers."
+    "significanceNote": "A long-standing density question with two independent posings and a slot in Green's list of 100 open problems; the cases d = 2 and d = 3,4 were each separate papers."
   },
   {
     "slug": "sum-product-conjecture-reals",
@@ -18360,7 +18445,7 @@
     "sourceName": "arXiv:2605.16840 - On $t$-edge-balanced graphs",
     "aiContribution": "ai-assisted",
     "significance": 15,
-    "significanceNote": "Settles a standing existence question in design theory, producing the first known examples for $t = 3$ and ruling out everything above it."
+    "significanceNote": "Settles a standing existence question in design theory, producing the first known examples for t = 3 and ruling out everything above it."
   },
   {
     "slug": "talagrand-convexity-problem",
@@ -18521,7 +18606,7 @@
     ],
     "aiRole": "According to the author's disclosure and the publicly shared ChatGPT transcript, GPT-5.6 Sol Max was prompted to solve Teschner's conjecture and found an explicit counterexample. The resulting manuscript gives an 18-vertex connected cubic bipartite graph with bondage number 5, together with an exact finite certificate establishing the claimed bondage number. Yavari subsequently checked and wrote up the result.",
     "verification": "site-confirmed",
-    "verificationNote": "Reproduced in full by this site on 13 August 2026. The counterexample is a single 18-vertex graph, so the claim is finite and was checked exhaustively rather than sampled. The edge list was transcribed from equation (3.1) of the preprint and every quantity recomputed independently, without reading or running the author's own verifier. Confirmed: the graph is connected, cubic and bipartite with the stated parts, on 18 vertices and 27 distinct edges, so Delta(G) = 3; its domination number is 6 by exhaustive search over vertex subsets in increasing size; and it has exactly 297 minimum dominating sets, which is the count the paper states, arrived at here independently. For the lower bound, all 20,853 edge subsets of size at most four (27 + 351 + 2925 + 17,550) were tested by the bundle criterion, and every single one leaves at least one minimum dominating set intact, so b(G) >= 5. For the upper bound, deleting the five edges 0-6, 0-10, 0-16, 1-8 and 1-11 raises the domination number to 7, and that was recomputed from scratch on the reduced graph rather than inferred from the criterion, so b(G) <= 5. Therefore b(G) = 5 > 4.5 = (3/2)Delta(G) and Teschner's conjecture is false. The lower-bound enumeration is the entire mathematical content of the claim, so this constitutes a complete independent check. Caveats that remain: the preprint is two days old, is hosted on figshare rather than arXiv, and has no peer review; the author's acknowledgements name Eric Hou (UBC) as an independent verifier, but that is a private check recorded in the paper, not a public endorsement by a domination-theory specialist.",
+    "verificationNote": "Reproduced in full here on 13 August 2026. The counterexample is a single 18-vertex graph, so the claim is finite and was checked exhaustively rather than sampled. The edge list was transcribed from equation (3.1) and every quantity recomputed independently, without reading or running the author's verifier. Confirmed: connected, cubic and bipartite with the stated parts, 18 vertices and 27 distinct edges, so $\\Delta(G) = 3$; domination number 6 by exhaustive search; and exactly 297 minimum dominating sets, the count the paper states, arrived at here independently. For the lower bound, all 20,853 edge subsets of size at most four were tested by the bundle criterion, and every one leaves at least one minimum dominating set intact, so $b(G) \\ge 5$. For the upper bound, deleting the five edges 0-6, 0-10, 0-16, 1-8 and 1-11 raises the domination number to 7, recomputed from scratch on the reduced graph rather than inferred from the criterion, so $b(G) \\le 5$. Therefore $b(G) = 5 > 4.5 = \\frac32\\Delta(G)$ and the conjecture is false. That enumeration is the entire mathematical content of the claim, so this is a complete independent check. Caveats: the preprint is two days old, is hosted on figshare rather than arXiv, and has no peer review; the acknowledgements name Eric Hou (UBC) as an independent verifier, but that is a private check, not a public endorsement by a specialist.",
     "publication": "preprint",
     "resolutionMethod": "construction",
     "citations": null,
@@ -18538,10 +18623,6 @@
     "significance": 15,
     "significanceNote": "A named conjecture in domination theory, posed by Teschner in 1995 and carried as an open problem in Xu's 2013 bondage-number survey and on Wikipedia's bondage number article. Real and long-standing, but firmly within a specialist subfield: there is no Wikipedia article for the conjecture itself, and the surrounding literature is a corner of graph theory rather than a mainstream target. Scored with the resolved specialist problems near 15, well below the named conjectures with their own broad literature such as Albertson-Berman (30).",
     "links": [
-      {
-        "label": "Yavari, A Counterexample to Teschner's Bondage-Number Conjecture (figshare preprint)",
-        "url": "https://doi.org/10.6084/m9.figshare.33198777"
-      },
       {
         "label": "ChatGPT conversation in which the counterexample was produced",
         "url": "https://chatgpt.com/share/6a7a08fe-9fd8-83e8-b3b4-392282dc501a"
@@ -18594,60 +18675,6 @@
     "aiContribution": "ai-discovered",
     "significance": 10,
     "significanceNote": "A documented suggestion of Thakur restated as an open question in 2024 and believed true after extensive computation, but confined to the function-field arithmetic community."
-  },
-  {
-    "slug": "the-mathieu-group-m23-as-a-galois-group-over-q",
-    "name": "The Mathieu Group M23 as a Galois Group over Q",
-    "shortName": "M23 over Q",
-    "problemNumber": null,
-    "field": "Inverse Galois theory",
-    "fieldGroup": "Number theory",
-    "resolution": "resolved",
-    "statement": "The $M_{23}$ case of the inverse Galois problem is resolved: the Mathieu group $M_{23}$ occurs as a Galois group over $\\mathbb{Q}$. More strongly, there exists a regular Galois extension of $\\mathbb{Q}(t)$ with Galois group $M_{23}$, and hence infinitely many $M_{23}$-extensions of $\\mathbb{Q}$. This completes the realization over $\\mathbb{Q}$ of all $26$ sporadic finite simple groups. The general inverse Galois problem remains open.",
-    "posedBy": null,
-    "yearPosed": null,
-    "solveType": "proved",
-    "solveDate": "2026-08-08",
-    "model": "Claude Fable 5; Claude Opus 4.8; ChatGPT 5.6 Sol",
-    "modelMaker": "Anthropic; OpenAI",
-    "humanCollaborators": [
-      "Xiaoyu Huang",
-      "Blake Jackson",
-      "Kyu-Hwan Lee",
-      "Bjorn Poonen",
-      "Rachel Pries",
-      "Shaowu Zhang"
-    ],
-    "aiRole": "The authors used Claude Fable 5, Claude Opus 4.8, and ChatGPT 5.6 Sol for literature search, code generation, testing hypotheses, ruling out unsuccessful approaches, devising computational strategies, and checking results. The project began at the May 27–30, 2026 AIM workshop “AI and number theory.” The authors state that no article text was written by AI and that the final results were verified independently of AI using Magma and PARI/GP.",
-    "verification": "unreviewed",
-    "verificationNote": "August 2026 preprint; no independent expert review or peer review identified as of submission. The authors report that the final results were verified without AI using Magma and PARI/GP. In particular, the explicit degree-23 polynomial is computationally certified to have splitting field with Galois group M23. Numerical Belyi-map computations are used in constructing the cover, with algebraic recognition and subsequent exact verification. The authors provide their computational code publicly.",
-    "publication": "preprint",
-    "resolutionMethod": "construction",
-    "citations": null,
-    "citationsPaper": null,
-    "citationsSource": null,
-    "citationsUrl": null,
-    "renownLangs": 0,
-    "sourceUrl": "https://arxiv.org/abs/2608.08538",
-    "sourceName": "The Mathieu group M23 is a Galois group over Q",
-    "resultNote": "Resolves the M23 case, not the general inverse Galois problem.",
-    "aiContribution": "ai-assisted",
-    "significance": 55,
-    "significanceNote": "The last of the 26 sporadic simple groups to be realized over Q. Researchers settled the other 25 between 1984 and 1989 and then this one held out for 37 years, long enough to earn its own survey of the failed attempts. Placed with the Cycle Double Cover Conjecture and the real sum-product conjecture at 55: celebrated in its field and an unusually clean story, but it resolves one case, and the general inverse Galois problem it belongs to remains open.",
-    "links": [
-      {
-        "label": "Github repo",
-        "url": "https://github.com/shaowuz/m23isgalois"
-      },
-      {
-        "label": "Prior-state survey: M23 remained unresolved",
-        "url": "https://arxiv.org/abs/2202.08222"
-      },
-      {
-        "label": "Frontier Math",
-        "url": "https://epoch.ai/frontiermath/open-problems/inverse-galois"
-      }
-    ]
   },
   {
     "slug": "thiele-voter-interval",
@@ -18831,13 +18858,7 @@
     "resultNote": "The honest reading, which the paper gives itself: the reduction is implicit in earlier work of Aboulker, Oijid, Petit, Rocton and Simon, and the model itself surfaced that reference when asked about originality. So this establishes the conjecture and supplies a polynomial-time algorithm, while the underlying idea is a rediscovery rather than a first. It is a striking record of a model producing an argument and then correcting the novelty claim made for it.",
     "aiContribution": "ai-discovered",
     "significance": 15,
-    "significanceNote": "A named conjecture whose truth implies the digraph acyclic-colouring analogues of Hajnal-Szemeredi, so it sits against a genuinely central classical theorem - but it falls to a short reduction rather than new machinery, and the reduction turns out to be implicit in existing literature. Scored with the resolved specialist problems rather than the long-standing named conjectures.",
-    "links": [
-      {
-        "label": "arXiv:2608.12207",
-        "url": "https://arxiv.org/abs/2608.12207"
-      }
-    ]
+    "significanceNote": "A named conjecture whose truth implies the digraph acyclic-colouring analogues of Hajnal-Szemeredi, so it sits against a genuinely central classical theorem - but it falls to a short reduction rather than new machinery, and the reduction turns out to be implicit in existing literature. Scored with the resolved specialist problems rather than the long-standing named conjectures."
   },
   {
     "slug": "tsp-optimal-chain-density",
@@ -19829,13 +19850,7 @@
     "ageNote": "The question belongs to Rieffel's compact quantum metric space programme, which dates to his 1998-2004 papers on group C*-algebras as quantum metric spaces; the entry uses 2002 for his 'Group C*-algebras as compact quantum metric spaces'. Sources vary on how to date the question itself, which was folklore in the area rather than a single numbered conjecture.",
     "aiContribution": "ai-co-developed",
     "significance": 20,
-    "significanceNote": "A recognised open question in non-commutative metric geometry, sitting in Rieffel's compact-quantum-metric-space programme, where the positive cases (polynomial growth, word-hyperbolic) were known and the expected negative answer had resisted an explicit witness. Specialist, with no Wikipedia article of its own, so scored with the resolved named problems of a single subfield rather than the broadly tracked conjectures.",
-    "links": [
-      {
-        "label": "arXiv:2608.12080",
-        "url": "https://arxiv.org/abs/2608.12080"
-      }
-    ]
+    "significanceNote": "A recognised open question in non-commutative metric geometry, sitting in Rieffel's compact-quantum-metric-space programme, where the positive cases (polynomial growth, word-hyperbolic) were known and the expected negative answer had resisted an explicit witness. Specialist, with no Wikipedia article of its own, so scored with the resolved named problems of a single subfield rather than the broadly tracked conjectures."
   },
   {
     "slug": "wow-284-refuted",

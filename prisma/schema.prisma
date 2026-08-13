@@ -7,6 +7,19 @@
 // seed source (see `prisma/seed.ts`), so a fresh database is always one
 // `npm run db:seed` away from the curated baseline.
 //
+// LENGTH CAPS - DO NOT APPLY THESE WITH `prisma db push`.
+//
+// The `@db.String(n)` annotations below mirror the `maxLength` on the field
+// specs in src/lib/editable.ts, so a curator script writing through Prisma is
+// refused by the database rather than only by the edit form.
+// `scripts/check-field-limits.ts` fails if the two ever disagree.
+//
+// They must be applied with prisma/manual/2026-08-13-field-length-caps.sql.
+// Prisma's cockroachdb connector cannot narrow STRING to STRING(n) in place:
+// asked to, it emits DROP COLUMN followed by ADD COLUMN, which silently
+// discards the contents of every affected column. The manual file uses
+// ALTER COLUMN ... TYPE, which keeps the data.
+//
 // Naming note: `solveType` and `verification` are stored as plain strings
 // rather than Postgres enums on purpose. Their vocabularies are curated and
 // still moving (the verification "trust ladder" gains tiers), and the existing
@@ -62,30 +75,30 @@ model Problem {
   id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   slug String @unique
 
-  name      String
+  name      String @db.String(200)
   /// Compact label for chart axes / narrow layouts.
-  shortName String
+  shortName String @db.String(60)
   /// Erdős problem number, if this is one.
   problemNumber Int?
-  field         String?
+  field         String? @db.String(80)
   /// Normalized field bucket for filtering (one of FIELD_GROUPS in
   /// src/lib/problems.ts - AIM-compatible taxonomy). `field` stays free text
   /// for the card detail line; this is what the filter chips group by.
   fieldGroup    String?
   /// Plain-language statement. Only ~1 in 5 entries has one; the card layout
   /// must not reserve space for it.
-  statement     String?
-  posedBy       String?
+  statement     String? @db.String(1200)
+  posedBy       String? @db.String(200)
   yearPosed     Int?
   /// "proved" | "disproved" - see the naming note at the top of this file.
   solveType     String
   /// ISO date, or "YYYY-MM" / "YYYY". For date ranges, the completion date.
   solveDate     String
-  model         String
-  modelMaker    String?
+  model         String @db.String(120)
+  modelMaker    String? @db.String(120)
   humanCollaborators String[]
   /// What the model did. Sparse, like `statement`.
-  aiRole        String?
+  aiRole        String? @db.String(1500)
   /// How CHECKED the mathematics is: "lean-verified" | "expert-verified" |
   /// "site-confirmed" | "lean-checked" | "unreviewed" | "contested".
   /// lean-verified requires the formal statement to be independently
@@ -93,7 +106,7 @@ model Problem {
   /// independent audited the informal-to-formal correspondence. Orthogonal to
   /// `publication` - the old single ladder conflated the two.
   verification  String
-  verificationNote String?
+  verificationNote String? @db.String(1500)
   /// Where the claim lives: "announcement" | "preprint" | "peer-reviewed".
   publication   String?
   /// How the resolution was achieved: "construction" | "computation" |
@@ -106,7 +119,7 @@ model Problem {
   /// When a documented issue exists with the claim (a refuted lemma, a
   /// misformalized Lean statement), the note explaining it. Renders as a
   /// visible flag on the entry.
-  claimIssueNote String?
+  claimIssueNote String? @db.String(1000)
   /// How much of the mathematics the model actually contributed:
   /// "ai-discovered" | "ai-co-developed" | "ai-assisted". Same string-not-enum
   /// convention as `solveType`. Null on entries not yet classified (the axis
@@ -115,14 +128,14 @@ model Problem {
   aiContribution String?
 
   citations       Int?
-  citationsPaper  String?
-  citationsSource String?
+  citationsPaper  String? @db.String(300)
+  citationsSource String? @db.String(120)
   citationsUrl    String?
 
   /// Renown proxy: Wikipedia language editions with an article dedicated to
   /// THIS problem. 0 means "no dedicated article", not "unknown".
   renownLangs Int     @default(0)
-  renownNote  String?
+  renownNote  String? @db.String(300)
   /// AI-estimated significance of the PROBLEM as it stood before the solve,
   /// an integer 0-100 against the anchored ladder in the methodology
   /// (Riemann hypothesis = 100) and, since prompt v2, placed comparatively
@@ -133,20 +146,18 @@ model Problem {
   /// /significance-prompt.md).
   significance     Int?
   /// One-line justification for the score, shown on the entry page.
-  significanceNote String?
+  significanceNote String? @db.String(600)
   /// Disclosed cost of producing the result, in whole US dollars. Almost
   /// always null: labs and authors rarely publish what a solve cost, and an
   /// undisclosed cost must never be guessed. Where a source gives only an
   /// aggregate over several results, the note says so.
   solveCostUsd  Int?
   /// What the figure covers and where it came from; shown beside the number.
-  solveCostNote String?
-  resultNote  String?
-  ageNote     String?
-
+  solveCostNote String? @db.String(300)
+  resultNote  String? @db.String(1000)
+  ageNote     String? @db.String(400)
   sourceUrl  String
-  sourceName String
-
+  sourceName String @db.String(200)
   /// Free text from the submitter to the reviewer, fixed at submission like
   /// `solveType` and `problemNumber` - not one of EDITABLE_FIELDS, so nobody
   /// edits it afterwards and it never appears on the published entry.
@@ -157,15 +168,14 @@ model Problem {
   /// belongs to neither category - "the catalog already has a related entry",
   /// "I could not find a DOI" - context for the review, not content about the
   /// mathematics. Shown only in /admin/submissions and the pending preview.
-  submitterNote String?
-
+  submitterNote String? @db.String(1000)
   status        ProblemStatus @default(published)
   /// When a curator approved or rejected this submission, and the message
   /// they left for the submitter. The message reaches the submitter through
   /// their notifications and is not public: a rejection reason is feedback
   /// for one person, not a changelog entry.
   reviewedAt     DateTime?
-  reviewMessage  String?
+  reviewMessage  String? @db.String(2000)
   /// The canned reason the reviewer picked, one of REVIEW_REASONS in
   /// src/lib/messages.ts. Kept beside the free-text message rather than folded
   /// into it so decisions stay countable: "how often do we turn things down as
@@ -207,7 +217,7 @@ model ProblemLink {
   id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   problemId String  @db.Uuid
   problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
-  label     String
+  label     String @db.String(120)
   url       String
   /// What the link IS: one of LINK_KINDS in src/lib/link-kinds.ts. Separate
   /// from `label`, which stays free text for the specifics ("Lean proof" is
