@@ -308,6 +308,10 @@
       {
         "label": "Makarov, Large induced forests in planar multigraphs - calls the conjecture open, revised 9 Aug 2026",
         "url": "https://arxiv.org/abs/2601.04637"
+      },
+      {
+        "label": "Makarov - a preprint claiming a somewhat different counterexample found independently without AI",
+        "url": "https://doi.org/10.5281/zenodo.21927901"
       }
     ]
   },
@@ -3295,7 +3299,7 @@
     "yearPosed": 2026,
     "solveType": "proved",
     "solveDate": "2026-08-12",
-    "model": "Claude Fable",
+    "model": "Claude Fable 5",
     "modelMaker": "Anthropic",
     "humanCollaborators": [],
     "aiRole": "The model produced the proof (the $\\mathrm{Dih}(3) = \\mathrm{Sym}(3)$ collapse, the Chvátal reduction, the cyclic corollary), the Lean 4 formalization, and the Python verification script autonomously. Human direction was limited to initiation and operational supervision.",
@@ -3343,7 +3347,7 @@
     "yearPosed": 2026,
     "solveType": "proved",
     "solveDate": "2026-08-13",
-    "model": "Claude Fable",
+    "model": "Claude Fable 5",
     "modelMaker": "Anthropic",
     "humanCollaborators": [],
     "aiRole": "The proof was produced by a sealed, multi-agent research process: independently-launched Claude agents across three rounds, convergent results cross-validated. Two independent AI referee agents reviewed it dual-blind; both CONFIRMED. Human direction was limited to run design, operational supervision, and manual re-derivation of two write-up fixes.",
@@ -10054,6 +10058,54 @@
     "significanceNote": "A known question in the information-theoretic entropy-power circle."
   },
   {
+    "slug": "four-color-rado-number-of-x-y-c-z-40c-41",
+    "name": "The 4-Color Rado Number of $x+y+c=z$: $R(c)=40c+41$ Whenever $c+1$ Is Divisible by 3, 4, 5 or 7",
+    "shortName": "4-color Rado R(c)=40c+41, 66% of cases",
+    "problemNumber": null,
+    "field": "Rado numbers / partition regularity",
+    "fieldGroup": "Combinatorics",
+    "resolution": "partial",
+    "statement": "$R(c) = 40c+41$ for every $c \\geq 2$ such that $c+1$ is divisible by 3, 4, 5, or 7 (covering $\\approx 66\\%$ of all $c$); the full conjecture (Myers 2015 Conj. 4.9, ABEMRS16 §5.5) reduces to prime cases $p \\geq 89$, all smaller primes settled by SAT. Twenty-eight exact values, nineteen new primes $p = 11, \\ldots, 83$, zero deviations from the conjectured line.",
+    "posedBy": "ABEMRS16 (Math. Comp. 85, 2016, §5.5); Myers (Ph.D. thesis, 2015, Conj. 4.9)",
+    "yearPosed": 2015,
+    "solveType": "proved",
+    "solveDate": "2026-08-14",
+    "model": "Claude Fable",
+    "modelMaker": "Anthropic",
+    "humanCollaborators": [],
+    "aiRole": "An autonomous clean-room Claude session chose the target problem (4-color Rado numbers), surveyed three mutually-unaware literatures (Malo 2000, Myers 2015, ABEMRS16 2016), re-derived the scaling lemma, proved the synthesis theorem and prime-reduction corollary, built the SAT pipeline and independent verifier, solved all nineteen prime cases, and ran the full two-tier certification (DRAT + independent second encoder). Two independent AI referee agents verified the proof (both CONFIRMED). Human direction limited to run design, operational supervision, and posting.",
+    "verification": "unreviewed",
+    "verificationNote": "Reproduced in substance by this site on 14 August 2026, independently of the repo's code. All 28 coloring certificates were re-checked by an own-code scanner over every monochromatic triple: 28/28 valid, so every lower bound holds outright. Five base cells were fully re-solved with an independently written encoder (own variable layout, own symmetry breaking): satisfiable at $n-1$ and unsatisfiable at $n$ for $c = 0, 2, 3, 4, 5$, matching $R(0)=45$ and the $40c+41$ line exactly. The scaling lemma, its sharpness against the universal lower bound, the synthesis theorem and the prime-reduction corollary were verified by hand; the algebra is elementary and correct. The literature was verified independently: ABEMRS16 is Math. Comp. 85 (2016) 2047-2064 with exactly the claimed authors; Myers' Conjecture 4.9 appears verbatim in the Rutgers thesis; Malo's 2000 thesis is real (Open Prairie, South Dakota State) with $R(1..3)$ in its public abstract, and its full text is bot-gated - so the submitter's hedge about the scaling lemma possibly being Malo's is accurate and could not be resolved from here either. The 2026 papers on this equation were spot-checked and are two-color, as claimed. Not reproduced: the nineteen prime-case UNSAT certificates ($n$ up to 3321), which rest on the bundle's kissat DRAT proofs, drat-trim VERIFIED, with a second independent encoder agreeing on every instance both ran; and no human peer review exists - produced and refereed by AI agents in one pipeline.",
+    "publication": "announcement",
+    "resolutionMethod": "computation",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://github.com/ZestyWombat854/rado-number-4color",
+    "sourceName": "GitHub repo (synthesis theorem + SAT certificates + dual-encoder verification + independent checker)",
+    "resultNote": "Twenty-eight individual exact values, each proved by SAT certificate (coloring at n-1, UNSAT at n). The synthesis theorem covers every c >= 2 whose c+1 is divisible by 3, 4, 5, or 7 (~66% of integers). The prime-reduction corollary shows the full conjecture (R(c)=40c+41 for all c >= 2) is equivalent to checking primes p >= 89; all primes through 83 are settled. What stays open: the conjecture at c=88 (p=89) and every larger c whose c+1 has all prime factors >= 89. The scaling lemma's attribution is hedged relative to Malo 2000 (full text not accessed). No Lean formalization; the SAT certificates and dual-encoder architecture are the verification tier.",
+    "ageNote": "Posed twice independently: Myers' Rutgers thesis (2015, Conjecture 4.9) and ABEMRS16 (Math. Comp. 85, submitted 2014), whose section 5.5 asks it for c >= 7. Malo's 2000 masters thesis had already settled two of the four congruence classes per its abstract - a fragmentation across three mutually unaware sources that this entry is the first to close.",
+    "aiContribution": "ai-discovered",
+    "significance": 8,
+    "significanceNote": "A ten-year-old conjecture with real standing - posed independently in a Math. Comp. paper and a Rutgers thesis, in the Schur/Rado tradition - advanced to two thirds of all cases with a clean reduction of the remainder to primes. Specialist territory, and the conjecture itself stays open, which caps it: level with the a >= 4 dihedral theorem (8), above the finite-cell bundles (5), below the Erdos entries at 10.",
+    "links": [
+      {
+        "label": "ABEMRS16, On the n-color Rado number for x_1+...+x_k+c = x_{k+1} (Math. Comp. 85, section 5.5 poses the conjecture)",
+        "url": "https://doi.org/10.1090/mcom3034"
+      },
+      {
+        "label": "Myers, Computational Advances in Rado Numbers (Rutgers Ph.D. thesis, 2015) - Conjecture 4.9",
+        "url": "https://sites.math.rutgers.edu/~zeilberg/Theses/KellenMyersThesis.pdf"
+      },
+      {
+        "label": "Malo, Four Color Rado Numbers for x_1+x_2+c=x_3 (South Dakota State M.S. thesis, 2000)",
+        "url": "https://openprairie.sdstate.edu/etd2/760/"
+      }
+    ]
+  },
+  {
     "slug": "fq-non-covering-congruence-systems",
     "name": "Non-Covering Congruence Systems over Fq[x]",
     "shortName": "Fq[x] covering systems",
@@ -14735,6 +14787,57 @@
     "significanceNote": "Listed as Open Problem 1 on DifferentialPrivacy.org, the differential-privacy community's recognized problem list, and the last gap between pure and approximate DP for query release."
   },
   {
+    "slug": "nineteen-exact-reflective-and-dihedral-ramsey-numbers-from-damnjanovic-dordevic-",
+    "name": "Nineteen exact reflective and dihedral Ramsey numbers from Damnjanovic-Dordevic's tables",
+    "shortName": "19 exact R_dih/R_ref values (DD26 Tables 3-13)",
+    "problemNumber": null,
+    "field": "Permutational Ramsey theory",
+    "fieldGroup": "Combinatorics",
+    "resolution": "resolved",
+    "statement": "Sixteen previously unknown exact values, plus three that confirm the sibling theorem entries' predictions computationally, across five ordered-pattern families ($P^{alt}$, $S^{sc}$, $C^{mon}$, $M^{nest}$, $K$) under dihedral and reflective group actions - each closing one open cell of Damnjanovic-Dordevic (arXiv:2607.06817, Tables 3-13). Five sit in cells the paper left without a conjecture. Full per-value table with regeneration commands, certificate hashes and referee verdicts in the evidence repo.",
+    "posedBy": "Damnjanovic-Dordevic (open cells of Tables 3-13)",
+    "yearPosed": 2026,
+    "solveType": "proved",
+    "solveDate": "2026-08-13",
+    "model": "Claude Fable 5",
+    "modelMaker": "Anthropic",
+    "humanCollaborators": [],
+    "aiRole": "AI agents built the census of open cells from the paper's tables, encoded every instance using the authors' own vendored generator, orchestrated kissat solving with drat-trim verification, and refereed all nineteen values through six independent agent reviews — each referee wrote its own encoder from the definitions, zero shared code with the producing leg or each other. Human direction was limited to run design, operational supervision, and posting.",
+    "verification": "site-confirmed",
+    "verificationNote": "Half-reproduced by this site on 14 August 2026, referee code, witnesses and CNFs deliberately unread - and this note is precise about which half. All 19 instances regenerate from the vendored DD26 generator and match their pinned SHA-256 byte for byte. All 19 LOWER bounds were established independently: the five pattern families, both group actions and the monotone-embedding notion were implemented here from the DD26 paper's definitions alone, a witness coloring at $n-1$ was found for every value, and each witness was re-verified by a brute-force embedding search sharing no code with the encoder. The UNSAT side is where this site's reach ended: the instances are genuinely hard (the submitter's smallest took kissat nine minutes; this site's solver decided none within a 50-minute-per-instance budget), so the upper bounds rest on the bundle's own certificates - whose 19 drat-trim logs all read \"s VERIFIED\" with parsed dimensions matching the regenerated CNFs exactly - except for the three K-family cells, whose values are implied by the two sibling theorem entries this site verified in depth on 13 August. Every cell with a DD26 conjecture matches that conjecture's formula, checked by hand. Not covered: no human peer review - produced and refereed by AI agents in one pipeline (six referee legs, each with its own encoder); the Lean file is a statement anchor with zero proofs, by design. Four further cells await their final referee leg and are, correctly, not claimed.",
+    "publication": "announcement",
+    "resolutionMethod": "computation",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://github.com/ZestyWombat854/reflective-dihedral-ramsey",
+    "sourceName": "GitHub repo (SAT certificates + six independent referee legs + Lean statement anchor)",
+    "resultNote": "Nineteen individual exact values, each decided by SAT certificate: unsatisfiable at the claimed $n$, witnessed satisfiable at $n-1$. They close cells in DD26's Tables 3-13 but settle no infinite family - the sibling entries do that for the $K$ column. The three overlap cells are $R_{dih}(P_4^{alt},K_6)=16$, $R_{dih}(P_3^{alt},K_9)=17$ and $R_{dih}(P_9^{alt},K_3)=17$, each an instance of a sibling theorem; the remaining sixteen stand on their own certificates. Four further cells passed the producing solver but await their final referee leg and are not claimed. Open: every other cell of DD26's tables, all cyclic-action and online-Ramsey cells.",
+    "aiContribution": "ai-discovered",
+    "significance": 5,
+    "significanceNote": "Nineteen finite table cells from a five-week-old paper in a niche new area, none settling a conjecture in full generality - the two theorem entries this accompanies did that for one family. Real, checkable, and five cells carry values the paper did not even conjecture; but each is one cell. Level with the a = 3 slice (5): above the single-gadget variant (4), below the a >= 4 theorem (8).",
+    "links": [
+      {
+        "label": "Damnjanovic and Djordjevic, Computation of small reflective and dihedral Ramsey numbers (Tables 3-13)",
+        "url": "https://arxiv.org/abs/2607.06817"
+      }
+    ],
+    "relations": [
+      {
+        "to": "dihedral-ramsey-numbers-of-the-alternating-a-path-versus-k-b-for-every-a-4-1-a-1",
+        "kind": "related",
+        "note": "Computational companion: two of these cells, (P4,K6) and (P9,K3), are instances of that theorem, and the certificate values agree with it exactly - a cross-check of both pipelines."
+      },
+      {
+        "to": "dihedral-and-cyclic-ramsey-numbers-of-the-alternating-3-path",
+        "kind": "related",
+        "note": "Computational companion: the (P3,K9) cell is an instance of that entry's 2b-1 theorem, and the certificate value agrees with it exactly."
+      }
+    ]
+  },
+  {
     "slug": "nivat-conjecture-non-convex-window-counterexample",
     "name": "A Counterexample to Nivat's Conjecture for a Non-Convex Window",
     "shortName": "Nivat, non-convex window",
@@ -17911,6 +18014,42 @@
     "significanceNote": "The Huneke-Wiegand conjecture, a known 1994 target in commutative algebra."
   },
   {
+    "slug": "sop-2-sop-3",
+    "name": "$SOP_2 = SOP_3$",
+    "shortName": "SOP_2 = SOP_3",
+    "problemNumber": null,
+    "field": "Model theory",
+    "fieldGroup": "Logic & foundations",
+    "resolution": "resolved",
+    "statement": "The classes of SOP_2 and SOP_3 first-order theories coincide. This answers a question of Džamonja and Shelah from 2004.",
+    "posedBy": "Mirna Džamonja, Saharon Shelah",
+    "yearPosed": 2004,
+    "solveType": "proved",
+    "solveDate": "2026-08-13",
+    "model": "ChatGPT 5.6",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Artem Chernikov"
+    ],
+    "aiRole": "From the paper: \"The proof was found using ChatGPT 5.6 and simplified and streamlined\nby the author.\"",
+    "verification": "unreviewed",
+    "verificationNote": "Checked by this site on 14 August 2026 against the paper's LaTeX source. The paper is real - five pages, math.LO, posted 13 August - and its author, Artem Chernikov, is a leading model theorist in exactly this area. The AI disclosure is verbatim as the entry quotes it. The history checks out in the paper's own introduction: Dzamonja and Shelah introduced the tree configurations $SOP_1$ and $SOP_2$ and asked whether either implication $SOP_3 \\Rightarrow SOP_2 \\Rightarrow SOP_1$ reverses; Mutchnik's breakthrough proved $SOP_2 = SOP_1$, and the question $SOP_2 = SOP_3$ was repeatedly highlighted afterwards, with partial results by Conant, Kaplan-Ramsey-Simon and Mutchnik. This result completes the collapse $SOP_1 = SOP_2 = SOP_3$. The acknowledgements record comments by Itay Kaplan and Scott Mutchnik on a preliminary version - expert eyes, but comments on a draft are not independent verification, and the manuscript is one day old and unrefereed, so the tier is Unreviewed. The proof itself - five pages of tree-indiscernible manipulation - was not checked here; it needs a model theorist.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2608.13291",
+    "sourceName": "SOP_2 = SOP_3",
+    "resultNote": "The new content is $SOP_2 \\Rightarrow SOP_3$; the converse implication was known from the start. Dzamonja and Shelah asked whether either implication in $SOP_3 \\Rightarrow SOP_2 \\Rightarrow SOP_1$ reverses: Mutchnik answered the second ($SOP_1 = SOP_2$), and this answers the first, collapsing the bottom of the hierarchy to $SOP_1 = SOP_2 = SOP_3$. The $SOP_n$ hierarchy for $n \\ge 3$ remains, as does everything above it.",
+    "ageNote": "Posed by Dzamonja and Shelah in 2004 alongside its sibling question SOP_1 = SOP_2, which Mutchnik answered in a celebrated 2022 preprint. Open 22 years.",
+    "aiContribution": "ai-co-developed",
+    "significance": 35,
+    "significanceNote": "One of the two 2004 Dzamonja-Shelah questions that organized two decades of classification theory, repeatedly highlighted in the NSOP_1 literature, and the surviving half after Mutchnik's celebrated SOP_1 = SOP_2. Resolving it collapses the bottom of the SOP hierarchy outright, with consequences for Keisler-order maximality. Central within model theory, little known outside it: placed at 35 with the field-famous specialist band (Feige, Krauth-Mezard), above HRT at 33."
+  },
+  {
     "slug": "sphere-packing-upper-bounds-cohn-elkies",
     "name": "Upper Bounds for High-Dimensional Sphere Packing",
     "shortName": "Sphere packing bounds",
@@ -18563,6 +18702,53 @@
     "aiContribution": "ai-co-developed",
     "significance": 37,
     "significanceNote": "Talagrand posed it in 1995 and kept restating it in his problem collections through 2026; it is also Problem 54 in Ben Green's list of 100 open problems, and Talagrand identified several connections from it into probability and combinatorics."
+  },
+  {
+    "slug": "talagrand-s-critical-sherrington-kirkpatrick-overlap-conjecture",
+    "name": "Talagrand's critical Sherrington-Kirkpatrick overlap conjecture",
+    "shortName": "Critical SK overlap",
+    "problemNumber": null,
+    "field": "Spin glass theory",
+    "fieldGroup": "Mathematical physics",
+    "resolution": "resolved",
+    "statement": "At the critical inverse temperature $\\beta=1$ in the Sherrington-Kirkpatrick spin glass model, Talagrand conjectured that the expected squared overlap of two independent Gibbs replicas has an exact $N^{-2/3}$ scaling: there exists a constant $a>0$ such that\n\n$$\n\\lim_{N\\to\\infty} N^{2/3}\\mathbb{E}\\langle R_{1,2}^2\\rangle=a.\n$$\n\nDu and Huang prove that this limit exists and is positive and finite. More strongly, they determine the full limiting quenched distribution of the rescaled overlap $N^{1/3}R_{1,2}$ in terms of the reflected $\\mathrm{Airy}_1$ point process.",
+    "posedBy": "Michel Talagrand",
+    "yearPosed": 2011,
+    "solveType": "proved",
+    "solveDate": "2026-08-09",
+    "model": "GPT-5.6 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Hang Du",
+      "Brice Huang"
+    ],
+    "aiRole": "The authors state that most of the arguments in the paper were generated using GPT-5.6 Pro, with the goal of exploring further consequences of ideas developed in their companion work on critical SK free-energy fluctuations. The paper does not assign individual lemmas or the central comparison principle specifically to the model, so the contribution is classified conservatively as AI co-developed rather than AI discovered.",
+    "verification": "unreviewed",
+    "verificationNote": "Checked by this site on 14 August 2026 against the paper's LaTeX source and the prior-art source, both fetched and read. Confirmed verbatim in the paper: \"The following corollary affirmatively resolves [Conjecture 11.7.5]\", attached to the corollary giving $\\lim N^{2/3}\\mathbb{E}\\langle R_{1,2}^2\\rangle$ as the mean of an explicit positive random variable built from the reflected $Airy_1$ process. The prior state is independently pinned: Dey and Kang (arXiv:2603.05636, March 2026) quote Conjecture 11.7.5 with exactly the statement submitted here and treat it as open. The AI disclosure was read in full: most formal arguments were initially generated by GPT-5.6 Pro, the principal human inputs are named (identification of the limiting objects, formulation of the sphere-to-cube comparison theorem, and the overall proof strategy), and the technical body separately credits one step to the model by name - the Hilbert-space kernel argument upgrading the Laplace-transform comparison is introduced as \"an idea due to GPT-5.6 Pro\". What was NOT checked here is the mathematics itself: a 36-page argument through the $Airy_1$ scaling limit at the GOE spectral edge needs a spin-glass or random-matrix specialist. The manuscript is five days old, unrefereed, and the authors taking responsibility for correctness is author-side checking, so the tier stays Unreviewed.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2608.08752",
+    "sourceName": "Overlap distribution of the critical Sherrington-Kirkpatrick model",
+    "resultNote": "Talagrand's Conjecture 11.7.5 is resolved affirmatively for the critical Ising Sherrington-Kirkpatrick model: $N^{2/3}\\mathbb{E}\\langle R_{1,2}^2\\rangle$ converges to a positive finite constant. The paper proves substantially more, showing that the entire quenched distribution of $N^{1/3}R_{1,2}$ converges to an explicit random probability measure defined from the reflected $\\mathrm{Airy}_1$ point process. The same limiting distribution and second-moment constant are obtained for the spherical SK model. This does not resolve the broader low-temperature overlap structure of the SK model.",
+    "ageNote": "Posed in Talagrand's Mean Field Models for Spin Glasses, volume II (2011), as Conjecture 11.7.5, alongside his theorems locating the transition window at width N^(-1/3). Open fifteen years; Dey and Kang still cite it as open in March 2026, five months before this proof.",
+    "aiContribution": "ai-co-developed",
+    "significance": 30,
+    "significanceNote": "A named conjecture of Michel Talagrand from his standard monograph (Mean Field Models for Spin Glasses, vol. II, 2011), open fifteen years and quoted as open in the literature five months before this proof. Critical-point overlap scaling is a celebrated question inside spin-glass theory but specialist territory outside it: a technical conjecture from the book, not one of the field's headline problems. Placed with the strong specialist conjectures at 30, below the field-famous band of Krauth-Mezard and Feige at 35.",
+    "links": [
+      {
+        "label": "Dey and Kang (arXiv:2603.05636) - quotes Conjecture 11.7.5 as open, five months before this proof",
+        "url": "https://arxiv.org/abs/2603.05636"
+      },
+      {
+        "label": "Du and Huang's companion paper on critical SK free-energy fluctuations, whose ideas this work extends",
+        "url": "https://arxiv.org/abs/2607.02172"
+      }
+    ]
   },
   {
     "slug": "tao-lebesgue-constants",

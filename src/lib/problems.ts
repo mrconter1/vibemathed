@@ -76,6 +76,12 @@ export const FIELD_GROUPS = [
   "Differential equations",
   "Mathematical physics",
   "Quantum information & computing",
+  // Added 14 Aug 2026 when the first model-theory entry arrived (SOP_2 =
+  // SOP_3) and the nearest existing bucket was Combinatorics, which is
+  // simply wrong for it. Broader than the submitter's suggested
+  // "Mathematical logic" so set theory, computability and proof theory
+  // land here too rather than each wanting a group of their own.
+  "Logic & foundations",
 ] as const;
 
 export type FieldGroup = (typeof FIELD_GROUPS)[number];
