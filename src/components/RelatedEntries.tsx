@@ -52,9 +52,8 @@ function Row({ relation }: { relation: RelationView }) {
         onFocus={show}
         onBlur={hide}
         className="text-sm text-[var(--accent-blue)] hover:underline"
-      >
-        {relation.shortName}
-      </Link>
+        dangerouslySetInnerHTML={{ __html: relation.shortNameHtml }}
+      />
       {open &&
         createPortal(
           <span role="tooltip" className={CARD} style={{ left: pos.x, top: pos.y }}>

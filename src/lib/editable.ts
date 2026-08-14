@@ -168,17 +168,16 @@ export const EDITABLE_FIELDS: FieldSpec[] = [
     help: "Math renders: $inline$ works here and shows properly on the site. In browser tabs, feeds and search the math degrades to plain text automatically.",
   },
   {
-    // The short name is the one title that must stay plain: it renders on
-    // chart axes, which are SVG text and cannot carry KaTeX markup. The full
-    // name CAN hold $...$ - every HTML surface renders it and the plain-text
-    // surfaces degrade through deTeX.
+    // Math is allowed here too. The one surface that cannot render it - SVG
+    // chart axes - flattens through deTeX instead, which its label code
+    // already did; keeping the field ASCII for that one consumer just made
+    // the highlights and related-entries rows read like source code.
     key: "shortName",
     label: "Short name",
     kind: "text",
     required: true,
     maxLength: 60,
-    plainText: true,
-    help: "Compact label used on chart axes and narrow layouts. Plain text - axes are SVG and cannot render math; write L^p or n=5.",
+    help: "Compact label for highlights, related-entry rows and chart axes. Math works: $inline$ renders everywhere except chart axes, where it degrades to plain text.",
   },
   {
     key: "fieldGroup",

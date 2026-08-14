@@ -114,8 +114,10 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
     for (const d of labeled) {
       const cx = x(d.age);
       // Estimated rendered width at fontSize 14 - the collision test must use
-      // the actual text lengths, or long neighbours still overprint.
-      const w = d.problem.shortName.length * 6.4 + 8;
+      // the actual text lengths, or long neighbours still overprint. Measured
+      // on the deTeX'd form, which is what the label actually draws: a
+      // math-bearing short name is shorter rendered than its $...$ source.
+      const w = deTeX(d.problem.shortName).length * 6.4 + 8;
       let labelY = y(d.significance) - 12;
       // Lift one line at a time until no placed label overlaps horizontally
       // at this height.

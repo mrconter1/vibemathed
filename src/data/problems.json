@@ -2803,21 +2803,22 @@
     "problemNumber": null,
     "field": "Matrix analysis",
     "fieldGroup": "Analysis",
-    "resolution": "candidate",
-    "statement": "Crouzeix conjectured in 2004 that for every square complex matrix $A$ and every polynomial $p$, $\\lVert p(A)\\rVert \\leq 2 \\max_{z \\in W(A)} |p(z)|$, where $W(A)$ is the numerical range of $A$. Crouzeix proved a constant of 11.08 in 2007 and Crouzeix and Palencia lowered it to $1+\\sqrt{2}$ in 2017; the conjectured constant 2 is attained by $2\\times 2$ matrices. Lorist and Schwenninger prove the sharp bound by combining the double-layer potential machinery with a perturbation lemma for 2-dilations.",
+    "resolution": "resolved",
+    "statement": "Crouzeix conjectured in 2004 that for every square complex matrix $A$ and every polynomial $p$, $\\lVert p(A)\\rVert \\leq 2 \\max_{z \\in W(A)} |p(z)|$, where $W(A)$ is the numerical range of $A$ - that is, the numerical range is a 2-spectral set. Crouzeix proved a constant of 11.08 in 2007 and Crouzeix and Palencia lowered it to $1+\\sqrt{2}$ in 2017; the conjectured constant 2 is attained by $2\\times 2$ matrices. Jin proves the sharp bound by a function-theoretic route whose key theorem reduces the problem, via a sampling strategy, to a positivity condition; Lorist and Schwenninger independently prove it days later by combining double-layer potential machinery with a perturbation lemma for 2-dilations.",
     "posedBy": "Michel Crouzeix",
     "yearPosed": 2004,
     "solveType": "proved",
-    "solveDate": "2026-08-04",
-    "model": "ChatGPT 5.6 Pro",
+    "solveDate": "2026-07-27",
+    "model": "GPT-5.6 Sol; ChatGPT 5.6 Pro",
     "modelMaker": "OpenAI",
     "humanCollaborators": [
+      "Shanmu Jin",
       "Emiel Lorist",
       "Felix L. Schwenninger"
     ],
-    "aiRole": "The paper's disclosure in full: \"ChatGPT 5.6 Pro by OpenAI was used to explore proof strategies for this note. The note was entirely written by the authors, who take full responsibility for the content.\" No individual lemma is attributed to the model, so the lower tier applies.",
-    "verification": "unreviewed",
-    "verificationNote": "A preprint days old, resolving a conjecture open since 2004. No independent expert review, no formalization, and a competing independent claim is outstanding (see the result note), so this is recorded as a candidate rather than a settled result.",
+    "aiRole": "For the first proof: Jin, a neurosurgery resident with no specialized mathematical training, reports that the key result (Theorem 2) emerged during an approximately sixteen-hour autonomous run of GPT-5.6 Sol in ChatGPT Work mode - a public prompt adapted from the Cycle Double Cover run, web access denied, a branching portfolio of subagent strategies under adversarial audit, and no human intervention once started. Jin then simplified and verified the output; the repository publishes the prompt, successive manuscripts, a Lean formalization and an axiom audit. For the independent second proof, Lorist and Schwenninger disclose that ChatGPT 5.6 Pro was used to explore proof strategies, with the note entirely written by the authors.",
+    "verification": "expert-verified",
+    "verificationNote": "Independently expert-verified, publicly on record: Townsend and Greenbaum's essay of 14 August 2026 states that both authors and Michel Crouzeix himself \"have checked the proof thoroughly and believe that Dr. Jin's manuscript is correct\" - the conjecture's own poser among the verifiers, and Greenbaum co-organized the 2017 AIM workshop on the problem. This site read that essay in full and audited Jin's repository (commit 9df0783): 82 Lean files with zero sorry, zero axiom declarations and zero native_decide with comments stripped, on toolchain v4.28.0, alongside an Annals-formatted manuscript and the complete autonomous-run prompt - though the Lean was not compiled here and its statement-to-conjecture correspondence not audited, so the tier rests on the expert endorsement, not the formalization. The independent second proof by Lorist and Schwenninger (arXiv:2608.03841) has no comparable public endorsement yet and the essay stops short of vouching for it. Neither manuscript is refereed.",
     "publication": "preprint",
     "resolutionMethod": "argument",
     "citations": null,
@@ -2825,18 +2826,34 @@
     "citationsSource": null,
     "citationsUrl": null,
     "renownLangs": 2,
-    "sourceUrl": "https://arxiv.org/abs/2608.03841",
-    "sourceName": "arXiv",
+    "sourceUrl": "https://www.preprints.org/manuscript/202607.1919",
+    "sourceName": "Jin, The Numerical Range Is a 2-Spectral Set",
     "renownNote": "English and Polish Wikipedia articles.",
-    "resultNote": "Concurrent independent proof: the authors note that during preparation of this note, a proof of the conjecture appeared independently in a July 2026 preprint of S. Jin (\"The numerical range is a 2-spectral set\", preprints.org), by a different, function-theoretic route. That work carries no AI disclosure known to us, so the first proof of Crouzeix's conjecture may not be an AI-assisted one; this entry records the AI-assisted proof, not a claim of priority.",
+    "resultNote": "Two independent proofs within eight days, both with AI in the loop. Jin's (posted 27 July, preprints.org, submitted to Annals) is the first: its decisive theorem came out of an autonomous GPT-5.6 Sol run, and it is the proof Townsend, Greenbaum and Crouzeix have checked. Lorist and Schwenninger's five-page argument (arXiv, 4 August) is a genuinely different route - double-layer potentials plus a perturbation lemma for 2-dilations - produced with ChatGPT 5.6 Pro exploring proof strategies. The entry's headline axes record Jin's proof; the earlier version of this entry recorded Lorist-Schwenninger's as primary while Jin's AI provenance was still unknown.",
     "ageNote": "Posed by Crouzeix in 2004, with a documented ladder of constants since: 11.08 (Crouzeix, 2007), 1 + √2 (Crouzeix and Palencia, 2017), plus many special cases.",
-    "aiContribution": "ai-assisted",
-    "significance": 30,
-    "significanceNote": "A named 2004 conjecture at the centre of matrix analysis and operator theory, with two decades of partial results, a survey of its own and a Wikipedia article, but little known outside those fields.",
+    "aiContribution": "ai-discovered",
+    "significance": 35,
+    "significanceNote": "A named 2004 conjecture at the centre of matrix analysis and operator theory: two decades of partial results, its own AIM workshop (2017), its own survey, and Wikipedia articles in two languages. Field-famous rather than household - level with Feige and Krauth-Mezard at 35, above the strong specialist band at 30 where it previously sat; the AIM workshop and the constant-lowering literature are the concrete differentiators.",
     "links": [
       {
-        "label": "Jin's concurrent independent proof (preprints.org, July 2026)",
-        "url": "https://www.preprints.org/manuscript/202607.1919"
+        "label": "Townsend and Greenbaum, The Neurosurgery Resident Who Proved Crouzeix's Conjecture (14 Aug 2026)",
+        "url": "https://alextownsend.net/essays/SIAMNews_CrouzeixConjecture.pdf"
+      },
+      {
+        "label": "Jin's repository: prompt, successive manuscripts, Lean formalization, axiom audit",
+        "url": "https://github.com/jinshanmu/CrouzeixConjecture"
+      },
+      {
+        "label": "Lorist and Schwenninger, A solution to Crouzeix's conjecture (arXiv, 4 Aug 2026) - the independent second proof",
+        "url": "https://arxiv.org/abs/2608.03841"
+      },
+      {
+        "label": "AIM workshop on Crouzeix's conjecture (2017)",
+        "url": "https://aimath.org/pastworkshops/crouzeix.html"
+      },
+      {
+        "label": "Wikipedia: Crouzeix's conjecture",
+        "url": "https://en.wikipedia.org/wiki/Crouzeix%27s_conjecture"
       }
     ]
   },
@@ -3041,7 +3058,7 @@
   {
     "slug": "davenport-constant-heisenberg-125",
     "name": "The Small Davenport Constant of the Heisenberg Group of Order 125",
-    "shortName": "Davenport, H_125",
+    "shortName": "Davenport, $H_{125}$",
     "problemNumber": null,
     "field": "Additive Combinatorics, Zero-Sum Theory",
     "fieldGroup": "Combinatorics",
@@ -3289,7 +3306,7 @@
   {
     "slug": "dihedral-and-cyclic-ramsey-numbers-of-the-alternating-3-path",
     "name": "Dihedral and cyclic Ramsey numbers of the alternating 3-path",
-    "shortName": "Alternating 3-path Ramsey numbers",
+    "shortName": "$R_{dih}(P_3^{alt},K_b)=2b-1$",
     "problemNumber": null,
     "field": "Permutational Ramsey theory",
     "fieldGroup": "Combinatorics",
@@ -3337,7 +3354,7 @@
   {
     "slug": "dihedral-ramsey-numbers-of-the-alternating-a-path-versus-k-b-for-every-a-4-1-a-1",
     "name": "Dihedral Ramsey numbers of the alternating a-path versus K_b, for every a >= 4: 1 + (a-1)(b-1)",
-    "shortName": "R_dih(P_a^alt, K_b) = 1+(a−1)(b−1), a≥4",
+    "shortName": "$R_{dih}(P_a^{alt},K_b)=1+(a-1)(b-1)$, $age4$",
     "problemNumber": null,
     "field": "Permutational Ramsey theory",
     "fieldGroup": "Combinatorics",
@@ -3743,7 +3760,7 @@
   {
     "slug": "double-covers-discrete-box",
     "name": "New Bounds for Double Covers of the Discrete Box",
-    "shortName": "Double covers of {0,1,2}^d",
+    "shortName": "Double covers of ${0,1,2}^d$",
     "problemNumber": null,
     "field": "Extremal Combinatorics, Covering Problems",
     "fieldGroup": "Combinatorics",
@@ -10060,7 +10077,7 @@
   {
     "slug": "four-color-rado-number-of-x-y-c-z-40c-41",
     "name": "The 4-Color Rado Number of $x+y+c=z$: $R(c)=40c+41$ Whenever $c+1$ Is Divisible by 3, 4, 5 or 7",
-    "shortName": "4-color Rado R(c)=40c+41, 66% of cases",
+    "shortName": "4-color Rado: $R(c)=40c+41$",
     "problemNumber": null,
     "field": "Rado numbers / partition regularity",
     "fieldGroup": "Combinatorics",
@@ -11365,7 +11382,7 @@
   {
     "slug": "hessian-conjecture-five-variable-counterexample",
     "name": "A Five-Variable Counterexample to the Hessian Conjecture",
-    "shortName": "Hessian conjecture, n=5",
+    "shortName": "Hessian conjecture, $n=5$",
     "problemNumber": null,
     "field": "Affine Algebraic Geometry, Polynomial Maps",
     "fieldGroup": "Algebra",
@@ -12520,7 +12537,7 @@
   {
     "slug": "kirby-4-37-irreducible-projective-plane",
     "name": "The Kinoshita Conjecture and Kirby Problem 4.37",
-    "shortName": "Irreducible projective plane in S^4",
+    "shortName": "Irreducible projective plane in $S^4$",
     "problemNumber": null,
     "field": "4-manifold topology",
     "fieldGroup": "Geometry & topology",
@@ -14789,7 +14806,7 @@
   {
     "slug": "nineteen-exact-reflective-and-dihedral-ramsey-numbers-from-damnjanovic-dordevic-",
     "name": "Nineteen exact reflective and dihedral Ramsey numbers from Damnjanovic-Dordevic's tables",
-    "shortName": "19 exact R_dih/R_ref values (DD26 Tables 3-13)",
+    "shortName": "19 exact $R_{dih}$/$R_{ref}$ values (DD26)",
     "problemNumber": null,
     "field": "Permutational Ramsey theory",
     "fieldGroup": "Combinatorics",
@@ -16208,7 +16225,7 @@
   {
     "slug": "primariness-lp-l1",
     "name": "Primariness of the Mixed-Norm Space $L_p(L_1)$",
-    "shortName": "Primariness of L_p(L_1)",
+    "shortName": "Primariness of $L_p(L_1)$",
     "problemNumber": null,
     "field": "Banach Space Decomposition Theory",
     "fieldGroup": "Analysis",
@@ -18016,7 +18033,7 @@
   {
     "slug": "sop-2-sop-3",
     "name": "$SOP_2 = SOP_3$",
-    "shortName": "SOP_2 = SOP_3",
+    "shortName": "$SOP_2 = SOP_3$",
     "problemNumber": null,
     "field": "Model theory",
     "fieldGroup": "Logic & foundations",
@@ -18600,7 +18617,7 @@
   {
     "slug": "symmetrically-colored-k-ap-bound",
     "name": "Improved Bound for Colorings Without Symmetrically Colored k-APs",
-    "shortName": "Symmetric k-AP colorings",
+    "shortName": "Symmetric $k$-AP colorings",
     "problemNumber": null,
     "field": "Additive Combinatorics, Ramsey Theory",
     "fieldGroup": "Combinatorics",
@@ -18636,7 +18653,7 @@
   {
     "slug": "t-edge-balanced-existence",
     "name": "Existence of $t$-Edge-Balanced Graphs for $t \\ge 3$",
-    "shortName": "t-edge-balanced graphs",
+    "shortName": "$t$-edge-balanced graphs",
     "problemNumber": null,
     "field": "Design theory",
     "fieldGroup": "Combinatorics",

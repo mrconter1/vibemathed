@@ -287,9 +287,9 @@ export interface RelationView {
   label: string;
   kind: string;
   slug: string;
-  shortName: string;
-  /// Pre-rendered with texToHtml - names carry $...$ and the hover card is a
-  /// client component, which must not ship KaTeX.
+  /// Pre-rendered with texToHtml - both titles may carry $...$ and the row is
+  /// a client component, which must not ship KaTeX.
+  shortNameHtml: string;
   nameHtml: string;
   note: string;
   solveDate: string;
@@ -335,7 +335,7 @@ export async function getRelations(slug: string): Promise<RelationView[]> {
       label: (outgoing ? spec?.forward : spec?.inverse) ?? r.kind,
       kind: r.kind,
       slug: other.slug,
-      shortName: other.shortName,
+      shortNameHtml: texToHtml(other.shortName),
       nameHtml: texToHtml(other.name),
       note: r.note,
       solveDate: other.solveDate,
