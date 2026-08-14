@@ -165,17 +165,20 @@ export const EDITABLE_FIELDS: FieldSpec[] = [
     kind: "text",
     required: true,
     maxLength: 200,
-    plainText: true,
-    help: "Plain text - write math in ASCII (L^p, n=5), not $...$. Titles appear in browser tabs, feeds and search, where LaTeX shows as source.",
+    help: "Math renders: $inline$ works here and shows properly on the site. In browser tabs, feeds and search the math degrades to plain text automatically.",
   },
   {
+    // The short name is the one title that must stay plain: it renders on
+    // chart axes, which are SVG text and cannot carry KaTeX markup. The full
+    // name CAN hold $...$ - every HTML surface renders it and the plain-text
+    // surfaces degrade through deTeX.
     key: "shortName",
     label: "Short name",
     kind: "text",
     required: true,
     maxLength: 60,
     plainText: true,
-    help: "Compact label used on chart axes and narrow layouts. Plain text, like the name.",
+    help: "Compact label used on chart axes and narrow layouts. Plain text - axes are SVG and cannot render math; write L^p or n=5.",
   },
   {
     key: "fieldGroup",

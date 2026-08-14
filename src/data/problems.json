@@ -7,7 +7,7 @@
     "field": null,
     "fieldGroup": "Combinatorics",
     "resolution": "partial",
-    "statement": "For a single-source unsplittable flow, find the optimal universal additive constant $C$ s.t. every feasible fractional flow $x$ with arc costs $c$ should admit an unsplittable routing $y$ with $c^\\top y \\le c^\\top x$ and $y_a \\le x_a + C \\cdot D$ on every arc. We provide several new results on $C$: (1) record lower bound for planar instances (against known ceiling 2):\n$$C \\ge \\frac{58676765987259}{50000000000000} = 1.17353531974518;$$\n(2) local envelope ladder (proved): $E(2) = 1$, $E(3) = 9/8$, $E(4) = (299 - 41\\cdot\\sqrt{41})/32 = 1.13974707\\ldots$, attained by the counterexamples from our previous work; record constants of our previous work are now exact local envelopes of the general theory;\n(3) global results: every exact-two-path instance with rows touching at most three terminals satisfies $C \\le 2$ (first unconditional constant for an unbounded class); interaction arity m gives $\\lceil\\lfloor 3m/2\\rfloor /2\\rceil \\cdot D$;\n(4) classes closed exactly: out-trees 0; two-layer hubs 1; outerplanar two-exit interval spines 1 (sharp); series-parallel $\\le 1$;\n(5) band merger constant $K^* \\ge 2.5652\\ldots$ (twice the general lower bound $1.2826\\ldots$).",
+    "statement": "For a single-source unsplittable flow, find the optimal universal additive constant $C$ s.t. every feasible fractional flow $x$ with arc costs $c$ should admit an unsplittable routing $y$ with $c^\\top y \\le c^\\top x$ and $y_a \\le x_a + C \\cdot D$ on every arc. We provide several new results on $C$: \n\n(1) record lower bound for planar instances (against known ceiling 2):\n$$C \\ge \\frac{58676765987259}{50000000000000} = 1.17353531974518;$$\n\n(2) local envelope ladder (proved): $E(2) = 1$, $E(3) = 9/8$, $E(4) = (299 - 41\\cdot\\sqrt{41})/32 = 1.13974707\\ldots$, attained by the counterexamples from our previous work; record constants of our previous work are now exact local envelopes of the general theory;\n\n(3) global results: every exact-two-path instance with rows touching at most three terminals satisfies $C \\le 2$ (first unconditional constant for an unbounded class); interaction arity m gives $\\lceil\\lfloor 3m/2\\rfloor /2\\rceil \\cdot D$;\n\n(4) classes closed exactly: out-trees 0; two-layer hubs 1; outerplanar two-exit interval spines 1 (sharp); series-parallel $\\le 1$;\n\n(5) band merger constant $K^* \\ge 2.5652\\ldots$ (twice the general lower bound $1.2826\\ldots$).",
     "posedBy": "Dinitz, Garg, Goemans",
     "yearPosed": 1999,
     "solveType": "proved",
@@ -15,7 +15,7 @@
     "model": "GPT-5.6 Sol, Claude Fable 5, Claude Opus 5",
     "modelMaker": "OpenAI, Anthropic",
     "humanCollaborators": [],
-    "aiRole": "Like the previous parts (https://vibemathed.com/problem/1-28249-lower-bound-and-partial-upper-bounds-for-cost-preserving-single-source-u), this work was written in close collaboration with GPT~5.6~Sol, Claude Fable~5, and Claude Opus~5, which contributed proofs, failed routes, adversarial reviews, code for the verification campaign, and more. This time, I cannot claim that it was a single tour de force by the models like the original counterexample by Rybin; it was a long journey with a lot of human involvement, but the key ideas were provided by the LLMs. I have personally verified and edited this work in its entirety, and all errors are mine.",
+    "aiRole": "Like the previous parts (https://vibemathed.com/problem/1-28249-lower-bound-and-partial-upper-bounds-for-cost-preserving-single-source-u), this work was written in close collaboration with GPT 5.6 Sol, Claude Fable 5, and Claude Opus 5, which contributed proofs, failed routes, adversarial reviews, code for the verification campaign, and more. This time, I cannot claim that it was a single tour de force by the models like the original counterexample by Rybin; it was a long journey with a lot of human involvement, but the key ideas were provided by the LLMs. I have personally verified and edited this work in its entirety, and all errors are mine.",
     "verification": "site-confirmed",
     "verificationNote": "Reproduced by this site on 13 August 2026 from a clean clone, in two parts. First the repository's own suite: all fourteen verifiers in verify/run_all.sh pass, exit 0. Those cover Parts I and II only, so the headline planar record was rebuilt here independently. Reading only the raw arc list, a depth-first search rediscovers exactly two source-to-terminal paths for each of the six terminals; the fractional arc loads recompute exactly on all 21 arcs; all 64 routing overloads recompute exactly in rational arithmetic; the cost rule fits all 64 of the certificate's own cost deltas; 42 routings come out cost-preserving as claimed; and the minimum overload over those 42 is $58676765987259/50000000000000$, exactly the record. Planarity was checked independently too, by Euler ($V=16$, $E=21$, $F=7$) and by networkx. The envelope constant was derived symbolically from the stated quartic rather than read off: $t^*=(7-\\sqrt{41})/4$ is the unique critical point in $(0,2-\\sqrt3)$, giving $E(4)=(299-41\\sqrt{41})/32$. The 2,015-cell closure ledger is internally complete: five forms of 403, family counts summing to 2,015, every cell on one of nine solver-free lemmas. Not checked: the mixture characterization, the network-matrix total-unimodularity theorem and the tree-path four-colouring theorem, conventional proofs in an unreviewed preprint with no independent expert review. The tier records this site's reproduction of the certificates; the structural theory remains unreviewed.",
     "publication": "preprint",
@@ -2723,7 +2723,7 @@
   },
   {
     "slug": "covering-number-c-12-6-4",
-    "name": "The Covering Number C(12,6,4)",
+    "name": "The Covering Number $C(12,6,4)$",
     "shortName": "Covering number C(12,6,4)",
     "problemNumber": null,
     "field": "Design theory",
@@ -3879,7 +3879,7 @@
   },
   {
     "slug": "e-log-concavity-chromatic-quasisymmetric",
-    "name": "e-Log-Concavity of Chromatic Quasisymmetric Functions",
+    "name": "$e$-Log-Concavity of Chromatic Quasisymmetric Functions",
     "shortName": "e-log-concavity",
     "problemNumber": null,
     "field": "Algebraic combinatorics",
@@ -10160,7 +10160,7 @@
   },
   {
     "slug": "fulek-l3-linear-extremal-bound",
-    "name": "Fulek's Question on the Extremal Function of L_3",
+    "name": "Fulek's Question on the Extremal Function of $L_3$",
     "shortName": "Forbidden 0-1 matrices",
     "problemNumber": null,
     "field": "Extremal combinatorics",
@@ -10693,7 +10693,7 @@
   },
   {
     "slug": "ghasemi-kopparty-sparse-decoding-polynomials",
-    "name": "Ghasemi-Kopparty Problem on Sparse S-Decoding Polynomials",
+    "name": "Ghasemi-Kopparty Problem on Sparse $S$-Decoding Polynomials",
     "shortName": "Sparse S-decoding polynomials",
     "problemNumber": null,
     "field": "Computational complexity",
@@ -11092,7 +11092,7 @@
   },
   {
     "slug": "hadwiger-debrunner-line-arrangements",
-    "name": "General Position for Planar Line Arrangements and HD_2(p,3)",
+    "name": "General Position for Planar Line Arrangements and $HD_2(p,3)$",
     "shortName": "Hadwiger-Debrunner bound",
     "problemNumber": null,
     "field": "Discrete geometry",
@@ -12074,7 +12074,7 @@
   },
   {
     "slug": "k-antichains-unit-cube",
-    "name": "Conjecture on k-Antichains in the Unit Cube",
+    "name": "Conjecture on $k$-Antichains in the Unit Cube",
     "shortName": "k-antichains",
     "problemNumber": null,
     "field": "Combinatorics",
@@ -16104,7 +16104,7 @@
   },
   {
     "slug": "primariness-lp-l1",
-    "name": "Primariness of the Mixed-Norm Space L_p(L_1)",
+    "name": "Primariness of the Mixed-Norm Space $L_p(L_1)$",
     "shortName": "Primariness of L_p(L_1)",
     "problemNumber": null,
     "field": "Banach Space Decomposition Theory",
@@ -18243,7 +18243,7 @@
   },
   {
     "slug": "strichartz-tse-radon-nikodym-integrability",
-    "name": "Strichartz-Tse L^p-Integrability on the Sierpinski Gasket",
+    "name": "Strichartz-Tse $L^p$-Integrability on the Sierpinski Gasket",
     "shortName": "Sierpinski energy densities",
     "problemNumber": null,
     "field": "Fractal analysis",
@@ -18496,7 +18496,7 @@
   },
   {
     "slug": "t-edge-balanced-existence",
-    "name": "Existence of t-Edge-Balanced Graphs for t ≥ 3",
+    "name": "Existence of $t$-Edge-Balanced Graphs for $t \\ge 3$",
     "shortName": "t-edge-balanced graphs",
     "problemNumber": null,
     "field": "Design theory",

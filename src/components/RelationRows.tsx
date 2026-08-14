@@ -135,7 +135,11 @@ function TargetPicker({
                 }}
                 className="block w-full px-2.5 py-1.5 text-left text-sm text-[var(--ink)] transition-colors hover:bg-[var(--field)]"
               >
-                <span className="block truncate">{r.name}</span>
+                {/* Pre-rendered on the server: names may carry $...$ math. */}
+                <span
+                  className="block truncate"
+                  dangerouslySetInnerHTML={{ __html: r.nameHtml }}
+                />
                 <span className="block text-[11px] text-[var(--ink-muted)]">{r.solveDate}</span>
               </button>
             </li>

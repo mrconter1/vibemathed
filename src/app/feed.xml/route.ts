@@ -1,5 +1,6 @@
 import { getPublishedProblems } from "@/lib/data";
 import { SITE_URL } from "@/lib/site";
+import { deTeX } from "@/components/TeX";
 
 // RSS 2.0 for the catalogue: newest solves first.
 //
@@ -65,7 +66,7 @@ export async function GET() {
         .filter(Boolean)
         .join(" · ");
       return `    <item>
-      <title>${esc(p.name)}</title>
+      <title>${esc(deTeX(p.name))}</title>
       <link>${SITE_URL}/problem/${p.slug}</link>
       <guid isPermaLink="true">${SITE_URL}/problem/${p.slug}</guid>
       <pubDate>${pubDate(p.solveDate)}</pubDate>

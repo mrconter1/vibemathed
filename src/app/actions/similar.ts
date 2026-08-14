@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { texToHtml } from "@/components/TeX";
 
 // Live duplicate check for the submission form.
 //
@@ -17,6 +18,9 @@ import { prisma } from "@/lib/prisma";
 export interface SimilarEntry {
   slug: string;
   name: string;
+  /// The name with $...$ pre-rendered to KaTeX HTML on the server, so client
+  /// dropdowns can show real math without shipping KaTeX to the browser.
+  nameHtml: string;
   solveDate: string;
 }
 
@@ -81,7 +85,12 @@ export async function searchEntriesForRelation(
       })
       .sort((a, b) => b.hits - a.hits || a.row.name.length - b.row.name.length)
       .slice(0, 8)
-      .map(({ row }) => ({ slug: row.slug, name: row.name, solveDate: row.solveDate }));
+      .map(({ row }) => ({
+        slug: row.slug,
+        name: row.name,
+        nameHtml: texToHtml(row.name),
+        solveDate: row.solveDate,
+      }));
   } catch (error) {
     console.error("searchEntriesForRelation failed", error);
     return [];
@@ -135,6 +144,7 @@ export async function findSimilarEntries(query: string): Promise<SimilarEntry[]>
       .map(({ row }) => ({
         slug: row.slug,
         name: row.name,
+        nameHtml: texToHtml(row.name),
         solveDate: row.solveDate,
       }));
   } catch (error) {
