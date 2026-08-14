@@ -9,7 +9,7 @@ import { Highlights } from "@/components/Highlights";
 import { ProblemCards } from "@/components/ProblemCards";
 import { RecentActivity } from "@/components/RecentActivity";
 import { StatBand } from "@/components/StatBand";
-import { texToHtml } from "@/components/TeX";
+import { deTeX, texToHtml } from "@/components/TeX";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -51,13 +51,19 @@ async function EntryList() {
     modelMaker: p.modelMaker,
     humanCollaborators: p.humanCollaborators,
     verification: p.verification,
-    verificationNote: p.verificationNote,
+    // Flattened: the card shows this only as a native title tooltip, which
+    // renders raw text - $...$ there is LaTeX source in the reader's face.
+    verificationNote: p.verificationNote ? deTeX(p.verificationNote) : null,
     publication: p.publication ?? null,
     resolutionMethod: p.resolutionMethod ?? null,
     significance: p.significance ?? null,
     significanceNote: p.significanceNote ?? null,
     solveCostUsd: p.solveCostUsd ?? null,
-    resultNote: p.resultNote ?? null,
+    // Flattened server-side: the card shows this in a two-line clamped
+    // footnote where $...$ would show raw (the card component is client-side
+    // and must not import KaTeX). The entry page renders the same field as
+    // real math.
+    resultNote: p.resultNote ? deTeX(p.resultNote) : null,
     ageNote: p.ageNote ?? null,
     upvotes: p.upvotes,
     downvotes: p.downvotes,

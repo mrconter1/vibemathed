@@ -266,7 +266,11 @@ function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string
         )}
 
         {/* Facts that every entry has */}
-        <div className="mt-2.5 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px]">
+        {/* items-baseline: the ageNote's StarNote is an align-super button,
+            which grows its fact's line box upward - without a shared baseline
+            the flex default let that whole fact sit visibly lower than its
+            neighbours ("Open 11y*" hung below "Posed by" and "Model"). */}
+        <div className="mt-2.5 flex flex-wrap items-baseline gap-x-3 gap-y-1 font-mono text-[11px]">
             <Fact label="Posed by">
               {p.posedBy ?? DASH}
               {p.yearPosed !== null && `, ${p.yearPosed}`}
