@@ -101,7 +101,10 @@ export function VoteButtons({
   // hover classes, which is why these buttons used to have no hover feedback.
   // The hover wash is a translucent ink mix so it reads on both surfaces
   // (paper on the entry page, raised paper on cards).
-  const base = `inline-flex flex-col items-center justify-center gap-0.5 rounded-md border font-medium leading-none transition-colors tabular-nums ${dims} disabled:opacity-50`;
+  // `rounded`, not `rounded-md`: these sit in the entry page's control corner
+  // beside the report and edit buttons, which use the 4px radius - a 6px
+  // radius on just the votes read as a different component family.
+  const base = `inline-flex flex-col items-center justify-center gap-0.5 rounded border font-medium leading-none transition-colors tabular-nums ${dims} disabled:opacity-50`;
   const inactive =
     "border-[var(--hairline)] text-[var(--ink-secondary)] hover:border-[var(--ink-muted)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)]";
 
