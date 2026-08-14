@@ -22,9 +22,10 @@ export interface PendingEntry {
   statementHtml: string | null;
   sourceUrl: string;
   sourceName: string;
-  /// For the reviewer, never published. Plain text - unlike `statementHtml`,
-  /// this never appears on the entry, so there is no need to render it as the
-  /// entry would.
+  /// For the reviewer, never published - but submitters write real math in
+  /// it ($R_{dih}$ and friends), so it renders through TeX like the name
+  /// does. "Never appears on the entry" was a reason not to cache it, not a
+  /// reason to show the reviewer raw source.
   submitterNote: string | null;
   submittedBy: string;
   /// Current pseudonym for the profile link, or null when unlinkable.
@@ -138,7 +139,7 @@ export function ReviewQueue({ pending }: { pending: PendingEntry[] }) {
           {p.submitterNote && (
             <p className="mt-2 rounded-md border border-[color-mix(in_srgb,var(--accent-blue)_40%,transparent)] bg-[color-mix(in_srgb,var(--accent-blue)_6%,transparent)] px-2.5 py-1.5 text-xs leading-relaxed text-[var(--ink-secondary)]">
               <span className="font-medium text-[var(--ink)]">Note from submitter: </span>
-              {p.submitterNote}
+              <TeX>{p.submitterNote}</TeX>
             </p>
           )}
 
