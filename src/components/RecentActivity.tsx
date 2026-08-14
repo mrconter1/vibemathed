@@ -7,20 +7,27 @@ import Link from "next/link";
 import type { SiteActivityView } from "@/lib/activity";
 import { Icon } from "@/components/Icons";
 import { RelativeTime } from "@/components/RelativeTime";
+import { TeX, deTeX } from "@/components/TeX";
 
+/// Field values quoted in a feed line are flattened through deTeX before
+/// truncating: names can carry $...$, and a feed line is too small a stage
+/// for display math - and truncation could split a $ pair, leaving the rest
+/// of the line inside a formula.
 function truncate(value: string | null, max = 60): string {
   if (!value) return "";
-  return value.length > max ? `${value.slice(0, max)}…` : value;
+  const flat = deTeX(value);
+  return flat.length > max ? `${flat.slice(0, max)}…` : flat;
 }
 
-/// What the person did, with the entry name rendered as the link.
+/// What the person did, with the entry name rendered as the link. This is a
+/// server component, so <TeX> here renders names' math at build time.
 function describe(a: SiteActivityView) {
   const entry = (
     <Link
       href={`/problem/${a.problemSlug}`}
       className="font-medium text-[var(--ink)] hover:text-[var(--accent-blue)] hover:underline"
     >
-      {a.problemName}
+      <TeX>{a.problemName}</TeX>
     </Link>
   );
 

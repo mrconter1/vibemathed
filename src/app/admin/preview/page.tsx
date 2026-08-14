@@ -135,7 +135,7 @@ async function Preview({
 
   return (
     <article className="rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-5 sm:px-6 sm:py-6">
-      <h2 className="font-serif text-2xl text-[var(--ink)] sm:text-3xl">{p.name}</h2>
+      <h2 className="font-serif text-2xl text-[var(--ink)] sm:text-3xl"><TeX>{p.name}</TeX></h2>
       {p.submittedBy && (
         <p className="mt-1 text-sm text-[var(--ink-muted)]">
           Submitted by{" "}

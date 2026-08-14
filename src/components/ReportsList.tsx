@@ -1,5 +1,6 @@
 "use client";
 
+import { TeX } from "@/components/TeX";
 // The curator's report queue: one card per open report, with the entry it
 // concerns, who sent it, when, and the free-text explanation. Handling one
 // clears it from the queue (and the header badge) without deleting the row,
@@ -71,7 +72,7 @@ export function ReportsList({ reports }: { reports: OpenReport[] }) {
               href={`/problem/${r.problemSlug}`}
               className="font-serif text-base text-[var(--ink)] hover:text-[var(--accent-blue)]"
             >
-              {r.problemName}
+              <TeX>{r.problemName}</TeX>
             </Link>
             <span className="font-mono text-[11px] text-[var(--ink-muted)]">
               {r.reportedAt}

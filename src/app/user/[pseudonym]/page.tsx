@@ -272,7 +272,7 @@ export default async function UserPage({
                     href={`/problem/${c.problemSlug}#discussion`}
                     className="text-[var(--accent-blue)] hover:underline"
                   >
-                    {c.problemName}
+                    <TeX>{c.problemName}</TeX>
                   </Link>{" "}
                   · {c.createdAt}
                 </p>
@@ -304,7 +304,7 @@ export default async function UserPage({
                   href={`/problem/${a.problemSlug}`}
                   className="text-[var(--accent-blue)] hover:underline"
                 >
-                  {a.problemName}
+                  <TeX>{a.problemName}</TeX>
                 </Link>{" "}
                 <span className="text-xs text-[var(--ink-muted)]">· {a.createdAt}</span>
               </li>
