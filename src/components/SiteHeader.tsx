@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AuthMenu } from "@/components/AuthMenu";
+import { DiscordLink } from "@/components/DiscordLink";
 import { InboxButton } from "@/components/InboxButton";
 import { NavLinks } from "@/components/NavLinks";
 import { NotificationsMenu } from "@/components/NotificationsMenu";
@@ -54,9 +55,15 @@ export function SiteHeader() {
               bell: it is the more personal of the two. */}
           <InboxButton />
           <NotificationsMenu />
-          {/* Left of the account button, and unlike the two above it renders
-              for signed-out visitors too: reading in the dark is not a
-              privilege of having an account. */}
+          {/* The community invite, in the slot the theme toggle used to hold.
+              Theme is a set-once preference and now lives in the account menu,
+              which is where GitHub, Reddit and YouTube all keep appearance; a
+              header slot is better spent on something a stranger should
+              notice. Signed-out readers keep the toggle here instead - it
+              renders itself only when there is no account menu to hold it, so
+              reading in the dark is still not a privilege of having an
+              account. */}
+          <DiscordLink />
           <ThemeToggle />
           <AuthMenu />
         </div>

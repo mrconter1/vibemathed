@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { DISCORD_INVITE } from "@/lib/community";
 import Link from "next/link";
 import { submitProblem } from "@/app/actions/submit-problem";
 import {
@@ -103,6 +104,20 @@ export function SubmitForm() {
         <p className="mt-1 text-xs text-[var(--ink-secondary)]">
           It stays private until a reviewer approves it. Once live it will credit you
           by pseudonym.
+        </p>
+        {/* The highest-intent moment on the site: someone has just
+            contributed and is waiting on a human. Worth one line. */}
+        <p className="mt-2 text-xs text-[var(--ink-secondary)]">
+          Want to talk it through while it waits?{" "}
+          <a
+            href={DISCORD_INVITE}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--accent-blue)] hover:underline"
+          >
+            Join the Discord
+          </a>
+          .
         </p>
         <button
           type="button"

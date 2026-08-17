@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DISCORD_INVITE } from "@/lib/community";
 
 /// One footer for the whole site: a single-sentence definition and the link
 /// row. The longer prose moved to the About page. Nothing here points at a
@@ -33,6 +34,15 @@ export function SiteFooter() {
             className={link}
           >
             GitHub
+          </a>
+          <span aria-hidden>·</span>
+          <a
+            href={DISCORD_INVITE}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={link}
+          >
+            Discord
           </a>
           <span aria-hidden>·</span>
           <Link href="/submit" className={link}>

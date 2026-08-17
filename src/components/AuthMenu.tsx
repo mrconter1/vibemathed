@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import Link from "next/link";
 import { signOutEverywhere } from "@/app/actions/auth";
 import { HEADER_ICON, HEADER_ICON_HOVER } from "@/lib/header-button";
@@ -128,6 +129,14 @@ export function AuthMenu() {
                 Public profile
               </Link>
             )}
+            {/* Appearance, where every comparable site keeps it. The header
+                slot it used to hold went to the Discord link; signed-out
+                readers still get the toggle up there, since they have no menu
+                to open. Deliberately NOT closing the menu on click: switching
+                theme is something you may want to try twice, and having the
+                menu vanish under you the first time makes the second one a
+                hunt. */}
+            <ThemeToggle variant="row" />
           </nav>
 
           {isAdmin && (
