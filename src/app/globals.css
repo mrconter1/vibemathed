@@ -36,6 +36,11 @@
   --accent-blue: #2a78d6;
   --accent-orange: #eb6834;
 
+  /* Discord's blurple, for the community link in the header - the one place
+     the site wears somebody else's brand colour. Tokenised like everything
+     else so the dark theme can lighten it, which it must. */
+  --brand-discord: #5865f2;
+
   --status-good: #0ca30c;
   --status-warning: #c98500;
   --status-critical: #d03b3b;
@@ -91,6 +96,13 @@
 
   --accent-blue: #6aa5e8;
   --accent-orange: #f08a5c;
+
+  /* Blurple lightened, exactly as accent-blue is. True #5865f2 measures 3.65
+     against the raised surface: inside 1.4.11's 3:1, so not a failure, but the
+     glyphs either side of it sit at 8.24 and it read as a recessed, muddy
+     smudge rather than a brand mark. This is 6.48 and still unmistakably
+     blurple (hue 230 against the original's 235). */
+  --brand-discord: #8a9bf5;
 
   --status-good: #45c245;
   --status-warning: #e0a53a;

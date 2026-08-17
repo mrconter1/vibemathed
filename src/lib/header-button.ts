@@ -25,11 +25,18 @@ const FOCUS =
   "focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 " +
   "focus-visible:outline-[var(--accent-blue)]";
 
-export const HEADER_ICON =
+/// Geometry and surface, with no glyph colour. Split out because the Discord
+/// link paints its glyph blurple: two `text-[...]` utilities have equal
+/// specificity, so which one won would come down to Tailwind's output order
+/// rather than the order they are written in, which is not something to build
+/// on. A caller that wants its own ink takes this and supplies it.
+export const HEADER_ICON_SHELL =
   "h-7 w-7 shrink-0 items-center justify-center rounded-md border " +
-  "border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-secondary)] " +
+  "border-[var(--hairline)] bg-[var(--paper-raised)] " +
   "sm:h-8 sm:w-8 " +
   FOCUS;
+
+export const HEADER_ICON = `${HEADER_ICON_SHELL} text-[var(--ink-secondary)]`;
 
 /// The hover treatment, separate because the pre-hydration shells are inert
 /// placeholders and must not appear interactive.
