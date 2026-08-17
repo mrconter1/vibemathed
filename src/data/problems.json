@@ -285,7 +285,7 @@
     "citationsUrl": null,
     "renownLangs": 0,
     "sourceUrl": "https://zenodo.org/records/21883880",
-    "sourceName": "Zenodo - A 15/31 Family of Maximal Planar Graphs Disproving the Albertson-Berman Conjecture",
+    "sourceName": "Zenodo - A 15/31 Counterexample Family to the Albertson–Berman Conjecture",
     "renownNote": "No Wikipedia article, but the conjecture appears on both Bojan Mohar's and Douglas West's open-problem pages for planar graphs and is cited by name in the current literature.",
     "resultNote": "The ratio 15/31 is not claimed to be optimal, and the paper makes no claim that 31 vertices is the smallest possible counterexample. The construction produces separating triangles by design, so it says nothing about the 4-connected case.",
     "ageNote": "Posed in 1979 and open for 47 years. A paper on the same quantity, Makarov's Large induced forests in planar multigraphs, still described the conjecture as open in its revision of 9 August 2026, two days before this preprint appeared.",
@@ -311,7 +311,11 @@
       },
       {
         "label": "Makarov - a preprint claiming a somewhat different counterexample found independently without AI",
-        "url": "https://doi.org/10.5281/zenodo.21927901"
+        "url": "https://zenodo.org/records/21927902"
+      },
+      {
+        "label": "Makarov - preprint PDF",
+        "url": "https://zenodo.org/records/21927902/files/albertson_berman_conjecture_counterexample.pdf"
       }
     ]
   },
@@ -1037,6 +1041,43 @@
     "aiContribution": "ai-discovered",
     "significance": 15,
     "significanceNote": "Six conjectures from one recent paper on subsum polynomials: real, published, specialist, with no accumulated literature beyond the posing paper."
+  },
+  {
+    "slug": "banach-s-isometric-conjecture",
+    "name": "Banach's isometric conjecture",
+    "shortName": "Banach isometric conjecture",
+    "problemNumber": null,
+    "field": "Functional analysis",
+    "fieldGroup": "Analysis",
+    "resolution": "resolved",
+    "statement": "Banach asked in 1932 whether a real Banach space X whose ndimensional subspaces, for some fixed 1 < n < dim X, are all isometric must be a Hilbert space. Gromov proved the conjecture for even n, and subsequent work settled several odd-dimensional cases. We prove the conjecture for every odd n, including all previously unresolved cases. Together with Gromov’s even-dimensional result, this completes Banach’s isometric conjecture in the real case. The proof combines bundle topology with Brouwer degree theory.",
+    "posedBy": "Stefan Banach",
+    "yearPosed": 1932,
+    "solveType": "proved",
+    "solveDate": "2026-08-13",
+    "model": "ChatGPT 5.6 Pro, ChatGPT 5.5 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Xinbao Lu",
+      "Kaiwen Yang"
+    ],
+    "aiRole": "The authors state that they had already reduced the main problem to proving Theorem 3.10 before using generative AI. An approach to that theorem then emerged through extensive interactions with ChatGPT 5.5 Pro and ChatGPT 5.6 Pro. GPT-5.6 Sol generated the initial draft of Section 3 and corresponding material in Section 2 following this approach; the authors subsequently checked and rewrote it. GPT-5.6 Sol was also used to improve the exposition.",
+    "verification": "unreviewed",
+    "verificationNote": "Checked by this site on 17 August 2026 against the paper's LaTeX (arXiv:2608.13536, Lu-Yang, 21 pages). The AI declaration is verbatim as this entry quotes it: the authors reduced the problem to one theorem before using AI, the approach to that theorem emerged through interactions with ChatGPT 5.5 Pro and 5.6 Pro, and GPT-5.6 Sol drafted Section 3 and parts of Section 2, subsequently checked and rewritten by the authors. The mathematics - bundle topology plus Brouwer degree - was not checked here and needs a geometer. One-day-old preprint, no independent review.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2608.13536",
+    "sourceName": "arXiv",
+    "resultNote": "The paper proves the previously unresolved odd-dimensional real cases of Banach's isometric conjecture. Combined with Gromov's earlier theorem for even dimensions and previous results, this completes the conjecture for real Banach spaces.",
+    "ageNote": "Posed in Banach's 1932 book. Gromov proved the even-dimensional case in 1967; odd cases fell piecemeal (n=3 Auerbach-Mazur-Ulam earlier, later 4k+1 cases and more). Open 94 years in full.",
+    "aiContribution": "ai-co-developed",
+    "significance": 40,
+    "significanceNote": "Posed by Banach himself in 1932, open 94 years, with Gromov's even-dimensional theorem (1967) the landmark partial result and a literature of odd-dimensional cases since. A famous named conjecture recognisable well outside convex geometry - placed with Sendov at 40, below the household band."
   },
   {
     "slug": "bandelt-dress-quartet-distance",
@@ -2602,6 +2643,38 @@
     "significanceNote": "A named 1999 problem adjacent to Wilf's conjecture, with a real literature (Yang solved the first two problems of the same set in 2001)."
   },
   {
+    "slug": "composites-among-xi-7-n",
+    "name": "Composites Among $[\\xi 7^n]$ and Right-Truncatable Primes in Base 7",
+    "shortName": "Composites among $[\\xi 7^n]$",
+    "problemNumber": null,
+    "field": "Number theory - integer sequences",
+    "fieldGroup": "Number theory",
+    "resolution": "resolved",
+    "statement": "For every real $\\xi>0$ the sequence of integer parts $[\\xi 7^{n}]$, $n=0,1,2,\\dots$, contains infinitely many composite numbers. Second, there is no infinite right truncatable prime in base~$7$.",
+    "posedBy": "Forman and Shapiro (1967), Dubickas and Novikas (2005)",
+    "yearPosed": 2005,
+    "solveType": "proved",
+    "solveDate": "2026-08-15",
+    "model": "Fable 5, Opus 4.8",
+    "modelMaker": null,
+    "humanCollaborators": [],
+    "aiRole": "After showing that a finite computation can provably resolve the problem, it wrote programs to do the computation, resulting in a checkable certificate. It then was directed to formalize all proofs and the certificate check in Lean. Finally it was directed to write a draft of the paper from the Lean.",
+    "verification": "unreviewed",
+    "verificationNote": "Reviewed by this site on 17 August 2026. The entry arrived titled with a person's name and claiming Lean-verified; both needed correcting. The submitter's own note says the Lean check rests on a massive native_decide certificate check - native_decide bypasses the kernel through the compiled evaluator, which is precisely the distinction this site's tier ladder exists to record - and, more fundamentally, no public Lean repository is linked anywhere on the entry: the only artifact is a ResearchGate manuscript. A formalization that cannot be fetched cannot hold any Lean tier, so this sits at Unreviewed. If the Lean development is published (with its native_decide dependence stated), the tier can move to Lean-checked on a source audit.",
+    "publication": "preprint",
+    "resolutionMethod": "computation",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://www.researchgate.net/publication/412294027_On_the_composites_among_x7",
+    "sourceName": "On the composites among [ξ7ⁿ]",
+    "aiContribution": "ai-discovered",
+    "significance": 10,
+    "significanceNote": "A concrete question in the Forman-Shapiro tradition, posed for base 7 by Dubickas and Novikas in 2005 and open twenty-one years. Specialist but genuinely standing - level with the numbered-Erdos band at 10."
+  },
+  {
     "slug": "connes-rigidity-conjecture",
     "name": "Connes' Rigidity Conjecture",
     "shortName": "Connes rigidity",
@@ -2992,8 +3065,8 @@
     "modelMaker": "OpenAI",
     "humanCollaborators": [],
     "aiRole": "Running in Ultra mode with 64 parallel subagents, GPT-5.6 Sol produced a claimed proof of the full Cycle Double Cover Conjecture in under an hour. OpenAI released both the proof manuscript and the task prompt; a public Lean formalization was added afterwards.",
-    "verification": "unreviewed",
-    "verificationNote": "Announced by OpenAI researcher Ethan Knight on 10 July 2026, timed to the GPT-5.6 Sol Ultra release. Not peer-reviewed; the Cycle Double Cover Conjecture has a history of claimed proofs later found to have gaps, so mathematicians are treating it cautiously pending independent review.",
+    "verification": "lean-checked",
+    "verificationNote": "Announced by OpenAI researcher Ethan Knight on 10 July 2026, timed to the GPT-5.6 Sol Ultra release. Not peer-reviewed; the Cycle Double Cover Conjecture has a history of claimed proofs later found to have gaps, so mathematicians are treating it cautiously pending independent review. Lean released here: https://github.com/openai/cdc-lean",
     "publication": "announcement",
     "resolutionMethod": "argument",
     "citations": null,
@@ -3010,6 +3083,10 @@
       {
         "label": "Independent Codex-assisted proof claim the same week (Kintali), unreviewed, arXiv:2607.14140",
         "url": "https://arxiv.org/abs/2607.14140"
+      },
+      {
+        "label": "Lean-checked proof",
+        "url": "https://github.com/openai/cdc-lean"
       }
     ]
   },
@@ -3548,7 +3625,7 @@
     "field": "Number Theory, Erdős–Pomerance Functions",
     "fieldGroup": "Number theory",
     "resolution": "resolved",
-    "statement": "For the Erdős–Pomerance functions $F(n)$ and $h_{\\mathbb{P}}(n)$ counting how many consecutive integers are needed to contain a distinct multiple of each integer, respectively prime, up to $n$, the paper proves $F(n) \\ge h_{\\mathbb{P}}(n) \\ge n\\exp(\\frac{1}{50}\\frac{\\log n}{\\log\\log n})$, disproving Kominers' conjecture that $F(n) \\ll n\\log n$.",
+    "statement": "For the Erdős–Pomerance functions $F(n)$ and $h_{\\mathbb{P}}(n)$ counting how many consecutive integers are needed to contain a distinct multiple of each integer, respectively prime, up to $n$, the paper proves $F(n) \\ge h_{\\mathbb{P}}(n) \\ge n\\exp\\left(\\left(\\frac{\\log 2}{2} - o(1)\\right)\\frac{\\log n}{\\log\\log n}\\right)$, disproving Kominers' conjecture that $F(n) \\ll n\\log n$. The paper also significantly  improves known upper bounds (which were on the order of $n^{3/2}$) to $F(n) \\le n^{4/3 + o(1)}$ and $h_{\\mathbb{P}}(n) \\le n^{4/3 - o(1)}$.",
     "posedBy": "Scott Duke Kominers; functions introduced by Erdős and Pomerance",
     "yearPosed": null,
     "solveType": "disproved",
@@ -3556,7 +3633,8 @@
     "model": "ChatGPT 5.x",
     "modelMaker": "OpenAI",
     "humanCollaborators": [
-      "Kaizhe Chen"
+      "Kaizhe Chen",
+      "Samuel Korsky"
     ],
     "aiRole": "The note carries a dedicated Statement on AI saying that the main proofs in it were developed with the assistance of ChatGPT 5.x. That is a claim about the mathematics rather than the exposition, which is why this sits a tier above the rest of its batch.",
     "verification": "unreviewed",
@@ -9487,6 +9565,76 @@
     "significanceNote": "A documented running-time barrier for sampling Eulerian tours, the standard measure of progress on the problem."
   },
   {
+    "slug": "every-ppt-channel-has-finite-entanglement-breaking-index",
+    "name": "Every PPT channel has finite entanglement-breaking index",
+    "shortName": "Finite EB index for PPT channels",
+    "problemNumber": null,
+    "field": "Entanglement theory",
+    "fieldGroup": "Quantum information & computing",
+    "resolution": "resolved",
+    "statement": "We prove that every PPT linear map has finite entanglement-breaking index, thereby establishing the eventual entanglement-breaking property of PPT channels in full generality. Furthermore, by utilizing completely positive maps with low entanglement dimensionality, we show that a large family of PPT maps, which strictly containing the class of 2-superpositive maps, has entanglement-breaking index bounded above by 3, uniformly in the dimension. In particular, these results provide strong evidence that the PPT-cubed conjecture may hold in full generality.",
+    "posedBy": "Matthias Christandl",
+    "yearPosed": 2012,
+    "solveType": "proved",
+    "solveDate": "2026-08-13",
+    "model": "ChatGPT-5.6 Sol",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Sang-Jun Park"
+    ],
+    "aiRole": "The author states that AI tools including ChatGPT were used for exploratory mathematical discussions during development of the manuscript, in addition to language and LaTeX assistance. In particular, some ideas used in the proof-development process in Section 3 arose during interactions with GPT-5.6 Sol. These suggestions were subsequently examined, reformulated, incorporated into the manuscript, and independently verified by the author.",
+    "verification": "unreviewed",
+    "verificationNote": "Checked by this site on 17 August 2026 against the paper's LaTeX (arXiv:2608.13551, Park, 14 pages). The AI statement is verbatim as this entry describes: ChatGPT for language, LaTeX and exploratory mathematical discussions, with some ideas in the splitting section arising during interactions with GPT-5.6 Sol. That is a vague disclosure, and the site's rule takes the lower tier, so ai-assisted stands. The proof was not checked here. One-day-old preprint, no independent review.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2608.13551",
+    "sourceName": "arXiv",
+    "resultNote": "Establishes that every PPT channel is eventually entanglement-breaking (finite EB index), in full generality, and bounds the index by 3 uniformly in dimension for a family strictly containing the 2-superpositive maps. The PPT-squared conjecture itself - index at most 2 - remains open; the paper presents its results as strong evidence toward the cubed version.",
+    "aiContribution": "ai-assisted",
+    "significance": 25,
+    "significanceNote": "The eventual entanglement-breaking question for PPT channels sits directly beside the PPT-squared conjecture, one of entanglement theory's best-known open problems since 2012. Resolving eventual-EB in full generality is a real advance the field will use; the PPT-squared conjecture itself remains open, which caps it below the 30 band."
+  },
+  {
+    "slug": "exact-order-three-ambiguity-of-the-einstein-maxwell-dilaton-coupling-a-2-in-metr",
+    "name": "Exact order-three ambiguity of the Einstein-Maxwell-dilaton coupling $a^2$ in metric jets, and its fourth-order collapse",
+    "shortName": "EMD $a^2$ jet threshold",
+    "problemNumber": null,
+    "field": "Mathematical relativity - Rainich geometrization, Kaluza-Klein",
+    "fieldGroup": "Mathematical physics",
+    "resolution": "resolved",
+    "statement": "Is the EMD coupling square $a^2$ a function of the metric three-jet on an explicit active, non-null, simple-spectrum family of truncated Einstein-Maxwell-dilaton data, and can one more derivative recover it? Proved: no function of the common metric three-jet returns $a^2$ - the order-three ambiguity is exactly a free affine shear orbit ($\\mathbb{R}$) mixing $B=a\\sin 2\\theta$ with the phase gradient - while the fourth-order quotient recovers $a^2=A^2+B^2$, with equality fiber exactly $a=\\pm b$ ($\\mathbb{Z}_2$). In particular Kaluza's $a=\\sqrt{3}$ and the control $a=1$ collide through metric order three.",
+    "posedBy": "This work (2026); lineage: Rainich 1925, Misner-Wheeler 1957",
+    "yearPosed": 2026,
+    "solveType": "proved",
+    "solveDate": "2026-08-14",
+    "model": "GPT 5.6 Sol, Fable",
+    "modelMaker": "OpenAI, Anthropic",
+    "humanCollaborators": [
+      "James Kehoe"
+    ],
+    "aiRole": "Proposed and proved the theorems, wrote the Lean 4 formalization and the manuscript under human direction, with repeated adversarial audit cycles; the human author set scope, claim boundaries, and verification gates.",
+    "verification": "lean-checked",
+    "verificationNote": "Source-audited by this site on 17 August 2026: the repository was cloned at v0.1.0 and all 77 Lean files scanned with comments stripped - zero sorry, zero admit, zero axiom declarations, zero native_decide, toolchain pinned at v4.32.1 with Mathlib. Not compiled here (the repo's CI is claimed to). Lean-checked rather than Lean-verified per this site's standing split: the statements' correspondence to the informal claims has not been independently audited, and the same pipeline produced both the proofs and the formalization. No human peer review.",
+    "publication": "announcement",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://github.com/jimpeebles/emd-coupling-identifiability/tree/v0.1.0",
+    "sourceName": "emd-coupling-identifiability (Lean 4 repository, manuscript + PDF)",
+    "resultNote": "Finite-jet theorems about compiled truncated EMD equation certificates: the exact shear-orbit fiber classification of the complete first seed channels, an explicit collision family with one metric three-jet realized by an actual cubic metric germ (genuine Frechet Ricci value and first derivative), the compiled impossibility theorem, and the fourth-order recovery with equality fiber $a=\\pm b$. Not settled here: promotion to analytic EMD solution germs (separate written argument pending specialist audit, in the parent repository), chart covariance beyond the fixed presentation, density of the active locus, degenerate branches, and any sufficiency of $a^2=3$ for a Kaluza uplift.",
+    "aiContribution": "ai-co-developed",
+    "significance": 3,
+    "significanceNote": "A precisely posed and cleanly resolved identifiability question, but posed by this work itself in 2026 - there is no prior literature asking it. Scored at the self-posed floor; the Rainich-Misner-Wheeler lineage is context, not a pedigree."
+  },
+  {
     "slug": "exact-two-scenario-ssuf-bound-on-the-four-terminal-planar-gadget",
     "name": "Exact SSUF scenario-count ladder on the four-terminal planar gadget",
     "shortName": "Four-terminal SSUF scenario ladder",
@@ -13753,6 +13901,52 @@
     "significanceNote": "The Lonely Runner Conjecture is field-famous across number theory and combinatorics with its own Wikipedia article and six decades of partial results; scored on the underlying conjecture per the methodology."
   },
   {
+    "slug": "lorist-schwenninger-remark-2-positivity-question",
+    "name": "Lorist-Schwenninger Remark 2 positivity question",
+    "shortName": "Lorist-Schwenninger Remark 2",
+    "problemNumber": null,
+    "field": "Numerical range / Crouzeix's conjecture",
+    "fieldGroup": "Analysis",
+    "resolution": "resolved",
+    "statement": "orist and Schwenninger prove Crouzeix's conjecture (arXiv:2608.03841, Lemma 1) by combining a lower bound (their inequality (4)) with an upper bound (inequality (5)). In Remark 2 they observe that (5) alone gives $\\kappa \\le 1 + \\sqrt{1 - \\Re\\langle E_1 Tx,x\\rangle}$, so positivity of $\\Re\\langle E_1 Tx,x\\rangle$ would prove the lemma outright. They write: \"it is unclear whether $\\Re\\langle E_1 Tx,x\\rangle \\ge 0$ in general.\"",
+    "posedBy": "Emiel Lorist, Felix L. Schwenninger",
+    "yearPosed": 2026,
+    "solveType": "disproved",
+    "solveDate": "2026-08-14",
+    "model": "Claude Opus 5.0",
+    "modelMaker": "Anthropic",
+    "humanCollaborators": [],
+    "aiRole": "The counterexample was found and verified computationally by Claude Opus 5.0 in a single session. The search identified the mechanism (the centres of the domain and the numerical range must be separated to make the quantity negative), found a 2x2 witness, reduced it to a closed-form algebraic expression, and verified the sign in exact arithmetic. The sharp consequence — that inequality (5) alone recovers exactly the Crouzeix-Palencia constant 1+sqrt(2) — was derived in the same session. The human operator directed the investigation to Remark 2 and approved the final write-up; all mathematical content was produced by the model.",
+    "verification": "site-confirmed",
+    "verificationNote": "Reproduced by this site on 17 August 2026. Remark 2 was confirmed verbatim in the Lorist-Schwenninger LaTeX source, including the exact sentence \"it is unclear whether Re<E_1 Tx,x> >= 0 in general\". The counterexample repository pins the claim in a statement file and was run here: the exact sympy certificate gives m = -4/95 - 1188*sqrt(90709)/8617355 = -0.0836..., with the sign certified through its minimal polynomial rather than floating point, and the independent mpmath implementation (no shared code) agrees; both also confirm the paper's own bounds still hold at the witness, so the counterexample refutes the remark's hope without touching Lemma 1. The mechanism note - the domain centre and numerical-range centre must separate - matches what the certificate shows. No human peer review; the tier records this site's own reproduction.",
+    "publication": "announcement",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2608.03841",
+    "sourceName": "Lorist-Schwenninger, \"A solution to Crouzeix's conjecture\"",
+    "resultNote": "Nothing in the paper's proof is affected. At the witness, inequality (4) holds with slack +27.0, inequality (5) holds with equality (f is inner), and the theorem itself holds with slack 2 - kappa = +0.80. Only the shortcut Remark 2 floats is refuted.",
+    "aiContribution": "ai-discovered",
+    "significance": 4,
+    "significanceNote": "A question posed ten days earlier, in a remark of the Lorist-Schwenninger Crouzeix paper - real, precisely stated, and worth settling because it delimits what their inequality (5) can do alone, but it is a fresh aside rather than a standing problem. Below the Graffiti anchor at 5.",
+    "links": [
+      {
+        "label": "GitHub",
+        "url": "https://github.com/ZestyWombat854/crouzeix-dilation-positivity"
+      }
+    ],
+    "relations": [
+      {
+        "to": "crouzeix-s-conjecture",
+        "kind": "builds-on",
+        "note": "Answers a question from Remark 2 of Lorist-Schwenninger's second Crouzeix proof: inequality (5) alone cannot give the sharp constant, since Re<E_1 Tx,x> can be negative."
+      }
+    ]
+  },
+  {
     "slug": "lukic-conjecture",
     "name": "The Lukic Conjecture",
     "shortName": "Lukic conjecture",
@@ -13819,6 +14013,53 @@
     "aiContribution": "ai-assisted",
     "significance": 5,
     "significanceNote": "A machine-posed 2026 problem from a curated open-problems list; real and documented, with no accumulated literature."
+  },
+  {
+    "slug": "makeev-s-conjecture-on-universal-cover",
+    "name": "Makeev's conjecture on universal cover",
+    "shortName": "Makeev's conjecture",
+    "problemNumber": null,
+    "field": "Metric geometry",
+    "fieldGroup": "Geometry & topology",
+    "resolution": "resolved",
+    "statement": "Let $U_n\\subset\\mathbb R^n$ be the difference polytope of a regular $n$-simplex such that $U_n$ circumscribes a sphere of diameter 1. Then every set of diameter 1 in $\\mathbb R^n$ is covered by a rotated copy of $U_n$.",
+    "posedBy": "V. V. Makeev",
+    "yearPosed": 1994,
+    "solveType": "disproved",
+    "solveDate": "2026-08-10",
+    "model": "ChatGPT 5.6 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [],
+    "aiRole": "AI found the counterexample in dimensions 4 and 5 and wrote the paper and code without human mathematical input.",
+    "verification": "unreviewed",
+    "verificationNote": "Checked by this site on 17 August 2026: the repository is real and unusually substantial - 596 files across four independently-built verification approaches (Magma certificates, interval-arithmetic C++, tensor-polynomial certificates, Python numerics), plus the full prompts and chat transcripts, and the problem-record links verify (Makeev's conjecture in arXiv:math/9809165, Handbook chapter 21). The certificates were not run here. The submitter reports a preliminary check by two students, which is private checking, not independent review - Unreviewed stands.",
+    "publication": "announcement",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://github.com/simplex4/math-results/blob/main/makeev-code/a4/makeev_d4_d5.pdf",
+    "sourceName": "Counterexamples to Makeev's regular-simplex conjecture in dimensions four and five",
+    "resultNote": "Makeev conjectured it to be true for all dimensions. This result disproves it for dimensions 4 and 5. Dimensions 6 and above remain open.",
+    "aiContribution": "ai-discovered",
+    "significance": 15,
+    "significanceNote": "A named 1994 conjecture in metric geometry, recorded in the Handbook of Discrete and Computational Geometry's problem chapter, in the universal-covers tradition of Lebesgue's problem. Real and thirty-two years old, but specialist: level with the named specialist band at 15.",
+    "links": [
+      {
+        "label": "Python and Magma code",
+        "url": "https://github.com/simplex4/math-results/tree/main/makeev-code/a4"
+      },
+      {
+        "label": "Conjecture 21.3.2",
+        "url": "https://www.csun.edu/~ctoth/Handbook/chap21.pdf"
+      },
+      {
+        "label": "Makeev's conjecture",
+        "url": "https://arxiv.org/abs/math/9809165v3"
+      }
+    ]
   },
   {
     "slug": "manin-diagonal-cubic-r-equivalence",
@@ -17445,6 +17686,38 @@
     "significanceNote": "A named conjecture of Schwartz on meander numbers, a classical enumerative object with a small dedicated literature."
   },
   {
+    "slug": "score-determined-induced-tournament-statistics-an-all-orders-classification-and-",
+    "name": "Score-Determined Induced Tournament Statistics: an All-Orders Classification",
+    "shortName": "Score-determined tournament statistics",
+    "problemNumber": null,
+    "field": "Tournament theory",
+    "fieldGroup": "Combinatorics",
+    "resolution": "resolved",
+    "statement": "A tournament orients every pair in a round-robin (winner → loser). The score sequence is the sorted win-count list. Reversing a directed 3-cycle never changes scores, so score-equivalent tournaments can look structurally different.\n\nQuestion: Which linear combinations of induced k-subtournament type-counts are score-determined — identical across all tournaments sharing a score sequence, at any host size?\n\nAnswer: Exactly the linear combinations of degree-multiplicity counts m₀,…,m_{k−1}, where mᵣ counts how many of the k chosen vertices have exactly r internal wins. These k functions satisfy one linear relation, so score-determined statistics have dimension k−1.",
+    "posedBy": null,
+    "yearPosed": null,
+    "solveType": "proved",
+    "solveDate": "2026-08-14",
+    "model": "GPT Sol 5.6",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [],
+    "aiRole": "Absolutely everything, i occasionally steered and redirected.",
+    "verification": "unreviewed",
+    "verificationNote": "Checked by this site on 17 August 2026: the Zenodo reproducibility archive (21959291, Howard-Stanley) is real and carries the manuscript and code. The classification itself was not checked here, no independent review exists, and - flagged plainly - nobody has swept the tournament-theory literature for prior appearances of this question, which for a self-posed problem is the main risk. The disclosure (\"absolutely everything, I occasionally steered\") is the frankest ai-discovered claim in the catalog.",
+    "publication": "preprint",
+    "resolutionMethod": "computation",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://doi.org/10.5281/zenodo.21959291",
+    "sourceName": "Reproducibility Archive for “Score-Determined Induced Tournament Statistics: An All-Orders Classification and a Square-Zero Defect Algebra”",
+    "aiContribution": "ai-discovered",
+    "significance": 3,
+    "significanceNote": "A clean and natural classification question, but self-posed and resolved in the same work - no prior literature poses it. Scored at the self-posed floor, and no systematic prior-art sweep has been done by the author or this site, so even novelty is unconfirmed."
+  },
+  {
     "slug": "semi-streaming-matching-greedy-optimal",
     "name": "Optimality of Greedy for Single-Pass Semi-Streaming Matching",
     "shortName": "Semi-streaming matching",
@@ -18473,6 +18746,39 @@
     ]
   },
   {
+    "slug": "strong-graph-reconstruction-conjecture",
+    "name": "Strong Graph Reconstruction Conjecture",
+    "shortName": "Strong Graph Reconstruction Conjecture",
+    "problemNumber": null,
+    "field": "Graph theory - reconstruction",
+    "fieldGroup": "Combinatorics",
+    "resolution": "resolved",
+    "statement": "For a graph G, its vertex deck is the multiset of graphs obtained by deleting one vertex. Bowler, Brown, and Fenner (BBF) proposed 2⌊(n−1)/3⌋ as the maximum possible overlap between the decks of two nonisomorphic n-vertex graphs, for all sufficiently large n. We first give an explicit pair of connected nonisomorphic graphs on 78 vertices with at least 51 common cards, exceeding BBF's predicted value of 50. We then construct, for every even r≥4, families at arbitrarily large orders whose overlap fraction is asymptotically at least 1−1/r. Consequently, for every α<1, infinitely many pairs have more than αn common cards, so the attainable fraction is arbitrarily close to the full deck. For representative instances, the predicted overlaps were also checked by complete deck generation and isomorphism testing with Brendan McKay's nauty tools",
+    "posedBy": "Andrew Bowler, Paul Brown, Trevor Fenner",
+    "yearPosed": 2010,
+    "solveType": "disproved",
+    "solveDate": "2026-08-12",
+    "model": "gpt-5.6-sol",
+    "modelMaker": null,
+    "humanCollaborators": [],
+    "aiRole": "Per the author's public statements (not disclosed in the paper itself): GPT-5.6 Sol proved most of the roughly 400 intermediate theorems explored, with the author supplying the decisive construction idea and direction - in the author's words, the models \"could not achieve the goal before I can point to the right idea\". Model-proved steps inside a human-led search is recorded as ai-co-developed.",
+    "verification": "unreviewed",
+    "verificationNote": "Checked by this site on 17 August 2026 against the paper's LaTeX (arXiv:2608.11930, Ivanov) and its verification repository, which the paper's own footnote links. Two submitted claims needed correcting. The entry arrived Expert-verified on the strength of the author's own LinkedIn post - self-endorsement is not independent expert verification, so this is Unreviewed. And the paper itself contains NO AI disclosure: the account of GPT-5.6 Sol's role rests entirely on the author's public statements outside the paper, which this entry now says explicitly. The nauty deck checks are author-side. The construction was not verified here.",
+    "publication": "preprint",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2608.11930",
+    "sourceName": "arxiv.org",
+    "resultNote": "Disproves the Bowler-Brown-Fenner bound of 2*floor((n-1)/3) on common cards between nonisomorphic graphs: an explicit connected 78-vertex pair shares at least 51 cards against the predicted 50, and for every even r >= 4 there are families with overlap fraction asymptotically at least 1 - 1/r, so the attainable fraction approaches the full deck. The Kelly-Ulam reconstruction conjecture itself is untouched.",
+    "aiContribution": "ai-co-developed",
+    "significance": 20,
+    "significanceNote": "The Strong Reconstruction Conjecture of Bowler, Brown and Fenner is the quantitative frontier of the reconstruction-number literature around the celebrated Kelly-Ulam problem. Disproving it, and showing overlap can approach the full deck, reshapes that frontier - specialist but consequential, at 20."
+  },
+  {
     "slug": "sum-free-lattice-cube-density",
     "name": "The Largest Sum-Free Subset of the Lattice Cube",
     "shortName": "Sum-free lattice cube",
@@ -18959,6 +19265,55 @@
     "aiContribution": "ai-discovered",
     "significance": 10,
     "significanceNote": "A documented suggestion of Thakur restated as an open question in 2024 and believed true after extensive computation, but confined to the function-field arithmetic community."
+  },
+  {
+    "slug": "the-2-1-gapped-consecutive-ones-property-problem-is-np-complete",
+    "name": "The $(2,1)$-Gapped Consecutive-Ones Property Problem is NP-complete",
+    "shortName": "$(2,1)$-C1P is NP-complete",
+    "problemNumber": null,
+    "field": "Computational complexity / consecutive-ones property",
+    "fieldGroup": "Theoretical computer science",
+    "resolution": "candidate",
+    "statement": "Given a binary matrix $M$, decide whether its columns can be permuted so that every row contains at most two blocks of 1s and, if it contains two blocks, they are separated by at most one 0. The claimed theorem proves that this $(2,1)$-Gapped Consecutive-Ones Property decision problem is NP-complete.",
+    "posedBy": "Cédric Chauve, Ján Maňuch, Murray Patterson",
+    "yearPosed": 2009,
+    "solveType": "proved",
+    "solveDate": "2026-08-12",
+    "model": "GPT-5.6 Sol High",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Maciej Nowicki"
+    ],
+    "aiRole": "GPT-5.6 Sol High produced the central NP-completeness construction: a polynomial-time reduction from 3-SAT using ordered slots, two-column variable gadgets, and a seven-column clause gadget implementing Boolean OR. The associated account reports that the solution emerged in roughly 3–4 model messages, with prompts written by the model for itself. The proof package includes exhaustive finite checks of the clause gadget and a separately implemented verifier/cross-check.",
+    "verification": "unreviewed",
+    "verificationNote": "Checked by this site on 17 August 2026: the Zenodo record (21898823) is real, credited to Maciej Nowicki and \"Eve\" with the proof and verification package attached, and the prior-open status verifies - the Chauve-Manuch-Patterson hardness paper (arXiv:0912.0309) establishes the (k,delta)-C1P classification whose exceptional case this claims to close, and the linked 2011 follow-up restates it as open. The reduction itself was not checked here, and no independent review exists; a self-published record by a pseudonymous-branded author stays Candidate until the proof is checked by someone.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://zenodo.org/records/21898823",
+    "sourceName": "I proved the last open case of the Gapped Consecutive-Ones problem is NP-complete, and the key 7-column OR gadget is optimal",
+    "resultNote": "The manuscript claims a polynomial-time reduction from 3-SAT proving $(2,1)$-C1P NP-hard; together with membership in NP, this establishes NP-completeness and closes the sole unresolved $(k,\\delta)$ case from the earlier classification. It also implies NP-completeness of the equivalent completion problem.\n\nThe proof package further shows that, within its specific nested-prefix/internal-local gadget architecture, no 3-OR gadget exists with at most six internal columns; at seven columns at least three local rows are required, and all optimal three-row gadgets form one symmetry class. These optimality claims are architecture-specific and are not needed for the NP-completeness result. Independent verification remains pending.",
+    "aiContribution": "ai-discovered",
+    "significance": 12,
+    "significanceNote": "The last open parameter case of a 2009 complexity classification with a real comparative-genomics motivation, open seventeen years. Specialist, and the resolution is self-published with no independent check yet - held at the specialist floor above the week-old problems.",
+    "links": [
+      {
+        "label": "Original 2009 hardness paper leaving $(2,1)$-C1P open",
+        "url": "https://arxiv.org/abs/0912.0309"
+      },
+      {
+        "label": "2011 follow-up explicitly stating that $(2,1)$-C1P remains open",
+        "url": "https://www.cs.ubc.ca/~jmanuch/journal/papers/JCB2011b.pdf"
+      },
+      {
+        "label": "Initial Zenodo record announcing the NP-completeness proof",
+        "url": "https://zenodo.org/records/21871667"
+      }
+    ]
   },
   {
     "slug": "thiele-voter-interval",
@@ -19513,6 +19868,43 @@
         "url": "https://eprint.iacr.org/2026/1509"
       }
     ]
+  },
+  {
+    "slug": "uniform-szekelyhidi-conjectures-for-complex-hessian-equations-on-projective-mani",
+    "name": "Uniform Székelyhidi conjectures for complex Hessian equations on projective manifolds",
+    "shortName": "Uniform Székelyhidi conjectures",
+    "problemNumber": null,
+    "field": "Kähler geometry",
+    "fieldGroup": "Geometry & topology",
+    "resolution": "partial",
+    "statement": "We prove a Nakai-Moishezon-type criterion for complex Hessian-type equations on projective manifolds whose associated degree-n polynomials are strongly strictly right-Noetherian. For strictly right-Noetherian polynomials of arbitrary degree, we prove a uniform Nakai-Moishezon-type criterion. This class includes the complex Hessian and Hessian quotient equations.",
+    "posedBy": "Gábor Székelyhidi; Ryosuke Murakami",
+    "yearPosed": 2018,
+    "solveType": "proved",
+    "solveDate": "2026-08-04",
+    "model": "ChatGPT 5.6 Sol",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Gao Chen",
+      "Sijie Nie",
+      "Yulun Xu"
+    ],
+    "aiRole": "The authors state that the proofs of the cone-inclusion lemmas in Section 3 are revised versions of arguments generated by ChatGPT 5.6 Sol. The authors subsequently checked and edited those arguments for mathematical clarity. ChatGPT 5.6 Sol also identified gaps in an earlier version of the manuscript and assisted with grammar correction. The Section 3 cone-inclusion lemmas are then used in Section 4 to prove the uniform Székelyhidi-type results.",
+    "verification": "unreviewed",
+    "verificationNote": "Checked by this site on 17 August 2026 against the paper's LaTeX (arXiv:2608.03815, Chen-Nie-Xu). The declaration is verbatim as this entry describes: the Section 3 cone-inclusion lemma proofs are revised versions of arguments generated by ChatGPT 5.6 Sol, checked and edited by the authors, and the model was also used to find gaps in an earlier version - the v2 comment records that a gap in v1 (omega not a priori Kahler) was fixed, which is worth knowing when weighing a fresh preprint. The mathematics was not checked here. No independent review.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2608.03815",
+    "sourceName": "arXiv",
+    "resultNote": "Chen, Nie and Xu prove a Nakai–Moishezon-type numerical criterion for a broad class of complex Hessian-type equations on compact projective manifolds. In particular, Corollary 1.3 gives a uniform version of Székelyhidi’s conjecture for complex Hessian quotient equations, while Corollary 1.5 proves the uniform version, formulated by Murakami, for complex k-Hessian equations. However, the results assume projectivity and a uniform numerical condition, whereas Székelyhidi’s original conjecture is formulated for arbitrary compact Kähler manifolds. Thus this should not be recorded as a full solution of the unrestricted original conjecture.",
+    "aiContribution": "ai-co-developed",
+    "significance": 20,
+    "significanceNote": "Szekelyhidi's Nakai-Moishezon-type criteria for complex Hessian equations are a standing target in Kahler geometry with a real partial-results literature. This settles a broad class (strictly right-Noetherian polynomials) on projective manifolds - substantial, specialist, partial."
   },
   {
     "slug": "uniform-witnesses-k3-question",
@@ -20313,6 +20705,39 @@
         "url": "https://github.com/KitaKen1/wowii-graph-conjecture-2-lean"
       }
     ]
+  },
+  {
+    "slug": "wowii-conjecture-72-two-induced-trees-pin-down-tree-g",
+    "name": "WOWII Conjecture 72: Two induced trees pin down tree($  G  $)",
+    "shortName": "WOWII 72 (tree($  G  $) bound)",
+    "problemNumber": null,
+    "field": "Graph theory (induced trees / graph invariants)",
+    "fieldGroup": "Combinatorics",
+    "resolution": "candidate",
+    "statement": "For a connected graph $  G  $, let $  t=  $ tree($  G  $) (order of a largest induced tree), $  A=  $ average eccentricity, and $  L=  $ maximum independence number of a neighbourhood. Then\n$   \\lceil (A+L)/3 \\rceil \\le t.   $\n(The evenly-divided reading of the conjecture holds; a stronger reading that divides only $  L  $ by three is false.)",
+    "posedBy": "Ermelinda DeLaViña (Graffiti.pc / Written on the Wall II)",
+    "yearPosed": 2001,
+    "solveType": "proved",
+    "solveDate": "2026-07-23",
+    "model": "GPT 5.6 Sol",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [],
+    "aiRole": "The model was given a short prompt (copied from a successful earlier run on a different WOWII conjecture) and asked to find a solution or counterexample to an open conjecture of its choosing. It selected WOWII Conjecture 72, produced the two-lemma argument (diametral path induces a tree on $  D+1  $ vertices; maximum independent neighbourhood induces a star on $  L+1  $ vertices), derived the bound $  \\lceil(A+L)/3\\rceil\\le t  $, and explicitly distinguished the evenly-divided reading (true) from the stronger reading that divides only $  L  $ by three (false). The human then posted the diagram and commentary.",
+    "verification": "site-confirmed",
+    "verificationNote": "Re-derived in full by this site on 17 August 2026 - the argument is elementary and correct, and short enough to state: a shortest path between two vertices at maximum distance D is induced, so it induces a path (a tree) on D+1 vertices, giving tree(G) >= D+1 >= A+1 since average eccentricity is at most D; a maximum independent set in a neighbourhood plus its centre induces a star on L+1 vertices, giving tree(G) >= L+1; hence A + L <= 2*tree(G) - 2, and ceil((A+L)/3) <= tree(G) follows by integrality. The stronger reading (dividing only L by three) fails on the claimed counterexample family. What keeps this Candidate is not the mathematics but the statement: Conjecture 72's canonical wording is not publicly pinned (no formal statement exists in the Formal Conjectures repository), so which reading DeLaViña intended is unconfirmed, and the X post plus transcript is the only artifact. Site-confirmed records this site's independent re-derivation of the proved reading.",
+    "publication": "announcement",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://x.com/4thRT/status/2080412225232400539",
+    "sourceName": "X post by @4thRT (with attached diagram and ChatGPT conversation link)",
+    "resultNote": "The evenly-divided reading of WOWII Conjecture 72 holds:\n$   \\lceil(A + L)/3\\rceil \\le t,   $\nwhere $  t =  $ tree($  G  $) (order of a largest induced tree), $  A =  $ average eccentricity and $  L =  $ maximum neighbourhood independence number.\nA stronger reading that divides only $  L  $ by three is false. The argument rests on two elementary observations (a diametral path is chordless and therefore induces a tree on $  D+1  $ vertices; a maximum independent set in a neighbourhood induces a star on $  L+1  $ vertices). The original conjecture’s precise wording is not yet pinned in a public formal repository, so statement fidelity remains to be audited.",
+    "aiContribution": "ai-discovered",
+    "significance": 5,
+    "significanceNote": "A machine-generated conjecture from DeLaViña's Written on the Wall II list - exactly the catalog's Graffiti anchor at 5. Open since around 2001 and part of the current wave of WOWII resolutions."
   },
   {
     "slug": "wowii-graph-conjecture-144",
