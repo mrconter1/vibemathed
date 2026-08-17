@@ -13982,7 +13982,7 @@
     "field": "Numerical range / Crouzeix's conjecture",
     "fieldGroup": "Analysis",
     "resolution": "resolved",
-    "statement": "orist and Schwenninger prove Crouzeix's conjecture (arXiv:2608.03841, Lemma 1) by combining a lower bound (their inequality (4)) with an upper bound (inequality (5)). In Remark 2 they observe that (5) alone gives $\\kappa \\le 1 + \\sqrt{1 - \\Re\\langle E_1 Tx,x\\rangle}$, so positivity of $\\Re\\langle E_1 Tx,x\\rangle$ would prove the lemma outright. They write: \"it is unclear whether $\\Re\\langle E_1 Tx,x\\rangle \\ge 0$ in general.\"",
+    "statement": "Lorist and Schwenninger prove Crouzeix's conjecture (arXiv:2608.03841, Lemma 1) by combining a lower bound (their inequality (4)) with an upper bound (inequality (5)). In Remark 2 they observe that (5) alone gives $\\kappa \\le 1 + \\sqrt{1 - \\Re\\langle E_1 Tx,x\\rangle}$, so positivity of $\\Re\\langle E_1 Tx,x\\rangle$ would prove the lemma outright. They write: \"it is unclear whether $\\Re\\langle E_1 Tx,x\\rangle \\ge 0$ in general.\"",
     "posedBy": "Emiel Lorist, Felix L. Schwenninger",
     "yearPosed": 2026,
     "solveType": "disproved",
@@ -15284,6 +15284,60 @@
     "aiContribution": "ai-co-developed",
     "significance": 20,
     "significanceNote": "A named conjecture on hypercube colourings, proved outright rather than in special cases."
+  },
+  {
+    "slug": "north-east-lattice-paths-with-few-collinear-vertices",
+    "name": "North-East Lattice Paths with Few Collinear Vertices",
+    "shortName": "North-East Lattice Paths",
+    "problemNumber": null,
+    "field": "Discrete geometry - lattice paths",
+    "fieldGroup": "Combinatorics",
+    "resolution": "partial",
+    "statement": "Let $A(k)$ be the largest possible number of moves in a north-east lattice path whose visited vertices contain no $k$ collinear points. Gerver (1979) and Gerver and Ramsey (1979) bounded $A(k)$ by\n$$\\exp\\left(\\Omega\\left(\\log(k)^2\\right)\\right) \\le A(k) \\le \\exp\\left(O\\left(k^4\\right)\\right),$$\nand determining the true growth rate has been open since. Both bounds are improved to\n$$\\exp\\left(\\Omega\\left(k^{1/3}\\right)\\right) \\le A(k) \\le \\exp\\left(O\\left(k^2\\right)\\right),$$\nwith the upper bound proved in the sharper form $\\exp\\left(\\left(\\tfrac{2}{e}+o(1)\\right)(k-1)^2\\right)$.",
+    "posedBy": "Joseph L. Gerver, L. Thomas Ramsey",
+    "yearPosed": 1979,
+    "solveType": "proved",
+    "solveDate": "2026-07-02",
+    "model": "GPT-5.5 Pro",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+      "Samuel Korsky"
+    ],
+    "aiRole": "The acknowledgement in full: the author was assisted by GPT-5.5 Pro in preparing the paper, but \"the main construction ideas, including the dyadic-interval random variables in the lower bound and the density-increment framework in the upper bound, were due to the author\". AI tools checked computations, assisted with drafting, and improved the upper-bound constant by suggesting the use of the mediant of the relevant Farey fractions. That last contribution is traceable in the text: it lifts the density increment from $(1/8-o(1))(k-1)^{-2}$ to $(1/4-o(1))(k-1)^{-2}$, which is what produces the $2/e$ constant. So the model sharpened the constant inside the new upper bound rather than the exponent, which is the lower tier by this site's definition.",
+    "verification": "unreviewed",
+    "verificationNote": "Checked by this site on 17 August 2026 against the paper's LaTeX (arXiv:2607.02832, Korsky, 2 July 2026). The abstract matches this entry, and the acknowledgement is verbatim as the AI-role note now quotes it - including the sentence attributing the main construction ideas to the author, which the submission's quote had omitted. The model's named contribution was traced through the text to the density-increment step it actually improves. The prior bounds attribute correctly: Gerver, Pacific J. Math. 83 (1979) 349-355, and Gerver-Ramsey, same volume, 357-363. The proofs themselves - a dyadic slope-field random construction and a Farey-mediant density increment - were not checked here and need a discrete geometer. Unrefereed preprint, no independent review.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://arxiv.org/abs/2607.02832",
+    "sourceName": "North-East Lattice Paths with Few Collinear Vertices (arXiv)",
+    "resultNote": "Both bounds move, and the gap stays enormous: the lower bound rises from $\\exp(\\Omega(\\log^2 k))$ to $\\exp(\\Omega(k^{1/3}))$ and the upper falls from $\\exp(O(k^4))$ to $\\exp(O(k^2))$, so $A(k)$ is still undetermined between an exponent of $k^{1/3}$ and one of $k^2$. The paper's own closing discussion argues its lower-bound construction is near the limit of the method and that beating it needs additional randomness, a sharper line-counting step, or a different model entirely.",
+    "ageNote": "Posed in a pair of 1979 Pacific J. Math. papers by Gerver and by Gerver and Ramsey, and catalogued in Brass, Moser and Pach's Research Problems in Discrete Geometry. Open 47 years, with the bounds improved by Lidbetter in 2024 and the small cases attacked by SAT solvers by Barnoff and Bright in 2026.",
+    "aiContribution": "ai-assisted",
+    "significance": 15,
+    "significanceNote": "A named problem - the Gerver-Ramsey collinearity problem - from two 1979 Pacific J. Math. papers, catalogued in Brass-Moser-Pach's standard problem book and still drawing work in 2024 and 2026. Forty-seven years open with a genuine literature, but firmly inside discrete geometry: the named specialist band at 15.",
+    "links": [
+      {
+        "label": "Gerver, Long walks in the plane with few collinear points (Pacific J. Math. 83, 1979)",
+        "url": "https://doi.org/10.2140/pjm.1979.83.349"
+      },
+      {
+        "label": "Gerver and Ramsey, On certain sequences of lattice points (Pacific J. Math. 83, 1979)",
+        "url": "https://doi.org/10.2140/pjm.1979.83.357"
+      },
+      {
+        "label": "Lidbetter, Improved bound for the Gerver-Ramsey collinearity problem (Discrete Math., 2024)",
+        "url": "https://doi.org/10.1016/j.disc.2023.113718"
+      },
+      {
+        "label": "Barnoff and Bright, North-East lattice paths avoiding k collinear points via satisfiability (2026)",
+        "url": "https://doi.org/10.1016/j.aam.2026.103112"
+      }
+    ]
   },
   {
     "slug": "npt-two-copy-distillability-divincenzo-family",
