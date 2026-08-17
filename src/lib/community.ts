@@ -5,7 +5,7 @@
 // up stale in one of them.
 //
 // NOTE for whoever rotates this: Discord invites expire after seven days by
-// default. This one must be created with expiry "Never" and max uses
-// "No limit", or the site quietly starts linking to a dead invite and nobody
-// notices until someone mentions it.
-export const DISCORD_INVITE = "https://discord.gg/wBGm4BQjN";
+// default. This one is set to expiry "Never", and any replacement must be
+// too, or the site quietly starts linking to a dead invite and nobody notices
+// until someone mentions it.
+export const DISCORD_INVITE = "https://discord.gg/UGFA5xVT7y";
