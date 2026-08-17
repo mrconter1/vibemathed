@@ -1,128 +1,110 @@
-"""VibeMathed logo files for the Discord community.
+"""Export the site's favicon as PNG assets (Discord icon, avatars, banners).
 
-Built from the site's own brand rather than invented: the wordmark is
-"Vibe" in ink with "Mathed" in accent blue, set in a serif, on the cream
-paper ground - the same split the header renders. Colours are lifted from
-globals.css:
+The source of truth is src/app/icon.svg - the blue rounded square with the
+cream wave that the site actually serves as its icon:
 
-    --paper       #f3efe3
-    --ink         #201d17
-    --accent-blue #2a78d6
-    dark --paper  #17150f   (used for the dark variant)
+    <rect width="32" height="32" rx="7" fill="#2a78d6"/>
+    <path d="M4 16 C 7 9, 11 9, 16 16 C 21 23, 25 23, 28 16"
+          fill="none" stroke="#f3efe3" stroke-width="3.4"
+          stroke-linecap="round" stroke-linejoin="round"/>
 
-Outputs (Discord wants square PNGs; 512 is its recommended server icon):
+It is redrawn here rather than rasterised through a converter: the shape is
+two primitives, cairosvg needs a system cairo that is not installed here, and
+svglib misreads the viewBox as 24x24 (it honours width/height attributes that
+this file does not set). Drawing it directly also means the wave can be
+supersampled, which matters - a 3.4/32 stroke scaled to 1024px is 109px wide,
+and a naive polyline shows its segment joints at that size.
 
-    vibemathed-icon-512.png      square "VM" mark, cream ground
-    vibemathed-icon-512-dark.png same on the dark ground
-    vibemathed-icon-1024.png     same mark at 2x for banners/upscaling
-    vibemathed-wordmark-1024.png full "VibeMathed" wordmark, transparent
+Geometry is taken verbatim from the SVG and scaled, so the output is the
+favicon at any size rather than something that resembles it.
+
+Outputs to ~/Downloads:
+
+    vibemathed-icon-512.png       Discord's recommended server-icon size
+    vibemathed-icon-1024.png      2x, for banners and upscaling
+    vibemathed-icon-256.png       small avatars
     vibemathed-icon-round-512.png circular crop, for platforms that mask
+    vibemathed-icon-square-512.png hard corners, for tiles that round it
+                                   themselves
 """
 import os
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 
-PAPER = (243, 239, 227, 255)
-PAPER_DARK = (23, 21, 15, 255)
-INK = (32, 29, 23, 255)
-INK_DARK = (240, 235, 221, 255)
-BLUE = (42, 120, 214, 255)
-BLUE_DARK = (106, 165, 232, 255)
+# Verbatim from icon.svg.
+VIEWBOX = 32.0
+BLUE = (42, 120, 214, 255)  # #2a78d6
+CREAM = (243, 239, 227, 255)  # #f3efe3
+RADIUS = 7.0
+STROKE = 3.4
+CURVE = [
+    # (start, c1, c2, end) in viewBox units - the two cubics of the path.
+    ((4, 16), (7, 9), (11, 9), (16, 16)),
+    ((16, 16), (21, 23), (25, 23), (28, 16)),
+]
 
+SS = 4  # supersampling factor
 OUT = os.path.join(os.environ["USERPROFILE"], "Downloads")
-SERIF = "C:/Windows/Fonts/cambria.ttc"
-SERIF_BOLD = "C:/Windows/Fonts/cambriab.ttf"
 
 
-def font(path, size):
-    return ImageFont.truetype(path, size)
+def bezier(p0, p1, p2, p3, steps):
+    """Points along one cubic Bezier."""
+    pts = []
+    for i in range(steps + 1):
+        t = i / steps
+        u = 1 - t
+        x = u**3 * p0[0] + 3 * u**2 * t * p1[0] + 3 * u * t**2 * p2[0] + t**3 * p3[0]
+        y = u**3 * p0[1] + 3 * u**2 * t * p1[1] + 3 * u * t**2 * p2[1] + t**3 * p3[1]
+        pts.append((x, y))
+    return pts
 
 
-def draw_centered(d, xy, text, f, fill, anchor="mm"):
-    d.text(xy, text, font=f, fill=fill, anchor=anchor)
-
-
-def icon(size, ground, ink, blue, round_mask=False):
-    """The square mark: 'V' in ink, 'M' in accent blue, sharing a baseline."""
-    img = Image.new("RGBA", (size, size), ground)
+def render(size, corners="rounded"):
+    """The favicon at `size` px. corners: rounded | square | circle."""
+    s = size * SS
+    scale = s / VIEWBOX
+    img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
 
-    f = font(SERIF_BOLD, int(size * 0.44))
-    wv = d.textlength("V", font=f)
-    wm = d.textlength("M", font=f)
-    total = wv + wm
-    x = (size - total) / 2
+    if corners == "square":
+        d.rectangle([0, 0, s - 1, s - 1], fill=BLUE)
+    elif corners == "circle":
+        d.ellipse([0, 0, s - 1, s - 1], fill=BLUE)
+    else:
+        d.rounded_rectangle([0, 0, s - 1, s - 1], radius=RADIUS * scale, fill=BLUE)
 
-    # Centre the LOCKUP (letters plus the rule beneath), not the glyphs
-    # alone - centring the glyphs leaves the rule hanging and the mark reads
-    # top-heavy at icon sizes. Positions come from the drawn bounding box,
-    # not font metrics: the metrics include ascender and descender space
-    # these two capitals do not occupy, which is what threw the first cut.
-    box = d.textbbox((x, 0), "VM", font=f, anchor="la")
-    cap_h = box[3] - box[1]
-    gap = size * 0.085
-    rule_w = max(2, int(size * 0.016))
-    lockup_h = cap_h + gap + rule_w
-    top = (size - lockup_h) / 2
-    # Drawing at anchor "la" puts the glyph TOP at y + box[1], so shift by
-    # that offset to land the caps exactly on `top`.
-    y = top - box[1]
+    # The wave, as one point list through both cubics so the join at (16,16)
+    # is continuous rather than two strokes meeting.
+    pts = []
+    for seg in CURVE:
+        part = bezier(*seg, steps=600)
+        pts.extend(part if not pts else part[1:])
+    pts = [(x * scale, y * scale) for x, y in pts]
 
-    d.text((x, y), "V", font=f, fill=ink, anchor="la")
-    d.text((x + wv, y), "M", font=f, fill=blue, anchor="la")
+    # Stamp a disc at every sample rather than calling d.line with a width.
+    # A round-capped, round-joined stroke IS the union of discs along the
+    # path, and PIL's thick polyline is not: it draws each segment as its
+    # own quad, so at this width (109px at 1024) the seams between segments
+    # show as hairlines across the wave.
+    r = STROKE * scale / 2
+    for x, y in pts:
+        d.ellipse([x - r, y - r, x + r, y + r], fill=CREAM)
 
-    # A rule under the mark, echoing the site's hairline borders and giving
-    # the icon a horizon so it does not float at small sizes. Matched to the
-    # glyph width, so it underlines the letters rather than reading as a
-    # separate element.
-    rule_y = int(top + cap_h + gap)
-    d.line([(x, rule_y), (x + total, rule_y)], fill=blue, width=rule_w)
-
-    if round_mask:
-        mask = Image.new("L", (size, size), 0)
-        ImageDraw.Draw(mask).ellipse([0, 0, size - 1, size - 1], fill=255)
-        out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-        out.paste(img, (0, 0), mask)
-        return out
-    return img
-
-
-def wordmark(width=1024):
-    """Full 'VibeMathed' on transparent, for headers and Discord banners."""
-    height = int(width * 0.30)
-    img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-    d = ImageDraw.Draw(img)
-    f = font(SERIF_BOLD, int(height * 0.52))
-    w1 = d.textlength("Vibe", font=f)
-    w2 = d.textlength("Mathed", font=f)
-    x = (width - (w1 + w2)) / 2
-    y = height * 0.44
-    d.text((x, y), "Vibe", font=f, fill=INK, anchor="lm")
-    d.text((x + w1, y), "Mathed", font=f, fill=BLUE, anchor="lm")
-
-    fs = font(SERIF, int(height * 0.135))
-    d.text(
-        (width / 2, height * 0.78),
-        "Math problems solved with AI",
-        font=fs,
-        fill=(90, 84, 72, 255),
-        anchor="mm",
-    )
-    return img
+    return img.resize((size, size), Image.LANCZOS)
 
 
 def main():
     jobs = [
-        ("vibemathed-icon-512.png", icon(512, PAPER, INK, BLUE)),
-        ("vibemathed-icon-512-dark.png", icon(512, PAPER_DARK, INK_DARK, BLUE_DARK)),
-        ("vibemathed-icon-1024.png", icon(1024, PAPER, INK, BLUE)),
-        ("vibemathed-icon-round-512.png", icon(512, PAPER, INK, BLUE, round_mask=True)),
-        ("vibemathed-wordmark-1024.png", wordmark(1024)),
+        ("vibemathed-icon-512.png", render(512)),
+        ("vibemathed-icon-1024.png", render(1024)),
+        ("vibemathed-icon-256.png", render(256)),
+        ("vibemathed-icon-round-512.png", render(512, corners="circle")),
+        ("vibemathed-icon-square-512.png", render(512, corners="square")),
     ]
     for name, img in jobs:
         path = os.path.join(OUT, name)
         img.save(path, "PNG")
-        print(f"  {name}  {img.size[0]}x{img.size[1]}  {os.path.getsize(path)/1024:.0f} KB")
+        print(f"  {name}  {img.size[0]}x{img.size[1]}  {os.path.getsize(path) / 1024:.0f} KB")
     print(f"\nwritten to {OUT}")
 
 
