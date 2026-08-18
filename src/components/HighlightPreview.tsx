@@ -113,23 +113,27 @@ export function HighlightList({ rows }: { rows: PreviewRow[] }) {
             }}
             className="border-t border-[var(--hairline)] py-2 first:border-t-0 first:pt-0 last:pb-0"
           >
+            {/* The badge sits with the ranking value on the right, not against
+                the name. Trailing the title it landed at a different x on every
+                row, so the eye had to hunt for it; on the right it reads as a
+                column. The name takes all the slack and is the only thing that
+                truncates, which is right - it is the variable-length field, and
+                a clipped "AI-discove…" would be worse than a clipped title. */}
             <Link
               href={`/problem/${row.slug}`}
-              className="group flex items-baseline justify-between gap-3"
+              className="group flex items-baseline gap-3"
             >
-              <span className="flex min-w-0 items-baseline gap-1.5">
-                <span className="min-w-0 truncate text-sm text-[var(--ink-secondary)] transition-colors group-hover:text-[var(--accent-blue)]">
-                  <TeX>{row.name}</TeX>
-                </span>
-                {row.aiDiscovered && (
-                  <span
-                    title={`${AI_CONTRIBUTION["ai-discovered"].pill}: the model produced the central proof or object`}
-                    className="min-w-0 shrink-[0.2] self-center truncate rounded-full bg-[color-mix(in_srgb,var(--status-good)_14%,transparent)] px-1.5 py-px text-[10px] font-medium text-[var(--status-good)]"
-                  >
-                    {AI_CONTRIBUTION["ai-discovered"].pill}
-                  </span>
-                )}
+              <span className="min-w-0 flex-1 truncate text-sm text-[var(--ink-secondary)] transition-colors group-hover:text-[var(--accent-blue)]">
+                <TeX>{row.name}</TeX>
               </span>
+              {row.aiDiscovered && (
+                <span
+                  title={`${AI_CONTRIBUTION["ai-discovered"].pill}: the model produced the central proof or object`}
+                  className="shrink-0 self-center rounded-full bg-[color-mix(in_srgb,var(--status-good)_14%,transparent)] px-1.5 py-px text-[10px] font-medium text-[var(--status-good)]"
+                >
+                  {AI_CONTRIBUTION["ai-discovered"].pill}
+                </span>
+              )}
               <span className="shrink-0 font-mono text-[11px] text-[var(--ink-muted)]">
                 {row.iso ? <SolvedStamp iso={row.iso} date={row.detail} /> : row.detail}
               </span>
