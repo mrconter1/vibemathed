@@ -39,7 +39,7 @@
 // maintains the table, is thanked for feedback on the manuscript.
 //
 // Dry run by default. Pass --apply to write.
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, type Prisma } from "@prisma/client";
 import { CURATOR_FIELDS, EDITABLE_FIELDS } from "../src/lib/editable";
 
 const prisma = new PrismaClient();
@@ -131,15 +131,17 @@ async function main() {
     return;
   }
 
-  const created = await prisma.problem.create({
-    data: {
-      slug: SLUG,
-      ...(FIELDS as never),
-      status: "published",
-      reviewedAt: new Date(),
-      links: { create: LINKS.map((l, position) => ({ ...l, position })) },
-    },
-  });
+  // FIELDS is keyed by name for the limit check above, so it arrives as
+  // Record<string, unknown>; the cast is on the assembled row, once.
+  const data = {
+    slug: SLUG,
+    ...FIELDS,
+    status: "published",
+    reviewedAt: new Date(),
+    links: { create: LINKS.map((l, position) => ({ ...l, position })) },
+  } as unknown as Prisma.ProblemCreateInput;
+
+  const created = await prisma.problem.create({ data });
   await prisma.problemActivity.create({
     data: { problemId: created.id, userId: admin.id, userName: admin.pseudonym ?? null, type: "approved" },
   });
