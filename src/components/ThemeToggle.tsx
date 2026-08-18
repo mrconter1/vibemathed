@@ -91,9 +91,7 @@ export function ThemeToggle({ variant = "icon" }: { variant?: "icon" | "row" }) 
   }
 
   // Header slot: signed-in readers get this control in the account menu
-  // instead, so it would be a duplicate here. Rendering nothing until the
-  // viewer snapshot loads would make the header jump, so an unknown viewer
-  // is treated as signed out - the state most visitors are in.
+  // instead, so it would be a duplicate here.
   if (loaded && signedIn) return null;
 
   return (
@@ -106,7 +104,22 @@ export function ThemeToggle({ variant = "icon" }: { variant?: "icon" | "row" }) 
       // it. This was h-9 w-9, copied from the account avatar, which is a
       // circular glyph rather than one of the square icon buttons and is
       // deliberately the larger of the two shapes.
-      className={`inline-flex ${HEADER_ICON} ${HEADER_ICON_HOVER}`}
+      //
+      // `viewer-out` while the snapshot is still loading, which is the same
+      // mechanism the inbox and bell use, in reverse: the button ships in the
+      // markup and the boot script's `data-viewer` attribute decides before
+      // first paint whether it is drawn. Treating an unknown viewer as signed
+      // out was right about the default - most visitors are - but it meant a
+      // signed-in reader watched the toggle paint with the page and then
+      // vanish once React learned it had a menu to live in, which is a longer
+      // beat than it sounds on a cold load.
+      //
+      // The class comes off the moment the viewer is known, so a stale
+      // attribute - signed out in another tab, cache cleared - can never keep
+      // hiding a button React has decided belongs. No attribute at all still
+      // means show it, which is the right fallback for a first visit and for
+      // anyone without JavaScript.
+      className={`${loaded ? "" : "viewer-out "}inline-flex ${HEADER_ICON} ${HEADER_ICON_HOVER}`}
     >
       {glyphs}
     </button>
