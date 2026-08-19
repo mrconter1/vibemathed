@@ -20,7 +20,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Icon } from "@/components/Icons";
 
-/// `id` is the chart's permalink target, e.g. `#by-ai-system`. It is chosen at
+/// `id` is the chart's permalink target, e.g. `#by-vendor`. It is chosen at
 /// the call site rather than derived from the chart's heading, for the reason
 /// review reasons and slugs are: once a link to it exists somewhere, it is
 /// stored data, and a reworded heading must not silently break it.
@@ -61,7 +61,7 @@ export function ChartCard({
   return (
     <div
       // scroll-mt clears the sticky header, the same way the methodology
-      // sections do it: without it, arriving on #by-ai-system parks the card's
+      // sections do it: without it, arriving on #by-vendor parks the card's
       // heading underneath the bar.
       id={id}
       className={`chart-card relative min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5 ${id ? "scroll-mt-20 " : ""}${className ?? ""}`}

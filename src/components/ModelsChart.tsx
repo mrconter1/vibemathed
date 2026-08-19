@@ -7,10 +7,15 @@ import { bucketKey, bucketRange, bucketTooltipLabel } from "@/lib/time-buckets";
 import { GranularityToggle, TimeAxis } from "@/components/GranularityToggle";
 import { useChartSettings } from "@/lib/chart-settings";
 
-// Cumulative solves per AI-system family over time - the volume race, not
-// just its final score. Same frame and hover behaviour as the other line
-// charts. An entry counts toward every family named on it (see
-// MODEL_FAMILIES), so the lines can sum to more than the number of problems.
+// Cumulative solves per vendor over time - the volume race, not just its
+// final score. Same frame and hover behaviour as the other line charts. An
+// entry counts toward every vendor named on it (see MODEL_FAMILIES), so the
+// lines can sum to more than the number of problems.
+//
+// "Vendor" rather than "AI system family": the series ARE vendors - OpenAI,
+// Anthropic, Google DeepMind - and the two rows that are not a company,
+// open-weights and agent systems, are labelled for what they are in the
+// legend.
 
 // One fixed color per family - color follows the entity, never its rank.
 // Seven series outgrow the theme's accent pair, so this chart carries its own
@@ -97,11 +102,11 @@ export function ModelsChart({ problems }: { problems: ChartProblem[] }) {
   return (
     <div className="flex h-full flex-col">
       <h2 className="font-serif text-lg text-[var(--ink)]">
-        Problems solved by AI system, over time
+        Problems solved per vendor, over time
       </h2>
       <p className="mt-1 text-xs text-[var(--ink-muted)]">
-        Cumulative count per system family; an entry counts toward every system
-        named on it.
+        Cumulative count per vendor; an entry counts toward every vendor named
+        on it, so the lines sum to more than the number of problems.
       </p>
 
       {/* Legend doubles as the standings AND the visibility toggles. */}
@@ -141,7 +146,7 @@ export function ModelsChart({ problems }: { problems: ChartProblem[] }) {
             viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
             className="h-full w-full"
             role="img"
-            aria-label="Cumulative problems solved over time, one line per AI-system family"
+            aria-label="Cumulative problems solved over time, one line per vendor"
           >
             {yTicks.map((t) => (
               <g key={t}>

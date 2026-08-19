@@ -299,7 +299,7 @@ select {
 }
 
 /*
- * The chart a permalink points at. Arriving at /stats#by-ai-system should
+ * The chart a permalink points at. Arriving at /stats#by-vendor should
  * answer "which one?" without the reader counting cards down the grid.
  *
  * :target rather than a script, so the highlight is a statement about the

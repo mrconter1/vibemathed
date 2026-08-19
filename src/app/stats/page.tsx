@@ -12,7 +12,6 @@ import { ModelsChart } from "@/components/ModelsChart";
 import { OpenSourceChart } from "@/components/OpenSourceChart";
 import { ReferencesChart } from "@/components/ReferencesChart";
 import { SolveRatioChart } from "@/components/SolveRatioChart";
-import { VendorShareChart } from "@/components/VendorShareChart";
 import { InfoTip } from "@/components/Tooltip";
 
 export const metadata: Metadata = {
@@ -198,15 +197,8 @@ export default async function StatsPage() {
         <ChartCard id="significance-vs-age" label="significance vs. age">
           <ReferencesChart problems={slim} />
         </ChartCard>
-        <ChartCard id="by-ai-system" label="solves by AI system">
+        <ChartCard id="by-vendor" label="solves per vendor">
           <ModelsChart problems={resolved} />
-        </ChartCard>
-        {/* Directly after the volume race, because it answers the question the
-            volume race raises and cannot settle: cumulative counts only rise,
-            so every vendor's line climbs and gaining ground looks the same as
-            being carried by the record's growth. */}
-        <ChartCard id="vendor-share" label="share of solves per vendor">
-          <VendorShareChart problems={resolved} />
         </ChartCard>
         <ChartCard id="by-contribution-tier" label="growth per AI-contribution tier">
           <ContributionGrowthChart problems={resolved} />
