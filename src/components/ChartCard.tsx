@@ -20,12 +20,25 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Icon } from "@/components/Icons";
 
+/// `id` is the chart's permalink target, e.g. `#by-ai-system`. It is chosen at
+/// the call site rather than derived from the chart's heading, for the reason
+/// review reasons and slugs are: once a link to it exists somewhere, it is
+/// stored data, and a reworded heading must not silently break it.
+///
+/// `label` names the chart for the link's tooltip and screen-reader text.
+/// It repeats the heading, which lives inside `children` where this component
+/// cannot reach it. A label that drifts from the heading is a cosmetic tooltip
+/// problem; the id is the contract.
 export function ChartCard({
   children,
   className,
+  id,
+  label,
 }: {
   children: ReactNode;
   className?: string;
+  id?: string;
+  label?: string;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -47,23 +60,51 @@ export function ChartCard({
 
   return (
     <div
-      className={`relative min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5 ${className ?? ""}`}
+      // scroll-mt clears the sticky header, the same way the methodology
+      // sections do it: without it, arriving on #by-ai-system parks the card's
+      // heading underneath the bar.
+      id={id}
+      className={`relative min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5 ${id ? "scroll-mt-20 " : ""}${className ?? ""}`}
     >
-      {/* Always visible while the chart is collapsed: hover-revealing it hid
-          the only affordance that says the chart can be opened at all, which
-          is worse than the crowding it was avoiding next to the legends. It
-          stays muted so it reads as chrome rather than data, and stays
-          desktop-only, since the overlay is pointless on a phone where the
-          card already spans the screen. */}
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label="Expand chart"
-        title="Expand"
-        className="absolute right-2 top-2 z-10 hidden h-6 w-6 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-muted)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)] lg:inline-flex"
-      >
-        <Icon name="expand" size={12} />
-      </button>
+      {/* Both controls sit in one flex cluster rather than being positioned
+          individually, so the permalink does not need to know whether the
+          expand button beside it is currently displayed - on a phone it is
+          not, and the link simply takes the corner. */}
+      <div className="absolute right-2 top-2 z-10 flex items-center gap-1">
+        {/* A plain anchor, so it does what a link does: updates the address bar
+            and scrolls. Right-click-copy then yields a shareable URL, which is
+            the whole point, and none of it needs JavaScript.
+
+            This lives on the card and not on the chart's own heading because
+            `children` is rendered twice while the overlay is open - anchoring
+            the heading would put two elements with the same id in the
+            document, and a duplicate id makes the link ambiguous. */}
+        {id && (
+          <a
+            href={`#${id}`}
+            aria-label={label ? `Link to the ${label} chart` : "Link to this chart"}
+            title={label ? `Link to the ${label} chart` : "Link to this chart"}
+            className="inline-flex h-6 w-6 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-muted)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)]"
+          >
+            <Icon name="link" size={12} />
+          </a>
+        )}
+        {/* Always visible while the chart is collapsed: hover-revealing it hid
+            the only affordance that says the chart can be opened at all, which
+            is worse than the crowding it was avoiding next to the legends. It
+            stays muted so it reads as chrome rather than data, and stays
+            desktop-only, since the overlay is pointless on a phone where the
+            card already spans the screen. */}
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label="Expand chart"
+          title="Expand"
+          className="hidden h-6 w-6 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] text-[var(--ink-muted)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)] lg:inline-flex"
+        >
+          <Icon name="expand" size={12} />
+        </button>
+      </div>
 
       {children}
 

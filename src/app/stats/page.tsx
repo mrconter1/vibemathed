@@ -194,33 +194,33 @@ export default async function StatsPage() {
       <section className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
         {/* Whole record: the scatter itself splits resolved (filled) from
             candidate (hollow) and excludes partial/variant/retracted. */}
-        <ChartCard>
+        <ChartCard id="significance-vs-age" label="significance vs. age">
           <ReferencesChart problems={slim} />
         </ChartCard>
-        <ChartCard>
+        <ChartCard id="by-ai-system" label="solves by AI system">
           <ModelsChart problems={resolved} />
         </ChartCard>
-        <ChartCard>
+        <ChartCard id="by-contribution-tier" label="growth per AI-contribution tier">
           <ContributionGrowthChart problems={resolved} />
         </ChartCard>
         {/* The "is AI doing theory yet?" chart. */}
-        <ChartCard>
+        <ChartCard id="by-resolution-method" label="growth per resolution method">
           <MethodGrowthChart problems={resolved} />
         </ChartCard>
         {/* The record by area beside the record's total - both count EVERY
             tracked entry, unlike the solve charts, and the pair reads as
             "what it is made of" next to "how it has grown". Growth on the
             right, as asked. */}
-        <ChartCard>
+        <ChartCard id="by-area" label="entries per area">
           <FieldsChart problems={slim} />
         </ChartCard>
-        <ChartCard>
+        <ChartCard id="over-time" label="problems over time">
           <CumulativeChart problems={slim} />
         </ChartCard>
-        <ChartCard>
+        <ChartCard id="proved-vs-disproved" label="proved vs. disproved">
           <SolveRatioChart problems={resolved} />
         </ChartCard>
-        <ChartCard>
+        <ChartCard id="closed-vs-open-source" label="closed vs. open source">
           <OpenSourceChart problems={resolved} />
         </ChartCard>
       </section>
