@@ -12,6 +12,7 @@ import { ModelsChart } from "@/components/ModelsChart";
 import { OpenSourceChart } from "@/components/OpenSourceChart";
 import { ReferencesChart } from "@/components/ReferencesChart";
 import { SolveRatioChart } from "@/components/SolveRatioChart";
+import { VendorShareChart } from "@/components/VendorShareChart";
 import { InfoTip } from "@/components/Tooltip";
 
 export const metadata: Metadata = {
@@ -200,6 +201,13 @@ export default async function StatsPage() {
         <ChartCard id="by-ai-system" label="solves by AI system">
           <ModelsChart problems={resolved} />
         </ChartCard>
+        {/* Directly after the volume race, because it answers the question the
+            volume race raises and cannot settle: cumulative counts only rise,
+            so every vendor's line climbs and gaining ground looks the same as
+            being carried by the record's growth. */}
+        <ChartCard id="vendor-share" label="share of solves per AI system">
+          <VendorShareChart problems={resolved} />
+        </ChartCard>
         <ChartCard id="by-contribution-tier" label="growth per AI-contribution tier">
           <ContributionGrowthChart problems={resolved} />
         </ChartCard>
@@ -207,11 +215,10 @@ export default async function StatsPage() {
         <ChartCard id="by-resolution-method" label="growth per resolution method">
           <MethodGrowthChart problems={resolved} />
         </ChartCard>
-        {/* The record by area beside the record's total - both count EVERY
-            tracked entry, unlike the solve charts, and the pair reads as
-            "what it is made of" next to "how it has grown". Growth on the
-            right, as asked. */}
-        <ChartCard id="by-area" label="entries per area">
+        {/* Area growth beside the record's total - both count EVERY tracked
+            entry, unlike the solve charts, so the pair reads as "which parts
+            of the record grew" next to "how the whole record grew". */}
+        <ChartCard id="by-area" label="growth per area">
           <FieldsChart problems={slim} />
         </ChartCard>
         <ChartCard id="over-time" label="problems over time">

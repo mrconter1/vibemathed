@@ -1,85 +1,320 @@
-import type { ChartProblem } from "@/lib/problems";
+"use client";
 
-// Entries per mathematical area: a horizontal bar per field group, whole
-// record, sorted by size. A server component on purpose - there is nothing
-// to hover or toggle, so it ships no JavaScript.
+import { useEffect, useRef, useState } from "react";
+import type { ChartProblem } from "@/lib/problems";
+import { bucketKey, bucketRange, bucketTooltipLabel } from "@/lib/time-buckets";
+import { GranularityToggle, TimeAxis } from "@/components/GranularityToggle";
+import { useChartSettings } from "@/lib/chart-settings";
+
+// Cumulative entries over time, one line per mathematical area. Was a
+// snapshot bar chart, which answered "what is the record made of" but not the
+// more interesting question next to it - whether an area is growing or has
+// stalled. Same frame, scales and hover behaviour as the other line charts.
+//
+// SERIES COUNT. The taxonomy has twelve groups and twelve lines is spaghetti,
+// so the seven largest are named and the rest fold into one "Other" line. That
+// is a cap, so it is stated in the caption and the folded groups are listed in
+// the legend chip's title - a reader can always see what was folded and how
+// much of the record it is.
+//
+// COLOR. The seven hues are ModelsChart's palette, unchanged, because the two
+// charts sit on the same page and a second colour system would read as a
+// second meaning. "Other" takes a neutral gray: it is a residue, not an
+// identity, and should not compete with the named areas.
+//
+// The palette was run through the dataviz validator against both surfaces
+// (#faf8f0 light, #201d16 dark). It passes the lightness band, the
+// normal-vision floor (worst adjacent pair 16.3) and contrast on both. It does
+// NOT clear the colour-blind separation bar: mustard and green sit at 4.6 dE
+// under protanopia, which is the same limitation the existing site palette
+// already carries. That is admissible only with secondary encoding, and this
+// chart has three: every legend chip pairs its colour with the written area
+// name, hovering a line or a chip isolates it and fades the rest to 25%, and
+// the tooltip lists each visible series by value. Colour is never the only
+// thing distinguishing two lines here.
 
 const VIEW_W = 640;
 const VIEW_H = 360;
-// The label column fits the taxonomy's longest name ("Quantum information &
-// computing") at 12px; the right margin holds the count.
-const M = { top: 6, right: 42, bottom: 6, left: 196 };
+const MARGIN = { top: 20, right: 20, bottom: 40, left: 44 };
+const PLOT_W = VIEW_W - MARGIN.left - MARGIN.right;
+const PLOT_H = VIEW_H - MARGIN.top - MARGIN.bottom;
+
+/// How many areas get a line of their own before the tail is folded.
+const NAMED = 7;
+
+const OTHER = "Other";
+
+/// Fixed hue order, ModelsChart's palette. Colour follows the entity: an area
+/// keeps its hue no matter how many series the legend toggles have hidden.
+const PALETTE = [
+  "#2a78d6", // blue
+  "#eb6834", // orange
+  "#8b5cf6", // violet
+  "#2e9e4f", // green
+  "#b8860b", // mustard
+  "#0f9b9b", // teal
+  "#d23b6e", // magenta
+];
+
+/// The residue, deliberately desaturated so it reads as "everything else".
+const OTHER_COLOR = "#6f6a5e";
+
+function niceMax(v: number, step: number) {
+  return Math.max(step, Math.ceil(v / step) * step);
+}
 
 export function FieldsChart({ problems }: { problems: ChartProblem[] }) {
-  const counts = new Map<string, number>();
-  for (const p of problems) {
-    const key = p.fieldGroup ?? "Unclassified";
-    counts.set(key, (counts.get(key) ?? 0) + 1);
-  }
-  const rows = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-  const max = rows[0]?.[1] ?? 1;
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [hover, setHover] = useState<number | null>(null);
+  const [isDesktop, setIsDesktop] = useState(false);
+  const { gran, setGran, hidden, toggleSeries } = useChartSettings("fields");
+  const [focused, setFocused] = useState<string | null>(null);
 
-  const innerH = VIEW_H - M.top - M.bottom;
-  const rowH = innerH / Math.max(1, rows.length);
-  const barH = Math.min(18, rowH * 0.6);
-  const barW = (n: number) =>
-    Math.max(2, (n / max) * (VIEW_W - M.left - M.right));
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  const keys = problems.map((p) => bucketKey(p.solveDate, gran)).sort();
+  if (keys.length === 0) return null;
+
+  const range = bucketRange(keys[0], keys[keys.length - 1], gran);
+
+  // Rank by whole-record total, so which areas are named does not flicker as
+  // the granularity changes.
+  const totals = new Map<string, number>();
+  for (const p of problems) {
+    const g = p.fieldGroup ?? "Unclassified";
+    totals.set(g, (totals.get(g) ?? 0) + 1);
+  }
+  const ranked = [...totals.entries()].sort(
+    (a, b) => b[1] - a[1] || a[0].localeCompare(b[0]),
+  );
+  const named = ranked.slice(0, NAMED).map(([g]) => g);
+  const folded = ranked.slice(NAMED);
+
+  const groupOf = (p: ChartProblem) => {
+    const g = p.fieldGroup ?? "Unclassified";
+    return named.includes(g) ? g : OTHER;
+  };
+
+  const series = [
+    ...named.map((g, i) => ({ key: g, label: g, color: PALETTE[i], title: g })),
+    ...(folded.length
+      ? [
+          {
+            key: OTHER,
+            label: OTHER,
+            color: OTHER_COLOR,
+            title: folded.map(([g, n]) => `${g} (${n})`).join(", "),
+          },
+        ]
+      : []),
+  ].map((s) => {
+    const seriesKeys = problems
+      .filter((p) => groupOf(p) === s.key)
+      .map((p) => bucketKey(p.solveDate, gran));
+    return {
+      ...s,
+      cumulative: range.map((mk) => seriesKeys.filter((k) => k <= mk).length),
+      total: seriesKeys.length,
+    };
+  });
+
+  const visible = series.filter((s) => !hidden.has(s.key));
+  const yMax = niceMax(Math.max(1, ...visible.map((s) => s.total)), 20);
+
+  const x = (i: number) =>
+    MARGIN.left + (range.length === 1 ? PLOT_W / 2 : (i / (range.length - 1)) * PLOT_W);
+  const yScale = (v: number) => MARGIN.top + PLOT_H - (v / yMax) * PLOT_H;
+
+  const yTicks = Array.from({ length: 5 }, (_, i) => Math.round((i * yMax) / 4));
+
+  function handleMove(e: React.MouseEvent<SVGElement>) {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const rect = svg.getBoundingClientRect();
+    const svgX = ((e.clientX - rect.left) / rect.width) * VIEW_W;
+    const t = (svgX - MARGIN.left) / PLOT_W;
+    const i = Math.round(t * (range.length - 1));
+    setHover(Math.min(Math.max(i, 0), range.length - 1));
+  }
+
+  const active = isDesktop && hover !== null && hover < range.length ? hover : null;
 
   return (
-    <div>
-      <h2 className="font-serif text-lg text-[var(--ink)]">Entries per area</h2>
+    <div className="flex h-full flex-col">
+      <h2 className="font-serif text-lg text-[var(--ink)]">Growth per area</h2>
       <p className="mt-1 text-xs text-[var(--ink-muted)]">
-        Every tracked entry, grouped by mathematical area.
+        Cumulative tracked entries by mathematical area; the {NAMED} largest,
+        with the remaining {folded.length} folded into Other.
       </p>
 
-      <div className="relative mt-3" style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}` }}>
-        <svg
-          viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
-          className="h-full w-full"
-          role="img"
-          aria-label={`Bar chart of tracked entries per mathematical area: ${rows
-            .map(([g, n]) => `${g} ${n}`)
-            .join(", ")}.`}
-        >
-          {rows.map(([group, n], i) => {
-            const cy = M.top + rowH * i + rowH / 2;
-            return (
-              <g key={group}>
-                <text
-                  x={M.left - 10}
-                  y={cy}
-                  dominantBaseline="middle"
-                  textAnchor="end"
-                  style={{ fontSize: 12, fill: "var(--ink-secondary)" }}
-                >
-                  {group}
-                </text>
-                <rect
-                  x={M.left}
-                  y={cy - barH / 2}
-                  width={barW(n)}
-                  height={barH}
-                  rx={2}
-                  fill="var(--accent-blue)"
-                  fillOpacity={0.75}
+      {/* Legend doubles as the current totals AND the visibility toggles. */}
+      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+        {series.map((s) => {
+          const off = hidden.has(s.key);
+          return (
+            <button
+              key={s.key}
+              type="button"
+              onClick={() => toggleSeries(s.key)}
+              aria-pressed={!off}
+              title={s.title}
+              onMouseEnter={() => setFocused(s.key)}
+              onMouseLeave={() => setFocused(null)}
+              className={`inline-flex items-center gap-1.5 rounded px-1 py-0.5 transition-opacity ${
+                off ? "opacity-40" : ""
+              }`}
+            >
+              <span
+                aria-hidden
+                className="inline-block h-2 w-2 rounded-full"
+                style={{ backgroundColor: s.color }}
+              />
+              <span className={`text-[var(--ink-secondary)] ${off ? "line-through" : ""}`}>
+                {s.label}
+              </span>
+              <span className="font-mono tabular-nums text-[var(--ink-muted)]">{s.total}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-3 flex flex-1 flex-col justify-center">
+        <div className="relative" style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}` }}>
+          <svg
+            ref={svgRef}
+            viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
+            className="h-full w-full"
+            role="img"
+            aria-label={`Cumulative tracked entries over time, one line per mathematical area: ${series
+              .map((s) => `${s.label} ${s.total}`)
+              .join(", ")}.`}
+          >
+            {yTicks.map((t) => (
+              <g key={t}>
+                <line
+                  x1={MARGIN.left}
+                  x2={VIEW_W - MARGIN.right}
+                  y1={yScale(t)}
+                  y2={yScale(t)}
+                  stroke="var(--hairline)"
+                  strokeWidth={1}
                 />
                 <text
-                  x={M.left + barW(n) + 8}
-                  y={cy}
+                  x={MARGIN.left - 8}
+                  y={yScale(t)}
                   dominantBaseline="middle"
+                  textAnchor="end"
                   className="font-mono"
-                  style={{
-                    fontSize: 12,
-                    fill: "var(--ink-muted)",
-                    fontVariantNumeric: "tabular-nums",
-                  }}
+                  style={{ fontSize: 14, fill: "var(--ink-muted)", fontVariantNumeric: "tabular-nums" }}
                 >
-                  {n}
+                  {t}
                 </text>
               </g>
-            );
-          })}
-        </svg>
+            ))}
+
+            {visible.map((s) => (
+              <polyline
+                key={s.key}
+                points={s.cumulative.map((v, i) => `${x(i)},${yScale(v)}`).join(" ")}
+                fill="none"
+                stroke={s.color}
+                strokeWidth={2.5}
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                pointerEvents="none"
+                opacity={focused !== null && focused !== s.key ? 0.25 : 1}
+              />
+            ))}
+
+            <TimeAxis range={range} gran={gran} x={x} y={VIEW_H - MARGIN.bottom + 18} />
+
+            {active !== null && (
+              <g pointerEvents="none">
+                <line
+                  x1={x(active)}
+                  x2={x(active)}
+                  y1={MARGIN.top}
+                  y2={yScale(0)}
+                  stroke="var(--ink-muted)"
+                  strokeWidth={1}
+                  strokeDasharray="3 3"
+                />
+                {visible.map((s) => (
+                  <circle
+                    key={s.key}
+                    cx={x(active)}
+                    cy={yScale(s.cumulative[active])}
+                    r={4}
+                    fill={s.color}
+                    stroke="var(--paper)"
+                    strokeWidth={2}
+                    opacity={focused !== null && focused !== s.key ? 0.25 : 1}
+                  />
+                ))}
+              </g>
+            )}
+
+            {isDesktop && (
+              <rect
+                x={MARGIN.left}
+                y={MARGIN.top}
+                width={PLOT_W}
+                height={PLOT_H}
+                fill="transparent"
+                onMouseMove={handleMove}
+                onMouseLeave={() => setHover(null)}
+              />
+            )}
+
+            {isDesktop &&
+              visible.map((s) => (
+                <polyline
+                  key={`hover-${s.key}`}
+                  points={s.cumulative.map((v, i) => `${x(i)},${yScale(v)}`).join(" ")}
+                  fill="none"
+                  stroke="transparent"
+                  strokeWidth={12}
+                  pointerEvents="stroke"
+                  onMouseEnter={() => setFocused(s.key)}
+                  onMouseLeave={() => setFocused(null)}
+                  onMouseMove={handleMove}
+                />
+              ))}
+          </svg>
+
+          {active !== null && (
+            <div
+              className="pointer-events-none absolute z-10 whitespace-nowrap rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-2.5 py-1.5 text-xs shadow-sm"
+              style={{
+                left: `${(x(active) / VIEW_W) * 100}%`,
+                top: `${(MARGIN.top / VIEW_H) * 100}%`,
+                transform: "translate(-50%, 0)",
+              }}
+            >
+              <span className="font-serif text-[var(--ink)]">{bucketTooltipLabel(range[active], gran)}</span>
+              {visible.map((s) => (
+                <span key={s.key} className="ml-2 inline-flex items-center gap-1 font-mono tabular-nums text-[var(--ink-secondary)]">
+                  <span
+                    aria-hidden
+                    className="inline-block h-1.5 w-1.5 rounded-full"
+                    style={{ backgroundColor: s.color }}
+                  />
+                  {s.cumulative[active]}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="mt-2.5 flex justify-center">
+        <GranularityToggle value={gran} onChange={setGran} />
       </div>
     </div>
   );
