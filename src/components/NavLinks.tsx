@@ -69,13 +69,41 @@ export function NavLinks() {
         rel="noopener noreferrer"
         title="Follow on X"
         aria-label="Follow on X (opens in a new tab)"
-        className="ml-0.5 inline-flex items-center rounded-md px-2 py-1.5 text-[var(--ink-secondary)] transition-colors hover:text-[var(--ink)]"
+        className="ml-1 inline-flex items-center rounded-md px-1.5 py-1.5 text-[var(--brand-x)] transition-opacity hover:opacity-70"
       >
-        {/* X's mark is monochrome, so unlike the Discord glyph beside it this
-            one wears the header's own ink and darkens on hover like the word
-            links do - a brand colour here would just be the ink colour. */}
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+        {/* The app-icon treatment: a filled tile with the X knocked OUT of it,
+            rather than the bare glyph. Closer to how the mark is presented
+            everywhere else, and at this size a solid shape with a hole in it
+            holds up far better than four thin strokes.
+
+            The knockout is a real hole, via a mask, not an X painted in the
+            surface colour. The header is translucent and sits over whatever
+            the page has scrolled under it, so a "transparent" X painted as
+            paper would be a visibly wrong shade the moment anything passed
+            beneath it.
+
+            Tile is --brand-x: true black, not the page's warm --ink, because
+            this is somebody else's mark and it is the colour they use. It
+            inverts to white in the dark theme rather than staying black, which
+            is X's own guidance and the only way the tile stays visible on a
+            near-black page.
+
+            Full strength at rest and dimming on hover, which is the inverse of
+            the word links beside it. They start recessed and darken because
+            they are ink; a brand mark starts solid, and dimming is the
+            interaction every other logo-link on the web uses. */}
+        <svg width="23" height="23" viewBox="0 0 24 24" aria-hidden>
+          <mask id="x-mark-knockout">
+            <rect width="24" height="24" rx="5" fill="white" />
+            {/* Scaled about the centre so the mark sits inside the tile with
+                app-icon-like padding instead of touching the corners. */}
+            <path
+              transform="translate(12 12) scale(0.68) translate(-12 -12)"
+              d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+              fill="black"
+            />
+          </mask>
+          <rect width="24" height="24" rx="5" fill="currentColor" mask="url(#x-mark-knockout)" />
         </svg>
       </a>
     </nav>

@@ -41,6 +41,13 @@
      else so the dark theme can lighten it, which it must. */
   --brand-discord: #5865f2;
 
+  /* X's mark, which is true black rather than the page's warm --ink. The one
+     other place the site wears somebody else's exact colour, alongside
+     blurple above. It inverts in the dark theme rather than staying black,
+     which is X's own guidance and the only way a black tile stays visible on
+     a near-black page. */
+  --brand-x: #000000;
+
   --status-good: #0ca30c;
   --status-warning: #c98500;
   --status-critical: #d03b3b;
@@ -103,6 +110,11 @@
      smudge rather than a brand mark. This is 6.48 and still unmistakably
      blurple (hue 230 against the original's 235). */
   --brand-discord: #8a9bf5;
+
+  /* Inverted, not lightened. A black tile measures 1.05 against this page and
+     would read as a hole punched in the header; white is what X itself
+     specifies on dark ground. */
+  --brand-x: #ffffff;
 
   --status-good: #45c245;
   --status-warning: #e0a53a;
