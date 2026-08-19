@@ -108,7 +108,40 @@ export function NavLinks() {
               fill="black"
             />
           </mask>
-          <rect width="24" height="24" rx="5" fill="currentColor" mask="url(#x-mark-knockout)" />
+          {/* Light: the app icon as X ships it, a solid tile with the mark cut
+              out. */}
+          <rect
+            className="x-mark-solid"
+            width="24"
+            height="24"
+            rx="5"
+            fill="currentColor"
+            mask="url(#x-mark-knockout)"
+          />
+          {/* Dark: outlined instead. Inverting the light treatment gives a
+              solid white slab, which is the loudest thing in the header and the
+              only control there that is a filled block rather than a bordered
+              shell like the plus, the bell and the theme button. Hollow keeps
+              the mark unmistakable at the same weight as its neighbours.
+              Drawn as a stroked frame plus a filled glyph rather than a mask,
+              because there is no knockout here: both strokes are the ink. */}
+          <g className="x-mark-hollow">
+            <rect
+              x="0.9"
+              y="0.9"
+              width="22.2"
+              height="22.2"
+              rx="4.4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.8}
+            />
+            <path
+              transform="translate(12 12) scale(0.55) translate(-12 -12)"
+              d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+              fill="currentColor"
+            />
+          </g>
         </svg>
       </a>
     </nav>
