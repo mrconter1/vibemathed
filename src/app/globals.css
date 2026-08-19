@@ -298,6 +298,24 @@ select {
   overflow: clip;
 }
 
+/*
+ * The chart a permalink points at. Arriving at /stats#by-ai-system should
+ * answer "which one?" without the reader counting cards down the grid.
+ *
+ * :target rather than a script, so the highlight is a statement about the
+ * current URL and nothing has to stay in sync with it: it appears on arrival,
+ * on a click of the card's own link, on reload, and on back/forward, and it
+ * clears itself the moment the hash does.
+ *
+ * The ring is a box-shadow, not a thicker border. A border-width change would
+ * resize the card and reflow the two-column grid, which is a lot of movement
+ * to announce one chart.
+ */
+.chart-card:target {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-blue) 18%, transparent);
+}
+
 ::picker(select) {
   background: var(--paper-raised);
   border: 1px solid var(--hairline);

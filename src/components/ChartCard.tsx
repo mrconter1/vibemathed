@@ -64,7 +64,7 @@ export function ChartCard({
       // sections do it: without it, arriving on #by-ai-system parks the card's
       // heading underneath the bar.
       id={id}
-      className={`relative min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5 ${id ? "scroll-mt-20 " : ""}${className ?? ""}`}
+      className={`chart-card relative min-w-0 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-4 sm:p-5 ${id ? "scroll-mt-20 " : ""}${className ?? ""}`}
     >
       {/* Both controls sit in one flex cluster rather than being positioned
           individually, so the permalink does not need to know whether the
