@@ -72,7 +72,11 @@ export function ModelsChart({ problems }: { problems: ChartProblem[] }) {
   const range = bucketRange(keys[0], keys[keys.length - 1], gran);
 
   const series = MODEL_FAMILIES.map((f) => {
-    const mine = problems.filter((p) => f.test.test(p.model));
+    // Model AND maker, because the model string alone is often a codename.
+    // Testing only `model` lost every "Astra (internal preview)" entry from
+    // OpenAI's line, eleven of them, including two of the highest-scoring
+    // entries in the record.
+    const mine = problems.filter((p) => f.test.test(`${p.model} ${p.modelMaker ?? ""}`));
     const famKeys = mine.map((p) => bucketKey(p.solveDate, gran));
     // What a row is actually made of. Every row here is a bag: "Agent systems
     // / other" is two dozen harnesses, but so is OpenAI, whose 349 entries

@@ -137,9 +137,13 @@ export const NOTABILITY_HELP =
 /// credit several systems on one entry, so matching is by keyword: an entry
 /// counts toward every family named on it.
 export const MODEL_FAMILIES: { key: string; label: string; test: RegExp }[] = [
-  { key: "openai", label: "OpenAI (GPT, Codex)", test: /gpt|codex|openai|\bo[0-9]\b/i },
+  // Product names as well as vendor names, because an entry may name only the
+  // model. "Astra (internal preview)" with maker OpenAI matched nothing for
+  // eleven entries, and "Fable 5, Opus 4.8" matched nothing at all: the
+  // Anthropic test was /claude/i, which does not know the rest of the range.
+  { key: "openai", label: "OpenAI (GPT, Codex)", test: /gpt|codex|openai|astra|\bsol\b|\bo[0-9]\b/i },
   { key: "google", label: "Google DeepMind", test: /gemini|deepmind|alphaevolve|alphaproof/i },
-  { key: "anthropic", label: "Anthropic (Claude)", test: /claude/i },
+  { key: "anthropic", label: "Anthropic (Claude)", test: /claude|fable|opus|sonnet|haiku/i },
   { key: "harmonic", label: "Harmonic (Aristotle)", test: /aristotle|harmonic/i },
   { key: "xai", label: "xAI (Grok)", test: /grok/i },
   { key: "open-weights", label: "Open-weights (DeepSeek, GLM)", test: /deepseek|glm/i },
@@ -149,7 +153,7 @@ export const MODEL_FAMILIES: { key: string; label: string; test: RegExp }[] = [
     // (GPT-5.6 Sol)") also count toward that vendor, by design.
     key: "agents",
     label: "Agent systems / other",
-    test: /aletheia|archivara|multiscalar|seed prover|axiomprover|demonstrandum|qed|tars|rethlas|archon|proofcouncil|hy3|hyra|capy/i,
+    test: /aletheia|archivara|multiscalar|seed prover|axiomprover|demonstrandum|qed|tars|rethlas|archon|proofcouncil|hy3|hyra|capy|danus|\bodin\b/i,
   },
 ];
 
