@@ -5,6 +5,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { X_PROFILE } from "@/lib/community";
 
 // Submit deliberately absent: it is an action, not a section, and lives as
 // the plus button in the header's action cluster.
@@ -51,6 +52,32 @@ export function NavLinks() {
           </Link>
         );
       })}
+
+      {/* Sits inside the nav rather than in the action cluster on the right,
+          because it belongs to the same "where else this site lives" group as
+          the sections, and because the cluster is for things you DO here. On a
+          phone the nav is its own full-width row, so keeping it here means it
+          stays beside About in both layouts instead of drifting to the other
+          end of the header.
+
+          Icon-only among four word links: the mark is more recognisable than
+          the word at this size, and a fifth label would crowd the row at the
+          360px width the header is already tight at. */}
+      <a
+        href={X_PROFILE}
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Follow on X"
+        aria-label="Follow on X (opens in a new tab)"
+        className="ml-0.5 inline-flex items-center rounded-md px-2 py-1.5 text-[var(--ink-secondary)] transition-colors hover:text-[var(--ink)]"
+      >
+        {/* X's mark is monochrome, so unlike the Discord glyph beside it this
+            one wears the header's own ink and darkens on hover like the word
+            links do - a brand colour here would just be the ink colour. */}
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+        </svg>
+      </a>
     </nav>
   );
 }

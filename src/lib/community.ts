@@ -9,3 +9,12 @@
 // too, or the site quietly starts linking to a dead invite and nobody notices
 // until someone mentions it.
 export const DISCORD_INVITE = "https://discord.gg/UGFA5xVT7y";
+
+/// The account the site posts from, linked beside the nav.
+///
+/// Deliberately a personal account rather than a project one: what this site
+/// sells is editorial judgement - why a submission was rejected, what a Lean
+/// repo actually proves - and that reads as a person, not a logo. If a
+/// @vibemathed account ever takes over the posting, this is the one line that
+/// changes.
+export const X_PROFILE = "https://x.com/RasmusLindahl6";
