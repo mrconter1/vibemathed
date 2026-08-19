@@ -97,10 +97,15 @@ const PATHS: Record<IconName, React.ReactNode> = {
       <path d="M13.2 6.2a3.2 3.2 0 010 3.6" strokeLinecap="round" />
     </>
   ),
+  // Two interlocking links. The previous data drew neither: each path opened
+  // with a zero-length arc (`a2.6 2.6 0 000 0`) and then swept the short way,
+  // so the two halves never closed and the glyph rendered as a single squiggle
+  // - legible as nothing at all, let alone as a chain. Rebuilt from the
+  // standard 24-box chain scaled into this file's 16 box.
   link: (
     <>
-      <path d="M6.8 9.2a2.6 2.6 0 000 0l3-3a2.6 2.6 0 10-3.7-3.7l-1 1" strokeLinecap="round" />
-      <path d="M9.2 6.8a2.6 2.6 0 000 0l-3 3a2.6 2.6 0 103.7 3.7l1-1" strokeLinecap="round" />
+      <path d="M6.7 8.7a3.3 3.3 0 005 .3l2-2a3.3 3.3 0 00-4.7-4.7l-1.1 1.1" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9.3 7.3a3.3 3.3 0 00-5-.3l-2 2a3.3 3.3 0 004.7 4.7l1.1-1.1" strokeLinecap="round" strokeLinejoin="round" />
     </>
   ),
   layers: (
