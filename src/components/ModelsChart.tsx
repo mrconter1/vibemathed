@@ -63,15 +63,32 @@ export function ModelsChart({ problems }: { problems: ChartProblem[] }) {
   const range = bucketRange(keys[0], keys[keys.length - 1], gran);
 
   const series = MODEL_FAMILIES.map((f) => {
-    const famKeys = problems
-      .filter((p) => f.test.test(p.model))
-      .map((p) => bucketKey(p.solveDate, gran));
+    const mine = problems.filter((p) => f.test.test(p.model));
+    const famKeys = mine.map((p) => bucketKey(p.solveDate, gran));
+    // What a row is actually made of, for its legend tooltip. Two rows here
+    // are not one system - "Agent systems / other" is a dozen harnesses and
+    // "Open-weights" is a couple of model families - and a reader has no way
+    // to see inside a row otherwise. Splitting them into their own lines is
+    // the wrong answer: the largest agent harness has a tenth of OpenAI's
+    // count, so its line would sit on the axis, and a chart cannot carry the
+    // dozen extra hues it would take.
+    const counts = new Map<string, number>();
+    for (const p of mine) counts.set(p.model, (counts.get(p.model) ?? 0) + 1);
+    const parts = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
     return {
       key: f.key,
       label: f.label,
       color: FAMILY_COLOR[f.key] ?? "var(--ink)",
       cumulative: range.map((mk) => famKeys.filter((k) => k <= mk).length),
       total: famKeys.length,
+      // Only worth showing when the row is a bag of several things.
+      breakdown:
+        parts.length > 1
+          ? parts
+              .slice(0, 12)
+              .map(([m, n]) => `${m} (${n})`)
+              .join("\n") + (parts.length > 12 ? `\n+${parts.length - 12} more` : "")
+          : undefined,
     };
   })
     .filter((s) => s.total > 0)
@@ -119,6 +136,7 @@ export function ModelsChart({ problems }: { problems: ChartProblem[] }) {
               type="button"
               onClick={() => toggleSeries(s.key)}
               aria-pressed={!off}
+              title={s.breakdown}
               onMouseEnter={() => setFocused(s.key)}
               onMouseLeave={() => setFocused(null)}
               className={`inline-flex items-center gap-1.5 rounded px-1 py-0.5 transition-opacity ${
