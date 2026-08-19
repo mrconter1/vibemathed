@@ -9,14 +9,21 @@ import type { Granularity } from "@/lib/time-buckets";
 
 const GRANS: Granularity[] = ["day", "week", "month"];
 
-export function useChartSettings(id: string): {
+/// `defaultGran` is the bucket a chart opens on before the reader has chosen
+/// one. Week suits the growth curves, where a cumulative line is smooth at any
+/// bucket; a composition chart is not, because a week holding three entries
+/// gives a mix of thirds, so those open on Month. A stored choice always wins.
+export function useChartSettings(
+  id: string,
+  defaultGran: Granularity = "week",
+): {
   gran: Granularity;
   setGran: (g: Granularity) => void;
   hidden: ReadonlySet<string>;
   toggleSeries: (key: string) => void;
 } {
   const key = `vibemathed:chart:${id}`;
-  const [gran, setGran] = useState<Granularity>("week");
+  const [gran, setGran] = useState<Granularity>(defaultGran);
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
 
   /* eslint-disable react-hooks/set-state-in-effect -- syncing state in from

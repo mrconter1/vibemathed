@@ -205,7 +205,7 @@ export default async function StatsPage() {
             volume race raises and cannot settle: cumulative counts only rise,
             so every vendor's line climbs and gaining ground looks the same as
             being carried by the record's growth. */}
-        <ChartCard id="vendor-share" label="share of solves per AI system">
+        <ChartCard id="vendor-share" label="share of solves per vendor">
           <VendorShareChart problems={resolved} />
         </ChartCard>
         <ChartCard id="by-contribution-tier" label="growth per AI-contribution tier">
