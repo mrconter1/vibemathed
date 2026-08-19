@@ -9,9 +9,14 @@ import { X_PROFILE } from "@/lib/community";
 
 // Submit deliberately absent: it is an action, not a section, and lives as
 // the plus button in the header's action cluster.
+// Methodology sits in the bar rather than only in the footer because a
+// mathematical physicist read the site closely enough to ask what the
+// inclusion test was, and still had to ask. The rules being findable is not a
+// convenience here: they are the argument for trusting the labels.
 const LINKS = [
   { href: "/", label: "Entries" },
   { href: "/stats", label: "Stats" },
+  { href: "/methodology", label: "Methodology" },
   { href: "/about", label: "About" },
 ] as const;
 
