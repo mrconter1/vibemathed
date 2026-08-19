@@ -25,6 +25,10 @@ const SOLVE_TYPE_FIELD: SubmissionFieldSpec = {
   options: [
     { value: "proved", label: "Proved" },
     { value: "disproved", label: "Disproved" },
+    // Rare, and offered anyway: a submitter with an independence result has
+    // nowhere honest to put it otherwise, and the two-option list was quietly
+    // pushing them toward "proved".
+    { value: "independent", label: "Independent of the axioms" },
   ],
 };
 

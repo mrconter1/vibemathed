@@ -1,4 +1,5 @@
 import { getPublishedProblems } from "@/lib/data";
+import { SOLVE_TYPE } from "@/lib/display";
 import { SITE_URL } from "@/lib/site";
 import { deTeX } from "@/components/TeX";
 
@@ -56,7 +57,10 @@ export async function GET() {
         .replace(/\s+/g, " ")
         .trim()
         .slice(0, 500);
-      const solved = p.solveType === "disproved" ? "Disproved" : "Proved";
+      // Read from the display map rather than testing for one value and
+      // defaulting to the other: with three results, that shape silently
+      // labelled an independence proof "Proved".
+      const solved = SOLVE_TYPE[p.solveType].label;
       const meta = [
         solved,
         p.field,

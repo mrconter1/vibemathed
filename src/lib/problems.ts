@@ -23,7 +23,14 @@
 // that importing a type or `ageAtSolve` from this module cannot drag 79 KB of
 // JSON into the browser bundle.
 
-export type SolveType = "proved" | "disproved";
+/// What happened to the statement as posed.
+///
+/// `independent` is a third outcome, not a flavour of the other two: the
+/// statement is neither provable nor refutable from the ambient axioms, and
+/// that itself is the theorem. Forcing such a result into "proved" (of the
+/// metatheorem) or "disproved" (of nothing) would misreport it, which is why
+/// this axis has three values rather than two.
+export type SolveType = "proved" | "disproved" | "independent";
 
 /// What happened to the PROBLEM - orthogonal to `verification`, which says how
 /// trustworthy the claim is. "resolved" is the default and the only status the
@@ -360,7 +367,7 @@ export interface CardEntry {
   links: LinkRef[];
 }
 
-const SOLVE_TYPES: SolveType[] = ["proved", "disproved"];
+const SOLVE_TYPES: SolveType[] = ["proved", "disproved", "independent"];
 const VERIFICATION_STATUSES: VerificationStatus[] = [
   "lean-verified",
   "expert-verified",

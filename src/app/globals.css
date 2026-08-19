@@ -36,6 +36,13 @@
   --accent-blue: #2a78d6;
   --accent-orange: #eb6834;
 
+  /* The third result, independence. Deliberately not one of the --status-*
+     colours: those mean good/warning/critical, and a statement being
+     independent of the axioms is a fact about the statement, not a problem
+     with the entry. Violet reads as "neither of the other two" beside blue and
+     orange without implying a verdict. */
+  --accent-violet: #7c5cd6;
+
   /* Discord's blurple, for the community link in the header - the one place
      the site wears somebody else's brand colour. Tokenised like everything
      else so the dark theme can lighten it, which it must. */
@@ -103,6 +110,9 @@
 
   --accent-blue: #6aa5e8;
   --accent-orange: #f08a5c;
+
+  /* Lightened like the pair above it, for the same reason. */
+  --accent-violet: #a98ce8;
 
   /* Blurple lightened, exactly as accent-blue is. True #5865f2 measures 3.65
      against the raised surface: inside 1.4.11's 3:1, so not a failure, but the

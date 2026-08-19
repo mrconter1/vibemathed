@@ -239,8 +239,9 @@ export default function MethodologyPage() {
 
       <Section title="Result and status">
         <p>
-          Every entry carries a result - <strong className="text-[var(--ink)]">proved</strong> or{" "}
-          <strong className="text-[var(--ink)]">disproved</strong> - and a status saying what
+          Every entry carries a result - <strong className="text-[var(--ink)]">proved</strong>,{" "}
+          <strong className="text-[var(--ink)]">disproved</strong> or{" "}
+          <strong className="text-[var(--ink)]">independent</strong> - and a status saying what
           actually happened to the problem:
         </p>
         <dl className="space-y-2.5">
@@ -257,8 +258,22 @@ export default function MethodologyPage() {
           The result records the fate of the statement <em>as it was posed</em>
           - a proof of X is logically a disproof of not-X, so proved versus
           disproved tracks whether the community&apos;s expectation held, not a
-          property of the mathematics. What the resolution actually consisted
-          of is the <strong className="text-[var(--ink)]">method</strong>:
+          property of the mathematics.
+        </p>
+        <p>
+          <strong className="text-[var(--ink)]">Independent</strong> is a third
+          outcome rather than a variety of the first two. The statement is
+          neither provable nor refutable from the ambient axioms, and that is
+          itself the theorem. Recording such a result as proved would describe
+          the metatheorem rather than the problem, and recording it as disproved
+          would describe nothing at all, so the axis has three values. The
+          problem still counts as resolved: the answer to &ldquo;which is
+          it?&rdquo; turned out to be &ldquo;neither, provably&rdquo;, which is
+          an answer.
+        </p>
+        <p>
+          What the resolution actually consisted of is the{" "}
+          <strong className="text-[var(--ink)]">method</strong>:
         </p>
         <dl className="space-y-2.5">
           {RESOLUTION_METHODS.map((m) => (
@@ -327,6 +342,34 @@ export default function MethodologyPage() {
             </div>
           ))}
         </dl>
+        <p>
+          A listing in the{" "}
+          <a
+            href="https://palomar-registry.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--accent-blue)] hover:underline"
+          >
+            Palomar registry
+          </a>{" "}
+          is recorded on an entry when it exists, and it is worth saying exactly
+          what it buys. Palomar requires the Lean FRO&apos;s comparator, which
+          forces the statement of a theorem to be separated from its proof and
+          to depend on Mathlib alone. That turns &ldquo;clone the repository and
+          work out which files you have to trust&rdquo; into something a
+          stranger can check in a minute, which is the practical obstacle that
+          has kept most formalized entries at Lean-checked rather than
+          Lean-verified.
+        </p>
+        <p>
+          What it does not do is decide whether the formal statement says what
+          the informal problem said. Palomar states plainly that a listing
+          &ldquo;does not constitute a certificate of novelty, nor a
+          certification of relevance&rdquo;, and separating a statement from a
+          proof does not make that statement faithful. So a listing is treated
+          here as a strong precondition rather than as the anchoring itself: it
+          makes the audit cheap, someone still has to do it.
+        </p>
         <p>
           Peer review is deliberately not a rung on this ladder. It answers a
           different question, where the claim sits in the scholarly pipeline,

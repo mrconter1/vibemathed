@@ -15,6 +15,7 @@ export type LinkKind =
   | "paper"
   | "lean-proof"
   | "lean-statement"
+  | "palomar"
   | "code"
   | "transcript"
   | "announcement"
@@ -59,6 +60,17 @@ export const LINK_KINDS: LinkKindSpec[] = [
     help: "The problem stated formally, without a proof",
     icon: "leanStatement",
     rank: 3,
+  },
+  {
+    // Ranked immediately after the Lean pair because it is what makes them
+    // auditable by somebody other than their author: a registry listing
+    // requires the statement to be separated from the proof and to depend on
+    // Mathlib alone, so a reader can see exactly what needs checking.
+    value: "palomar",
+    label: "Palomar listing",
+    help: "Indexed in the Palomar registry, with the statement separated from the proof",
+    icon: "leanStatement",
+    rank: 4,
   },
   {
     value: "code",

@@ -17,9 +17,14 @@ import type {
 /// least one, so this shows up a lot.
 export const DASH = "—";
 
+/// Colour is a supporting channel here, never the only one: every place this
+/// renders also prints the label, so violet sitting a little near blue for a
+/// deuteranope costs nothing. That is why a third result could take a colour
+/// at all, where a third pie slice could not.
 export const SOLVE_TYPE: Record<SolveType, { label: string; color: string }> = {
   proved: { label: "Proved", color: "var(--accent-blue)" },
   disproved: { label: "Disproved", color: "var(--accent-orange)" },
+  independent: { label: "Independent", color: "var(--accent-violet)" },
 };
 
 /// Resolution statuses. `pill` is what renders next to the result on cards -
