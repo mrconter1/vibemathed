@@ -12,20 +12,9 @@
 // Storage key matches the viewer snapshot's namespace so everything this site
 // keeps in localStorage sits under one prefix.
 
-import { useEffect } from "react";
-import { THEME_COLOR, THEME_KEY } from "@/lib/theme";
+import { THEME_KEY, paintChrome } from "@/lib/theme";
 import { HEADER_ICON, HEADER_ICON_HOVER } from "@/lib/header-button";
 import { useViewer } from "@/components/ViewerProvider";
-
-/// Keeps browser chrome (the mobile address bar) on the same colour as the
-/// page. The boot script does this too, but metadata order in <head> relative
-/// to that script is not guaranteed, so if the tag had not been emitted yet
-/// this is the pass that lands.
-function paintChrome(dark: boolean) {
-  document
-    .querySelector('meta[name="theme-color"]')
-    ?.setAttribute("content", dark ? THEME_COLOR.dark : THEME_COLOR.light);
-}
 
 /// `icon` is the header button; `row` is the line inside the account menu.
 ///
@@ -40,23 +29,28 @@ export function ThemeToggle({ variant = "icon" }: { variant?: "icon" | "row" }) 
   const { loaded, signedIn } = useViewer();
 
   // No state at all: the DOM attribute is the source of truth, CSS draws the
-  // icon from it, and `toggle` reads it directly. The only thing left for
-  // JavaScript on mount is the chrome colour, which is a DOM write rather than
-  // React state.
-  useEffect(() => {
-    paintChrome(document.documentElement.dataset.theme === "dark");
-  }, []);
+  // icon from it, and `toggle` reads it directly. The mount-time chrome pass
+  // lives in ThemeSync, which is always mounted - this component is not, since
+  // the row variant only exists while the account menu is open.
 
+  /// Clicking PINS a choice. Until the first click the page follows the OS
+  /// (see ThemeSync); after it, the stored value wins and the OS is ignored.
+  ///
+  /// There is deliberately no third "auto" position. A two-state control that
+  /// means what it says beats a three-state one nobody reads, and the cost is
+  /// only that returning to follow-the-system means clearing site data - which
+  /// is a thing almost nobody wants and nobody does by accident.
   function toggle() {
     const next = !(document.documentElement.dataset.theme === "dark");
-    document.documentElement.dataset.theme = next ? "dark" : "light";
+    const name = next ? "dark" : "light";
+    document.documentElement.dataset.theme = name;
     try {
-      localStorage.setItem(THEME_KEY, next ? "dark" : "light");
+      localStorage.setItem(THEME_KEY, name);
     } catch {
       // Private mode or a full quota: the theme still applies for this page,
       // it just will not be remembered. Not worth surfacing.
     }
-    paintChrome(next);
+    paintChrome(name);
   }
 
   // Both icons ship in the markup and CSS reveals the right one; the same

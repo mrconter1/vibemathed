@@ -71,9 +71,11 @@
  * are the same hues raised in lightness until they clear 4.5:1.
  *
  * Applied by [data-theme], set on <html> by the boot script in layout.tsx
- * before first paint. Deliberately NOT a prefers-color-scheme media query:
- * the choice is explicit and stored, so the system preference seeds it once
- * and never overrides a decision the reader has made.
+ * before first paint. Still NOT a prefers-color-scheme media query, even
+ * though the OS preference is now the default: the script resolves the OS
+ * setting and a pinned choice down to one attribute, so there is exactly one
+ * thing for the CSS to key off. A media query here would fight the attribute
+ * whenever a reader has pinned the opposite of their system.
  */
 :root[data-theme="dark"] {
   color-scheme: dark;

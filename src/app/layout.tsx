@@ -4,10 +4,11 @@ import { Analytics } from "@vercel/analytics/next";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 import { SITE_URL } from "@/lib/site";
-import { THEME_COLOR, THEME_KEY } from "@/lib/theme";
+import { SYSTEM_DARK, THEME_COLOR, THEME_KEY } from "@/lib/theme";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ScrollGuard } from "@/components/ScrollGuard";
+import { ThemeSync } from "@/components/ThemeSync";
 import { ViewerProvider } from "@/components/ViewerProvider";
 
 // What Google shows. Title: brand + the plain-language topic, under 60 chars
@@ -88,14 +89,20 @@ export const metadata: Metadata = {
   },
 };
 
-// One value, not a prefers-color-scheme pair. The theme is an explicit stored
-// choice now, so keying browser chrome off the OS setting contradicts it: pick
-// dark on a light-set phone and the page goes dark while the address bar stays
-// cream. This ships the light colour as the static default and the boot script
-// below rewrites it to match the actual theme, which is the only mechanism that
-// can follow a choice the HTML cannot know.
+// A prefers-color-scheme pair, because the OS setting is now the default and
+// these tags are the only thing that can be right before any script runs. A
+// single light value used to be correct, back when light was forced on a first
+// visit; it would now flash a cream address bar above a dark page on every
+// cold load for every dark-set phone.
+//
+// A pinned choice still wins: the boot script strips `media` from both tags
+// and writes the resolved colour, so this pair only decides the cold-load case
+// it is there for.
 export const viewport: Viewport = {
-  themeColor: THEME_COLOR.light,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: THEME_COLOR.light },
+    { media: "(prefers-color-scheme: dark)", color: THEME_COLOR.dark },
+  ],
 };
 
 export default function RootLayout({
@@ -151,24 +158,34 @@ export default function RootLayout({
             Runs synchronously in <head>, so the attribute is set before the
             body renders.
 
-            Light is the default, and the OS preference is deliberately not
-            consulted. The site is a cream paper surface and that is what it
-            is meant to look like; a dark-set laptop should not decide that a
-            first-time reader sees the other one. Dark is a choice, and once
-            made it is stored and always wins. Anything other than the two
-            known values falls back to light, so a corrupted or hand-edited
-            key cannot leave the page unstyled. */}
+            The OS preference is the default. This used to force light on a
+            first visit, on the reasoning that a cream paper surface is what
+            the site is meant to look like and a dark-set laptop should not
+            decide otherwise. That reasoning loses: someone who has set their
+            machine to dark has already made the choice once, for everything,
+            and a site that ignores it is not showing them its design, it is
+            showing them a bright rectangle at night.
+
+            So: a stored choice wins, and without one the page follows the
+            system. Anything other than the two known values reads as no
+            choice, so a corrupted or hand-edited key falls back to the OS
+            rather than leaving the page unstyled. ThemeSync keeps following
+            the OS after load, for as long as nothing is pinned. */}
         <script
           dangerouslySetInnerHTML={{
             __html:
-              `try{var t=localStorage.getItem(${JSON.stringify(THEME_KEY)});` +
-              `if(t!=="dark"&&t!=="light")t="light";` +
+              `try{var s=localStorage.getItem(${JSON.stringify(THEME_KEY)});` +
+              `var t=(s==="dark"||s==="light")?s:` +
+              `(matchMedia(${JSON.stringify(SYSTEM_DARK)}).matches?"dark":"light");` +
               `document.documentElement.dataset.theme=t;` +
-              // Chrome colour too, if the tag has been emitted by now. Metadata
-              // order relative to this script is not guaranteed, so ThemeToggle
-              // repeats this on mount and the two together cover both orders.
-              `var m=document.querySelector('meta[name="theme-color"]');` +
-              `if(m)m.setAttribute("content",t==="dark"?${JSON.stringify(THEME_COLOR.dark)}:${JSON.stringify(THEME_COLOR.light)});` +
+              // Chrome colour too, for whichever tags have been emitted by
+              // now. Metadata order relative to this script is not
+              // guaranteed, so ThemeSync repeats this on mount and the two
+              // together cover both orders. `media` comes off because from
+              // here on the resolved theme is the authority, not the OS.
+              `var m=document.querySelectorAll('meta[name="theme-color"]');` +
+              `for(var i=0;i<m.length;i++){m[i].removeAttribute("media");` +
+              `m[i].setAttribute("content",t==="dark"?${JSON.stringify(THEME_COLOR.dark)}:${JSON.stringify(THEME_COLOR.light)});}` +
               `}catch(e){}`,
           }}
         />
@@ -180,6 +197,8 @@ export default function RootLayout({
         <ViewerProvider>
           {/* Sets html[data-scrolling] while the page moves; see ScrollGuard. */}
           <ScrollGuard />
+          {/* Follows the OS theme after load, while nothing is pinned. */}
+          <ThemeSync />
           <SiteHeader />
           {/* A flex column so a page's <main> can flex-1 itself and center its
               content in the leftover viewport height (the About page does). */}
