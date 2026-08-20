@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 // A whole-of-something pie card: title, one-line caption, the pie, and a
 // legend with counts and percentages. Shared by the ratio charts on the stats
 // page so they stay visually identical (mark specs per the dataviz skill:
@@ -26,13 +28,35 @@ export function RatioPie({
   title,
   caption,
   rows,
+  note,
+  controls,
 }: {
   title: string;
   caption: string;
   rows: PieRow[];
+  /// Rendered under the caption: what a filter excluded, when one is active.
+  note?: ReactNode;
+  /// Rendered centered at the foot of the card, like the time charts' toggles.
+  controls?: ReactNode;
 }) {
   const total = rows.reduce((sum, r) => sum + r.n, 0);
-  if (total === 0) return null;
+
+  // An empty pie still renders its frame, because `controls` is how the reader
+  // got here and returning null would take the filter away with the chart -
+  // and the filter is persisted, so the card would not come back on reload.
+  if (total === 0) {
+    return (
+      <div className="flex h-full flex-col">
+        <h2 className="font-serif text-lg text-[var(--ink)]">{title}</h2>
+        <p className="mt-1 text-xs text-[var(--ink-muted)]">{caption}</p>
+        {note}
+        <div className="mt-4 flex flex-1 items-center justify-center">
+          <p className="text-sm text-[var(--ink-muted)]">Nothing in this slice.</p>
+        </div>
+        {controls && <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">{controls}</div>}
+      </div>
+    );
+  }
 
   const pct = (n: number) => Math.round((n / total) * 100);
   const cx = 90;
@@ -55,6 +79,7 @@ export function RatioPie({
     <div className="flex h-full flex-col">
       <h2 className="font-serif text-lg text-[var(--ink)]">{title}</h2>
       <p className="mt-1 text-xs text-[var(--ink-muted)]">{caption}</p>
+      {note}
 
       {/* flex-wrap: on very narrow screens the legend drops below the pie
           instead of squeezing out of the card. */}
@@ -65,15 +90,24 @@ export function RatioPie({
           role="img"
           aria-label={slices.map((s) => `${pct(s.n)} percent ${s.label.toLowerCase()}`).join(", ")}
         >
-          {slices.map((s) => (
-            <path
-              key={s.label}
-              d={slice(cx, cy, r, s.a0, s.a1)}
-              fill={s.color}
-              stroke="var(--paper)"
-              strokeWidth={2}
-            />
-          ))}
+          {/* A lone slice is the whole circle, and an SVG arc whose start and
+              end are the same point draws nothing at all - the card rendered
+              as an empty square with a hairline seam. Rare before the tier
+              filter existed, routine now that one can drive a category to
+              zero, so the full-circle case gets a real circle. */}
+          {slices.length === 1 ? (
+            <circle cx={cx} cy={cy} r={r} fill={slices[0].color} />
+          ) : (
+            slices.map((s) => (
+              <path
+                key={s.label}
+                d={slice(cx, cy, r, s.a0, s.a1)}
+                fill={s.color}
+                stroke="var(--paper)"
+                strokeWidth={2}
+              />
+            ))
+          )}
         </svg>
 
         <ul className="flex flex-col gap-2 text-sm">
@@ -93,6 +127,8 @@ export function RatioPie({
           ))}
         </ul>
       </div>
+
+      {controls && <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">{controls}</div>}
     </div>
   );
 }

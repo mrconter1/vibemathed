@@ -10,7 +10,7 @@ import {
   rangeCaption,
   timeWindow,
 } from "@/lib/time-buckets";
-import { TimeAxis, TimeRangeToggle } from "@/components/TimeControls";
+import { TierNote, TierToggle, TimeAxis, TimeRangeToggle } from "@/components/TimeControls";
 import { useChartSettings } from "@/lib/chart-settings";
 
 // Cumulative solves over time, one line per resolution method - the "is AI
@@ -47,7 +47,8 @@ export function MethodGrowthChart({
   const [hover, setHover] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
   // The time window and hidden series survive reloads (see useChartSettings).
-  const { range: timeRange, setRange, hidden, toggleSeries } = useChartSettings("method");
+  const { range: timeRange, setRange, tier, setTier, hidden, toggleSeries } =
+    useChartSettings("method");
   // Hovering a line (or its legend chip) highlights it and fades the rest.
   const [focused, setFocused] = useState<string | null>(null);
 
@@ -59,8 +60,20 @@ export function MethodGrowthChart({
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  const classified = problems.filter((p) => p.resolutionMethod != null);
-  const keys = classified.map((p) => bucketKey(p.solveDate, CHART_GRAN)).sort();
+  // Tier scope is applied before anything else, so every count, axis and
+  // legend total below describes exactly the selected slice. Choosing a tier
+  // necessarily drops entries with none recorded; the caption says how many.
+  const scoped =
+    tier === "all" ? problems : problems.filter((p) => p.aiContribution === tier);
+
+  const classified = scoped.filter((p) => p.resolutionMethod != null);
+  // Axis source falls back to the unfiltered set when a tier selects nothing.
+  // Without this the empty case hits the early return below and the whole card
+  // disappears - including the control that chose the tier, which is persisted,
+  // so the chart would still be gone on the next visit. Better to draw the
+  // frame with no line in it and leave the way out on screen.
+  const axisSource = classified.length > 0 ? classified : problems;
+  const keys = axisSource.map((p) => bucketKey(p.solveDate, CHART_GRAN)).sort();
   if (keys.length === 0) return null;
 
   const { buckets: range, from } = timeWindow(keys[0], today, timeRange);
@@ -114,6 +127,7 @@ export function MethodGrowthChart({
         argument, an explicit object, or a finite computation;{" "}
         {inWindow.length} classified {rangeCaption(timeRange)}.
       </p>
+      <TierNote tier={tier} shown={scoped.length} total={problems.length} />
 
       {/* Legend doubles as the current totals AND the visibility toggles. */}
       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
@@ -282,8 +296,9 @@ export function MethodGrowthChart({
 
       {/* Bucket picker, centered below the plot on every time chart;
           persisted per chart (see useChartSettings). */}
-      <div className="mt-2.5 flex justify-center">
+      <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
         <TimeRangeToggle value={timeRange} onChange={setRange} />
+        <TierToggle value={tier} onChange={setTier} />
       </div>
     </div>
   );

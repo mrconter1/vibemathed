@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ageAtSolve, type ChartProblem } from "@/lib/problems";
 import { useChartSettings } from "@/lib/chart-settings";
+import { TierToggle } from "@/components/TimeControls";
 import { TeX, deTeX } from "@/components/TeX";
 
 // This chart plots SIGNIFICANCE (the AI-estimated problem weight) against how
@@ -54,7 +55,7 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
   // Legend chips toggle point groups (proved / disproved / under review),
   // persisted across reloads. Axes stay fixed so toggling declutters without
   // reflowing the plot.
-  const { hidden, toggleSeries: toggleGroup } = useChartSettings("scatter");
+  const { tier, setTier, hidden, toggleSeries: toggleGroup } = useChartSettings("scatter");
 
   // Resolved entries plot as filled dots; CANDIDATE entries (a full solution
   // claimed and vetted, community review pending) plot as hollow rings so a
@@ -93,8 +94,16 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
     (t) => t in SOLVE_TYPE_COLOR,
   );
 
+  // The tier filter hides POINTS but never touches the axes above, which are
+  // still scaled from the full plottable set. Deliberate, and the same reason
+  // the legend toggles work this way: switching tiers keeps one frame, so the
+  // three tiers can actually be compared against each other rather than each
+  // being redrawn to fit itself.
   const shown = plottable.filter(
-    (d) => !hidden.has(d.problem.solveType) && !(d.claimed && hidden.has("claimed")),
+    (d) =>
+      !hidden.has(d.problem.solveType) &&
+      !(d.claimed && hidden.has("claimed")) &&
+      (tier === "all" || d.problem.aiContribution === tier),
   );
   const active = shown.find((d) => d.problem.slug === activeSlug);
 
@@ -386,6 +395,16 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
           {`${pending} of ${problems.length} entries lack a posed year or a score, so aren't plotted.`}
         </p>
       )}
+
+      {tier !== "all" && (
+        <p className="mt-1 text-xs text-[var(--accent-orange)]">
+          {`Showing ${shown.length} of ${plottable.length} plotted points; the axes still cover all of them.`}
+        </p>
+      )}
+
+      <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
+        <TierToggle value={tier} onChange={setTier} />
+      </div>
     </div>
   );
 }

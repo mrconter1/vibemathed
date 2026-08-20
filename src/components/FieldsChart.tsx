@@ -9,7 +9,7 @@ import {
   rangeCaption,
   timeWindow,
 } from "@/lib/time-buckets";
-import { TimeAxis, TimeRangeToggle } from "@/components/TimeControls";
+import { TierNote, TierToggle, TimeAxis, TimeRangeToggle } from "@/components/TimeControls";
 import { useChartSettings } from "@/lib/chart-settings";
 
 // Cumulative entries over time, one line per mathematical area. Was a
@@ -81,7 +81,8 @@ export function FieldsChart({
   const svgRef = useRef<SVGSVGElement>(null);
   const [hover, setHover] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
-  const { range: timeRange, setRange, hidden, toggleSeries } = useChartSettings("fields");
+  const { range: timeRange, setRange, tier, setTier, hidden, toggleSeries } =
+    useChartSettings("fields");
   const [focused, setFocused] = useState<string | null>(null);
 
   useEffect(() => {
@@ -92,11 +93,23 @@ export function FieldsChart({
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  const keys = problems.map((p) => bucketKey(p.solveDate, CHART_GRAN)).sort();
+  // Tier scope is applied before anything else, so every count, axis and
+  // legend total below describes exactly the selected slice. Choosing a tier
+  // necessarily drops entries with none recorded; the caption says how many.
+  const scoped =
+    tier === "all" ? problems : problems.filter((p) => p.aiContribution === tier);
+
+  // Axis source falls back to the unfiltered set when a tier selects nothing.
+  // Without this the empty case hits the early return below and the whole card
+  // disappears - including the control that chose the tier, which is persisted,
+  // so the chart would still be gone on the next visit. Better to draw the
+  // frame with no line in it and leave the way out on screen.
+  const axisSource = scoped.length > 0 ? scoped : problems;
+  const keys = axisSource.map((p) => bucketKey(p.solveDate, CHART_GRAN)).sort();
   if (keys.length === 0) return null;
 
   const { buckets: range, from } = timeWindow(keys[0], today, timeRange);
-  const inWindow = problems.filter((p) => bucketKey(p.solveDate, CHART_GRAN) >= from);
+  const inWindow = scoped.filter((p) => bucketKey(p.solveDate, CHART_GRAN) >= from);
 
   // Rank by WHOLE-RECORD total, not by the window's. This is the one chart
   // whose series are data-derived rather than a fixed list, so ranking on the
@@ -175,6 +188,7 @@ export function FieldsChart({
         the {NAMED} largest over the whole record, with the remaining{" "}
         {folded.length} folded into Other.
       </p>
+      <TierNote tier={tier} shown={scoped.length} total={problems.length} />
 
       {/* Legend doubles as the current totals AND the visibility toggles. */}
       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
@@ -336,8 +350,9 @@ export function FieldsChart({
         </div>
       </div>
 
-      <div className="mt-2.5 flex justify-center">
+      <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
         <TimeRangeToggle value={timeRange} onChange={setRange} />
+        <TierToggle value={tier} onChange={setTier} />
       </div>
     </div>
   );

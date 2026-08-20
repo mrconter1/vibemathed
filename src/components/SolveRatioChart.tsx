@@ -1,5 +1,9 @@
+"use client";
+
 import type { ChartProblem } from "@/lib/problems";
 import { RatioPie } from "@/components/RatioPie";
+import { TierNote, TierToggle } from "@/components/TimeControls";
+import { useChartSettings } from "@/lib/chart-settings";
 
 // Two slices, not three, now that `independent` exists as a third result.
 //
@@ -15,12 +19,22 @@ import { RatioPie } from "@/components/RatioPie";
 // the results that went one way or the other actually went, and the caption
 // carries the remainder rather than hiding it.
 export function SolveRatioChart({ problems }: { problems: ChartProblem[] }) {
-  const proved = problems.filter((p) => p.solveType === "proved").length;
-  const disproved = problems.filter((p) => p.solveType === "disproved").length;
-  const independent = problems.filter((p) => p.solveType === "independent").length;
+  const { tier, setTier } = useChartSettings("solve-ratio");
+
+  // Worth filtering here even though the pie has no time axis: whether
+  // AI-discovered results skew toward disproofs is a different question from
+  // how the record as a whole splits, and this is the chart that answers it.
+  const scoped =
+    tier === "all" ? problems : problems.filter((p) => p.aiContribution === tier);
+
+  const proved = scoped.filter((p) => p.solveType === "proved").length;
+  const disproved = scoped.filter((p) => p.solveType === "disproved").length;
+  const independent = scoped.filter((p) => p.solveType === "independent").length;
 
   return (
     <RatioPie
+      note={<TierNote tier={tier} shown={scoped.length} total={problems.length} />}
+      controls={<TierToggle value={tier} onChange={setTier} />}
       title="Proved vs. disproved"
       caption={
         independent === 0

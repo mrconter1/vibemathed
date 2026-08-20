@@ -9,7 +9,7 @@ import {
   rangeCaption,
   timeWindow,
 } from "@/lib/time-buckets";
-import { TimeAxis, TimeRangeToggle } from "@/components/TimeControls";
+import { TierNote, TierToggle, TimeAxis, TimeRangeToggle } from "@/components/TimeControls";
 import { useChartSettings } from "@/lib/chart-settings";
 
 // The whole record over time, in the same half-width column as every other
@@ -181,7 +181,7 @@ export function CumulativeChart({
 }) {
   const [isDesktop, setIsDesktop] = useState(false);
   // The window survives reloads (see useChartSettings).
-  const { range: timeRange, setRange } = useChartSettings("cumulative");
+  const { range: timeRange, setRange, tier, setTier } = useChartSettings("cumulative");
 
   useEffect(() => {
     const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
@@ -191,7 +191,19 @@ export function CumulativeChart({
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  const allKeys = problems.map((p) => bucketKey(p.solveDate, CHART_GRAN)).sort();
+  // Tier scope is applied before anything else, so every count, axis and
+  // legend total below describes exactly the selected slice. Choosing a tier
+  // necessarily drops entries with none recorded; the caption says how many.
+  const scoped =
+    tier === "all" ? problems : problems.filter((p) => p.aiContribution === tier);
+
+  // Axis source falls back to the unfiltered set when a tier selects nothing.
+  // Without this the empty case hits the early return below and the whole card
+  // disappears - including the control that chose the tier, which is persisted,
+  // so the chart would still be gone on the next visit. Better to draw the
+  // frame with no line in it and leave the way out on screen.
+  const axisSource = scoped.length > 0 ? scoped : problems;
+  const allKeys = axisSource.map((p) => bucketKey(p.solveDate, CHART_GRAN)).sort();
   if (allKeys.length === 0) return null;
 
   const { buckets: range, from } = timeWindow(allKeys[0], today, timeRange);
@@ -219,6 +231,7 @@ export function CumulativeChart({
         Cumulative count of all tracked entries, {total} {rangeCaption(timeRange)},
         candidates and partial results included.
       </p>
+      <TierNote tier={tier} shown={scoped.length} total={problems.length} />
 
       <div className="mt-3 flex flex-1 flex-col justify-center">
         <Plot data={data} />
@@ -226,8 +239,9 @@ export function CumulativeChart({
 
       {/* Window picker, centered below the plot on every time chart;
           persisted per chart (see useChartSettings). */}
-      <div className="mt-2.5 flex justify-center">
+      <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
         <TimeRangeToggle value={timeRange} onChange={setRange} />
+        <TierToggle value={tier} onChange={setTier} />
       </div>
     </div>
   );

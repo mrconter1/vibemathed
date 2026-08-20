@@ -1,6 +1,7 @@
 "use client";
 
 import { TIME_RANGES, bucketLabel, type Granularity, type TimeRange } from "@/lib/time-buckets";
+import type { TierFilter } from "@/lib/chart-settings";
 
 // The pieces every time chart shares: the tiny 1M / 3M / All segmented control
 // (rendered below each plot) and the TimeAxis tick row.
@@ -49,6 +50,81 @@ export function TimeAxis({
         </text>
       ))}
     </>
+  );
+}
+
+/// Short labels, because this control sits beside the range toggle under a
+/// half-width card and the written-out tiers ("AI co-developed") do not fit on
+/// one row. The full names stay one hover away in the title attribute.
+const TIER_OPTIONS: { value: TierFilter; label: string; title: string }[] = [
+  { value: "all", label: "Any", title: "Every entry, including those with no contribution tier recorded" },
+  { value: "ai-discovered", label: "Discovered", title: "AI-discovered" },
+  { value: "ai-co-developed", label: "Co-developed", title: "AI co-developed" },
+  { value: "ai-assisted", label: "Assisted", title: "AI-assisted" },
+];
+
+/// "[Any | Discovered | Co-developed | Assisted]" - which AI-contribution tier
+/// a chart counts. Selecting a tier necessarily drops entries with no tier
+/// recorded, so charts using this say how many that was.
+export function TierToggle({
+  value,
+  onChange,
+}: {
+  value: TierFilter;
+  onChange: (t: TierFilter) => void;
+}) {
+  return (
+    <div
+      role="group"
+      aria-label="AI contribution tier"
+      className="inline-flex overflow-hidden rounded border border-[var(--hairline)] bg-[var(--paper)]"
+    >
+      {TIER_OPTIONS.map((o, i) => (
+        <button
+          key={o.value}
+          type="button"
+          onClick={() => onChange(o.value)}
+          aria-pressed={value === o.value}
+          title={o.title}
+          className={`px-2.5 py-1 text-xs transition-colors ${
+            i > 0 ? "border-l border-[var(--hairline)]" : ""
+          } ${
+            value === o.value
+              ? "bg-[color-mix(in_srgb,var(--accent-blue)_12%,transparent)] font-medium text-[var(--accent-blue)]"
+              : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
+          }`}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/// Says what a tier selection excluded, and only when one is active.
+///
+/// Without this a filtered chart is indistinguishable from a shrinking record:
+/// the totals drop, the lines flatten, and nothing on screen explains why. The
+/// unclassified entries matter most - a tier filter silently discards every
+/// entry whose tier was never recorded, which is not a small share.
+export function TierNote({
+  tier,
+  shown,
+  total,
+}: {
+  tier: TierFilter;
+  /// Entries the chart is counting after the tier filter.
+  shown: number;
+  /// Entries it would count with the filter off.
+  total: number;
+}) {
+  if (tier === "all") return null;
+  const label = TIER_OPTIONS.find((o) => o.value === tier)?.title ?? tier;
+  return (
+    <p className="mt-1 text-xs text-[var(--accent-orange)]">
+      {label} only: {shown} of {total} entries. The rest sit in another tier or
+      have none recorded.
+    </p>
   );
 }
 

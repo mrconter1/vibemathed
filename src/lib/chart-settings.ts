@@ -6,12 +6,21 @@
 
 import { useEffect, useState } from "react";
 import { TIME_RANGES, type TimeRange } from "@/lib/time-buckets";
+import { AI_CONTRIBUTIONS, type AiContribution } from "@/lib/problems";
 
 const RANGES = TIME_RANGES.map((r) => r.value);
+
+/// "all" keeps unclassified entries in; any tier selects only that tier, which
+/// necessarily drops entries with no tier recorded.
+export type TierFilter = AiContribution | "all";
+
+const TIERS: TierFilter[] = ["all", ...AI_CONTRIBUTIONS];
 
 export function useChartSettings(id: string): {
   range: TimeRange;
   setRange: (r: TimeRange) => void;
+  tier: TierFilter;
+  setTier: (t: TierFilter) => void;
   hidden: ReadonlySet<string>;
   toggleSeries: (key: string) => void;
 } {
@@ -19,6 +28,7 @@ export function useChartSettings(id: string): {
   // All time by default: the record's whole shape is the honest first view,
   // and a returning reader's narrower window is restored below.
   const [range, setRange] = useState<TimeRange>("all");
+  const [tier, setTier] = useState<TierFilter>("all");
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
 
   /* eslint-disable react-hooks/set-state-in-effect -- syncing state in from
@@ -29,6 +39,7 @@ export function useChartSettings(id: string): {
     try {
       const s = JSON.parse(localStorage.getItem(key) ?? "null") as {
         range?: unknown;
+        tier?: unknown;
         hidden?: unknown;
       } | null;
       if (s) {
@@ -36,6 +47,7 @@ export function useChartSettings(id: string): {
         // range, so it fails this check and the chart opens on All - no
         // migration needed, and no crash from a value that means nothing now.
         if (RANGES.includes(s.range as TimeRange)) setRange(s.range as TimeRange);
+        if (TIERS.includes(s.tier as TierFilter)) setTier(s.tier as TierFilter);
         if (Array.isArray(s.hidden)) {
           setHidden(new Set(s.hidden.filter((x): x is string => typeof x === "string")));
         }
@@ -50,11 +62,11 @@ export function useChartSettings(id: string): {
   useEffect(() => {
     if (!restored) return;
     try {
-      localStorage.setItem(key, JSON.stringify({ range, hidden: [...hidden] }));
+      localStorage.setItem(key, JSON.stringify({ range, tier, hidden: [...hidden] }));
     } catch {
       // Storage full or blocked - the chart still works, it just won't persist.
     }
-  }, [restored, key, range, hidden]);
+  }, [restored, key, range, tier, hidden]);
 
   const toggleSeries = (k: string) =>
     setHidden((prev) => {
@@ -64,5 +76,5 @@ export function useChartSettings(id: string): {
       return next;
     });
 
-  return { range, setRange, hidden, toggleSeries };
+  return { range, setRange, tier, setTier, hidden, toggleSeries };
 }

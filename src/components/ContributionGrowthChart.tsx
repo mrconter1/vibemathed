@@ -284,7 +284,7 @@ export function ContributionGrowthChart({
 
       {/* Bucket picker, centered below the plot on every time chart;
           persisted per chart (see useChartSettings). */}
-      <div className="mt-2.5 flex justify-center">
+      <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
         <TimeRangeToggle value={timeRange} onChange={setRange} />
       </div>
     </div>

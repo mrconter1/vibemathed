@@ -10,7 +10,7 @@ import {
   rangeCaption,
   timeWindow,
 } from "@/lib/time-buckets";
-import { TimeAxis, TimeRangeToggle } from "@/components/TimeControls";
+import { TierNote, TierToggle, TimeAxis, TimeRangeToggle } from "@/components/TimeControls";
 import { useChartSettings } from "@/lib/chart-settings";
 
 // Cumulative solves per vendor over time - the volume race, not just its
@@ -64,7 +64,8 @@ export function ModelsChart({
   const [hover, setHover] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
   // The time window and hidden series survive reloads (see useChartSettings).
-  const { range: timeRange, setRange, hidden, toggleSeries } = useChartSettings("systems");
+  const { range: timeRange, setRange, tier, setTier, hidden, toggleSeries } =
+    useChartSettings("systems");
   // Hovering a line (or its legend chip) highlights it and fades the rest.
   const [focused, setFocused] = useState<string | null>(null);
   // Which composite row has its contents open, if any. Deliberately one at a
@@ -80,14 +81,26 @@ export function ModelsChart({
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  const keys = problems.map((p) => bucketKey(p.solveDate, CHART_GRAN)).sort();
+  // Tier scope is applied before anything else, so every count, axis and
+  // legend total below describes exactly the selected slice. Choosing a tier
+  // necessarily drops entries with none recorded; the caption says how many.
+  const scoped =
+    tier === "all" ? problems : problems.filter((p) => p.aiContribution === tier);
+
+  // Axis source falls back to the unfiltered set when a tier selects nothing.
+  // Without this the empty case hits the early return below and the whole card
+  // disappears - including the control that chose the tier, which is persisted,
+  // so the chart would still be gone on the next visit. Better to draw the
+  // frame with no line in it and leave the way out on screen.
+  const axisSource = scoped.length > 0 ? scoped : problems;
+  const keys = axisSource.map((p) => bucketKey(p.solveDate, CHART_GRAN)).sort();
   if (keys.length === 0) return null;
 
   const { buckets: range, from } = timeWindow(keys[0], today, timeRange);
   // Re-baselined to the window's start. Vendor identity and colour come from
   // the fixed MODEL_FAMILIES list, so narrowing the range never repaints a
   // vendor - it only drops the ones with nothing in the window.
-  const inWindow = problems.filter((p) => bucketKey(p.solveDate, CHART_GRAN) >= from);
+  const inWindow = scoped.filter((p) => bucketKey(p.solveDate, CHART_GRAN) >= from);
 
   const series = MODEL_FAMILIES.map((f) => {
     // Model AND maker, because the model string alone is often a codename.
@@ -157,6 +170,7 @@ export function ModelsChart({
         toward every vendor named on it, so the lines sum to more than the
         number of problems.
       </p>
+      <TierNote tier={tier} shown={scoped.length} total={problems.length} />
 
       {/* Legend doubles as the standings AND the visibility toggles. */}
       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
@@ -378,8 +392,9 @@ export function ModelsChart({
 
       {/* Bucket picker, centered below the plot on every time chart;
           persisted per chart (see useChartSettings). */}
-      <div className="mt-2.5 flex justify-center">
+      <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
         <TimeRangeToggle value={timeRange} onChange={setRange} />
+        <TierToggle value={tier} onChange={setTier} />
       </div>
     </div>
   );
