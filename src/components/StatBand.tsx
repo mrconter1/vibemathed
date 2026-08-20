@@ -10,6 +10,7 @@
 // here, but the highlight cards directly below now say the same thing with the
 // entry names attached, so the tiles would just be repeating them.
 
+import Link from "next/link";
 import { ageAtSolve, type ProblemWithVotes } from "@/lib/problems";
 import { Icon, type IconName } from "@/components/Icons";
 
@@ -18,6 +19,10 @@ interface Tile {
   label: string;
   value: string;
   sub?: string;
+  /// When the tile names something you can go and look at, the label links to
+  /// it. On the label rather than the whole tile because an <a> wrapping
+  /// <dt>/<dd> is not valid inside a <dl>.
+  href?: string;
 }
 
 function computeTiles(problems: ProblemWithVotes[], users: number): Tile[] {
@@ -57,6 +62,11 @@ function computeTiles(problems: ProblemWithVotes[], users: number): Tile[] {
       label: "Community members",
       value: String(users),
       sub: `${votes} votes · ${comments} comments`,
+      // The count is every registered account; the directory lists the ones
+      // who opted to appear and says how many more hold an account without
+      // having published yet. So the two numbers differ, and the destination
+      // is the thing that explains why.
+      href: "/users",
     },
   ];
 }
@@ -79,7 +89,16 @@ export function StatBand({
         >
           <dt className="flex items-center gap-1.5 text-xs text-[var(--ink-muted)]">
             <Icon name={t.icon} />
-            {t.label}
+            {t.href ? (
+              <Link
+                href={t.href}
+                className="transition-colors hover:text-[var(--accent-blue)] hover:underline"
+              >
+                {t.label}
+              </Link>
+            ) : (
+              t.label
+            )}
           </dt>
           {/* Proportional figures on purpose - tabular-nums looks loose at
               display sizes; reserve it for columns that must align. The tile
