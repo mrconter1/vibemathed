@@ -6,11 +6,12 @@ import type { ChartProblem } from "@/lib/problems";
 import {
   CHART_GRAN,
   bucketKey,
+  lastBucketPartial,
   bucketTooltipLabel,
   rangeCaption,
   timeWindow,
 } from "@/lib/time-buckets";
-import { TierNote, TierToggle, TimeAxis, TimeRangeToggle } from "@/components/TimeControls";
+import { PartialWeekNote, TierNote, TierToggle, TimeAxis, TimeRangeToggle } from "@/components/TimeControls";
 import { useChartSettings } from "@/lib/chart-settings";
 
 // Cumulative solves per vendor over time - the volume race, not just its
@@ -392,6 +393,8 @@ export function ModelsChart({
 
       {/* Bucket picker, centered below the plot on every time chart;
           persisted per chart (see useChartSettings). */}
+      <PartialWeekNote show={lastBucketPartial(today)} />
+
       <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
         <TimeRangeToggle value={timeRange} onChange={setRange} />
         <TierToggle value={tier} onChange={setTier} />

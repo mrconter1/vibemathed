@@ -130,6 +130,18 @@ export function rangeCaption(range: TimeRange): string {
   return TIME_RANGES.find((r) => r.value === range)?.caption ?? "to date";
 }
 
+/// Whether the window's last bucket is still filling.
+///
+/// Every window ends at the week containing today, and that week is complete
+/// only on its final day. The rest of the time the last point counts three or
+/// four days against seven, so every line ends flat and reads as "activity
+/// stopped" rather than "the week is not over". True six days in seven.
+export function lastBucketPartial(today: string): boolean {
+  const { y, m, d } = parts(today);
+  // ISO weeks run Monday to Sunday, so Sunday (0) is the only complete day.
+  return new Date(Date.UTC(y, m - 1, d)).getUTCDay() !== 0;
+}
+
 /// The fixed resolution every time chart now draws at.
 export const CHART_GRAN: Granularity = "week";
 

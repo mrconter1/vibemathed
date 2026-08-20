@@ -6,11 +6,12 @@ import { AI_CONTRIBUTION } from "@/lib/display";
 import {
   CHART_GRAN,
   bucketKey,
+  lastBucketPartial,
   bucketTooltipLabel,
   rangeCaption,
   timeWindow,
 } from "@/lib/time-buckets";
-import { TimeAxis, TimeRangeToggle } from "@/components/TimeControls";
+import { PartialWeekNote, TimeAxis, TimeRangeToggle } from "@/components/TimeControls";
 import { useChartSettings } from "@/lib/chart-settings";
 
 // Cumulative solves over time, one line per AI-contribution tier. Same frame,
@@ -284,6 +285,8 @@ export function ContributionGrowthChart({
 
       {/* Bucket picker, centered below the plot on every time chart;
           persisted per chart (see useChartSettings). */}
+      <PartialWeekNote show={lastBucketPartial(today)} />
+
       <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
         <TimeRangeToggle value={timeRange} onChange={setRange} />
       </div>

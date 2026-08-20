@@ -128,6 +128,26 @@ export function TierNote({
   );
 }
 
+/// Says that the rightmost point is a week in progress.
+///
+/// Every window ends at the current week, so unless it is Sunday that point
+/// counts a few days against seven and every line ends flat. On the All view
+/// that is one bucket in fifty-seven and barely visible; at 1M it is one in
+/// five and looks exactly like activity falling off a cliff. The data is
+/// right, the reading is wrong, and one sentence fixes the reading.
+///
+/// A sentence rather than a dashed final segment or a shaded band: those need
+/// a legend to mean anything, and this is a single recurring caveat, not a
+/// second encoding the chart has to teach.
+export function PartialWeekNote({ show }: { show: boolean }) {
+  if (!show) return null;
+  return (
+    <p className="mt-2 text-center text-[11px] text-[var(--ink-muted)]">
+      The last point is the current week, still filling.
+    </p>
+  );
+}
+
 /// "[1M | 3M | All]", centered below each time chart's plot - the same
 /// segmented-control styling as the list's period picker, one size down.
 export function TimeRangeToggle({
