@@ -3,8 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { AI_CONTRIBUTIONS, type AiContribution, type ChartProblem } from "@/lib/problems";
 import { AI_CONTRIBUTION } from "@/lib/display";
-import { bucketKey, bucketRange, bucketTooltipLabel } from "@/lib/time-buckets";
-import { GranularityToggle, TimeAxis } from "@/components/GranularityToggle";
+import {
+  CHART_GRAN,
+  bucketKey,
+  bucketTooltipLabel,
+  rangeCaption,
+  timeWindow,
+} from "@/lib/time-buckets";
+import { TimeAxis, TimeRangeToggle } from "@/components/TimeControls";
 import { useChartSettings } from "@/lib/chart-settings";
 
 // Cumulative solves over time, one line per AI-contribution tier. Same frame,
@@ -30,12 +36,20 @@ function niceMax(v: number, step: number) {
   return Math.max(step, Math.ceil(v / step) * step);
 }
 
-export function ContributionGrowthChart({ problems }: { problems: ChartProblem[] }) {
+export function ContributionGrowthChart({
+  problems,
+  today,
+}: {
+  problems: ChartProblem[];
+  /// Today's date from the server, so the window's last bucket is the same
+  /// on both sides of hydration.
+  today: string;
+}) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hover, setHover] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
-  // Granularity and hidden series survive reloads (see useChartSettings).
-  const { gran, setGran, hidden, toggleSeries } = useChartSettings("contribution");
+  // The time window and hidden series survive reloads (see useChartSettings).
+  const { range: timeRange, setRange, hidden, toggleSeries } = useChartSettings("contribution");
   // Hovering a line (or its legend chip) highlights it and fades the rest.
   const [focused, setFocused] = useState<string | null>(null);
 
@@ -49,15 +63,20 @@ export function ContributionGrowthChart({ problems }: { problems: ChartProblem[]
 
   // Unclassified entries (null tier) have nothing to say here.
   const classified = problems.filter((p) => p.aiContribution != null);
-  const keys = classified.map((p) => bucketKey(p.solveDate, gran)).sort();
+  const keys = classified.map((p) => bucketKey(p.solveDate, CHART_GRAN)).sort();
   if (keys.length === 0) return null;
 
-  const range = bucketRange(keys[0], keys[keys.length - 1], gran);
+  const { buckets: range, from } = timeWindow(keys[0], today, timeRange);
+  // Every line re-baselines to the window's start, so a narrow view shows what
+  // was added in it rather than a flat plateau of the running total. Series
+  // identity comes from the fixed AI_CONTRIBUTIONS list, so no colour moves
+  // when the window changes.
+  const inWindow = classified.filter((p) => bucketKey(p.solveDate, CHART_GRAN) >= from);
 
   const series = AI_CONTRIBUTIONS.map((tier) => {
-    const tierKeys = classified
+    const tierKeys = inWindow
       .filter((p) => p.aiContribution === tier)
-      .map((p) => bucketKey(p.solveDate, gran));
+      .map((p) => bucketKey(p.solveDate, CHART_GRAN));
     return {
       tier,
       label: AI_CONTRIBUTION[tier].label,
@@ -68,7 +87,11 @@ export function ContributionGrowthChart({ problems }: { problems: ChartProblem[]
   }).filter((s) => s.total > 0);
 
   const visible = series.filter((s) => !hidden.has(s.tier));
-  const yMax = niceMax(Math.max(1, ...visible.map((s) => s.total)), 20);
+  // Step scales to the window. A fixed step of 20 was right for the whole
+  // record but rounded a narrow window's totals up to a single gridline,
+  // flattening every line onto the axis just as the reader zoomed in.
+  const peak = Math.max(1, ...visible.map((s) => s.total));
+  const yMax = niceMax(peak, peak > 60 ? 20 : peak > 20 ? 10 : 5);
 
   const x = (i: number) =>
     MARGIN.left + (range.length === 1 ? PLOT_W / 2 : (i / (range.length - 1)) * PLOT_W);
@@ -96,7 +119,7 @@ export function ContributionGrowthChart({ problems }: { problems: ChartProblem[]
       </h2>
       <p className="mt-1 text-xs text-[var(--ink-muted)]">
         Cumulative resolved entries by how much the model contributed;{" "}
-        {classified.length} classified to date.
+        {inWindow.length} classified {rangeCaption(timeRange)}.
       </p>
 
       {/* Legend doubles as the current totals AND the visibility toggles. */}
@@ -175,7 +198,7 @@ export function ContributionGrowthChart({ problems }: { problems: ChartProblem[]
               />
             ))}
 
-            <TimeAxis range={range} gran={gran} x={x} y={VIEW_H - MARGIN.bottom + 18} />
+            <TimeAxis range={range} gran={CHART_GRAN} x={x} y={VIEW_H - MARGIN.bottom + 18} />
 
             {active !== null && (
               <g pointerEvents="none">
@@ -243,7 +266,7 @@ export function ContributionGrowthChart({ problems }: { problems: ChartProblem[]
                 transform: "translate(-50%, 0)",
               }}
             >
-              <span className="font-serif text-[var(--ink)]">{bucketTooltipLabel(range[active], gran)}</span>
+              <span className="font-serif text-[var(--ink)]">{bucketTooltipLabel(range[active], CHART_GRAN)}</span>
               {visible.map((s) => (
                 <span key={s.tier} className="ml-2 inline-flex items-center gap-1 font-mono tabular-nums text-[var(--ink-secondary)]">
                   <span
@@ -262,7 +285,7 @@ export function ContributionGrowthChart({ problems }: { problems: ChartProblem[]
       {/* Bucket picker, centered below the plot on every time chart;
           persisted per chart (see useChartSettings). */}
       <div className="mt-2.5 flex justify-center">
-        <GranularityToggle value={gran} onChange={setGran} />
+        <TimeRangeToggle value={timeRange} onChange={setRange} />
       </div>
     </div>
   );

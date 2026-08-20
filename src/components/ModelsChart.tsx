@@ -3,8 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { MODEL_FAMILIES } from "@/lib/display";
 import type { ChartProblem } from "@/lib/problems";
-import { bucketKey, bucketRange, bucketTooltipLabel } from "@/lib/time-buckets";
-import { GranularityToggle, TimeAxis } from "@/components/GranularityToggle";
+import {
+  CHART_GRAN,
+  bucketKey,
+  bucketTooltipLabel,
+  rangeCaption,
+  timeWindow,
+} from "@/lib/time-buckets";
+import { TimeAxis, TimeRangeToggle } from "@/components/TimeControls";
 import { useChartSettings } from "@/lib/chart-settings";
 
 // Cumulative solves per vendor over time - the volume race, not just its
@@ -45,12 +51,20 @@ function niceMax(v: number, step: number) {
   return Math.max(step, Math.ceil(v / step) * step);
 }
 
-export function ModelsChart({ problems }: { problems: ChartProblem[] }) {
+export function ModelsChart({
+  problems,
+  today,
+}: {
+  problems: ChartProblem[];
+  /// Today's date from the server, so the window's last bucket is the same
+  /// on both sides of hydration.
+  today: string;
+}) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hover, setHover] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
-  // Granularity and hidden series survive reloads (see useChartSettings).
-  const { gran, setGran, hidden, toggleSeries } = useChartSettings("systems");
+  // The time window and hidden series survive reloads (see useChartSettings).
+  const { range: timeRange, setRange, hidden, toggleSeries } = useChartSettings("systems");
   // Hovering a line (or its legend chip) highlights it and fades the rest.
   const [focused, setFocused] = useState<string | null>(null);
   // Which composite row has its contents open, if any. Deliberately one at a
@@ -66,18 +80,22 @@ export function ModelsChart({ problems }: { problems: ChartProblem[] }) {
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  const keys = problems.map((p) => bucketKey(p.solveDate, gran)).sort();
+  const keys = problems.map((p) => bucketKey(p.solveDate, CHART_GRAN)).sort();
   if (keys.length === 0) return null;
 
-  const range = bucketRange(keys[0], keys[keys.length - 1], gran);
+  const { buckets: range, from } = timeWindow(keys[0], today, timeRange);
+  // Re-baselined to the window's start. Vendor identity and colour come from
+  // the fixed MODEL_FAMILIES list, so narrowing the range never repaints a
+  // vendor - it only drops the ones with nothing in the window.
+  const inWindow = problems.filter((p) => bucketKey(p.solveDate, CHART_GRAN) >= from);
 
   const series = MODEL_FAMILIES.map((f) => {
     // Model AND maker, because the model string alone is often a codename.
     // Testing only `model` lost every "Astra (internal preview)" entry from
     // OpenAI's line, eleven of them, including two of the highest-scoring
     // entries in the record.
-    const mine = problems.filter((p) => f.test.test(`${p.model} ${p.modelMaker ?? ""}`));
-    const famKeys = mine.map((p) => bucketKey(p.solveDate, gran));
+    const mine = inWindow.filter((p) => f.test.test(`${p.model} ${p.modelMaker ?? ""}`));
+    const famKeys = mine.map((p) => bucketKey(p.solveDate, CHART_GRAN));
     // What a row is actually made of. Every row here is a bag: "Agent systems
     // / other" is two dozen harnesses, but so is OpenAI, whose 349 entries
     // name 174 distinct model strings. Splitting any of it into its own line
@@ -104,7 +122,11 @@ export function ModelsChart({ problems }: { problems: ChartProblem[] }) {
   // Resolved after `series`, so a row that stops being composite (or vanishes)
   // cannot leave a stale panel open.
   const expandedParts = series.find((s) => s.key === expanded)?.parts ?? null;
-  const yMax = niceMax(Math.max(1, ...visible.map((s) => s.total)), 20);
+  // Step scales to the window. A fixed step of 20 was right for the whole
+  // record but rounded a narrow window's totals up to a single gridline,
+  // flattening every line onto the axis just as the reader zoomed in.
+  const peak = Math.max(1, ...visible.map((s) => s.total));
+  const yMax = niceMax(peak, peak > 60 ? 20 : peak > 20 ? 10 : 5);
 
   const x = (i: number) =>
     MARGIN.left + (range.length === 1 ? PLOT_W / 2 : (i / (range.length - 1)) * PLOT_W);
@@ -131,8 +153,9 @@ export function ModelsChart({ problems }: { problems: ChartProblem[] }) {
         Problems solved per vendor, over time
       </h2>
       <p className="mt-1 text-xs text-[var(--ink-muted)]">
-        Cumulative count per vendor; an entry counts toward every vendor named
-        on it, so the lines sum to more than the number of problems.
+        Cumulative count per vendor {rangeCaption(timeRange)}; an entry counts
+        toward every vendor named on it, so the lines sum to more than the
+        number of problems.
       </p>
 
       {/* Legend doubles as the standings AND the visibility toggles. */}
@@ -266,7 +289,7 @@ export function ModelsChart({ problems }: { problems: ChartProblem[] }) {
               />
             ))}
 
-            <TimeAxis range={range} gran={gran} x={x} y={VIEW_H - MARGIN.bottom + 18} />
+            <TimeAxis range={range} gran={CHART_GRAN} x={x} y={VIEW_H - MARGIN.bottom + 18} />
 
             {active !== null && (
               <g pointerEvents="none">
@@ -334,7 +357,7 @@ export function ModelsChart({ problems }: { problems: ChartProblem[] }) {
                 transform: "translate(-50%, 0)",
               }}
             >
-              <span className="font-serif text-[var(--ink)]">{bucketTooltipLabel(range[active], gran)}</span>
+              <span className="font-serif text-[var(--ink)]">{bucketTooltipLabel(range[active], CHART_GRAN)}</span>
               {visible.map((s) => (
                 <span
                   key={s.key}
@@ -356,7 +379,7 @@ export function ModelsChart({ problems }: { problems: ChartProblem[] }) {
       {/* Bucket picker, centered below the plot on every time chart;
           persisted per chart (see useChartSettings). */}
       <div className="mt-2.5 flex justify-center">
-        <GranularityToggle value={gran} onChange={setGran} />
+        <TimeRangeToggle value={timeRange} onChange={setRange} />
       </div>
     </div>
   );

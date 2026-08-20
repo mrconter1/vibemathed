@@ -1,22 +1,24 @@
 "use client";
 
-// Per-chart persisted settings for the stats page: the time granularity and
-// the hidden legend series survive reloads, one localStorage key per chart.
+// Per-chart persisted settings for the stats page: the time window and the
+// hidden legend series survive reloads, one localStorage key per chart.
 // Values are validated on restore; stale hidden keys simply match nothing.
 
 import { useEffect, useState } from "react";
-import type { Granularity } from "@/lib/time-buckets";
+import { TIME_RANGES, type TimeRange } from "@/lib/time-buckets";
 
-const GRANS: Granularity[] = ["day", "week", "month"];
+const RANGES = TIME_RANGES.map((r) => r.value);
 
 export function useChartSettings(id: string): {
-  gran: Granularity;
-  setGran: (g: Granularity) => void;
+  range: TimeRange;
+  setRange: (r: TimeRange) => void;
   hidden: ReadonlySet<string>;
   toggleSeries: (key: string) => void;
 } {
   const key = `vibemathed:chart:${id}`;
-  const [gran, setGran] = useState<Granularity>("week");
+  // All time by default: the record's whole shape is the honest first view,
+  // and a returning reader's narrower window is restored below.
+  const [range, setRange] = useState<TimeRange>("all");
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
 
   /* eslint-disable react-hooks/set-state-in-effect -- syncing state in from
@@ -26,11 +28,14 @@ export function useChartSettings(id: string): {
   useEffect(() => {
     try {
       const s = JSON.parse(localStorage.getItem(key) ?? "null") as {
-        gran?: unknown;
+        range?: unknown;
         hidden?: unknown;
       } | null;
       if (s) {
-        if (GRANS.includes(s.gran as Granularity)) setGran(s.gran as Granularity);
+        // A stored `gran` from the old Day/Week/Month control is simply not a
+        // range, so it fails this check and the chart opens on All - no
+        // migration needed, and no crash from a value that means nothing now.
+        if (RANGES.includes(s.range as TimeRange)) setRange(s.range as TimeRange);
         if (Array.isArray(s.hidden)) {
           setHidden(new Set(s.hidden.filter((x): x is string => typeof x === "string")));
         }
@@ -45,11 +50,11 @@ export function useChartSettings(id: string): {
   useEffect(() => {
     if (!restored) return;
     try {
-      localStorage.setItem(key, JSON.stringify({ gran, hidden: [...hidden] }));
+      localStorage.setItem(key, JSON.stringify({ range, hidden: [...hidden] }));
     } catch {
       // Storage full or blocked - the chart still works, it just won't persist.
     }
-  }, [restored, key, gran, hidden]);
+  }, [restored, key, range, hidden]);
 
   const toggleSeries = (k: string) =>
     setHidden((prev) => {
@@ -59,5 +64,5 @@ export function useChartSettings(id: string): {
       return next;
     });
 
-  return { gran, setGran, hidden, toggleSeries };
+  return { range, setRange, hidden, toggleSeries };
 }

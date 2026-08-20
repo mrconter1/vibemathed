@@ -3,12 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import type { ChartProblem } from "@/lib/problems";
 import {
+  CHART_GRAN,
   bucketKey,
-  bucketRange,
   bucketTooltipLabel,
-  type Granularity,
+  rangeCaption,
+  timeWindow,
 } from "@/lib/time-buckets";
-import { GranularityToggle, TimeAxis } from "@/components/GranularityToggle";
+import { TimeAxis, TimeRangeToggle } from "@/components/TimeControls";
 import { useChartSettings } from "@/lib/chart-settings";
 
 // The whole record over time, in the same half-width column as every other
@@ -32,7 +33,6 @@ interface PlotData {
   range: string[];
   cumulative: number[];
   yMax: number;
-  gran: Granularity;
   // Hover is only wired on devices with a real (mouse) pointer.
   interactive: boolean;
 }
@@ -40,7 +40,7 @@ interface PlotData {
 function Plot({ data }: { data: PlotData }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hover, setHover] = useState<number | null>(null);
-  const { range, cumulative, yMax, gran, interactive } = data;
+  const { range, cumulative, yMax, interactive } = data;
 
   const plotW = VIEW_W - MARGIN.left - MARGIN.right;
   const x = (i: number) =>
@@ -63,8 +63,8 @@ function Plot({ data }: { data: PlotData }) {
     setHover(Math.min(Math.max(i, 0), range.length - 1));
   }
 
-  // Clamped against the CURRENT range: switching granularity (day -> month)
-  // shrinks range from ~340 buckets to ~13 without resetting a stale hover
+  // Clamped against the CURRENT range: narrowing the window (All -> 1M)
+  // shrinks range from ~57 buckets to ~5 without resetting a stale hover
   // index, and range[active]/cumulative[active] going undefined fed straight
   // into bucketTooltipLabel's key.split("-"), crashing the render.
   const active = interactive && hover !== null && hover < range.length ? hover : null;
@@ -111,7 +111,7 @@ function Plot({ data }: { data: PlotData }) {
           strokeLinecap="round"
         />
 
-        <TimeAxis range={range} gran={gran} x={x} y={VIEW_H - MARGIN.bottom + 18} />
+        <TimeAxis range={range} gran={CHART_GRAN} x={x} y={VIEW_H - MARGIN.bottom + 18} />
 
         {active !== null && (
           <g pointerEvents="none">
@@ -158,7 +158,7 @@ function Plot({ data }: { data: PlotData }) {
           }}
         >
           <span className="font-serif text-[var(--ink)]">
-            {bucketTooltipLabel(range[active], gran)}
+            {bucketTooltipLabel(range[active], CHART_GRAN)}
           </span>
           <span className="ml-2 font-mono tabular-nums text-[var(--ink-secondary)]">
             {cumulative[active]} tracked
@@ -169,10 +169,19 @@ function Plot({ data }: { data: PlotData }) {
   );
 }
 
-export function CumulativeChart({ problems }: { problems: ChartProblem[] }) {
+export function CumulativeChart({
+  problems,
+  today,
+}: {
+  problems: ChartProblem[];
+  /// Today's date from the server, so the window's end is the same on both
+  /// sides of hydration. Reading the clock during a client render would put a
+  /// different last bucket in the client HTML than the server produced.
+  today: string;
+}) {
   const [isDesktop, setIsDesktop] = useState(false);
-  // Granularity survives reloads (see useChartSettings).
-  const { gran, setGran } = useChartSettings("cumulative");
+  // The window survives reloads (see useChartSettings).
+  const { range: timeRange, setRange } = useChartSettings("cumulative");
 
   useEffect(() => {
     const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
@@ -182,19 +191,24 @@ export function CumulativeChart({ problems }: { problems: ChartProblem[] }) {
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  const keys = problems.map((p) => bucketKey(p.solveDate, gran)).sort();
-  if (keys.length === 0) return null;
+  const allKeys = problems.map((p) => bucketKey(p.solveDate, CHART_GRAN)).sort();
+  if (allKeys.length === 0) return null;
 
-  // Continuous bucket range from first to last entry.
-  const range = bucketRange(keys[0], keys[keys.length - 1], gran);
+  const { buckets: range, from } = timeWindow(allKeys[0], today, timeRange);
+
+  // Counted from the window's own start, not from the record's. A cumulative
+  // line that kept the running total would open a 1M view near 600 and climb
+  // to 620: a flat line pinned to the top of the plot, where the whole reason
+  // to narrow the window was to see the recent shape. Re-baselining makes the
+  // narrow views read as "added since", which the caption states outright.
+  const keys = allKeys.filter((k) => k >= from);
   const cumulative = range.map((mk) => keys.filter((k) => k <= mk).length);
-  const total = problems.length;
+  const total = keys.length;
 
   const data: PlotData = {
     range,
     cumulative,
-    yMax: niceMax(total, 20),
-    gran,
+    yMax: niceMax(total, total > 60 ? 20 : 5),
     interactive: isDesktop,
   };
 
@@ -202,18 +216,18 @@ export function CumulativeChart({ problems }: { problems: ChartProblem[] }) {
     <div className="flex h-full flex-col">
       <h2 className="font-serif text-lg text-[var(--ink)]">Problems over time</h2>
       <p className="mt-1 text-xs text-[var(--ink-muted)]">
-        Cumulative count of all tracked entries, {total} to date, candidates
-        and partial results included.
+        Cumulative count of all tracked entries, {total} {rangeCaption(timeRange)},
+        candidates and partial results included.
       </p>
 
       <div className="mt-3 flex flex-1 flex-col justify-center">
         <Plot data={data} />
       </div>
 
-      {/* Bucket picker, centered below the plot on every time chart;
+      {/* Window picker, centered below the plot on every time chart;
           persisted per chart (see useChartSettings). */}
       <div className="mt-2.5 flex justify-center">
-        <GranularityToggle value={gran} onChange={setGran} />
+        <TimeRangeToggle value={timeRange} onChange={setRange} />
       </div>
     </div>
   );

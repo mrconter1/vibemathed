@@ -211,6 +211,22 @@ async function countsSince(since: Date): Promise<WindowCounts> {
 /// place a prerendered page may read the clock - same pattern as the vote
 /// trend windows above, and a minute of staleness is nothing against a
 /// seven-day window.
+/// Today's UTC date as YYYY-MM-DD, for charts that window their x axis to
+/// "the last N months" and so need to know where now is.
+///
+/// Server-side and passed down as a prop rather than read in the browser: the
+/// charts are client components but still render on the server, and a clock
+/// read during a client render would put a different final bucket in the
+/// hydrated HTML than the server produced. Behind "use cache" for the same
+/// reason as getEntryFlow - it is where a prerendered page may read the clock.
+/// Refreshed hourly, which can leave the date stale for at most an hour after
+/// midnight UTC; the cost of that is one week-bucket at the right edge.
+export async function getToday(): Promise<string> {
+  "use cache";
+  cacheLife("hours");
+  return new Date().toISOString().slice(0, 10);
+}
+
 export async function getEntryFlow(): Promise<{ week: number; prevWeek: number }> {
   "use cache";
   cacheTag("problems");

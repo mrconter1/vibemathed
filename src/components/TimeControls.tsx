@@ -1,8 +1,8 @@
 "use client";
 
-import { bucketLabel, type Granularity } from "@/lib/time-buckets";
+import { TIME_RANGES, bucketLabel, type Granularity, type TimeRange } from "@/lib/time-buckets";
 
-// The pieces every time chart shares: the tiny D / W / M segmented control
+// The pieces every time chart shares: the tiny 1M / 3M / All segmented control
 // (rendered below each plot) and the TimeAxis tick row.
 
 /// X-axis tick labels for a bucketed time range. Density scales with how
@@ -52,28 +52,22 @@ export function TimeAxis({
   );
 }
 
-const OPTIONS: { value: Granularity; label: string }[] = [
-  { value: "day", label: "Day" },
-  { value: "week", label: "Week" },
-  { value: "month", label: "Month" },
-];
-
-/// "[Day | Week | Month]", centered below each time chart's plot - the same
+/// "[1M | 3M | All]", centered below each time chart's plot - the same
 /// segmented-control styling as the list's period picker, one size down.
-export function GranularityToggle({
+export function TimeRangeToggle({
   value,
   onChange,
 }: {
-  value: Granularity;
-  onChange: (g: Granularity) => void;
+  value: TimeRange;
+  onChange: (r: TimeRange) => void;
 }) {
   return (
     <div
       role="group"
-      aria-label="Time granularity"
+      aria-label="Time range"
       className="inline-flex overflow-hidden rounded border border-[var(--hairline)] bg-[var(--paper)]"
     >
-      {OPTIONS.map((o, i) => (
+      {TIME_RANGES.map((o, i) => (
         <button
           key={o.value}
           type="button"

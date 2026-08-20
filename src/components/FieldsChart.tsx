@@ -2,8 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { ChartProblem } from "@/lib/problems";
-import { bucketKey, bucketRange, bucketTooltipLabel } from "@/lib/time-buckets";
-import { GranularityToggle, TimeAxis } from "@/components/GranularityToggle";
+import {
+  CHART_GRAN,
+  bucketKey,
+  bucketTooltipLabel,
+  rangeCaption,
+  timeWindow,
+} from "@/lib/time-buckets";
+import { TimeAxis, TimeRangeToggle } from "@/components/TimeControls";
 import { useChartSettings } from "@/lib/chart-settings";
 
 // Cumulative entries over time, one line per mathematical area. Was a
@@ -63,11 +69,19 @@ function niceMax(v: number, step: number) {
   return Math.max(step, Math.ceil(v / step) * step);
 }
 
-export function FieldsChart({ problems }: { problems: ChartProblem[] }) {
+export function FieldsChart({
+  problems,
+  today,
+}: {
+  problems: ChartProblem[];
+  /// Today's date from the server, so the window's last bucket is the same
+  /// on both sides of hydration.
+  today: string;
+}) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hover, setHover] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
-  const { gran, setGran, hidden, toggleSeries } = useChartSettings("fields");
+  const { range: timeRange, setRange, hidden, toggleSeries } = useChartSettings("fields");
   const [focused, setFocused] = useState<string | null>(null);
 
   useEffect(() => {
@@ -78,13 +92,17 @@ export function FieldsChart({ problems }: { problems: ChartProblem[] }) {
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  const keys = problems.map((p) => bucketKey(p.solveDate, gran)).sort();
+  const keys = problems.map((p) => bucketKey(p.solveDate, CHART_GRAN)).sort();
   if (keys.length === 0) return null;
 
-  const range = bucketRange(keys[0], keys[keys.length - 1], gran);
+  const { buckets: range, from } = timeWindow(keys[0], today, timeRange);
+  const inWindow = problems.filter((p) => bucketKey(p.solveDate, CHART_GRAN) >= from);
 
-  // Rank by whole-record total, so which areas are named does not flicker as
-  // the granularity changes.
+  // Rank by WHOLE-RECORD total, not by the window's. This is the one chart
+  // whose series are data-derived rather than a fixed list, so ranking on the
+  // window would rename and recolour the lines every time the range changed -
+  // an area's colour has to belong to the area, not to its current position.
+  // A named area with nothing in the window simply draws flat at zero.
   const totals = new Map<string, number>();
   for (const p of problems) {
     const g = p.fieldGroup ?? "Unclassified";
@@ -114,9 +132,9 @@ export function FieldsChart({ problems }: { problems: ChartProblem[] }) {
         ]
       : []),
   ].map((s) => {
-    const seriesKeys = problems
+    const seriesKeys = inWindow
       .filter((p) => groupOf(p) === s.key)
-      .map((p) => bucketKey(p.solveDate, gran));
+      .map((p) => bucketKey(p.solveDate, CHART_GRAN));
     return {
       ...s,
       cumulative: range.map((mk) => seriesKeys.filter((k) => k <= mk).length),
@@ -125,7 +143,11 @@ export function FieldsChart({ problems }: { problems: ChartProblem[] }) {
   });
 
   const visible = series.filter((s) => !hidden.has(s.key));
-  const yMax = niceMax(Math.max(1, ...visible.map((s) => s.total)), 20);
+  // Step scales to the window. A fixed step of 20 was right for the whole
+  // record but rounded a narrow window's totals up to a single gridline,
+  // flattening every line onto the axis just as the reader zoomed in.
+  const peak = Math.max(1, ...visible.map((s) => s.total));
+  const yMax = niceMax(peak, peak > 60 ? 20 : peak > 20 ? 10 : 5);
 
   const x = (i: number) =>
     MARGIN.left + (range.length === 1 ? PLOT_W / 2 : (i / (range.length - 1)) * PLOT_W);
@@ -149,8 +171,9 @@ export function FieldsChart({ problems }: { problems: ChartProblem[] }) {
     <div className="flex h-full flex-col">
       <h2 className="font-serif text-lg text-[var(--ink)]">Growth per area</h2>
       <p className="mt-1 text-xs text-[var(--ink-muted)]">
-        Cumulative tracked entries by mathematical area; the {NAMED} largest,
-        with the remaining {folded.length} folded into Other.
+        Cumulative tracked entries by mathematical area {rangeCaption(timeRange)};
+        the {NAMED} largest over the whole record, with the remaining{" "}
+        {folded.length} folded into Other.
       </p>
 
       {/* Legend doubles as the current totals AND the visibility toggles. */}
@@ -232,7 +255,7 @@ export function FieldsChart({ problems }: { problems: ChartProblem[] }) {
               />
             ))}
 
-            <TimeAxis range={range} gran={gran} x={x} y={VIEW_H - MARGIN.bottom + 18} />
+            <TimeAxis range={range} gran={CHART_GRAN} x={x} y={VIEW_H - MARGIN.bottom + 18} />
 
             {active !== null && (
               <g pointerEvents="none">
@@ -297,7 +320,7 @@ export function FieldsChart({ problems }: { problems: ChartProblem[] }) {
                 transform: "translate(-50%, 0)",
               }}
             >
-              <span className="font-serif text-[var(--ink)]">{bucketTooltipLabel(range[active], gran)}</span>
+              <span className="font-serif text-[var(--ink)]">{bucketTooltipLabel(range[active], CHART_GRAN)}</span>
               {visible.map((s) => (
                 <span key={s.key} className="ml-2 inline-flex items-center gap-1 font-mono tabular-nums text-[var(--ink-secondary)]">
                   <span
@@ -314,7 +337,7 @@ export function FieldsChart({ problems }: { problems: ChartProblem[] }) {
       </div>
 
       <div className="mt-2.5 flex justify-center">
-        <GranularityToggle value={gran} onChange={setGran} />
+        <TimeRangeToggle value={timeRange} onChange={setRange} />
       </div>
     </div>
   );

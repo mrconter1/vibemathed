@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getEntryFlow, getPublishedProblems } from "@/lib/data";
+import { getEntryFlow, getPublishedProblems, getToday } from "@/lib/data";
 import { ChartCard } from "@/components/ChartCard";
 import type { ChartProblem } from "@/lib/problems";
 import { ContributionGrowthChart } from "@/components/ContributionGrowthChart";
@@ -30,6 +30,8 @@ export const metadata: Metadata = {
 
 export default async function StatsPage() {
   const problems = await getPublishedProblems();
+  // The right edge of every windowed chart's x axis (see getToday).
+  const today = await getToday();
 
   // The charts are client components, so whatever they receive as props is
   // serialized into the page payload. Handing them the raw catalog shipped
@@ -198,23 +200,23 @@ export default async function StatsPage() {
           <ReferencesChart problems={slim} />
         </ChartCard>
         <ChartCard id="by-vendor" label="solves per vendor">
-          <ModelsChart problems={resolved} />
+          <ModelsChart problems={resolved} today={today} />
         </ChartCard>
         <ChartCard id="by-contribution-tier" label="growth per AI-contribution tier">
-          <ContributionGrowthChart problems={resolved} />
+          <ContributionGrowthChart problems={resolved} today={today} />
         </ChartCard>
         {/* The "is AI doing theory yet?" chart. */}
         <ChartCard id="by-resolution-method" label="growth per resolution method">
-          <MethodGrowthChart problems={resolved} />
+          <MethodGrowthChart problems={resolved} today={today} />
         </ChartCard>
         {/* Area growth beside the record's total - both count EVERY tracked
             entry, unlike the solve charts, so the pair reads as "which parts
             of the record grew" next to "how the whole record grew". */}
         <ChartCard id="by-area" label="growth per area">
-          <FieldsChart problems={slim} />
+          <FieldsChart problems={slim} today={today} />
         </ChartCard>
         <ChartCard id="over-time" label="problems over time">
-          <CumulativeChart problems={slim} />
+          <CumulativeChart problems={slim} today={today} />
         </ChartCard>
         <ChartCard id="proved-vs-disproved" label="proved vs. disproved">
           <SolveRatioChart problems={resolved} />

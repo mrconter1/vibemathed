@@ -97,6 +97,76 @@ export function bucketLabel(key: string, g: Granularity, prev: string | null): s
   return `${d} ${MONTH[m - 1]}${prev ? ` '${String(y).slice(2)}` : ""}`;
 }
 
+// ---------------------------------------------------------------------------
+// Time windows.
+//
+// The charts used to offer Day / Week / Month, which only changed how finely
+// the same full history was sliced - a rendering preference dressed up as a
+// question about the data. What a reader actually wants to ask is "how much of
+// this happened recently", so the control now picks a WINDOW and the
+// resolution stays fixed at one week.
+//
+// No "last week" option, deliberately: at weekly resolution that is a single
+// point, which is a number and not a line. One month is the shortest window
+// that still draws a shape.
+
+export type TimeRange = "1m" | "3m" | "all";
+
+/// `months` is how far back the window reaches; null means the whole record.
+/// `caption` completes a sentence like "142 entries <caption>", so every
+/// windowed chart states which window its numbers describe.
+export const TIME_RANGES: {
+  value: TimeRange;
+  label: string;
+  months: number | null;
+  caption: string;
+}[] = [
+  { value: "1m", label: "1M", months: 1, caption: "in the last month" },
+  { value: "3m", label: "3M", months: 3, caption: "in the last three months" },
+  { value: "all", label: "All", months: null, caption: "to date" },
+];
+
+export function rangeCaption(range: TimeRange): string {
+  return TIME_RANGES.find((r) => r.value === range)?.caption ?? "to date";
+}
+
+/// The fixed resolution every time chart now draws at.
+export const CHART_GRAN: Granularity = "week";
+
+/// The first week key inside a window ending today, or null for "all".
+///
+/// Month arithmetic is calendar-based and inherits JS's overflow behaviour, so
+/// one month back from 31 March lands in early March rather than on the 31st
+/// of a month that has no 31st. Irrelevant at week resolution, where both fall
+/// in the same bucket or one either side of it.
+export function rangeStart(today: string, range: TimeRange): string | null {
+  const months = TIME_RANGES.find((r) => r.value === range)?.months ?? null;
+  if (months == null) return null;
+  const { y, m, d } = parts(today);
+  const dt = new Date(Date.UTC(y, m - 1 - months, d));
+  return mondayOf(dt.getUTCFullYear(), dt.getUTCMonth() + 1, dt.getUTCDate());
+}
+
+/// The x axis for a windowed chart: every week from the window's start (or the
+/// first entry, whichever is later) through the week containing today.
+///
+/// Ending at TODAY rather than at the last entry is the point of a window. A
+/// range that stopped at the final solve would silently crop a quiet fortnight
+/// and redraw "nothing happened lately" as "the chart ends here".
+export function timeWindow(
+  firstKey: string,
+  today: string,
+  range: TimeRange,
+): { buckets: string[]; from: string } {
+  const todayKey = bucketKey(today, CHART_GRAN);
+  const start = rangeStart(today, range);
+  const from = start && start > firstKey ? start : firstKey;
+  // A window entirely in the future of the data (an empty catalog, or a clock
+  // skewed backwards) still has to produce one drawable bucket.
+  const buckets = from > todayKey ? [todayKey] : bucketRange(from, todayKey, CHART_GRAN);
+  return { buckets, from };
+}
+
 /// The full, self-contained form for tooltips.
 export function bucketTooltipLabel(key: string, g: Granularity): string {
   if (g === "month") {
