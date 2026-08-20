@@ -8,6 +8,7 @@ import {
   SUBMISSION_DRAFT_KEY,
   SUBMISSION_FIELDS,
   SUBMISSION_GROUPS,
+  SUBMISSIONS_PER_WINDOW,
   emptySubmission,
   type SubmissionValues,
 } from "@/lib/submission";
@@ -143,7 +144,12 @@ export function SubmitForm() {
           summary. If a result is contested, unreviewed or partial, say so in
           the status and verification fields rather than leaving it out.
           Submissions are reviewed before they appear.
-          {!isAdmin && " You can submit up to three entries per day."} Full
+          {/* Read from the constant, never spelled out: this line said
+              "three" for a while after the limit became five, which is the
+              kind of small lie that costs a submission. */}
+          {!isAdmin &&
+            ` You can submit up to ${SUBMISSIONS_PER_WINDOW} entries per day.`}{" "}
+          Full
           criteria in the{" "}
           <Link
             href="/methodology"
@@ -185,7 +191,16 @@ export function SubmitForm() {
             // Under the title only. Duplicates are the commonest avoidable
             // rejection, and the title is the field that can predict one.
             renderAfter={(key) =>
-              key === "name" ? <DuplicateHint value={values.name ?? ""} /> : null
+              key === "name" ? (
+                <DuplicateHint
+                  value={values.name ?? ""}
+                  // The source is the stronger signal of the two: titles
+                  // diverge when two people file the same paper, arXiv ids do
+                  // not. Passed from under the title so the warning still
+                  // appears where the submitter is looking.
+                  sourceUrl={values.sourceUrl ?? ""}
+                />
+              ) : null
             }
           />
         );
