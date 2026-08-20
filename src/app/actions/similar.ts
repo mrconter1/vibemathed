@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { texToHtml } from "@/components/TeX";
+import { extractSourceId } from "@/lib/source-ids";
 
 // Live duplicate check for the submission form.
 //
@@ -97,7 +98,55 @@ export async function searchEntriesForRelation(
   }
 }
 
-export async function findSimilarEntries(query: string): Promise<SimilarEntry[]> {
+/// `sourceUrl` is the submission's primary link, when the form has one yet.
+///
+/// A shared PRIMARY source is not a hint, it is the answer: two entries whose
+/// primary source is the same arXiv id are the same work whatever their titles
+/// say, and titles are exactly what diverges when two people file the same
+/// paper. So that match short-circuits the title search and is returned on its
+/// own, because mixing it into loose word matches buries the row that matters.
+///
+/// Primary to primary, deliberately, and NOT against the entries' other links.
+/// Sharing a secondary link is ordinary: eleven entries cite the
+/// formal-conjectures repository, eight Kourovka entries come from one
+/// multi-problem paper, five Erdős entries from another. Matching on any link
+/// would have called all eleven duplicates of each other, which is how a
+/// warning panel teaches people to ignore it.
+export async function findSimilarEntries(
+  query: string,
+  sourceUrl?: string,
+): Promise<SimilarEntry[]> {
+  const sourceId = extractSourceId(sourceUrl ?? "");
+  if (sourceId) {
+    try {
+      // Candidates first, cheaply: an id contains the distinctive part of the
+      // URL, so a contains-match narrows to a handful of rows before the exact
+      // comparison runs on them.
+      const needle = sourceId.split(":").slice(1).join(":");
+      const rows = await prisma.problem.findMany({
+        where: {
+          status: "published",
+          sourceUrl: { contains: needle, mode: "insensitive" },
+        },
+        select: { slug: true, name: true, solveDate: true, sourceUrl: true },
+        take: 20,
+      });
+      const hits = rows
+        .filter((r) => extractSourceId(r.sourceUrl ?? "") === sourceId)
+        .slice(0, MAX_RESULTS)
+        .map((r) => ({
+          slug: r.slug,
+          name: r.name,
+          nameHtml: texToHtml(r.name),
+          solveDate: r.solveDate,
+        }));
+      if (hits.length > 0) return hits;
+    } catch (error) {
+      console.error("findSimilarEntries source lookup failed", error);
+      // Fall through to the title search rather than losing the panel.
+    }
+  }
+
   const text = query.trim();
   if (text.length < MIN_QUERY) return [];
 

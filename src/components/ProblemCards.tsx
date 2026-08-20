@@ -45,6 +45,7 @@ import {
   type SolveType,
   type VerificationStatus,
 } from "@/lib/problems";
+import { entrySourceIds, extractSourceId } from "@/lib/source-ids";
 import {
   AI_CONTRIBUTION,
   DASH,
@@ -737,6 +738,10 @@ export function ProblemCards({
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
+    // Computed once for the whole pass rather than per entry: parsing a URL
+    // 600 times per keystroke is the kind of thing that makes a search box
+    // feel slow.
+    const queryId = extractSourceId(query);
     // Rolling cutoff, matching the engagement metrics' windows. Only
     // non-engagement sorts date-filter; score/discussion window their metric
     // in sortValue instead, ranking the WHOLE list by that period's activity.
@@ -767,6 +772,12 @@ export function ProblemCards({
       if (publicationFilter !== "all" && p.publication !== publicationFilter) return false;
       if (methodFilter !== "all" && p.resolutionMethod !== methodFilter) return false;
       if (!q) return true;
+      // A pasted link or a bare arXiv id is an identity, not a word: compare
+      // it against what the entry's links actually point at, so
+      // arxiv.org/pdf/2608.13637v2 finds an entry filed under /abs/ and a
+      // Zenodo DOI finds one filed under the record URL. Returns early
+      // because a match here is exact and needs no text scoring.
+      if (queryId && entrySourceIds(p.sourceUrl, p.links).includes(queryId)) return true;
       const haystack = [
         // Both forms: a name carrying math is displayed rendered, so someone
         // searching types what they see ("Lp(L1)"), not the source ("$L_p(L_1)$").
