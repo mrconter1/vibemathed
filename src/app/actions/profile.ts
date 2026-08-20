@@ -180,3 +180,36 @@ export async function updateGoogleVisibility(
   updateTag("users");
   return { ok: true };
 }
+
+export type PrivacyResult = { ok: true } | { ok: false; error: string };
+
+/// Sets one of the two discoverability toggles. Owner-only by construction
+/// (it writes to the session's own row).
+///
+/// Like the flags above, these change what gets RENDERED and nothing else.
+/// Turning `showComments` off does not delete or hide a single comment - each
+/// one stays on its entry under the same pseudonym, because a comment is part
+/// of a public discussion someone else is still reading. What it withdraws is
+/// the collected view of them.
+export async function updatePrivacy(
+  field: "listed" | "showComments",
+  on: boolean,
+): Promise<PrivacyResult> {
+  const session = await auth();
+  if (!session?.user?.id) return { ok: false, error: "Sign in first." };
+
+  try {
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: field === "listed" ? { listed: on } : { showComments: on },
+    });
+  } catch (error) {
+    console.error("updatePrivacy failed", error);
+    return { ok: false, error: "Could not save that. Please try again." };
+  }
+
+  // Both tags: the profile page reads showComments, the directory reads
+  // listed, and they are cached separately.
+  updateTag("users");
+  return { ok: true };
+}

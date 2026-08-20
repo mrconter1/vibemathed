@@ -24,6 +24,11 @@ export interface ViewerState {
   /// the Google name / email on the public profile. Both default off.
   showGoogleName: boolean;
   showGoogleEmail: boolean;
+  /// The viewer's own discoverability toggles, also for seeding the editor.
+  /// Both default ON: neither publishes anything that was private, they only
+  /// govern whether it is gathered in one place (see the schema).
+  listed: boolean;
+  showComments: boolean;
   /// Whether this viewer may review submissions. The UI uses it to decide what
   /// to show; every privileged action re-checks server-side regardless.
   isAdmin: boolean;
@@ -52,6 +57,9 @@ export const SIGNED_OUT: ViewerState = {
   verified: false,
   showGoogleName: false,
   showGoogleEmail: false,
+  // Signed out has no profile to list, so the values here are inert.
+  listed: true,
+  showComments: true,
   isAdmin: false,
   pendingReviews: 0,
   openReports: 0,

@@ -17,6 +17,7 @@ import {
   updateBio,
   updateGoogleVisibility,
   updateLinks,
+  updatePrivacy,
   updatePseudonym,
   updateRole,
 } from "@/app/actions/profile";
@@ -125,6 +126,21 @@ export function ProfileEditor({
     const r = await updateGoogleVisibility(field, show);
     if (!r.ok) {
       viewer.setGoogleVisibility(field, !show);
+      setError(r.error);
+      return;
+    }
+    window.location.reload();
+  }
+
+  /// Same immediate-save shape as toggleGoogle: a privacy switch that sat in a
+  /// draft until you pressed Save would be a switch you could believe you had
+  /// flipped when you had not.
+  async function togglePrivacy(field: "listed" | "showComments", on: boolean) {
+    setError(null);
+    viewer.setPrivacy(field, on);
+    const r = await updatePrivacy(field, on);
+    if (!r.ok) {
+      viewer.setPrivacy(field, !on);
       setError(r.error);
       return;
     }
@@ -271,6 +287,41 @@ export function ProfileEditor({
               className="accent-[var(--accent-blue)]"
             />
             Show my account email on this profile
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset className="mt-3">
+        <legend className="text-[11px] font-medium text-[var(--ink-secondary)]">
+          Discoverability
+        </legend>
+        <p className="mt-0.5 text-[11px] leading-snug text-[var(--ink-muted)]">
+          On by default. Neither one hides anything you have already posted -
+          your comments stay on the entries where you wrote them, under this
+          same pseudonym. These control whether it is gathered up in one place.
+          Saves immediately.
+        </p>
+        <div className="mt-1.5 space-y-1">
+          <label className="flex items-center gap-2 text-xs text-[var(--ink-secondary)]">
+            <input
+              type="checkbox"
+              checked={viewer.listed}
+              onChange={(e) => togglePrivacy("listed", e.target.checked)}
+              className="accent-[var(--accent-blue)]"
+            />
+            List me in the{" "}
+            <Link href="/users" className="text-[var(--accent-blue)] hover:underline">
+              member directory
+            </Link>
+          </label>
+          <label className="flex items-center gap-2 text-xs text-[var(--ink-secondary)]">
+            <input
+              type="checkbox"
+              checked={viewer.showComments}
+              onChange={(e) => togglePrivacy("showComments", e.target.checked)}
+              className="accent-[var(--accent-blue)]"
+            />
+            Show my comment history on this profile
           </label>
         </div>
       </fieldset>

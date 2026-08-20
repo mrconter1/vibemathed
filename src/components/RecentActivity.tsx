@@ -104,8 +104,14 @@ export function RecentActivity({ activity }: { activity: SiteActivityView[] }) {
             <Icon name="pulse" size={14} className="text-[var(--ink-muted)]" />
             Latest activity
           </h2>
+          {/* The directory's contextual entry point. Every row below names a
+              member and links to them, so this is where wanting to see who
+              else is here actually occurs to someone. */}
           <p className="mt-0.5 text-[11px] text-[var(--ink-muted)]">
-            Edits, submissions and discussion
+            Edits, submissions and discussion ·{" "}
+            <Link href="/users" className="hover:text-[var(--accent-blue)] hover:underline">
+              all members
+            </Link>
           </p>
         </div>
 

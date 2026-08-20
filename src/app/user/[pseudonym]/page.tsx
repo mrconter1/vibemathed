@@ -82,7 +82,17 @@ export default async function UserPage({
     // record a member actually built, rather than how it was received.
     { icon: "pulse", label: "Contributions", value: String(profile.contributions) },
     { icon: "layers", label: "Entries", value: String(profile.entries.length) },
-    { icon: "bubble", label: "Comments", value: String(profile.commentCount) },
+    // No Comments tile when the history is withheld: leaving the total on
+    // screen would answer most of what the section was hiding.
+    ...(profile.showComments
+      ? [
+          {
+            icon: "bubble" as IconName,
+            label: "Comments",
+            value: String(profile.commentCount),
+          },
+        ]
+      : []),
     { icon: "pencil", label: "Edits", value: String(profile.editCount) },
     {
       icon: "votes",
@@ -255,6 +265,10 @@ export default async function UserPage({
         )}
       </section>
 
+      {/* Omitted, not emptied, when the member withholds their history: an
+          absent section is unremarkable, an empty one looks like a bug and
+          announces the choice to everyone who visits. */}
+      {profile.showComments && (
       <section className="mt-8">
         <h2 className="font-serif text-xl text-[var(--ink)]">Comments</h2>
         {profile.comments.length === 0 ? (
@@ -290,6 +304,7 @@ export default async function UserPage({
           </p>
         )}
       </section>
+      )}
 
       <section className="mt-8">
         <h2 className="font-serif text-xl text-[var(--ink)]">Recent edits</h2>

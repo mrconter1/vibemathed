@@ -418,6 +418,7 @@ export async function getActivity(slug: string): Promise<ActivityView[]> {
       oldValue: true,
       newValue: true,
       createdAt: true,
+      user: { select: { pseudonym: true } },
     },
   });
 
@@ -425,6 +426,7 @@ export async function getActivity(slug: string): Promise<ActivityView[]> {
     rows.map((a) => ({
       id: a.id,
       userName: resolveSnapshot(a.userName, a.userId !== null),
+      userPseudonym: a.user?.pseudonym ?? null,
       createdAtIso: a.createdAt.toISOString(),
       type: a.type,
       field: a.field,
@@ -501,6 +503,12 @@ export interface UserProfile {
   /// Curator-set identity check, and what was checked.
   verified: boolean;
   verifiedNote: string | null;
+  /// Whether the member publishes their comment history here. When false,
+  /// `comments` is empty and the page omits the section rather than showing an
+  /// empty one - an absent section is unremarkable, an empty one looks broken
+  /// and announces the choice. `commentCount` stays accurate either way,
+  /// because it feeds `contributions`.
+  showComments: boolean;
   /// The Google identity, present ONLY when the owner turned its toggle on.
   /// Null carries no information about whether the account has one - the
   /// projection below never selects what it will not show.
@@ -544,6 +552,87 @@ export interface UserProfile {
   }[];
 }
 
+export interface DirectoryMember {
+  pseudonym: string;
+  role: string | null;
+  verified: boolean;
+  /// Same blended number as the profile's: entries + comments + edits.
+  contributions: number;
+  entries: number;
+  comments: number;
+  /// Field-level edits to other people's entries. Shown because it is often
+  /// the whole of someone's rank: several members here have no entries and no
+  /// comments and sit high on curation alone, which reads as a sorting bug
+  /// until the number that earned it is on the row.
+  edits: number;
+  joined: string;
+}
+
+/// The member directory: everyone who has opted to be listed, most active
+/// first.
+///
+/// Counts come from filtered `_count`s rather than per-member queries, so this
+/// is one round trip whatever the membership.
+///
+/// The filters are not decoration. An unfiltered activity count includes
+/// VOTES, which are recorded as activity rows, and voting is one click: the
+/// first version of this ranked a member with no entries and no comments above
+/// the curator who had submitted twenty, purely on votes cast. The three
+/// filters here reproduce the profile page's definition of `contributions`
+/// exactly - published entries, comments on published entries, and `updated`
+/// activity only - so a member's rank here and their profile agree.
+///
+/// `showComments` is deliberately NOT consulted. That toggle withholds the
+/// comment HISTORY, not the fact that someone comments; a member who has
+/// hidden their history still ranks by what they have done.
+export async function getMemberDirectory(): Promise<DirectoryMember[]> {
+  "use cache";
+  cacheTag("users");
+  cacheLife("minutes");
+
+  const users = await prisma.user.findMany({
+    // `listed` is the opt-out. Banned accounts never appear regardless: the
+    // directory is a front door, and theirs is closed.
+    where: { listed: true, banned: false, pseudonym: { not: null } },
+    select: {
+      pseudonym: true,
+      role: true,
+      verified: true,
+      createdAt: true,
+      _count: {
+        select: {
+          submittedProblems: { where: { status: "published" } },
+          comments: { where: { problem: { status: "published" } } },
+          activities: {
+            where: { type: "updated", problem: { status: "published" } },
+          },
+        },
+      },
+    },
+  });
+
+  return users
+    .map((u) => ({
+      pseudonym: u.pseudonym as string,
+      role: u.role,
+      verified: u.verified,
+      contributions:
+        u._count.submittedProblems + u._count.comments + u._count.activities,
+      entries: u._count.submittedProblems,
+      comments: u._count.comments,
+      edits: u._count.activities,
+      joined: formatCommentDate(u.createdAt),
+    }))
+    // Most active first, then alphabetical so the long tail of members with
+    // identical counts has a stable, findable order rather than whatever the
+    // database returned.
+    .sort(
+      (a, b) =>
+        b.contributions - a.contributions ||
+        a.pseudonym.localeCompare(b.pseudonym),
+    );
+}
+
 /// Public profile by CURRENT pseudonym, or null when no such member exists.
 export async function getUserProfile(
   pseudonym: string,
@@ -566,6 +655,7 @@ export async function getUserProfile(
       email: true,
       showGoogleName: true,
       showGoogleEmail: true,
+      showComments: true,
       linkWebsite: true,
       linkArxiv: true,
       linkOrcid: true,
@@ -591,7 +681,11 @@ export async function getUserProfile(
           downvotes: true,
         },
       }),
-      prisma.comment.findMany({
+      // Skipped entirely when the member has withdrawn their comment history,
+      // rather than fetched and then dropped at render: the cheapest way to
+      // not publish something is not to read it.
+      user.showComments
+        ? prisma.comment.findMany({
         where: { userId: user.id, ...publishedOnly },
         orderBy: { createdAt: "desc" },
         take: 50,
@@ -601,7 +695,10 @@ export async function getUserProfile(
           createdAt: true,
           problem: { select: { name: true, slug: true } },
         },
-      }),
+          })
+        : Promise.resolve([]),
+      // Counted either way: it feeds `contributions`, which is one blended
+      // number and stays honest. Only the LIST is withheld.
       prisma.comment.count({ where: { userId: user.id, ...publishedOnly } }),
       prisma.problemActivity.findMany({
         where: { userId: user.id, type: "updated", ...publishedOnly },
@@ -628,6 +725,7 @@ export async function getUserProfile(
     role: user.role,
     verified: user.verified,
     verifiedNote: user.verifiedNote,
+    showComments: user.showComments,
     googleName: user.showGoogleName ? user.name : null,
     googleEmail: user.showGoogleEmail ? user.email : null,
     contributions,

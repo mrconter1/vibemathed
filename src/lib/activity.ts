@@ -18,6 +18,14 @@ export interface ActivityView {
   id: string;
   /// Pseudonym snapshot, or "Curator" for the seeded baseline.
   userName: string;
+  /// The actor's CURRENT pseudonym, for the profile link; null when there is
+  /// no account to link to (a deleted member, or a curator-authored row) and
+  /// the snapshot name renders unlinked.
+  ///
+  /// On the base view rather than only on SiteActivityView because the
+  /// per-entry changelog wants the same link the homepage feed has - a name
+  /// that is a link in one list and plain text in another reads as a bug.
+  userPseudonym: string | null;
   type: string;
   /// For `updated`: which field changed, and its before/after.
   field: string | null;
@@ -42,9 +50,6 @@ export interface ActivityView {
 export interface SiteActivityView extends ActivityView {
   problemName: string;
   problemSlug: string;
-  /// The actor's CURRENT pseudonym for the profile link; null when there is
-  /// no account to link (the snapshot name still renders, unlinked).
-  userPseudonym: string | null;
 }
 
 /// Collapses a run of edits by one person on one entry into a single view.

@@ -28,6 +28,7 @@ interface ViewerContextValue extends ViewerState {
   setBio: (bio: string) => void;
   setRole: (role: string | null) => void;
   setGoogleVisibility: (field: "name" | "email", show: boolean) => void;
+  setPrivacy: (field: "listed" | "showComments", on: boolean) => void;
   /// Zeroes the unread-notification badge locally, after the server watermark
   /// has been moved (opening the notifications panel does both).
   clearNotifications: () => void;
@@ -184,13 +185,19 @@ export function ViewerProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const setPrivacy = useCallback((field: "listed" | "showComments", on: boolean) => {
+    setState((prev) =>
+      field === "listed" ? { ...prev, listed: on } : { ...prev, showComments: on },
+    );
+  }, []);
+
   const clearNotifications = useCallback(() => {
     setState((prev) => ({ ...prev, notifications: 0 }));
   }, []);
 
   const value = useMemo(
-    () => ({ ...state, loaded, setVote, setPseudonym, setBio, setRole, setGoogleVisibility, clearNotifications, refresh }),
-    [state, loaded, setVote, setPseudonym, setBio, setRole, setGoogleVisibility, clearNotifications, refresh],
+    () => ({ ...state, loaded, setVote, setPseudonym, setBio, setRole, setGoogleVisibility, setPrivacy, clearNotifications, refresh }),
+    [state, loaded, setVote, setPseudonym, setBio, setRole, setGoogleVisibility, setPrivacy, clearNotifications, refresh],
   );
 
   return <ViewerContext.Provider value={value}>{children}</ViewerContext.Provider>;

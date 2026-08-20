@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ActivityView } from "@/lib/activity";
 import { RelativeTime } from "@/components/RelativeTime";
 
@@ -87,7 +88,18 @@ export function Changelog({ activity }: { activity: ActivityView[] }) {
             key={a.id}
             className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 border-t border-[var(--hairline)] py-2 text-xs leading-relaxed first:border-t-0 first:pt-0"
           >
-            <span className="font-medium text-[var(--ink)]">{a.userName}</span>
+            {/* Linked when there is an account behind the name, exactly as
+                the homepage feed and every comment do it. */}
+            {a.userPseudonym ? (
+              <Link
+                href={`/user/${encodeURIComponent(a.userPseudonym)}`}
+                className="font-medium text-[var(--ink)] transition-colors hover:text-[var(--accent-blue)] hover:underline"
+              >
+                {a.userName}
+              </Link>
+            ) : (
+              <span className="font-medium text-[var(--ink)]">{a.userName}</span>
+            )}
             {/* break-words: quoted old/new values can be unbreakable URLs */}
             <span className="min-w-0 flex-1 break-words text-[var(--ink-secondary)]">
               {describe(a)}

@@ -427,6 +427,21 @@ model User {
   showGoogleName  Boolean @default(false)
   showGoogleEmail Boolean @default(false)
 
+  /// Owner-set discoverability. Both default ON, unlike the two flags above,
+  /// because neither one publishes anything that was private: a pseudonym is
+  /// already on every comment and in the homepage activity feed, and the
+  /// profile has always listed comments. Defaulting these off would have
+  /// silently emptied existing profiles.
+  ///
+  /// They control AGGREGATION, which is a real exposure of its own even when
+  /// each part is public. `listed` is whether the member appears in the
+  /// directory at /users - off keeps the profile reachable, just not
+  /// enumerable from one page. `showComments` is whether the profile gathers
+  /// their comment history; off leaves every comment exactly where it was
+  /// posted, on the entry, under the same pseudonym.
+  listed       Boolean @default(true)
+  showComments Boolean @default(true)
+
   /// Curator-set: identity or affiliation was actually checked. Never
   /// self-serve. `verifiedNote` records what was checked, shown on hover.
   verified     Boolean @default(false)

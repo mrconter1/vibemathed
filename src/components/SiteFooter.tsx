@@ -23,6 +23,14 @@ export function SiteFooter() {
             Methodology
           </Link>
           <span aria-hidden>·</span>
+          {/* Footer rather than the nav bar: the directory is a secondary
+              page, and a fifth top-level item would crowd the bar on a phone
+              for something most readers never need. The link that matters is
+              the contextual one, beside Recent activity. */}
+          <Link href="/users" className={link}>
+            Members
+          </Link>
+          <span aria-hidden>·</span>
           <a href="/api/dataset" className={link}>
             Dataset (CC BY 4.0)
           </a>
