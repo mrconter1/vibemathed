@@ -126,13 +126,37 @@ export function HighlightList({ rows }: { rows: PreviewRow[] }) {
               <span className="min-w-0 flex-1 truncate text-sm text-[var(--ink-secondary)] transition-colors group-hover:text-[var(--accent-blue)]">
                 <TeX>{row.name}</TeX>
               </span>
-              {row.aiDiscovered && (
+              {/* One pill slot, and standing wins it.
+
+                  These columns now include claims still under review, so the
+                  scarce-and-interesting signal is no longer the scarcest thing
+                  a row has to say - whether to believe it is. An AI-discovered
+                  pill on an unreviewed claim advertises the strong reading and
+                  hides the caveat, which is the wrong way round for a record
+                  whose value is that its labels are honest.
+
+                  So a candidate shows Under review and nothing else. Warning
+                  amber rather than the resolution map's blue, which is this
+                  site's link and primary colour and reads as a feature rather
+                  than a caution; amber is what partial and variant already
+                  use. Everything else keeps the AI-discovered pill exactly as
+                  before, and a resolved AI-discovered row is unchanged. */}
+              {row.resolution === "candidate" ? (
                 <span
-                  title={`${AI_CONTRIBUTION["ai-discovered"].pill}: the model produced the central proof or object`}
-                  className="shrink-0 self-center rounded-full bg-[color-mix(in_srgb,var(--status-good)_14%,transparent)] px-1.5 py-px text-[10px] font-medium text-[var(--status-good)]"
+                  title={`${RESOLUTION.candidate.label}: a full solution is claimed, authoritative review is still pending`}
+                  className="shrink-0 self-center rounded-full bg-[color-mix(in_srgb,var(--status-warning)_16%,transparent)] px-1.5 py-px text-[10px] font-medium text-[var(--status-warning)]"
                 >
-                  {AI_CONTRIBUTION["ai-discovered"].pill}
+                  {RESOLUTION.candidate.pill}
                 </span>
+              ) : (
+                row.aiDiscovered && (
+                  <span
+                    title={`${AI_CONTRIBUTION["ai-discovered"].pill}: the model produced the central proof or object`}
+                    className="shrink-0 self-center rounded-full bg-[color-mix(in_srgb,var(--status-good)_14%,transparent)] px-1.5 py-px text-[10px] font-medium text-[var(--status-good)]"
+                  >
+                    {AI_CONTRIBUTION["ai-discovered"].pill}
+                  </span>
+                )
               )}
               <span className="shrink-0 font-mono text-[11px] text-[var(--ink-muted)]">
                 {row.iso ? <SolvedStamp iso={row.iso} date={row.detail} /> : row.detail}

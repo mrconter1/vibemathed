@@ -1,4 +1,4 @@
-// Two entry points into the dataset, above the full list: what just happened
+﻿// Two entry points into the dataset, above the full list: what just happened
 // and what mattered most this week. Neither duplicates the list's default
 // ordering.
 //
@@ -11,7 +11,10 @@
 //
 // Deliberately NOT "recently added": every entry was seeded within the same few
 // seconds, so `createdAt` ordering is seed insertion order, not information.
-// "Just solved" uses `solveDate`, which is real curated data. Community-driven
+// "Latest" uses `solveDate`, which is real curated data. It was called "Just
+// solved" while it showed only resolved entries; now that a claim still under
+// review can appear there, that title would have been asserting the one thing
+// such a row does not yet establish. Community-driven
 // columns (top voted, most discussed) are worth adding once there is enough
 // traffic for them to be non-empty - for now that signal lives in the list's
 // sort control.
@@ -76,34 +79,35 @@ interface Column {
 }
 
 function buildColumns(all: ProblemWithVotes[], rows: number): Column[] {
-  // "Just solved" is about outcomes, so only fully resolved entries qualify: a
-  // candidate under review or a retracted claim must not headline it or count
-  // as having fallen.
-  const problems = all.filter((p) => p.resolution === "resolved");
-
-  // "This week" ranks by how much the problem mattered, and excluding partial
-  // results there hid the biggest thing that has happened to this record. The
-  // zeta critical-line bound is the most significant entry in the catalog and
-  // was invisible on the front page, because improving a bound on the Riemann
-  // hypothesis is a partial result by definition. So are the Tuza degree-seven
-  // proof and most record ladders: the more famous the problem, the likelier
-  // that real progress on it is partial rather than total.
+  // One pool for both columns: everything the record holds except a withdrawn
+  // claim.
   //
-  // Candidates and variants stay out. Those are claims whose standing is in
-  // question, where partial describes how much of the problem fell, not how
-  // much to believe it.
+  // The columns used to be narrower - the first resolved-only, the second
+  // resolved-or-partial - and the effect was that the record's biggest results
+  // were missing from its own front page. That is not bad luck, it is
+  // selection: the more significant a claim, the longer it waits in
+  // `candidate` for someone qualified to check it, so filtering candidates out
+  // filtered systematically for unimportance. The disproof of
+  // Yau-Tian-Donaldson, the sub-optimality of Marton's inner bound and the
+  // sofic-groups question are all in the catalog at significance 50 or above
+  // and none of them appeared here.
   //
-  // The row itself does not mark a partial as such. It keeps the AI-discovered
-  // pill, which is the scarcer and more interesting signal, and the resolution
-  // shows on the hover card and on the entry page - one click away, where the
-  // result note explains what was and was not proved. The column promises the
-  // most significant results of the week, not that each one closed its
-  // problem.
-  const notable = all.filter(
-    (p) => p.resolution === "resolved" || p.resolution === "partial",
-  );
+  // The same argument had already been made once for partial results, which is
+  // why they were let in: on a famous problem, real progress is usually
+  // partial rather than total. Candidates are the same mistake one rung along.
+  //
+  // `retracted` stays out, and no pill fixes it. A withdrawn claim is not a
+  // recent result, and listing one among them would be false whatever label it
+  // carried.
+  //
+  // Standing is carried on the row instead of at the filter: a candidate shows
+  // an Under review pill (see HighlightPreview). Partials and variants stay
+  // unmarked, as before - "partial" says how much of the problem fell, which
+  // the hover card and entry page explain, whereas "candidate" says how much
+  // to believe it, and that belongs in front of the reader.
+  const pool = all.filter((p) => p.resolution !== "retracted");
 
-  const recent = [...problems]
+  const recent = [...pool]
     .sort((a, b) => b.solveDate.localeCompare(a.solveDate))
     .slice(0, rows);
   // The newest solve sets the reference year for the whole column.
@@ -136,12 +140,12 @@ function buildColumns(all: ProblemWithVotes[], rows: number): Column[] {
   // out and the column reads as though nothing has been solved, when what
   // actually happened is that nothing was solved THIS week specifically.
   const newest =
-    [...notable].sort((a, b) => b.solveDate.localeCompare(a.solveDate))[0]?.solveDate ?? "";
+    [...pool].sort((a, b) => b.solveDate.localeCompare(a.solveDate))[0]?.solveDate ?? "";
   const weekAgo = newest
     ? new Date(`${newest.slice(0, 10)}T00:00:00Z`).getTime() - 7 * 86400000
     : 0;
   const cutoff = newest ? new Date(weekAgo).toISOString().slice(0, 10) : "";
-  const thisWeek = notable
+  const thisWeek = pool
     .filter((p) => p.significance != null && p.solveDate >= cutoff)
     .sort(
       (a, b) =>
@@ -152,7 +156,7 @@ function buildColumns(all: ProblemWithVotes[], rows: number): Column[] {
     .map((p) => toRow(p, `${p.significance}/100`));
 
   return [
-    { icon: "spark", title: "Just solved", hint: "Most recent results", rows: justSolved },
+    { icon: "spark", title: "Latest", hint: "Most recent results", rows: justSolved },
     {
       icon: "pulse",
       title: "This week",
