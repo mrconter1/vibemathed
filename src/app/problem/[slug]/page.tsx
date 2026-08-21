@@ -76,6 +76,16 @@ export async function generateMetadata({
       description,
       url: `/problem/${p.slug}`,
     },
+    // Explicit, because Next merges metadata per top-level key: this page
+    // replaced `openGraph` but inherited the layout's `twitter` block whole,
+    // and X prefers twitter:* tags - so every shared entry carried the
+    // generic site title instead of its own. The image comes from the
+    // sibling opengraph-image.tsx and needs no listing here.
+    twitter: {
+      card: "summary_large_image",
+      title: `${deTeX(p.name)} · VibeMathed`,
+      description,
+    },
   };
 }
 
