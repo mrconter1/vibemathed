@@ -11,6 +11,7 @@
 // Reports, does not write. `--json` for the machine-readable form.
 
 import { PrismaClient } from "@prisma/client";
+import { charLength } from "../src/lib/char-length";
 import { CURATOR_FIELDS, EDITABLE_FIELDS, MAX_LINKS, sameDocument } from "../src/lib/editable";
 import { MESSAGE_MAX } from "../src/lib/messages";
 
@@ -46,13 +47,18 @@ async function main() {
 
     for (const [key, limit] of LIMITS) {
       const v = row[key];
-      if (typeof v !== "string" || v.length <= limit) continue;
+      if (typeof v !== "string") continue;
+      // charLength, matching the form and both server actions. With .length
+      // this audit reported astral-heavy notes as over a limit they were
+      // under, which is the same bug it exists to catch.
+      const n = charLength(v);
+      if (n <= limit) continue;
       findings.push({
         slug: p.slug,
         field: key,
         limit,
-        length: v.length,
-        over: v.length - limit,
+        length: n,
+        over: n - limit,
         sample: v.slice(0, 60),
       });
     }

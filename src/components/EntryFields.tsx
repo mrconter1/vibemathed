@@ -5,6 +5,7 @@
 // they differ only in which fields they are handed.
 
 import type { ReactNode } from "react";
+import { charLength } from "@/lib/char-length";
 import { LinkRows } from "@/components/LinkRows";
 import { RelationRows } from "@/components/RelationRows";
 
@@ -17,6 +18,11 @@ export interface RenderableField {
   options?: { value: string; label: string }[];
   /// "$" is refused by the server; warn live while typing instead of at save.
   plainText?: boolean;
+  /// The server's cap for this field, so the count can be shown while typing.
+  /// The field specs have carried this all along; the form simply never read
+  /// it, so the only way to learn a note was too long was to have it refused
+  /// on save with no number to compare against.
+  maxLength?: number;
 }
 
 // White, not a paper tone: a form field should read as a fillable well, and on
@@ -108,6 +114,31 @@ export function EntryFields({
                 onChange={(e) => onChange(spec.key, e.target.value)}
                 className={`${controlClass} mt-1`}
               />
+            )}
+
+            {/* Character count, once there is something to count.
+                Deliberately absent while the field is empty, so a form of
+                thirty fields is not a wall of "0/1000".
+
+                Counted the way the server counts, and the way a person does:
+                characters, not UTF-16 units (see lib/char-length). The two
+                disagree on blackboard bold and friends, which is how a note
+                measured at 998 characters could be refused as over 1000 with
+                no counter on screen to argue with.
+
+                No maxLength attribute on the control. A hard stop silently
+                swallows the end of a paste, which is worse than showing a red
+                number and letting the writer decide what to cut. */}
+            {spec.maxLength != null && value.trim() !== "" && (
+              <p
+                className={`mt-1 text-right text-[10px] tabular-nums ${
+                  charLength(value.trim()) > spec.maxLength
+                    ? "text-[var(--status-critical)]"
+                    : "text-[var(--ink-muted)]"
+                }`}
+              >
+                {charLength(value.trim())}/{spec.maxLength}
+              </p>
             )}
 
             {/* Live version of the server's plain-text rule, so nobody types

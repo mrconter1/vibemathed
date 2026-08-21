@@ -5,6 +5,7 @@ import { updateTag } from "next/cache";
 import { auth } from "@/auth";
 import { sendDirectMessage } from "@/app/actions/inbox";
 import { isAdmin } from "@/lib/admin";
+import { charLength } from "@/lib/char-length";
 import { prisma } from "@/lib/prisma";
 import { isHttpUrl, isValidSolveDate, parseLinks } from "@/lib/editable";
 import {
@@ -65,8 +66,12 @@ export async function submitProblem(values: SubmissionValues): Promise<SubmitRes
       data[spec.key] = spec.kind === "list" ? [] : null;
       continue;
     }
-    if (spec.maxLength && raw.length > spec.maxLength) {
-      return { ok: false, error: `${spec.label} is too long (max ${spec.maxLength}).` };
+    // charLength, not raw.length: see src/lib/char-length.ts.
+    if (spec.maxLength && charLength(raw) > spec.maxLength) {
+      return {
+        ok: false,
+        error: `${spec.label} is too long: ${charLength(raw)} characters, max ${spec.maxLength}.`,
+      };
     }
     if (spec.plainText && raw.includes("$")) {
       return {

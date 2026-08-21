@@ -3,6 +3,7 @@
 import { updateTag } from "next/cache";
 import { auth } from "@/auth";
 import { isAdmin } from "@/lib/admin";
+import { charLength } from "@/lib/char-length";
 import { prisma } from "@/lib/prisma";
 import {
   EDITABLE_FIELDS,
@@ -37,8 +38,14 @@ function parseField(
     return { ok: true, value: emptyArray ? [] : null };
   }
 
-  if (spec.maxLength && v.length > spec.maxLength) {
-    return { ok: false, error: `${spec.label} is too long (max ${spec.maxLength}).` };
+  // charLength, not v.length: see src/lib/char-length.ts. Counting UTF-16
+  // units refused notes the author had correctly counted as under the cap,
+  // because blackboard bold and friends cost two units each.
+  if (spec.maxLength && charLength(v) > spec.maxLength) {
+    return {
+      ok: false,
+      error: `${spec.label} is too long: ${charLength(v)} characters, max ${spec.maxLength}.`,
+    };
   }
 
   if (spec.plainText && v.includes("$")) {
