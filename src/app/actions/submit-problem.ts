@@ -5,7 +5,7 @@ import { updateTag } from "next/cache";
 import { auth } from "@/auth";
 import { sendDirectMessage } from "@/app/actions/inbox";
 import { isAdmin } from "@/lib/admin";
-import { charLength } from "@/lib/char-length";
+import { canonical, charLength } from "@/lib/char-length";
 import { prisma } from "@/lib/prisma";
 import { isHttpUrl, isValidSolveDate, parseLinks } from "@/lib/editable";
 import {
@@ -57,7 +57,8 @@ export async function submitProblem(values: SubmissionValues): Promise<SubmitRes
   // Validate and coerce every field against its spec.
   const data: Record<string, unknown> = {};
   for (const spec of SUBMISSION_FIELDS) {
-    const raw = (values[spec.key] ?? "").trim();
+    // NFC as well as trim: see the note in parseField, and lib/char-length.
+    const raw = canonical((values[spec.key] ?? "").trim());
 
     if (raw === "") {
       if (spec.required) return { ok: false, error: `${spec.label} is required.` };

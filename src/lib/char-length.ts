@@ -12,8 +12,32 @@
 /// `STRING(n)` in characters, so `.length` was rejecting text the database
 /// would have stored happily.
 ///
-/// Iterating a string yields code points, which is what a person counting
-/// characters means and what the column measures.
+/// Iterating a string yields code points, which is what the column measures.
+///
+/// NFC first, because the same visible text can arrive in more than one
+/// encoding and only one of them is cheap. Pasted from macOS, "Erdös" often
+/// comes decomposed as o + combining diaeresis: six code points where the
+/// precomposed spelling is five, for glyphs a reader cannot tell apart.
+/// Normalizing costs the writer nothing and makes the count depend on what
+/// the text looks like rather than where it was copied from. It also means
+/// one visible string always stores as one byte sequence, so search and
+/// duplicate detection cannot be fooled by the spelling.
+///
+/// NOT grapheme clusters, though those are what a person actually counts.
+/// A combining sequence with no precomposed form - x-bar, v-vector, alpha-hat,
+/// all ordinary in mathematics - stays two code points after NFC while being
+/// one grapheme. Counting graphemes would therefore accept text the database
+/// refuses: the columns are `STRING(n)` and n is measured in code points,
+/// confirmed here by feeding 150 graphemes at 300 code points to a
+/// `String(200)` column and watching it be rejected. Validating on a looser
+/// unit than the column enforces turns a clean "too long" message into a
+/// write that fails at the driver, which is a worse experience than the
+/// occasional two-for-one character.
 export function charLength(s: string): number {
-  return [...s].length;
+  return [...s.normalize("NFC")].length;
+}
+
+/// The canonical form to store, so what was counted is what is written.
+export function canonical(s: string): string {
+  return s.normalize("NFC");
 }

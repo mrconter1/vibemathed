@@ -1,9 +1,9 @@
-"use server";
+﻿"use server";
 
 import { updateTag } from "next/cache";
 import { auth } from "@/auth";
 import { isAdmin } from "@/lib/admin";
-import { charLength } from "@/lib/char-length";
+import { canonical, charLength } from "@/lib/char-length";
 import { prisma } from "@/lib/prisma";
 import {
   EDITABLE_FIELDS,
@@ -30,7 +30,11 @@ function parseField(
   raw: string,
   ownSlug: string,
 ): { ok: true; value: Parsed } | { ok: false; error: string } {
-  const v = raw.trim();
+  // NFC as well as trim, so the value that gets counted below is the value
+  // that gets stored. Without it a decomposed paste is measured one way and
+  // written another, and two spellings of one visible name sit in the
+  // catalog as different strings.
+  const v = canonical(raw.trim());
 
   if (v === "") {
     if (spec.required) return { ok: false, error: `${spec.label} cannot be empty.` };
