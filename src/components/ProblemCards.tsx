@@ -26,7 +26,10 @@ import {
   SORTS,
   TIME_SENSITIVE,
   normalizeListSettings,
+  parseSelection,
+  selectionMatches,
   sortValue,
+  toggleSelection,
   type ListSettings,
   type SortDir,
   type SortKey,
@@ -617,7 +620,12 @@ export function ProblemCards({
     if (sortDir !== "desc") q.set("dir", sortDir);
     if (period !== "all") q.set("period", period);
     if (perPage !== 25) q.set("per", String(perPage));
-    const qs = q.toString();
+    // URLSearchParams percent-encodes the comma that separates a facet's
+    // options, turning a shared link into ?contribution=a%2Cb. A comma is a
+    // legal sub-delimiter in a query string and `url.get` reads it back
+    // identically, so it is put back purely so the address bar stays legible.
+    // Safe to do blindly: no option value contains a comma of its own.
+    const qs = q.toString().replace(/%2C/g, ",");
     window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
   }, [restored, fieldFilter, resultFilter, statusFilter, contributionFilter, modelFilter, verificationFilter, publicationFilter, methodFilter, sortKey, sortDir, period, perPage]);
 
@@ -725,6 +733,8 @@ export function ProblemCards({
     method: methodFilter,
   };
 
+  // Takes the whole new value rather than one option: the panel and the chip
+  // row both compute it with toggleSelection, and Clear passes "all".
   function setFilter(key: string, value: string) {
     touch();
     if (key === "result") setResultFilter(value);
@@ -751,6 +761,13 @@ export function ProblemCards({
           .toISOString()
           .slice(0, 10)
       : "";
+    // Resolved to regexes once, for the same reason as queryId: the model
+    // facet is the one filter that cannot compare values directly, and
+    // scanning MODEL_FAMILIES per entry per keystroke is work with no payoff.
+    const chosenModels = parseSelection(modelFilter);
+    const modelTests = MODEL_FAMILIES.filter((f) => chosenModels.includes(f.key)).map(
+      (f) => f.test,
+    );
     return problems.filter((p) => {
       if (dateFiltering) {
         // "Added" scopes by when the entry entered the catalog; every other
@@ -760,17 +777,20 @@ export function ProblemCards({
         const stamp = sortKey === "added" ? p.addedAt.slice(0, 10) : p.solveDate;
         if (stamp < cutoff) return false;
       }
-      if (fieldFilter !== "all" && p.fieldGroup !== fieldFilter) return false;
-      if (resultFilter !== "all" && p.solveType !== resultFilter) return false;
-      if (statusFilter !== "all" && p.resolution !== statusFilter) return false;
-      if (contributionFilter !== "all" && p.aiContribution !== contributionFilter) return false;
-      if (modelFilter !== "all") {
-        const fam = MODEL_FAMILIES.find((f) => f.key === modelFilter);
-        if (fam && !fam.test.test(p.model)) return false;
-      }
-      if (verificationFilter !== "all" && p.verification !== verificationFilter) return false;
-      if (publicationFilter !== "all" && p.publication !== publicationFilter) return false;
-      if (methodFilter !== "all" && p.resolutionMethod !== methodFilter) return false;
+      // Options within a facet are alternatives, facets AND with each other -
+      // see selectionMatches. An empty facet passes everything, so this reads
+      // the same as the single-value version it replaced.
+      if (!selectionMatches(fieldFilter, p.fieldGroup)) return false;
+      if (!selectionMatches(resultFilter, p.solveType)) return false;
+      if (!selectionMatches(statusFilter, p.resolution)) return false;
+      if (!selectionMatches(contributionFilter, p.aiContribution)) return false;
+      // The one facet matched by pattern rather than by value: an entry names
+      // its systems in free text, and a multi-system entry belongs to every
+      // family named on it.
+      if (modelTests.length > 0 && !modelTests.some((t) => t.test(p.model))) return false;
+      if (!selectionMatches(verificationFilter, p.verification)) return false;
+      if (!selectionMatches(publicationFilter, p.publication)) return false;
+      if (!selectionMatches(methodFilter, p.resolutionMethod)) return false;
       if (!q) return true;
       // A pasted link or a bare arXiv id is an identity, not a word: compare
       // it against what the entry's links actually point at, so
@@ -862,6 +882,8 @@ export function ProblemCards({
   const pageBtn =
     "inline-flex h-9 min-w-9 items-center justify-center rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-2.5 text-sm text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] hover:text-[var(--ink)] disabled:pointer-events-none disabled:opacity-40";
 
+  const chosenFields = parseSelection(fieldFilter);
+
   const filtersActive =
     query ||
     fieldFilter !== "all" ||
@@ -886,9 +908,11 @@ export function ProblemCards({
   return (
     <div>
       {/* Field taxonomy chips, with counts. One row that wraps; groups with no
-          entries never render. */}
+          entries never render. Chips accumulate like every other facet -
+          Algebra plus Analysis shows both - and "All fields" is how you get
+          back to none. */}
       <div className="mb-2.5 flex flex-wrap items-center gap-1.5">
-        <button type="button" onClick={() => { touch(); setFieldFilter("all"); }} className={chip(fieldFilter === "all")}>
+        <button type="button" onClick={() => { touch(); setFieldFilter("all"); }} className={chip(chosenFields.length === 0)}>
           All fields
           <span className="font-mono text-[11px] text-[var(--ink-muted)]">{problems.length}</span>
         </button>
@@ -896,8 +920,9 @@ export function ProblemCards({
           <button
             key={group}
             type="button"
-            onClick={() => { touch(); setFieldFilter(group); }}
-            className={chip(fieldFilter === group)}
+            aria-pressed={chosenFields.includes(group)}
+            onClick={() => { touch(); setFieldFilter(toggleSelection(fieldFilter, group)); }}
+            className={chip(chosenFields.includes(group))}
           >
             {group}
             <span className="font-mono text-[11px] text-[var(--ink-muted)]">{count}</span>
@@ -928,23 +953,26 @@ export function ProblemCards({
           end. The row only exists while something is filtered. */}
       {filtersActive && (
         <div className="mb-2.5 flex flex-wrap items-center gap-1.5">
-          {facets.map((f) => {
-            const v = filterValues[f.key];
-            if (v === "all") return null;
-            const label = f.options.find((o) => o.value === v)?.label ?? v;
-            return (
-              <button
-                key={f.key}
-                type="button"
-                onClick={() => setFilter(f.key, "all")}
-                aria-label={`Remove filter: ${label}`}
-                className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-[var(--accent-blue)] bg-[color-mix(in_srgb,var(--accent-blue)_10%,transparent)] px-2.5 py-1 text-xs font-medium text-[var(--accent-blue)]"
-              >
-                {label}
-                <span aria-hidden>×</span>
-              </button>
-            );
-          })}
+          {/* One chip per CONDITION, not per facet: two options chosen in the
+              same facet are two independent things to see and to remove, and
+              a single chip could only offer to drop both. */}
+          {facets.flatMap((f) =>
+            parseSelection(filterValues[f.key]).map((v) => {
+              const label = f.options.find((o) => o.value === v)?.label ?? v;
+              return (
+                <button
+                  key={`${f.key}:${v}`}
+                  type="button"
+                  onClick={() => setFilter(f.key, toggleSelection(filterValues[f.key], v))}
+                  aria-label={`Remove filter: ${label}`}
+                  className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-[var(--accent-blue)] bg-[color-mix(in_srgb,var(--accent-blue)_10%,transparent)] px-2.5 py-1 text-xs font-medium text-[var(--accent-blue)]"
+                >
+                  {label}
+                  <span aria-hidden>×</span>
+                </button>
+              );
+            }),
+          )}
           {/* A pill, like the chips it sits beside, but deliberately not a
               blue one: the chips are blue because each is an active filter,
               and a blue "Clear all" would read as one more of them rather

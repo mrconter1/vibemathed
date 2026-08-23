@@ -89,15 +89,62 @@ export const NUMERIC_KEYS: SortKey[] = [
 
 export const PAGE_SIZES = [10, 25, 50, 100];
 
+/// What one facet is set to: `"all"`, or one or more option values joined by
+/// commas.
+///
+/// A string rather than an array because these settings travel as a URL query
+/// string, a cookie and a localStorage blob, and a string survives all three
+/// unchanged. `?contribution=ai-discovered,ai-co-developed` reads as what it
+/// does, and a cookie written before multi-select ("ai-discovered") is already
+/// a valid one-element selection, so nobody's remembered view resets. No
+/// option value anywhere contains a comma, which is what makes the separator
+/// safe; the sanitizer below drops anything that is not a known option, so it
+/// stays safe even if one ever did.
+export type Selection = string;
+
+/// The options a facet is set to, in the order they were picked. `"all"` and
+/// an absent value both read as "no condition".
+export function parseSelection(value: Selection | undefined): string[] {
+  if (!value || value === "all") return [];
+  return value.split(",").filter(Boolean);
+}
+
+export function joinSelection(values: string[]): Selection {
+  return values.length === 0 ? "all" : values.join(",");
+}
+
+/// Adds an option to a facet, or removes it if it is already chosen. This is
+/// the only way the UI changes a facet, so clicking an active pill still
+/// clears it exactly as it did when facets held one value.
+export function toggleSelection(value: Selection | undefined, option: string): Selection {
+  const chosen = parseSelection(value);
+  return joinSelection(
+    chosen.includes(option) ? chosen.filter((v) => v !== option) : [...chosen, option],
+  );
+}
+
+/// Whether an entry passes a facet. An empty selection passes everything;
+/// otherwise the chosen options are ORed. Within a facet the options are
+/// alternatives - "AI-discovered and AI-co-developed" is one question about
+/// one column, and ANDing them would match nothing. Facets still AND with
+/// each other, so adding a second facet always narrows.
+export function selectionMatches(
+  value: Selection | undefined,
+  actual: string | null | undefined,
+): boolean {
+  const chosen = parseSelection(value);
+  return chosen.length === 0 || (actual != null && chosen.includes(actual));
+}
+
 export interface ListSettings {
-  fieldFilter: string;
-  resultFilter: string;
-  statusFilter: string;
-  contributionFilter: string;
-  modelFilter: string;
-  verificationFilter: string;
-  publicationFilter: string;
-  methodFilter: string;
+  fieldFilter: Selection;
+  resultFilter: Selection;
+  statusFilter: Selection;
+  contributionFilter: Selection;
+  modelFilter: Selection;
+  verificationFilter: Selection;
+  publicationFilter: Selection;
+  methodFilter: Selection;
   sortKey: SortKey;
   sortDir: SortDir;
   period: Period;
@@ -127,8 +174,14 @@ export const SETTINGS_COOKIE = "vibemathed_list";
 /// by significance once should still land there next month.
 export const SETTINGS_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
-const isOneOf = (value: unknown, allowed: readonly string[]) =>
-  typeof value === "string" && (value === "all" || allowed.includes(value));
+/// Keeps the options a facet can actually offer today and drops the rest,
+/// option by option: a stale value inside a multi-selection loses only itself
+/// rather than resetting the whole facet. Duplicates collapse, so a
+/// hand-edited URL cannot make one condition count twice in the badge.
+const sanitize = (value: unknown, allowed: readonly string[]): Selection => {
+  if (typeof value !== "string") return "all";
+  return joinSelection([...new Set(parseSelection(value))].filter((v) => allowed.includes(v)));
+};
 
 /// Validates whatever was stored into settings the UI can actually render.
 /// Anything unrecognised falls back to its default, key by key, so one stale
@@ -137,22 +190,14 @@ export function normalizeListSettings(raw: unknown): ListSettings {
   const s = (typeof raw === "object" && raw !== null ? raw : {}) as Record<string, unknown>;
   const out = { ...DEFAULT_SETTINGS };
 
-  if (isOneOf(s.fieldFilter, FIELD_GROUPS)) out.fieldFilter = s.fieldFilter as string;
-  if (isOneOf(s.resultFilter, Object.keys(SOLVE_TYPE))) out.resultFilter = s.resultFilter as string;
-  if (isOneOf(s.statusFilter, RESOLUTION_STATUSES)) out.statusFilter = s.statusFilter as string;
-  if (isOneOf(s.contributionFilter, AI_CONTRIBUTIONS)) {
-    out.contributionFilter = s.contributionFilter as string;
-  }
-  if (isOneOf(s.modelFilter, MODEL_FAMILIES.map((f) => f.key))) {
-    out.modelFilter = s.modelFilter as string;
-  }
-  if (isOneOf(s.verificationFilter, Object.keys(VERIFICATION))) {
-    out.verificationFilter = s.verificationFilter as string;
-  }
-  if (isOneOf(s.publicationFilter, PUBLICATION_STATUSES)) {
-    out.publicationFilter = s.publicationFilter as string;
-  }
-  if (isOneOf(s.methodFilter, RESOLUTION_METHODS)) out.methodFilter = s.methodFilter as string;
+  out.fieldFilter = sanitize(s.fieldFilter, FIELD_GROUPS);
+  out.resultFilter = sanitize(s.resultFilter, Object.keys(SOLVE_TYPE));
+  out.statusFilter = sanitize(s.statusFilter, RESOLUTION_STATUSES);
+  out.contributionFilter = sanitize(s.contributionFilter, AI_CONTRIBUTIONS);
+  out.modelFilter = sanitize(s.modelFilter, MODEL_FAMILIES.map((f) => f.key));
+  out.verificationFilter = sanitize(s.verificationFilter, Object.keys(VERIFICATION));
+  out.publicationFilter = sanitize(s.publicationFilter, PUBLICATION_STATUSES);
+  out.methodFilter = sanitize(s.methodFilter, RESOLUTION_METHODS);
 
   if (SORTS.some((x) => x.key === s.sortKey)) out.sortKey = s.sortKey as SortKey;
   if (s.sortDir === "asc" || s.sortDir === "desc") out.sortDir = s.sortDir;
@@ -164,8 +209,16 @@ export function normalizeListSettings(raw: unknown): ListSettings {
 
 /// Reads the server's copy. A missing, malformed or oversized cookie is just
 /// "no preference"; it must never be able to fail a page render.
+///
+/// The size guard is a sanity bound on a value the browser sends us, not a
+/// budget: every legal setting fits far inside it. It was 512, which a
+/// single-valued facet could never approach but multi-select can - choosing
+/// every field group alone is ~300 characters once percent-encoding has
+/// tripled each space. Measured worst case (every option of every facet) is
+/// under 1kB, so 2048 leaves room for facets yet to exist while still
+/// refusing anything that is obviously not our cookie.
 export function readSettingsCookie(value: string | undefined): ListSettings {
-  if (!value || value.length > 512) return DEFAULT_SETTINGS;
+  if (!value || value.length > 2048) return DEFAULT_SETTINGS;
   try {
     return normalizeListSettings(JSON.parse(decodeURIComponent(value)));
   } catch {

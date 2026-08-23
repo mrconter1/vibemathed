@@ -6,12 +6,16 @@
 // was outgrowing the control bar.
 //
 // Selections apply instantly (the list refilters client-side, so an Apply
-// button would only add ceremony). Tapping the active pill again clears that
-// facet back to "all". State lives in ProblemCards, exactly where the old
-// selects kept it, so persistence and counting are untouched.
+// button would only add ceremony). A facet takes as many options as you like:
+// pills toggle, so tapping an active one removes just that option and tapping
+// another adds it alongside. Options within a facet are alternatives (any of),
+// which is why picking a second one widens the list while picking a second
+// FACET narrows it. State lives in ProblemCards, exactly where the old selects
+// kept it, so persistence is untouched.
 
 import { useEffect, useId, useRef, useState } from "react";
 import { Icon } from "@/components/Icons";
+import { parseSelection, toggleSelection } from "@/lib/list-settings";
 
 export interface FilterFacet {
   key: string;
@@ -25,6 +29,7 @@ export function FilterPanel({
   onChange,
 }: {
   facets: FilterFacet[];
+  /// Per facet: "all", or the chosen option values joined by commas.
   values: Record<string, string>;
   onChange: (key: string, value: string) => void;
 }) {
@@ -37,7 +42,11 @@ export function FilterPanel({
   const panelRef = useRef<HTMLDivElement>(null);
   const panelId = useId();
 
-  const activeCount = facets.filter((f) => (values[f.key] ?? "all") !== "all").length;
+  // Conditions, not facets: with several options allowed per facet, counting
+  // facets would show "1" for a three-way AI-contribution choice and stop
+  // moving as more were added, which is the opposite of what a count on a
+  // collapsed control is for.
+  const activeCount = facets.reduce((n, f) => n + parseSelection(values[f.key]).length, 0);
 
   // Clamp the desktop popover inside the viewport. The anchor button's
   // position depends on how the control row wrapped, so this is measured
@@ -131,32 +140,62 @@ export function FilterPanel({
           // rounded thumb on a transparent track.
           className="dialog-scroll fixed inset-x-0 bottom-0 z-50 max-h-[75vh] rounded-t-xl border-t border-[var(--hairline)] bg-[var(--paper-raised)] px-5 pb-6 pt-4 shadow-lg sm:absolute sm:inset-x-auto sm:bottom-auto sm:left-0 sm:top-full sm:mt-2 sm:w-[22rem] sm:rounded-lg sm:border sm:px-4 sm:pb-4"
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             <span className="font-serif text-base text-[var(--ink)]">Filters</span>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              aria-label="Close filters"
-              className="rounded px-2 py-1 text-sm text-[var(--ink-muted)] transition-colors hover:text-[var(--ink)]"
-            >
-              ✕
-            </button>
+            <span className="flex items-center gap-1">
+              {/* In the HEADER, not only at the foot of the panel. Seven
+                  facets are taller than the panel, so the footer copy sat
+                  below the fold on any short window - the one control a
+                  reader wants when the list has gone empty was the one they
+                  had to scroll to find. Rendered only when it would do
+                  something, so it never reads as a live control on a clean
+                  panel. The same pill as the chip row's outside, so the two
+                  clears read as one control in two places. */}
+              {activeCount > 0 && (
+                <button
+                  type="button"
+                  onClick={() => facets.forEach((f) => onChange(f.key, "all"))}
+                  className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-[var(--hairline)] bg-[var(--paper)] px-2.5 py-1 text-xs font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-orange)] hover:text-[var(--accent-orange)]"
+                >
+                  <Icon name="close" size={11} />
+                  Clear filters
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                aria-label="Close filters"
+                className="rounded px-2 py-1 text-sm text-[var(--ink-muted)] transition-colors hover:text-[var(--ink)]"
+              >
+                ✕
+              </button>
+            </span>
           </div>
 
           {facets.map((f) => {
             const current = values[f.key] ?? "all";
+            const chosen = parseSelection(current);
             return (
               <fieldset key={f.key} className="mt-4">
-                <legend className="text-xs text-[var(--ink-muted)]">{f.label}</legend>
+                <legend className="text-xs text-[var(--ink-muted)]">
+                  {f.label}
+                  {/* Only once a second option is picked, because that is the
+                      only moment the reader needs telling: one pill is
+                      unambiguous, two could plausibly mean "both at once",
+                      which here would match nothing. */}
+                  {chosen.length > 1 && (
+                    <span className="ml-1.5 text-[var(--ink-muted)] opacity-70">any of</span>
+                  )}
+                </legend>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   {f.options.map((o) => {
-                    const active = current === o.value;
+                    const active = chosen.includes(o.value);
                     return (
                       <button
                         key={o.value}
                         type="button"
                         aria-pressed={active}
-                        onClick={() => onChange(f.key, active ? "all" : o.value)}
+                        onClick={() => onChange(f.key, toggleSelection(current, o.value))}
                         className={pill(active)}
                       >
                         {o.label}
@@ -168,18 +207,7 @@ export function FilterPanel({
             );
           })}
 
-          <div className="mt-5 flex items-center justify-between border-t border-[var(--hairline)] pt-3">
-            {/* Same pill as the chip row's, so the two clears read as one
-                control in two places rather than two different affordances. */}
-            <button
-              type="button"
-              onClick={() => facets.forEach((f) => onChange(f.key, "all"))}
-              disabled={activeCount === 0}
-              className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-[var(--hairline)] bg-[var(--paper)] px-2.5 py-1 text-xs font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-orange)] hover:text-[var(--accent-orange)] disabled:pointer-events-none disabled:opacity-40"
-            >
-              <Icon name="close" size={11} />
-              Clear filters
-            </button>
+          <div className="mt-5 flex items-center justify-end border-t border-[var(--hairline)] pt-3">
             <button
               type="button"
               onClick={() => setOpen(false)}
