@@ -261,8 +261,8 @@ export default function MethodologyPage() {
           property of the mathematics.
         </p>
         <p>
-          <strong className="text-[var(--ink)]">Independent</strong> is a third
-          outcome rather than a variety of the first two. The statement is
+          <strong className="text-[var(--ink)]">Independent</strong>{" "}
+          is a third outcome rather than a variety of the first two. The statement is
           neither provable nor refutable from the ambient axioms, and that is
           itself the theorem. Recording such a result as proved would describe
           the metatheorem rather than the problem, and recording it as disproved
@@ -407,7 +407,11 @@ export default function MethodologyPage() {
         <p>
           Every entry carries an <strong className="text-[var(--ink)]">AI-estimated
           significance score</strong>: how much mathematics cared about the problem{" "}
-          <em>before</em> it was solved, as an integer from 0 to 100. It is
+          {/* Explicit, like the {" "} on the line above. A literal space
+              between a closing tag and a text node that then wraps is eaten by
+              JSX, which is how this rendered as "beforeit was solved". */}
+          <em>before</em>{" "}
+          it was solved, as an integer from 0 to 100. It is
           calibrated against an anchored ladder - the Riemann hypothesis is 100,
           Collatz sits near 80, the Jacobian conjecture near 65, a conjecture
           famous within one research community around 30, a typical numbered
