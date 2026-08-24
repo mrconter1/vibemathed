@@ -111,17 +111,33 @@ export async function getInbox(): Promise<InboxResult> {
   if (!session?.user?.id) return { ok: false, error: "Sign in to read your inbox." };
   const userId = session.user.id;
 
-  // One query. Membership in a thread is decided entirely by its root: the
-  // two ends of a conversation are the root's recipient and sender, and
-  // `replyToMessage` only ever lets those two write in it. So the reader's
-  // threads are exactly the roots naming them, and `include: replies` brings
-  // each thread along in the same round trip - this used to be two sequential
-  // queries, the first of which filtered on unindexed `senderId` and scanned
-  // the table.
+  // One query, and NOT capped at the SQL level: the order a reader cares
+  // about is by last ACTIVITY, which is not known until the replies are in
+  // hand, so a `take` here would cut on the wrong axis. This used to
+  // `take: PAGE` ordered by the root's own `createdAt`, which is a
+  // conversation's AGE, not its activity - a root from three weeks ago that
+  // got a reply five minutes ago sorted by that reply for display, but had
+  // already been cut from the batch fetched, by root age, before that reply
+  // was ever looked at. The result: a genuinely unread, genuinely recent
+  // conversation invisible on every page, with no error and no sign anything
+  // was missing - exactly what this project's own curator hit at 90
+  // conversations, the 75th oldest, its most recent reply nine days after
+  // the row itself would have been fetched. Fetching every one of this
+  // reader's threads and slicing after the real sort (below) fixes it, at
+  // the cost of the take: for a personal-scale inbox - curator and
+  // submitter conversations, not a message platform - even the busiest
+  // account today is two digits, so this is still the one query it always
+  // was.
+  //
+  // Membership in a thread is decided entirely by its root: the two ends of
+  // a conversation are the root's recipient and sender, and `replyToMessage`
+  // only ever lets those two write in it. So the reader's threads are
+  // exactly the roots naming them, and `include: replies` brings each thread
+  // along in the same round trip - this used to be two sequential queries,
+  // the first of which filtered on unindexed `senderId` and scanned the
+  // table.
   const roots = await prisma.directMessage.findMany({
     where: { parentId: null, OR: [{ userId }, { senderId: userId }] },
-    orderBy: { createdAt: "desc" },
-    take: PAGE,
     select: {
       id: true,
       kind: true,
@@ -184,12 +200,11 @@ export async function getInbox(): Promise<InboxResult> {
   });
 
   // Most recently spoken in first: a conversation answered an hour ago
-  // belongs above one that has been quiet for a week. (The take-PAGE window
-  // above is by root age, so a thread older than the newest fifty roots ages
-  // out of the list even if it was answered today - acceptable at fifty, and
-  // the trade is what keeps this a single indexed read.)
+  // belongs above one that has been quiet for a week. The PAGE cap applies
+  // HERE, after the true order is known, not at the query above - see the
+  // comment there for what went wrong when it was the other way round.
   items.sort((a, b) => b.stamp - a.stamp);
-  return { ok: true, items: items.map((x) => x.item) };
+  return { ok: true, items: items.slice(0, PAGE).map((x) => x.item) };
 }
 
 /// One conversation, in full.
