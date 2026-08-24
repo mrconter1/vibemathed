@@ -163,3 +163,14 @@ export const MESSAGE_MAX = 2000;
 /// row, not a first paragraph; anything that needs more room belongs in the
 /// body it is introducing.
 export const SUBJECT_MAX = 120;
+
+/// "Show the inbox list", broadcast by the header's envelope and heard by the
+/// inbox page.
+///
+/// The two are in different trees, and what has to change is component state
+/// rather than a URL: an open conversation is deliberately not addressable
+/// (see the note at the top of InboxList), so pressing the envelope while
+/// already on /inbox is a soft navigation to the current route and moves
+/// nothing. Named here rather than in either component so neither can rename
+/// it alone and leave the other listening for a string nobody sends.
+export const INBOX_HOME_EVENT = "vibemathed:inbox-home";

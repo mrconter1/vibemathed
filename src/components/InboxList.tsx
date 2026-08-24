@@ -39,7 +39,7 @@ import {
   type InboxMessage,
   type InboxSummary,
 } from "@/app/actions/inbox";
-import { MESSAGE_MAX, SUBJECT_MAX } from "@/lib/messages";
+import { INBOX_HOME_EVENT, MESSAGE_MAX, SUBJECT_MAX } from "@/lib/messages";
 import { useViewer } from "@/components/ViewerProvider";
 import { TeX } from "@/components/TeX";
 
@@ -117,6 +117,13 @@ function EntryLine({
 /// A div acting as a button rather than a <button>, because the name and the
 /// entry inside it are real links and interactive content may not nest inside
 /// a button.
+///
+/// An unread row is deliberately loud. It used to differ from a read one by a
+/// small orange "1 new" pill and a slightly darker preview line, which was not
+/// enough to answer "which of these have I not read" at a glance - the
+/// question the page exists to answer. It now carries a thick orange left
+/// edge, a tinted surface, a filled dot and a bolder name, so the answer is
+/// visible from across the room and from peripheral vision while scrolling.
 function SummaryRow({
   item,
   onOpen,
@@ -142,14 +149,31 @@ function SummaryRow({
           onOpen();
         }
       }}
-      className="block w-full cursor-pointer rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3 text-left transition-colors hover:border-[var(--ink-muted)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent-blue)]"
+      // border-l-[3px] on top of the `border` shorthand, not instead of it:
+      // the row keeps its hairline box and thickens one edge, so an unread
+      // row is not a differently-sized rectangle in the stack.
+      className={`block w-full cursor-pointer rounded-lg border px-4 py-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent-blue)] ${
+        unread
+          ? "border-l-[3px] border-[var(--accent-orange)] bg-[color-mix(in_srgb,var(--accent-orange)_8%,var(--paper-raised))]"
+          : "border-[var(--hairline)] bg-[var(--paper-raised)] hover:border-[var(--ink-muted)]"
+      }`}
     >
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
         <span className="flex items-baseline gap-2">
+          {/* The dot carries the state at the smallest possible size, for the
+              scan down the left edge; the pill below spells it out. Aria-less
+              because the pill already says "N new" in words. */}
+          {unread && (
+            <span
+              aria-hidden
+              className="inline-block h-2 w-2 shrink-0 self-center rounded-full"
+              style={{ backgroundColor: "var(--accent-orange)" }}
+            />
+          )}
           <OtherName
             name={item.other}
             user={item.otherUser}
-            className={`text-sm ${unread ? "font-medium text-[var(--ink)]" : "text-[var(--ink)]"}`}
+            className={`text-sm text-[var(--ink)] ${unread ? "font-semibold" : ""}`}
           />
           {unread && (
             <span className="rounded-full bg-[var(--accent-orange)] px-1.5 py-px text-[10px] font-medium text-white">
@@ -184,7 +208,7 @@ function SummaryRow({
           you" and "you are waiting on them". */}
       <p
         className={`mt-1.5 truncate text-sm ${
-          unread ? "text-[var(--ink)]" : "text-[var(--ink-secondary)]"
+          unread ? "font-medium text-[var(--ink)]" : "text-[var(--ink-secondary)]"
         }`}
       >
         {item.lastMine && (
@@ -561,6 +585,21 @@ export function InboxList() {
   const [page, setPage] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const fetched = useRef(false);
+  // Which conversations were unread when the page was opened. The list is
+  // ordered unread-first from THIS frozen set rather than from live
+  // unreadCount, for two reasons. Ten rows per page and a strictly
+  // most-recent-first order meant an unread decision from last week could sit
+  // under three newer conversations, or on page two, where no amount of
+  // styling helps. And freezing it stops the list reshuffling under the
+  // reader: opening a thread clears its pill but must not make its row jump
+  // down the page while they are looking at it.
+  //
+  // State, not a ref: it is read while computing what to render, and a ref
+  // read during render is exactly what the react-hooks/refs rule exists to
+  // catch (its value could be stale or torn under concurrent rendering).
+  // Setting it once when the inbox loads, alongside `items`, is the only
+  // write it ever needs.
+  const [arrivedUnread, setArrivedUnread] = useState<Set<string>>(new Set());
   // Conversations fetched ahead of a click. Warmed on row hover/focus and
   // kept in step by replies; dropped nowhere, since a session's inbox is
   // small and a stale cache is corrected by the read-marking on open.
@@ -574,9 +613,31 @@ export function InboxList() {
     if (fetched.current) return;
     fetched.current = true;
     getInbox().then((result) => {
-      if (result.ok) setItems(result.items);
-      else setError(result.error);
+      if (result.ok) {
+        setArrivedUnread(
+          new Set(result.items.filter((i) => i.unreadCount > 0).map((i) => i.id)),
+        );
+        setItems(result.items);
+      } else setError(result.error);
     });
+  }, []);
+
+  // The header's envelope, pressed while already on /inbox, means "back to the
+  // list" - the same thing it means from anywhere else on the site. It cannot
+  // do that by navigating: an open conversation is component state, not a URL
+  // (see the note at the top of this file), so the router sees a soft
+  // navigation to the route it is already on and nothing happens. So the
+  // button announces the press and this closes whatever is open. A window
+  // event rather than shared state because the two live in different trees,
+  // the header and the page.
+  useEffect(() => {
+    function home() {
+      setOpen(null);
+      setComposing(false);
+      setPage(0);
+    }
+    window.addEventListener(INBOX_HOME_EVENT, home);
+    return () => window.removeEventListener(INBOX_HOME_EVENT, home);
   }, []);
 
   /// Prefetch, without marking read: "read" is a claim about the reader, not
@@ -720,13 +781,19 @@ export function InboxList() {
       return <ComposeView onBack={() => setComposing(false)} onSent={onSent} />;
     }
 
-    const pages = Math.max(1, Math.ceil(items.length / PER_PAGE));
+    // Unread first, each block keeping the server's most-recent-first order.
+    // A stable sort, so this is exactly "float the arrived-unread rows to the
+    // top" and nothing else moves.
+    const ordered = [...items].sort(
+      (a, b) => (arrivedUnread.has(a.id) ? 0 : 1) - (arrivedUnread.has(b.id) ? 0 : 1),
+    );
+    const pages = Math.max(1, Math.ceil(ordered.length / PER_PAGE));
     const current = Math.min(page, pages - 1);
-    const visible = items.slice(current * PER_PAGE, (current + 1) * PER_PAGE);
+    const visible = ordered.slice(current * PER_PAGE, (current + 1) * PER_PAGE);
 
     return (
       <ListBody
-        items={items}
+        items={ordered}
         visible={visible}
         pages={pages}
         current={current}

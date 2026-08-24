@@ -14,12 +14,15 @@
 // state that this renders from.
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Icon } from "@/components/Icons";
 import { useViewer } from "@/components/ViewerProvider";
 import { HEADER_ICON, HEADER_ICON_HOVER } from "@/lib/header-button";
+import { INBOX_HOME_EVENT } from "@/lib/messages";
 
 export function InboxButton() {
   const { loaded, signedIn, unreadInbox } = useViewer();
+  const pathname = usePathname();
 
   // Same idiom as the bell: while the viewer is unknown, ship the control
   // and let `data-viewer` decide visibility, so it does not pop into a
@@ -41,6 +44,17 @@ export function InboxButton() {
   return (
     <Link
       href="/inbox"
+      // Already on /inbox: the press means "back to the list", which the
+      // router cannot do here. An open conversation is component state, not a
+      // URL, so navigating to the route we are on moves nothing and the
+      // envelope reads as broken. Announce it instead and let the page close
+      // whatever is open (INBOX_HOME_EVENT). Off /inbox it stays an ordinary
+      // link, and a fresh mount lands on the list anyway.
+      onClick={(e) => {
+        if (pathname !== "/inbox") return;
+        e.preventDefault();
+        window.dispatchEvent(new Event(INBOX_HOME_EVENT));
+      }}
       aria-label={unreadInbox > 0 ? `Inbox (${unreadInbox} unread)` : "Inbox"}
       title="Inbox"
       className={`relative inline-flex ${HEADER_ICON} ${HEADER_ICON_HOVER}`}
