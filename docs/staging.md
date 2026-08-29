@@ -27,12 +27,15 @@ Vercel gives every push to a non-production branch its own preview URL for
 free, and those are useful for a quick visual check. They are not enough here,
 for two reasons:
 
-1. **Sign-in cannot work on them.** A GitHub OAuth App accepts exactly one
-   callback URL. Per-deployment preview URLs carry a hash and so differ every
-   time, and no OAuth App can be registered against all of them. Anything
-   behind a session - submitting, reviewing, voting, the inbox - is untestable
-   on one. The per-*branch* alias above is the exception: it is stable, which
-   is precisely why staging is a branch rather than a pull request.
+1. **Sign-in cannot work on them.** OAuth redirect URIs have to be registered
+   in advance, and a per-deployment preview URL carries a hash that is not
+   known until the deployment exists. GitHub allows up to ten redirect URIs per
+   app and Google allows several, but no allowance helps when the URL cannot be
+   predicted, and a stream of pull requests would exhaust ten regardless.
+   Anything behind a session - submitting, reviewing, voting, the inbox - is
+   therefore untestable on a per-deployment preview. The per-*branch* alias
+   above is the exception: it is stable and known ahead of time, which is
+   precisely why staging is a branch rather than a pull request.
 2. **They would share production's database.** Preview deployments inherit the
    Preview environment's variables. Unless those are overridden, a preview
    writes to the live catalog, which is exactly what a test environment must
@@ -78,12 +81,20 @@ Two new clients, because staging must not accept production's tokens:
 Write `STAGING` below for
 `https://vibemathed-git-staging-rasmus-projects-f85c1805.vercel.app`.
 
-- **Google** — Cloud Console → Credentials → the existing OAuth client can be
-  reused if you add `STAGING/api/auth/callback/google` to its authorized
-  redirect URIs. Google allows several.
-- **GitHub** — Developer settings → OAuth Apps → **New OAuth App**. GitHub
-  allows only one callback URL per app, so this must be a separate app with
-  `STAGING/api/auth/callback/github`.
+Both providers accept several redirect URIs per client - GitHub up to ten -
+so adding the staging callback to the production client would work. Prefer a
+separate client anyway, for isolation rather than necessity: a staging
+credential is then worthless against production, and rotating or revoking
+staging cannot take the live site down with it. That is the whole point of
+having a staging environment.
+
+- **GitHub** — Developer settings → OAuth Apps → **New OAuth App**, callback
+  `STAGING/api/auth/callback/github`. Leave wildcard matching OFF; it would let
+  tokens reach any subdomain or path under that URL. Leave "Expire user access
+  tokens" off too - the app reads the GitHub token once at sign-in and never
+  calls the API again, so a refresh token would be for something nothing uses.
+- **Google** — Cloud Console → Credentials → new OAuth client ID (Web
+  application), authorized redirect URI `STAGING/api/auth/callback/google`.
 
 Neither can be created from a CLI: GitHub's API can create GitHub Apps but not
 OAuth Apps, and Google's OAuth clients are console-only in practice. These two

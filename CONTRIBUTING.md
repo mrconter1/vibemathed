@@ -44,8 +44,10 @@ npm run dev
 ```
 
 `.env.example` documents every variable, including how to create the Google and
-GitHub OAuth clients. Note that a GitHub OAuth App accepts exactly one callback
-URL, so local development needs its own app.
+GitHub OAuth clients. Both providers accept several redirect URIs per client,
+so you *can* add `http://localhost:3000/...` to an existing app - but make your
+own rather than borrowing someone else's, so a local credential is never one
+that works anywhere else.
 
 If `db:push` fails, see the CockroachDB quirks section of the
 [README](README.md#cockroachdb-quirks) - there are two known ones, both with
