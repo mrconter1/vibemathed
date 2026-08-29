@@ -31,6 +31,13 @@ export function SiteFooter() {
             Members
           </Link>
           <span aria-hidden>·</span>
+          {/* Beside Members rather than next to Submit: this covers every way
+              in, including the sceptical ones and the code, whereas Submit is
+              one specific route that already has its own link below. */}
+          <Link href="/contributing" className={link}>
+            Contributing
+          </Link>
+          <span aria-hidden>·</span>
           <a href="/api/dataset" className={link}>
             Dataset (CC BY 4.0)
           </a>
