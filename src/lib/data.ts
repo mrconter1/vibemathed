@@ -230,7 +230,7 @@ export async function getToday(): Promise<string> {
 export async function getEntryFlow(): Promise<{ week: number; prevWeek: number }> {
   "use cache";
   cacheTag("problems");
-  cacheLife("minutes");
+  cacheLife("hours");
   const now = Date.now();
   const [week, prevWeek] = await Promise.all([
     prisma.problem.count({
@@ -249,11 +249,13 @@ export async function getEntryFlow(): Promise<{ week: number; prevWeek: number }
 export async function getPublishedProblems(): Promise<ProblemWithTrends[]> {
   "use cache";
   cacheTag("problems");
-  cacheLife("minutes");
+  cacheLife("hours");
 
-  // `cacheLife("minutes")` means these window edges are up to a minute stale.
-  // That is immaterial for a 7- or 30-day window and still fine for 24 hours,
-  // where a minute is 0.07% of the window.
+  // `cacheLife("hours")` means these window edges are up to an hour stale.
+  // Immaterial for a 7- or 30-day window, and still fine for the 24-hour one,
+  // where an hour is 4% of the window and only shifts which entries sit just
+  // inside the boundary. An edit or a new entry does not wait for the hour:
+  // `updateTag("problems")` drops this the moment anything published changes.
   const now = Date.now();
   const [rows, day, threeDay, week, month] = await Promise.all([
     prisma.problem.findMany({
@@ -287,7 +289,7 @@ export async function getProblemBySlug(
 ): Promise<ProblemWithVotes | null> {
   "use cache";
   cacheTag("problems", `problem-${slug}`);
-  cacheLife("minutes");
+  cacheLife("hours");
 
   const row = await prisma.problem.findFirst({
     where: { slug, status: "published" },
@@ -321,7 +323,7 @@ export interface RelationView {
 export async function getRelations(slug: string): Promise<RelationView[]> {
   "use cache";
   cacheTag("problems", `problem-${slug}`);
-  cacheLife("minutes");
+  cacheLife("hours");
 
   const TARGET = {
     slug: true,
@@ -371,7 +373,7 @@ export async function getRelations(slug: string): Promise<RelationView[]> {
 export async function getComments(slug: string): Promise<CommentView[]> {
   "use cache";
   cacheTag(`comments-${slug}`);
-  cacheLife("minutes");
+  cacheLife("hours");
 
   const rows = await prisma.comment.findMany({
     where: { problem: { slug } },
@@ -403,7 +405,7 @@ export async function getComments(slug: string): Promise<CommentView[]> {
 export async function getActivity(slug: string): Promise<ActivityView[]> {
   "use cache";
   cacheTag(`activity-${slug}`);
-  cacheLife("minutes");
+  cacheLife("hours");
 
   const rows = await prisma.problemActivity.findMany({
     where: { problem: { slug }, type: { in: [...CHANGELOG_TYPES] } },
@@ -447,7 +449,7 @@ export async function getRecentActivity(
 ): Promise<SiteActivityView[]> {
   "use cache";
   cacheTag("activity");
-  cacheLife("minutes");
+  cacheLife("hours");
 
   const rows = await prisma.problemActivity.findMany({
     where: {
@@ -588,6 +590,13 @@ export interface DirectoryMember {
 export async function getMemberDirectory(): Promise<DirectoryMember[]> {
   "use cache";
   cacheTag("users");
+  // Stays at "minutes" on purpose while its neighbours moved to "hours".
+  // Accounts are created inside the Auth.js adapter, which revalidates no tag,
+  // so a new member reaching this list depends on the cache life alone - the
+  // same reason `getUserCount` keeps its short life. The cost of the exception
+  // is one query a minute for one cache entry, against the 586-entry pages
+  // that made the short life expensive; there is nothing to win by raising it
+  // and a visibly empty directory to lose.
   cacheLife("minutes");
 
   const users = await prisma.user.findMany({
@@ -639,7 +648,7 @@ export async function getUserProfile(
 ): Promise<UserProfile | null> {
   "use cache";
   cacheTag("users");
-  cacheLife("minutes");
+  cacheLife("hours");
 
   const user = await prisma.user.findUnique({
     where: { pseudonym },
@@ -776,7 +785,7 @@ export async function getUserProfile(
 export async function getStatementHtmlMap(): Promise<Record<string, string>> {
   "use cache";
   cacheTag("problems");
-  cacheLife("minutes");
+  cacheLife("days");
 
   const rows = await prisma.problem.findMany({
     where: { status: "published", statement: { not: null } },
