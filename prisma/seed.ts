@@ -54,9 +54,19 @@ function contentOf(p: MathProblem) {
     // idempotent rather than accumulating duplicates.
     links: {
       deleteMany: {},
-      create: (p.links ?? []).map((l, position) => ({ ...l, position })),
+      create: linkRows(p),
     },
   } satisfies Prisma.ProblemUpdateInput;
+}
+
+/// The link rows for an entry, in file order.
+///
+/// Shared because `contentOf` is update-shaped - it clears the existing set
+/// with `deleteMany` before rewriting it - while `create` has nothing to clear
+/// and rejects that key outright. Both need the same rows, so they come from
+/// here rather than being written twice and drifting.
+function linkRows(p: (typeof problems)[number]) {
+  return (p.links ?? []).map((l, position) => ({ ...l, position }));
 }
 
 async function main() {
@@ -75,8 +85,23 @@ async function main() {
       continue;
     }
 
+    // `contentOf` is update-shaped: its `links` carries a `deleteMany` to
+    // clear the old set before rewriting it, which keeps a re-seed idempotent.
+    // `create` has nothing to delete and rejects that key outright, so the
+    // link set is rebuilt here instead of spread in. Dropping `links` from the
+    // spread and re-adding it is what keeps the two shapes from diverging.
+    //
+    // This only bites on a genuinely empty database. Against one that has been
+    // seeded before, every entry takes the `update` path above and never
+    // reaches this line, which is why a fresh bootstrap was the first thing to
+    // ever hit it.
     const problem = await prisma.problem.create({
-      data: { slug: p.slug, ...contentOf(p) },
+      data: {
+        slug: p.slug,
+        ...contentOf(p),
+        // Overrides the spread above, so the `deleteMany` never reaches Prisma.
+        links: { create: linkRows(p) },
+      },
     });
 
     // Seeded entries are curator-authored, so there is no user to attribute.
