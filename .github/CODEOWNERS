@@ -1,0 +1,8 @@
+# Every pull request requests a review from the owner automatically.
+#
+# One catch-all line rather than per-directory owners: with a single
+# maintainer, splitting it would just be four ways of writing the same name,
+# and the file would go stale the moment a second person joined. Add specific
+# paths above the catch-all when there is actually someone else to name.
+
+*       @mrconter1

@@ -43,7 +43,6 @@ import { MESSAGE_MAX } from "../src/lib/messages";
 const prisma = new PrismaClient();
 const APPLY = process.argv.includes("--apply");
 const SLUG = "riviere-s-regularity-question-for-critical-n-laplace-systems-with-antisymmetric-";
-const LINK_LABEL_MAX = 120;
 
 const LIMITS = new Map<string, number>();
 for (const s of [...EDITABLE_FIELDS, ...CURATOR_FIELDS]) if (s.maxLength) LIMITS.set(s.key, s.maxLength);

@@ -1,0 +1,72 @@
+name: CI
+
+# Runs on every pull request into the two long-lived branches, and on pushes to
+# them so the branch's own status is visible rather than inferred from the last
+# PR that touched it.
+on:
+  pull_request:
+    branches: [main, staging]
+  push:
+    branches: [main, staging]
+
+# A second push to the same PR makes the first run pointless. Cancel it rather
+# than paying for both and reading whichever finishes last.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Job id and display name are both `checks` on purpose: this is the context
+  # name the `main` branch protection rule requires, and the two drifting apart
+  # would silently block every merge.
+  checks:
+    name: checks
+    runs-on: ubuntu-latest
+    env:
+      # Never connected to - it only has to parse. Prisma resolves env() when
+      # it loads the schema, so `prisma validate` and `prisma generate` both
+      # fail outright with "Environment variable not found: DATABASE_URL"
+      # rather than skipping the check, which would make every pull request go
+      # red for a reason that has nothing to do with the change. A dummy URL is
+      # also the only correct answer here: a fork PR must never see the real
+      # credentials, and nothing in this job needs a live database.
+      DATABASE_URL: "postgresql://ci:ci@localhost:26257/ci?sslmode=disable"
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      # `npm ci` runs the postinstall hook, which is `prisma generate` - the
+      # generated client is what typecheck needs to resolve @prisma/client.
+      # No DATABASE_URL is required to generate it, only to connect.
+      - name: Install
+        run: npm ci
+
+      - name: Prisma schema is valid
+        run: npx prisma validate
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Types
+        run: npm run typecheck
+
+      # The seed baseline is committed, so a malformed edit would only surface
+      # at `db:seed` time on someone else's machine. Parsing it here is cheap
+      # and catches a truncated or conflict-marked file immediately.
+      - name: Seed baseline parses
+        run: node -e "const p=require('./src/data/problems.json');if(!Array.isArray(p)||p.length===0)throw new Error('problems.json must be a non-empty array of entries');console.log('problems.json OK:',p.length,'entries')"
+
+# Deliberately no `npm run build` here. The build prerenders the most-visited
+# entry pages through generateStaticParams, which needs a reachable
+# DATABASE_URL, and pull requests from forks get no secrets - correctly, since
+# a fork PR can run arbitrary code. Vercel builds every push against the real
+# database anyway, so a broken build shows up on the deployment check rather
+# than being missed. If a build gate in CI is ever wanted, it needs a
+# throwaway database seeded from problems.json, not the production URL.
