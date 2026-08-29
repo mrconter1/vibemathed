@@ -5,6 +5,7 @@ import { getUserProfile } from "@/lib/data";
 import { RESOLUTION, SOLVE_TYPE } from "@/lib/display";
 import type { ResolutionStatus, SolveType } from "@/lib/problems";
 import { SITE_URL } from "@/lib/site";
+import { withFallbackParam } from "@/lib/static-params";
 import { Icon, type IconName } from "@/components/Icons";
 import { MEMBER_ROLE, VERIFIED_HELP, type MemberRole } from "@/lib/roles";
 import { InfoTip } from "@/components/Tooltip";
@@ -39,9 +40,14 @@ export async function generateStaticParams() {
     },
     select: { pseudonym: true },
   });
-  return users
-    .filter((u): u is { pseudonym: string } => u.pseudonym !== null)
-    .map((u) => ({ pseudonym: u.pseudonym }));
+  // A database with entries but no members yet - a freshly seeded staging or
+  // local one - would otherwise return nothing here and fail the build.
+  return withFallbackParam(
+    users
+      .filter((u): u is { pseudonym: string } => u.pseudonym !== null)
+      .map((u) => ({ pseudonym: u.pseudonym })),
+    "pseudonym",
+  );
 }
 
 export async function generateMetadata({

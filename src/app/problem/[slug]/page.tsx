@@ -16,6 +16,7 @@ import { formatCommentDate } from "@/lib/comment-render";
 import { toEditableValues } from "@/lib/editable";
 import { groupLinksByKind, inferLinkKind } from "@/lib/link-kinds";
 import { SITE_URL } from "@/lib/site";
+import { withFallbackParam } from "@/lib/static-params";
 import { Icon, type IconName } from "@/components/Icons";
 import { Changelog } from "@/components/Changelog";
 import { RelativeTime } from "@/components/RelativeTime";
@@ -54,7 +55,12 @@ export async function generateStaticParams() {
     }),
   ]);
   const slugs = new Set([...recent, ...major].map((r) => r.slug));
-  return [...slugs].map((slug) => ({ slug }));
+  // Same guard as the profile route: an unseeded database has no published
+  // entries, and returning nothing here fails the build outright.
+  return withFallbackParam(
+    [...slugs].map((slug) => ({ slug })),
+    "slug",
+  );
 }
 
 export async function generateMetadata({
