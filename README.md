@@ -92,6 +92,17 @@ Open [http://localhost:3000](http://localhost:3000).
 `npm run build` needs a reachable `DATABASE_URL`: the most-visited entry pages
 are prerendered from the database via `generateStaticParams`.
 
+## Contributing
+
+Catalog contributions - new entries, corrections, challenges to a claim - go
+through the site rather than through git, because the catalog lives in a
+database: see [vibemathed.com/contributing](https://vibemathed.com/contributing).
+
+For code, see [CONTRIBUTING.md](CONTRIBUTING.md). Pull requests go to `staging`
+first, which runs at its own URL against its own database
+([`docs/staging.md`](docs/staging.md)), and are promoted to `main` from there.
+`main` requires a green CI run and one approval.
+
 ## License
 
 Code is MIT (see [LICENSE](LICENSE)). The catalog content served by the site
