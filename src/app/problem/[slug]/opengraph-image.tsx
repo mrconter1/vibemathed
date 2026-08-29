@@ -26,6 +26,24 @@ export const alt = "VibeMathed entry card";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+// This route stays dynamic (`ƒ` in the build output) and two obvious ways to
+// change that do not work, recorded so the next person does not spend the
+// afternoon rediscovering it:
+//
+//   `use cache` on the component fails the build outright - the return value is
+//   an ImageResponse, a class instance, and the cache boundary only carries
+//   plain objects ("Only plain objects, and a few built-ins, can be passed...").
+//
+//   `generateStaticParams`, mirroring the one on the page route, changes
+//   nothing: the route still reports `ƒ` and no images are prerendered, because
+//   awaiting `params` is a request-time read under Cache Components.
+//
+// The data it renders from IS cached (getProblemBySlug is a `use cache` scope),
+// so what repeats per request is the satori/resvg encode, not the query. That
+// showed up as $3.78 of Fluid Active CPU on the August invoice - real, but two
+// orders below the cache-churn lines, which is why this is left alone rather
+// than worked around.
+
 const RESULT_COLOR: Record<string, string> = {
   proved: "#2e7d32",
   disproved: "#c62828",
