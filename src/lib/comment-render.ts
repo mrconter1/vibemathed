@@ -13,6 +13,7 @@
 
 import katex from "katex";
 import { linkifyEscaped } from "@/lib/linkify";
+import { TEX_TOKENS, isDisplayMath, isInlineMath, unescapeDollars } from "@/lib/tex-tokens";
 
 function escapeHtml(s: string): string {
   return s
@@ -32,16 +33,13 @@ export function renderCommentHtml(text: string): string {
   return text
     .split(/\n{2,}/)
     .map((paragraph) => {
-      const parts = paragraph.split(/(\$\$[^$]+\$\$|\$[^$]+\$)/g);
+      const parts = paragraph.split(TEX_TOKENS);
       const inner = parts
         .map((part) => {
-          if (part.startsWith("$$") && part.endsWith("$$") && part.length > 4) {
-            return renderMath(part.slice(2, -2), true);
-          }
-          if (part.startsWith("$") && part.endsWith("$") && part.length > 2) {
-            return renderMath(part.slice(1, -1), false);
-          }
-          return linkifyEscaped(escapeHtml(part)).replace(/\n/g, "<br />");
+          if (isDisplayMath(part)) return renderMath(part.slice(2, -2), true);
+          if (isInlineMath(part)) return renderMath(part.slice(1, -1), false);
+          const linked = linkifyEscaped(escapeHtml(part));
+          return unescapeDollars(linked).replace(/\n/g, "<br />");
         })
         .join("");
       return inner ? `<p>${inner}</p>` : "";

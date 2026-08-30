@@ -1,5 +1,6 @@
 import katex from "katex";
 import { linkifyEscaped } from "@/lib/linkify";
+import { TEX_TOKENS, isDisplayMath, isInlineMath, unescapeDollars } from "@/lib/tex-tokens";
 
 // Server-rendered math. This is a server component, so KaTeX runs at build time
 // and the rendered markup ships in the static HTML - no client JS, no flash of
@@ -27,14 +28,12 @@ function escapeHtml(s: string): string {
 /// inside a stretched <a>, and an anchor nested in an anchor is invalid HTML.
 /// Prose fields ask for it; titles do not.
 export function texToHtml(children: string, opts?: { linkify?: boolean }): string {
-  const parts = children.split(/(\$\$[^$]+\$\$|\$[^$]+\$)/g);
-  const isDisplay = (p: string) => p.startsWith("$$") && p.endsWith("$$") && p.length > 4;
+  const parts = children.split(TEX_TOKENS);
+  const isDisplay = isDisplayMath;
   return parts
     .map((part, i) => {
       if (isDisplay(part)) return render(part.slice(2, -2), true);
-      if (part.startsWith("$") && part.endsWith("$") && part.length > 2) {
-        return render(part.slice(1, -1), false);
-      }
+      if (isInlineMath(part)) return render(part.slice(1, -1), false);
       // Newlines are meaningful here, and used to vanish: HTML collapses them,
       // so a statement written as a list rendered as one run-on paragraph.
       // Thirteen statements, ten AI-role notes and eight verification notes
@@ -47,7 +46,8 @@ export function texToHtml(children: string, opts?: { linkify?: boolean }): strin
       if (isDisplay(parts[i - 1] ?? "")) text = text.replace(/^\n/, "");
       if (isDisplay(parts[i + 1] ?? "")) text = text.replace(/\n$/, "");
       const escaped = escapeHtml(text);
-      return (opts?.linkify ? linkifyEscaped(escaped) : escaped).replace(/\n/g, "<br>");
+      const linked = opts?.linkify ? linkifyEscaped(escaped) : escaped;
+      return unescapeDollars(linked).replace(/\n/g, "<br>");
     })
     .join("");
 }
@@ -115,8 +115,12 @@ const REPLACEMENTS: [RegExp, string][] = [
 ];
 
 export function deTeX(s: string): string {
-  let out = s.replace(/\$\$?([^$]+)\$\$?/g, "$1");
+  // Escape-aware for the same reason the renderer is: a `\$` prize amount must
+  // not pair with a real delimiter and swallow the sentence between them. A meta
+  // description gets this wrong silently, which is how it went unnoticed.
+  let out = s.replace(/(?<!\\)\$\$?((?:\\.|[^$\\])+)\$\$?/g, "$1");
   for (const [re, rep] of REPLACEMENTS) out = out.replace(re, rep);
+  out = unescapeDollars(out);
   return out
     // A literal newline in a meta description or an OG tag is not a line
     // break, it is a broken tag.
