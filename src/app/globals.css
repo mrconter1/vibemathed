@@ -403,6 +403,27 @@ select option::checkmark {
 }
 
 /*
+ * KaTeX emits every formula TWICE: a MathML tree for assistive technology and
+ * a styled HTML tree for everyone else. Only the HTML is visible - katex.min.css
+ * clips the MathML to a 1px box - but a clipped element is still SELECTABLE, so
+ * copying a statement pastes both trees interleaved:
+ *
+ *   S 2 × S 2 S 2  ×S 2
+ *
+ * which reads as broken math to anyone who quotes an entry into an email, a
+ * ticket or a chat. Noticed on the submissions queue; it affects every page
+ * that renders math.
+ *
+ * Taking the MathML out of selection leaves one copy. It stays in the DOM and
+ * stays available to screen readers - user-select governs selection and the
+ * clipboard, not visibility or the accessibility tree.
+ */
+.katex-mathml {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/*
  * Prose paragraphs that render INLINE KaTeX (statements, AI-role and
  * verification notes). Inline math cannot line-break inside delimiters, so a
  * formula wider than a phone must scroll inside its paragraph - without this
