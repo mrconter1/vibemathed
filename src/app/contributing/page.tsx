@@ -58,6 +58,8 @@ const CARDS: { title: string; body: React.ReactNode; wide?: boolean }[] = [
         public changelog with your pseudonym against it. A misread source, a
         missing collaborator, an overstated AI claim, a significance score that
         looks off - fix it, or say so on the entry&apos;s discussion thread.
+        Comments are yours: deleting one removes it and its changelog line,
+        from the entry and from your profile.
       </>
     ),
   },

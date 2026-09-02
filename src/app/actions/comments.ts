@@ -247,6 +247,7 @@ export async function deleteComment(
   const existing = await prisma.comment.findUnique({
     where: { id: commentId },
     select: {
+      problemId: true,
       userId: true,
       userName: true,
       createdAt: true,
@@ -264,17 +265,40 @@ export async function deleteComment(
     return { ok: false, error: "You can only delete your own comments." };
   }
 
+  // The "commented" changelog row goes with the comment, whichever way the
+  // comment goes. It carries no content, but it is a public statement that
+  // this person said something here, on the entry's changelog and on their
+  // profile, and a member who deletes a comment reasonably expects that gone
+  // too (issue #9). No column links the two, so the row is matched by author,
+  // entry, type and a two-second window around the comment's own timestamp -
+  // the two are written back to back in addComment.
+  const activityMatch = {
+    problemId: existing.problemId,
+    userId: existing.userId,
+    type: "commented" as const,
+    createdAt: {
+      gte: new Date(existing.createdAt.getTime() - 2000),
+      lte: new Date(existing.createdAt.getTime() + 2000),
+    },
+  };
+
   try {
     if (existing._count.replies === 0) {
-      await prisma.comment.delete({ where: { id: commentId } });
+      await prisma.$transaction([
+        prisma.comment.delete({ where: { id: commentId } }),
+        prisma.problemActivity.deleteMany({ where: activityMatch }),
+      ]);
       invalidate(slug);
       return { ok: true, removed: true };
     }
     const deletedAt = new Date();
-    await prisma.comment.update({
-      where: { id: commentId },
-      data: { body: "", deletedAt },
-    });
+    await prisma.$transaction([
+      prisma.comment.update({
+        where: { id: commentId },
+        data: { body: "", deletedAt },
+      }),
+      prisma.problemActivity.deleteMany({ where: activityMatch }),
+    ]);
     invalidate(slug);
     return {
       ok: true,
