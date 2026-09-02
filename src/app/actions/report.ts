@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import { sendDirectMessage } from "@/app/actions/inbox";
-import { isAdmin } from "@/lib/admin";
+import { canReview } from "@/lib/curators";
 import { prisma } from "@/lib/prisma";
 
 // Entry reports: a reader flags an entry for curator attention, with a
@@ -39,7 +39,7 @@ export async function reportProblem(slug: string, body: string): Promise<ReportR
 
   // Rolling 24h window, same shape as the submission limit. Admins are
   // exempt for the same reason they are there: they are the moderation.
-  if (!isAdmin(session.user.email)) {
+  if (!canReview(session.user)) {
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const recent = await prisma.problemReport.count({
       where: { userId, createdAt: { gte: since } },
@@ -79,7 +79,7 @@ export async function handleReport(
   message = "",
 ): Promise<ReportResult> {
   const session = await auth();
-  if (!isAdmin(session?.user?.email)) {
+  if (!canReview(session?.user)) {
     return { ok: false, error: "Not allowed." };
   }
 

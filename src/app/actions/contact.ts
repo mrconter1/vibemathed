@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { isAdmin } from "@/lib/admin";
+import { canReview } from "@/lib/curators";
 import { prisma } from "@/lib/prisma";
 import { contactKind } from "@/lib/messages";
 import {
@@ -104,7 +104,7 @@ export async function sendSiteMessage(input: ContactInput): Promise<ContactResul
   if (userId) {
     // Admins are exempt for the same reason they are everywhere else: they
     // are the moderation.
-    if (!isAdmin(session?.user?.email)) {
+    if (!canReview(session?.user)) {
       const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
       const recent = await prisma.siteMessage.count({
         where: { userId, createdAt: { gte: since } },

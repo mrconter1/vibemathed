@@ -2,7 +2,7 @@
 
 import { updateTag } from "next/cache";
 import { auth } from "@/auth";
-import { isAdmin } from "@/lib/admin";
+import { canReview } from "@/lib/curators";
 import { canonical, charLength } from "@/lib/char-length";
 import { prisma } from "@/lib/prisma";
 import {
@@ -199,7 +199,7 @@ export async function updateProblem(
   let nextLinks: LinkRef[] | null = null;
   let nextRelations: RelationRef[] | null = null;
 
-  const writable = isAdmin(session.user.email)
+  const writable = canReview(session.user)
     ? [...EDITABLE_FIELDS, ...CURATOR_FIELDS]
     : EDITABLE_FIELDS;
 

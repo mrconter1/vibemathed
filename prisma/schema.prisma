@@ -197,6 +197,7 @@ model Problem {
   activities ProblemActivity[]
   links      ProblemLink[]
   reports    ProblemReport[]
+  reviewNotes ReviewNote[]
   messages   DirectMessage[]
   relationsFrom ProblemRelation[] @relation("RelationFrom")
   relationsTo   ProblemRelation[] @relation("RelationTo")
@@ -447,6 +448,18 @@ model User {
   verified     Boolean @default(false)
   verifiedNote String?
 
+  /// Curator-set place on the site's team: one of STAFF_ROLES in
+  /// src/lib/curators.ts. "admin" and "moderator" carry permissions;
+  /// "developer" is a credit. Set only by an admin, never self-serve, and the
+  /// ADMIN_EMAILS environment list stays the root of trust above it.
+  staffRole String?
+
+  /// Curator-set citation count for a verified researcher, read from a public
+  /// source at the time noted in `citationsNote` (e.g. "Google Scholar,
+  /// 2 Sep 2026"). Display only; a snapshot, not a live figure.
+  citations     Int?
+  citationsNote String?
+
   /// Banned accounts cannot sign in (denied in the signIn callback), and
   /// banning deletes their sessions - so with database sessions they lose all
   /// authenticated abilities at once. Curator-set; no UI.
@@ -472,6 +485,30 @@ model User {
   messages          SiteMessage[]
   inbox             DirectMessage[]   @relation("DirectMessageRecipient")
   sentMessages      DirectMessage[]   @relation("DirectMessageSender")
+  reviewNotes       ReviewNote[]
+}
+
+/// A curator's working note on a submission under review. Internal: shown on
+/// the review page only, never on the entry, never to the submitter.
+///
+/// Exists because review became a shared job. With one curator a note could
+/// live in their head; with several, the second reviewer needs to see that the
+/// first already checked the source, or is waiting on an author's reply, or
+/// thinks the tier is wrong. Comments (public, on published entries) and
+/// DirectMessage (to the submitter) are both the wrong channel for that.
+model ReviewNote {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  problemId String  @db.Uuid
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  /// Pseudonym snapshot, same reason as Comment.userName.
+  userName  String?
+  /// Plain text. Curators' shorthand, not a formatting surface.
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([problemId])
 }
 
 /// A curator writing TO one reader. The mirror of SiteMessage, which carries

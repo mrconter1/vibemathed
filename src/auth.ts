@@ -10,6 +10,9 @@ declare module "next-auth" {
     user: {
       id: string;
       pseudonym: string | null;
+      /// Curator-set team role, or null. Rides on the session so permission
+      /// checks (src/lib/curators.ts) are synchronous and cost no query.
+      staffRole: string | null;
     } & DefaultSession["user"];
   }
 }
@@ -65,6 +68,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // `user` is the full adapter record, so the pseudonym rides along and no
       // extra query is needed to render the viewer's public identity.
       session.user.pseudonym = (user as { pseudonym?: string | null }).pseudonym ?? null;
+      // Same ride for the staff role. Database sessions re-read the user row
+      // on every request, so a role granted or removed takes effect on the
+      // member's next request without a sign-out.
+      session.user.staffRole = (user as { staffRole?: string | null }).staffRole ?? null;
       return session;
     },
   },

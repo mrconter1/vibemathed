@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { auth } from "@/auth";
-import { isAdmin } from "@/lib/admin";
+import { canReview } from "@/lib/curators";
 import { prisma } from "@/lib/prisma";
 import { formatCommentDateTime } from "@/lib/comment-render";
 import { ReportsList, type OpenReport } from "@/components/ReportsList";
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 /// than through a cached reader - reports are private curator mail.
 async function Queue() {
   const session = await auth();
-  if (!isAdmin(session?.user?.email)) {
+  if (!canReview(session?.user)) {
     return (
       <div>
         <p className="text-sm text-[var(--ink-secondary)]">

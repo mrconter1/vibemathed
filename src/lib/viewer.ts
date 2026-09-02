@@ -29,9 +29,15 @@ export interface ViewerState {
   /// govern whether it is gathered in one place (see the schema).
   listed: boolean;
   showComments: boolean;
-  /// Whether this viewer may review submissions. The UI uses it to decide what
-  /// to show; every privileged action re-checks server-side regardless.
+  /// Whether this viewer may review submissions (env admin, or a database
+  /// admin or moderator - see src/lib/curators.ts). The UI uses it to decide
+  /// what to show; every privileged action re-checks server-side regardless.
   isAdmin: boolean;
+  /// Whether this viewer may manage members: verify, set citations, grant
+  /// staff roles. Env admins and database admins only.
+  isSiteAdmin: boolean;
+  /// The viewer's own staff role, for the profile editor and the header.
+  staffRole: string | null;
   /// Submissions awaiting review. Always 0 for non-admins, so the count is
   /// never disclosed to anyone who could not act on it.
   pendingReviews: number;
@@ -65,6 +71,8 @@ export const SIGNED_OUT: ViewerState = {
   listed: true,
   showComments: true,
   isAdmin: false,
+  isSiteAdmin: false,
+  staffRole: null,
   pendingReviews: 0,
   oldestPendingAt: null,
   openReports: 0,

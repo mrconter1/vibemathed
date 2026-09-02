@@ -4,7 +4,7 @@ import type { Prisma } from "@prisma/client";
 import { updateTag } from "next/cache";
 import { auth } from "@/auth";
 import { sendDirectMessage } from "@/app/actions/inbox";
-import { isAdmin } from "@/lib/admin";
+import { canReview } from "@/lib/curators";
 import { canonical, charLength } from "@/lib/char-length";
 import { formatCommentDate } from "@/lib/comment-render";
 import { prisma } from "@/lib/prisma";
@@ -33,7 +33,7 @@ export async function submitProblem(values: SubmissionValues): Promise<SubmitRes
   }
   const userId = session.user.id;
   const userName = session.user.pseudonym ?? null;
-  const admin = isAdmin(session.user.email);
+  const admin = canReview(session.user);
 
   // A few submissions per person per day, so a burst cannot flood the queue.
   // Admins bypass it.
@@ -232,7 +232,7 @@ export async function getMyPendingSubmissions(): Promise<MyPendingSubmission[]> 
 async function requireAdmin() {
   const session = await auth();
   if (!session?.user?.id) return null;
-  if (!isAdmin(session.user.email)) return null;
+  if (!canReview(session.user)) return null;
   return session;
 }
 

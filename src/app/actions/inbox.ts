@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { isAdmin } from "@/lib/admin";
+import { canReview } from "@/lib/curators";
 import { formatCommentDateTime } from "@/lib/comment-render";
 import { MESSAGE_MAX, SUBJECT_MAX, messageKindLabel, reasonLabel } from "@/lib/messages";
 import { prisma } from "@/lib/prisma";
@@ -550,7 +550,7 @@ export async function sendDirectMessage(input: {
   problemId?: string | null;
 }): Promise<void> {
   const session = await auth();
-  if (!isAdmin(session?.user?.email)) return;
+  if (!canReview(session?.user)) return;
 
   // Nothing to deliver, or nobody to deliver it to. An anonymous report has
   // no account behind it, which is a normal outcome, not an error.

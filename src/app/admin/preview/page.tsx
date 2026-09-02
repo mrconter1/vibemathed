@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { auth } from "@/auth";
-import { isAdmin } from "@/lib/admin";
+import { canReview } from "@/lib/curators";
 import { prisma } from "@/lib/prisma";
 import { PROBLEM_SELECT, toProblem } from "@/lib/data";
 import { ageAtSolve } from "@/lib/problems";
@@ -48,7 +48,7 @@ async function Preview({
   const { slug } = await searchParams;
   if (!slug) notFound();
   const session = await auth();
-  if (!isAdmin(session?.user?.email)) {
+  if (!canReview(session?.user)) {
     return (
       <p className="text-sm text-[var(--ink-secondary)]">
         This page is for reviewers.{" "}

@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { isAdmin } from "@/lib/admin";
+import { canManageMembers, canReview } from "@/lib/curators";
 import { prisma } from "@/lib/prisma";
 import { SIGNED_OUT, type ViewerState } from "@/lib/viewer";
 
@@ -17,7 +17,9 @@ export async function getViewerState(): Promise<ViewerState> {
   const session = await auth();
   if (!session?.user?.id) return SIGNED_OUT;
 
-  const admin = isAdmin(session.user.email);
+  // Env admins and database admins/moderators alike; the staff role rides on
+  // the session (see src/auth.ts), so this costs no query.
+  const admin = canReview(session.user);
 
   const userId = session.user.id;
 
@@ -102,6 +104,8 @@ export async function getViewerState(): Promise<ViewerState> {
     listed: me?.listed ?? true,
     showComments: me?.showComments ?? true,
     isAdmin: admin,
+    isSiteAdmin: canManageMembers(session.user),
+    staffRole: session.user.staffRole ?? null,
     pendingReviews,
     oldestPendingAt: oldestPending?.createdAt.toISOString() ?? null,
     openReports,

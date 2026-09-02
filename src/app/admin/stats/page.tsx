@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { auth } from "@/auth";
-import { isAdmin } from "@/lib/admin";
+import { canReview } from "@/lib/curators";
 import { availableDays, getAdminStats } from "@/lib/admin-stats";
 import { getTraffic } from "@/lib/vercel-analytics";
 import { AdminBars, AdminRanked } from "@/components/AdminBars";
@@ -44,7 +44,7 @@ function Card({ children }: { children: React.ReactNode }) {
 
 async function Dashboard() {
   const session = await auth();
-  if (!isAdmin(session?.user?.email)) {
+  if (!canReview(session?.user)) {
     return (
       <p className="text-sm text-[var(--ink-secondary)]">
         This page is for reviewers.{" "}
