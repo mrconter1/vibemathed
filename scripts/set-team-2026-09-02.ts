@@ -11,7 +11,13 @@
 // Scholar profile (2 citations, h-index 1) and the personal homepage (PhD
 // candidate in theoretical physics, William & Mary, Bentsen QIS group).
 //
-// Saul Schleimer - moderator, verified. The account is saulsch@gmail.com with
+// CORRECTION, same day: Saul's moderator role was removed an hour after it
+// was set. Making him a moderator was the curator's inference from "add the
+// other guys as moderator", not anything Saul asked for; he keeps the
+// verification and the citation count. Ask before granting a role.
+//
+// Saul Schleimer - verified (moderator until the correction above). The
+// account is saulsch@gmail.com with
 // Google name "Saul Schleimer" and bio "Geometric topologist at the University
 // of Warwick". His homepage (sschleimer.warwick.ac.uk) lists only the Warwick
 // address, so the gmail is NOT confirmed from his own page. What was checked:
@@ -59,6 +65,9 @@ const TEAM: {
   {
     email: "saulsch@gmail.com",
     expectPseudonym: "Saul Schleimer",
+    // Was "moderator" when this first ran; see the correction in the header.
+    // The type requires a role, so re-running this script would re-grant it:
+    // do not re-run it for Saul.
     staffRole: "moderator",
     verified: {
       note: "Handle matches his GitHub (Saul Schleimer, University of Warwick, links to his homepage) and Mathstodon accounts; bio matches the Warwick staff page. Checked 2 Sep 2026.",
