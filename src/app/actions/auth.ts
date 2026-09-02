@@ -1,6 +1,14 @@
 "use server";
 
-import { signIn, signOut } from "@/auth";
+import { randomUUID } from "node:crypto";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { AUTH_SESSION_MAX_AGE_SECONDS, signIn, signOut } from "@/auth";
+import { prisma } from "@/lib/prisma";
+import { DEVELOPMENT_USERS } from "../../../prisma/seeds_development";
+
+const DEVELOPMENT_SESSION_COOKIE = "authjs.session-token";
+const DEVELOPMENT_USER_EMAILS = DEVELOPMENT_USERS.map((user) => user.email);
 
 // Used directly as `<form action={...}>` handlers, so React hands them the
 // form's FormData.
@@ -26,6 +34,59 @@ export async function signInWithGoogle(formData?: FormData) {
 
 export async function signInWithGitHub(formData?: FormData) {
   await signIn("github", { redirectTo: safeRedirect(formData?.get("redirectTo") ?? null) });
+}
+
+/// Local-only shortcut for exercising authenticated UI without an OAuth
+/// round-trip. The server check is the security boundary; hiding its form in
+/// the page is only presentation and must never be relied upon by itself.
+export async function signInAsDevelopmentUser(formData: FormData) {
+  if (process.env.NODE_ENV !== "development") {
+    throw new Error("Development sign-in is disabled.");
+  }
+
+  const rawUserId = formData.get("userId");
+  if (typeof rawUserId !== "string" || !rawUserId) {
+    throw new Error("Choose a development user.");
+  }
+
+  // Restrict the action to the explicit fixtures. A copied production user
+  // must not become impersonatable merely because it is present locally.
+  const user = await prisma.user.findFirst({
+    where: {
+      id: rawUserId,
+      email: { in: DEVELOPMENT_USER_EMAILS },
+      banned: false,
+    },
+    select: { id: true },
+  });
+  if (!user) throw new Error("Development user not found.");
+
+  const cookieStore = await cookies();
+  const previousToken = cookieStore.get(DEVELOPMENT_SESSION_COOKIE)?.value;
+  const sessionToken = randomUUID();
+  const expires = new Date(Date.now() + AUTH_SESSION_MAX_AGE_SECONDS * 1000);
+
+  const createSession = prisma.session.create({
+    data: { sessionToken, userId: user.id, expires },
+  });
+  if (previousToken) {
+    await prisma.$transaction([
+      prisma.session.deleteMany({ where: { sessionToken: previousToken } }),
+      createSession,
+    ]);
+  } else {
+    await createSession;
+  }
+
+  cookieStore.set(DEVELOPMENT_SESSION_COOKIE, sessionToken, {
+    expires,
+    httpOnly: true,
+    sameSite: "lax",
+    secure: false,
+    path: "/",
+  });
+
+  redirect(safeRedirect(formData.get("redirectTo")));
 }
 
 export async function signOutEverywhere() {

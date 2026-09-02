@@ -5,6 +5,8 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { generateUniquePseudonym } from "@/lib/pseudonym";
 
+export const AUTH_SESSION_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
+
 declare module "next-auth" {
   interface Session {
     user: {
@@ -48,7 +50,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   // fortnight buys nothing. `updateAge` slides the window on use, so an
   // active reader effectively never gets logged out.
   session: {
-    maxAge: 30 * 24 * 60 * 60,
+    maxAge: AUTH_SESSION_MAX_AGE_SECONDS,
     updateAge: 24 * 60 * 60,
   },
   pages: {
@@ -64,15 +66,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true;
     },
     session({ session, user }) {
-      session.user.id = user.id;
-      // `user` is the full adapter record, so the pseudonym rides along and no
-      // extra query is needed to render the viewer's public identity.
-      session.user.pseudonym = (user as { pseudonym?: string | null }).pseudonym ?? null;
-      // Same ride for the staff role. Database sessions re-read the user row
-      // on every request, so a role granted or removed takes effect on the
-      // member's next request without a sign-out.
-      session.user.staffRole = (user as { staffRole?: string | null }).staffRole ?? null;
-      return session;
+      // Build a fresh payload rather than returning the adapter's runtime
+      // object. With database sessions that object also carries the session
+      // token and every User column; neither belongs in /api/auth/session.
+      return {
+        expires: session.expires,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          // `user` is the full adapter record, so the pseudonym rides along
+          // and no extra query is needed to render the viewer's public identity.
+          pseudonym: (user as { pseudonym?: string | null }).pseudonym ?? null,
+          // Database sessions re-read this row on every request, so granting
+          // or removing a staff role takes effect without a sign-out.
+          staffRole: (user as { staffRole?: string | null }).staffRole ?? null,
+        },
+      };
     },
   },
   events: {

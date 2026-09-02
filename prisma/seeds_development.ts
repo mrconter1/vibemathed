@@ -1,6 +1,6 @@
 import type { PrismaClient } from "@prisma/client";
 
-const DEVELOPMENT_USERS = [
+export const DEVELOPMENT_USERS = [
   {
     email: "test-admin@vibemathed.local",
     name: "Local Test Admin",
