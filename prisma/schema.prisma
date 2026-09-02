@@ -198,6 +198,7 @@ model Problem {
   links      ProblemLink[]
   reports    ProblemReport[]
   reviewNotes ReviewNote[]
+  provenance  FieldProvenance[]
   messages   DirectMessage[]
   relationsFrom ProblemRelation[] @relation("RelationFrom")
   relationsTo   ProblemRelation[] @relation("RelationTo")
@@ -523,6 +524,33 @@ model User {
   sentMessages      DirectMessage[]   @relation("DirectMessageSender")
   reviewNotes       ReviewNote[]
   commentVotes      CommentVote[]
+}
+
+/// Where a field's current value came from, when a model helped write it
+/// (issues #7 and #6). One row per (entry, field), overwritten on each
+/// AI-assisted write, so a row describes the value that is showing now.
+///
+/// This is the site holding itself to the bar it holds papers to: several
+/// entries were declined because a disclosure named no model and attributed
+/// no step. Recording started 2 Sep 2026; curator prose before that was
+/// AI-assisted without a per-field record, which the AI-disclosure page says.
+/// A field with no row is therefore "unrecorded", not "human-written".
+model FieldProvenance {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  problemId String   @db.Uuid
+  problem   Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  /// The MathProblem field name, e.g. "verificationNote".
+  field     String
+  /// The model that drafted the value, as the curator would name it.
+  model     String
+  /// What it worked from: a paper, a repository, a thread, a verifier run.
+  source    String?
+  /// The curator who reviewed and saved the value.
+  userId    String?
+  userName  String?
+  createdAt DateTime @default(now())
+
+  @@unique([problemId, field])
 }
 
 /// A curator's working note on a submission under review. Internal: shown on

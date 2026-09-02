@@ -33,6 +33,7 @@ import {
 import { texToHtml } from "@/components/TeX";
 import type { CommentView } from "@/lib/comments";
 import { resolveSnapshot } from "@/lib/identity";
+import type { ProvenanceView } from "@/lib/provenance";
 import type {
   AiContribution,
   FieldGroup,
@@ -413,6 +414,27 @@ export async function getComments(slug: string): Promise<CommentView[]> {
       deleted,
     };
   });
+}
+
+/// Per-field AI provenance for one entry, for the markers on the entry page.
+/// Cached with the entry: provenance changes only when a field is rewritten,
+/// and every such write drops the problem tag.
+export async function getProvenance(slug: string): Promise<ProvenanceView[]> {
+  "use cache";
+  cacheTag("problems", `problem-${slug}`);
+  cacheLife("hours");
+
+  const rows = await prisma.fieldProvenance.findMany({
+    where: { problem: { slug } },
+    select: { field: true, model: true, source: true, userName: true, userId: true, createdAt: true },
+  });
+  return rows.map((r) => ({
+    field: r.field,
+    model: r.model,
+    source: r.source,
+    reviewedBy: resolveSnapshot(r.userName, r.userId !== null),
+    date: formatCommentDate(r.createdAt),
+  }));
 }
 
 /// The changelog for one entry, newest first.

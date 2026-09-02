@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getActivity, getComments, getProblemBySlug, getRelations } from "@/lib/data";
+import { getActivity, getComments, getProblemBySlug, getProvenance, getRelations } from "@/lib/data";
+import { AiMark } from "@/components/AiMark";
 import { ageAtSolve, type ProblemWithVotes } from "@/lib/problems";
 import {
   AI_CONTRIBUTION,
@@ -103,13 +104,16 @@ export default async function ProblemPage({
   const { slug } = await params;
   // All four reads in parallel - none depends on another, and a missing slug
   // just returns empty lists from the secondary ones.
-  const [p, comments, activity, relations] = await Promise.all([
+  const [p, comments, activity, relations, provenance] = await Promise.all([
     getProblemBySlug(slug),
     getComments(slug),
     getActivity(slug),
     getRelations(slug),
+    getProvenance(slug),
   ]);
   if (!p) notFound();
+  // Per-field AI provenance, keyed by field, for the markers beside headings.
+  const prov = new Map(provenance.map((r) => [r.field, r]));
   const age = ageAtSolve(p);
   const v = VERIFICATION[p.verification];
   // Built from data the page already has, so opening the editor costs no query.
@@ -273,6 +277,7 @@ export default async function ProblemPage({
                 {k === "Significance" && p.significanceNote && (
                   <StarNote text={p.significanceNote} />
                 )}
+                {k === "Significance" && <AiMark provenance={prov.get("significance")} />}
                 {k === "Disclosed cost" && p.solveCostNote && (
                   <StarNote text={p.solveCostNote} />
                 )}
@@ -285,7 +290,10 @@ export default async function ProblemPage({
             claim rather than elaborating on it. */}
         {p.resultNote && (
           <section id="result-note" className="mt-6 scroll-mt-24">
-            <h2 className="font-serif text-lg text-[var(--ink)]">What was actually shown</h2>
+            <h2 className="flex items-center gap-2 font-serif text-lg text-[var(--ink)]">
+              What was actually shown
+              <AiMark provenance={prov.get("resultNote")} />
+            </h2>
             <p className="math-prose mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
               <TeX linkify>{p.resultNote}</TeX>
             </p>
@@ -294,7 +302,10 @@ export default async function ProblemPage({
 
         {p.aiRole && (
           <section className="mt-6">
-            <h2 className="font-serif text-lg text-[var(--ink)]">What the AI did</h2>
+            <h2 className="flex items-center gap-2 font-serif text-lg text-[var(--ink)]">
+              What the AI did
+              <AiMark provenance={prov.get("aiRole")} />
+            </h2>
             <p className="math-prose mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
               <TeX linkify>{p.aiRole}</TeX>
             </p>
@@ -303,7 +314,10 @@ export default async function ProblemPage({
 
         {p.verificationNote && (
           <section className="mt-6">
-            <h2 className="font-serif text-lg text-[var(--ink)]">Verification</h2>
+            <h2 className="flex items-center gap-2 font-serif text-lg text-[var(--ink)]">
+              Verification
+              <AiMark provenance={prov.get("verificationNote")} />
+            </h2>
             <p className="math-prose mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
               <TeX linkify>{p.verificationNote}</TeX>
             </p>
