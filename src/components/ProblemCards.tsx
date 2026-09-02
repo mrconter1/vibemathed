@@ -34,6 +34,7 @@ import {
   type SortDir,
   type SortKey,
 } from "@/lib/list-settings";
+import { SOURCE_HOSTS, sourceHostKey } from "@/lib/source-hosts";
 import Link from "next/link";
 import {
   ageAtSolve,
@@ -440,6 +441,7 @@ export function ProblemCards({
   const [verificationFilter, setVerificationFilter] = useState(initial.verificationFilter);
   const [publicationFilter, setPublicationFilter] = useState(initial.publicationFilter);
   const [methodFilter, setMethodFilter] = useState(initial.methodFilter);
+  const [sourceFilter, setSourceFilter] = useState(initial.sourceFilter);
   const [sortKey, setSortKey] = useState<SortKey>(initial.sortKey);
   const [sortDir, setSortDir] = useState<SortDir>(initial.sortDir);
   const [period, setPeriod] = useState<Period>(initial.period);
@@ -523,6 +525,7 @@ export function ProblemCards({
       ["verification", "verificationFilter"],
       ["publication", "publicationFilter"],
       ["method", "methodFilter"],
+      ["source", "sourceFilter"],
       ["sort", "sortKey"],
       ["dir", "sortDir"],
       ["period", "period"],
@@ -548,6 +551,7 @@ export function ProblemCards({
     setVerificationFilter(next.verificationFilter);
     setPublicationFilter(next.publicationFilter);
     setMethodFilter(next.methodFilter);
+    setSourceFilter(next.sourceFilter);
     setSortKey(next.sortKey);
     setSortDir(next.sortDir);
     setPeriod(next.period);
@@ -570,6 +574,7 @@ export function ProblemCards({
       verificationFilter,
       publicationFilter,
       methodFilter,
+      sourceFilter,
       sortKey,
       sortDir,
       period,
@@ -616,6 +621,7 @@ export function ProblemCards({
     if (verificationFilter !== "all") q.set("verification", verificationFilter);
     if (publicationFilter !== "all") q.set("publication", publicationFilter);
     if (methodFilter !== "all") q.set("method", methodFilter);
+    if (sourceFilter !== "all") q.set("source", sourceFilter);
     if (sortKey !== "solveDate") q.set("sort", sortKey);
     if (sortDir !== "desc") q.set("dir", sortDir);
     if (period !== "all") q.set("period", period);
@@ -627,7 +633,7 @@ export function ProblemCards({
     // Safe to do blindly: no option value contains a comma of its own.
     const qs = q.toString().replace(/%2C/g, ",");
     window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
-  }, [restored, fieldFilter, resultFilter, statusFilter, contributionFilter, modelFilter, verificationFilter, publicationFilter, methodFilter, sortKey, sortDir, period, perPage]);
+  }, [restored, fieldFilter, resultFilter, statusFilter, contributionFilter, modelFilter, verificationFilter, publicationFilter, methodFilter, sourceFilter, sortKey, sortDir, period, perPage]);
 
   // Statements beyond the first default-sort page ship without their rendered
   // HTML; one background fetch fills the map after hydration (see CardEntry).
@@ -710,6 +716,15 @@ export function ProblemCards({
         problems.some((p) => p.publication === v),
       ).map((v) => ({ value: v, label: PUBLICATION[v].label })),
     },
+    {
+      // WHERE the source lives, as distinct from what kind of thing it is
+      // (the publication facet above). Only the buckets present today.
+      key: "source",
+      label: "Source",
+      options: SOURCE_HOSTS.filter((h) =>
+        problems.some((p) => sourceHostKey(p.sourceUrl) === h.key),
+      ).map((h) => ({ value: h.key, label: h.label })),
+    },
     ...(problems.some((p) => p.resolutionMethod)
       ? [
           {
@@ -731,6 +746,7 @@ export function ProblemCards({
     verification: verificationFilter,
     publication: publicationFilter,
     method: methodFilter,
+    source: sourceFilter,
   };
 
   // Takes the whole new value rather than one option: the panel and the chip
@@ -744,6 +760,7 @@ export function ProblemCards({
     else if (key === "verification") setVerificationFilter(value);
     else if (key === "publication") setPublicationFilter(value);
     else if (key === "method") setMethodFilter(value);
+    else if (key === "source") setSourceFilter(value);
   }
 
   const filtered = useMemo(() => {
@@ -791,6 +808,9 @@ export function ProblemCards({
       if (!selectionMatches(verificationFilter, p.verification)) return false;
       if (!selectionMatches(publicationFilter, p.publication)) return false;
       if (!selectionMatches(methodFilter, p.resolutionMethod)) return false;
+      // Derived from the URL rather than stored, so it cannot drift from
+      // the source it describes. Cheap: one URL parse per entry per pass.
+      if (!selectionMatches(sourceFilter, sourceHostKey(p.sourceUrl))) return false;
       if (!q) return true;
       // A pasted link or a bare arXiv id is an identity, not a word: compare
       // it against what the entry's links actually point at, so
@@ -815,7 +835,7 @@ export function ProblemCards({
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [problems, query, period, sortKey, fieldFilter, resultFilter, statusFilter, contributionFilter, modelFilter, verificationFilter, publicationFilter, methodFilter]);
+  }, [problems, query, period, sortKey, fieldFilter, resultFilter, statusFilter, contributionFilter, modelFilter, verificationFilter, publicationFilter, methodFilter, sourceFilter]);
 
   const sorted = useMemo(() => {
     const arr = [...filtered];
@@ -850,6 +870,7 @@ export function ProblemCards({
     verificationFilter,
     publicationFilter,
     methodFilter,
+    sourceFilter,
     perPage,
     sortKey,
     sortDir,
@@ -893,7 +914,8 @@ export function ProblemCards({
     modelFilter !== "all" ||
     verificationFilter !== "all" ||
     publicationFilter !== "all" ||
-    methodFilter !== "all";
+    methodFilter !== "all" ||
+    sourceFilter !== "all";
 
   // `grow justify-center sm:grow-0`: on a phone the wrapped chip rows
   // stretch to fill the full width instead of leaving a ragged right edge;
