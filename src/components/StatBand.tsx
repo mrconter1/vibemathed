@@ -11,6 +11,7 @@
 // entry names attached, so the tiles would just be repeating them.
 
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { ageAtSolve, type ProblemWithVotes } from "@/lib/problems";
 import { Icon, type IconName } from "@/components/Icons";
 
@@ -18,14 +19,17 @@ interface Tile {
   icon: IconName;
   label: string;
   value: string;
-  sub?: string;
+  sub?: ReactNode;
+  /// Plain-text twin of `sub` for the truncation tooltip, needed only when
+  /// `sub` carries markup.
+  subTitle?: string;
   /// When the tile names something you can go and look at, the label links to
   /// it. On the label rather than the whole tile because an <a> wrapping
   /// <dt>/<dd> is not valid inside a <dl>.
   href?: string;
 }
 
-function computeTiles(problems: ProblemWithVotes[], users: number): Tile[] {
+function computeTiles(problems: ProblemWithVotes[], users: number, pending: number): Tile[] {
   const resolved = problems.filter((p) => p.resolution === "resolved").length;
   const lean = problems.filter((p) => p.verification === "lean-verified").length;
   const votes = problems.reduce((sum, p) => sum + p.upvotes + p.downvotes, 0);
@@ -46,7 +50,20 @@ function computeTiles(problems: ProblemWithVotes[], users: number): Tile[] {
       label: "Tracked problems",
       value: String(problems.length),
       // A sub line like its three siblings, so the row reads as one family.
-      sub: `${resolved} fully resolved`,
+      //
+      // The review count is shown even at zero. It is the record's proof of
+      // life: "0 under review" says everything sent in has been looked at,
+      // which is a different message from saying nothing. Linked to the
+      // public queue so a reader can see what the number stands for.
+      sub: (
+        <>
+          {resolved} fully resolved ·{" "}
+          <Link href="/queue" className="transition-colors hover:text-[var(--accent-blue)] hover:underline">
+            {pending} under review
+          </Link>
+        </>
+      ),
+      subTitle: `${resolved} fully resolved · ${pending} under review`,
     },
     {
       icon: "hourglass",
@@ -74,15 +91,18 @@ function computeTiles(problems: ProblemWithVotes[], users: number): Tile[] {
 export function StatBand({
   problems,
   users,
+  pending,
 }: {
   problems: ProblemWithVotes[];
   users: number;
+  /// Submissions awaiting review, from getPendingCount.
+  pending: number;
 }) {
   if (problems.length === 0) return null;
 
   return (
     <dl className="contents">
-      {computeTiles(problems, users).map((t) => (
+      {computeTiles(problems, users, pending).map((t) => (
         <div
           key={t.label}
           className="flex flex-col justify-center rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3"
@@ -108,7 +128,10 @@ export function StatBand({
               splitting the slack evenly instead of pooling it. */}
           <dd className="mt-1 text-2xl font-semibold text-[var(--ink)]">{t.value}</dd>
           {t.sub && (
-            <dd className="mt-0.5 truncate text-[11px] text-[var(--ink-muted)]" title={t.sub}>
+            <dd
+              className="mt-0.5 truncate text-[11px] text-[var(--ink-muted)]"
+              title={t.subTitle ?? (typeof t.sub === "string" ? t.sub : undefined)}
+            >
               {t.sub}
             </dd>
           )}

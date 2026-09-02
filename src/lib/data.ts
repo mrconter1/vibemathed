@@ -807,6 +807,72 @@ export async function getUserCount(): Promise<number> {
   return prisma.user.count();
 }
 
+/// How many submissions are waiting for a curator.
+///
+/// Public on purpose. The size of the queue used to be admin-only on the
+/// theory that it was nobody else's business, and the effect was that a
+/// visitor could not tell a curated record with three entries in review from
+/// an abandoned one. In September 2026 a Discord thread concluded the site
+/// had stopped tracking anything, while six submissions moved through the
+/// queue in 36 hours. The number is the cheapest possible proof of life.
+///
+/// Tagged "submissions", which submitProblem, approveSubmission and
+/// rejectSubmission all update, so it is exact along the normal path and at
+/// most a minute stale after a script-side write.
+export async function getPendingCount(): Promise<number> {
+  "use cache";
+  cacheTag("submissions");
+  cacheLife("minutes");
+
+  return prisma.problem.count({ where: { status: "pending" } });
+}
+
+export interface QueueEntry {
+  name: string;
+  field: string | null;
+  fieldGroup: string | null;
+  submittedBy: string;
+  submittedAtIso: string;
+  /// Relative wording where possible, else the absolute date; see
+  /// relativeFallback.
+  submittedAt: string;
+}
+
+/// The review queue as the public sees it: title, field, age and submitter,
+/// oldest first.
+///
+/// Deliberately nothing else. A pending entry has no page, its claim has not
+/// been checked, and the site's name must not sit next to a statement it has
+/// not stood behind - that is what the review is FOR. So no statement, no
+/// source, no model, no slug: enough to show that the record is alive and that
+/// a particular submission is in it, and not one field more. The admin review
+/// page reads the full rows, uncached and behind auth, for exactly that reason.
+export async function getPendingQueue(): Promise<QueueEntry[]> {
+  "use cache";
+  cacheTag("submissions");
+  cacheLife("minutes");
+
+  const rows = await prisma.problem.findMany({
+    where: { status: "pending" },
+    orderBy: { createdAt: "asc" },
+    select: {
+      name: true,
+      field: true,
+      fieldGroup: true,
+      createdAt: true,
+      submittedBy: { select: { pseudonym: true } },
+    },
+  });
+  return rows.map((r) => ({
+    name: r.name,
+    field: r.field,
+    fieldGroup: r.fieldGroup,
+    submittedBy: resolveSnapshot(r.submittedBy?.pseudonym ?? null, r.submittedBy !== null),
+    submittedAtIso: r.createdAt.toISOString(),
+    submittedAt: relativeFallback(r.createdAt, formatCommentDate(r.createdAt)),
+  }));
+}
+
 /// Slugs of every published problem, for `generateStaticParams` and the sitemap.
 export async function getPublishedSlugs(): Promise<string[]> {
   "use cache";

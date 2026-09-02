@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { cookies } from "next/headers";
-import { getPublishedProblems, getRecentActivity, getUserCount } from "@/lib/data";
+import {
+  getPendingCount,
+  getPublishedProblems,
+  getRecentActivity,
+  getUserCount,
+} from "@/lib/data";
 import { SETTINGS_COOKIE, readSettingsCookie, sortValue } from "@/lib/list-settings";
 import type { CardEntry } from "@/lib/problems";
 import { SITE_URL } from "@/lib/site";
@@ -114,10 +119,11 @@ export default async function Home() {
   // Ten activity rows. The feed scrolls inside a capped height on both
   // layouts (max-h-36 on mobile, the absolute fill on lg), so a longer list
   // adds history without changing how tall the card is.
-  const [problems, activity, users] = await Promise.all([
+  const [problems, activity, users, pending] = await Promise.all([
     getPublishedProblems(),
     getRecentActivity(10),
     getUserCount(),
+    getPendingCount(),
   ]);
 
   // Two schema.org objects on the home page. WebSite is what Google reads the
@@ -176,7 +182,7 @@ export default async function Home() {
         className="grid grid-cols-2 gap-2.5 lg:grid-cols-6"
         aria-label="Overview"
       >
-        <StatBand problems={problems} users={users} />
+        <StatBand problems={problems} users={users} pending={pending} />
         <RecentActivity activity={activity} />
         {/* Five rows, matching the activity feed: the highlight cards then
             fill the column height the feed forces with real content instead
