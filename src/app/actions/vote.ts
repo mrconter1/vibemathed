@@ -9,6 +9,80 @@ export type VoteResult =
   | { ok: true; userVote: VoteKind | null; upvotes: number; downvotes: number }
   | { ok: false; error: string };
 
+/// Casts, switches, or undoes the viewer's vote on one comment. Same shape as
+/// voteOnProblem: vote row and denormalised tally move in one transaction.
+/// No activity row - the changelog is about the entry, not its discussion.
+/// `slug` is only for cache invalidation; the comment is looked up by id and
+/// the entry it belongs to must be published.
+export async function voteOnComment(
+  commentId: string,
+  vote: VoteKind,
+  slug: string,
+): Promise<VoteResult> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { ok: false, error: "Sign in to vote." };
+  }
+  const userId = session.user.id;
+
+  const comment = await prisma.comment.findFirst({
+    where: { id: commentId, deletedAt: null, problem: { slug, status: "published" } },
+    select: { id: true },
+  });
+  if (!comment) {
+    return { ok: false, error: "That comment no longer exists." };
+  }
+
+  try {
+    const outcome = await prisma.$transaction(async (tx) => {
+      const existing = await tx.commentVote.findUnique({
+        where: { commentId_userId: { commentId, userId } },
+        select: { id: true, vote: true },
+      });
+
+      if (!existing) {
+        await tx.commentVote.create({ data: { commentId, userId, vote } });
+        const counts = await tx.comment.update({
+          where: { id: commentId },
+          data:
+            vote === "up" ? { upvotes: { increment: 1 } } : { downvotes: { increment: 1 } },
+          select: { upvotes: true, downvotes: true },
+        });
+        return { userVote: vote as VoteKind | null, ...counts };
+      }
+
+      if (existing.vote === vote) {
+        await tx.commentVote.delete({ where: { id: existing.id } });
+        const counts = await tx.comment.update({
+          where: { id: commentId },
+          data:
+            vote === "up" ? { upvotes: { decrement: 1 } } : { downvotes: { decrement: 1 } },
+          select: { upvotes: true, downvotes: true },
+        });
+        return { userVote: null as VoteKind | null, ...counts };
+      }
+
+      await tx.commentVote.update({ where: { id: existing.id }, data: { vote } });
+      const counts = await tx.comment.update({
+        where: { id: commentId },
+        data:
+          vote === "up"
+            ? { upvotes: { increment: 1 }, downvotes: { decrement: 1 } }
+            : { downvotes: { increment: 1 }, upvotes: { decrement: 1 } },
+        select: { upvotes: true, downvotes: true },
+      });
+      return { userVote: vote as VoteKind | null, ...counts };
+    });
+
+    // Only the discussion changes; the entry cards do not show comment votes.
+    updateTag(`comments-${slug}`);
+    return { ok: true, ...outcome };
+  } catch (error) {
+    console.error("voteOnComment failed", error);
+    return { ok: false, error: "Could not record your vote. Please try again." };
+  }
+}
+
 /// Casts, switches, or undoes the signed-in viewer's vote on one entry.
 ///
 /// Keyed by public slug rather than row id so internal UUIDs never reach the

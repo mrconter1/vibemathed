@@ -13,13 +13,25 @@ export interface CommentView {
   /// when the account is gone (the snapshot name still renders, unlinked).
   authorPseudonym: string | null;
   /// Server-rendered HTML (escaped text + KaTeX math). See `comment-render.ts`.
+  /// Empty for a deleted comment.
   html: string;
   /// The original plain text, so the author edits what they actually wrote.
   /// Sent for every comment - it is the same content as `html`, just unrendered,
   /// so there is nothing to withhold and the list stays publicly cacheable.
   source: string;
+  /// Display form, "2 Sep 2026, 11:14 UTC".
   createdAt: string;
+  /// Raw ISO timestamp, the only thing the client can sort by.
+  createdAtIso: string;
   edited: boolean;
+  /// The comment this one answers, or null for a top-level comment. The tree
+  /// is built client-side from this field; see src/lib/comment-tree.ts.
+  parentId: string | null;
+  upvotes: number;
+  downvotes: number;
+  /// Blanked by its author while replies existed. The row stays so the thread
+  /// under it keeps its shape; the UI shows a placeholder and no controls.
+  deleted: boolean;
 }
 
 export const COMMENT_MAX_LENGTH = 5000;

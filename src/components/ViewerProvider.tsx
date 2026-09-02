@@ -24,6 +24,8 @@ interface ViewerContextValue extends ViewerState {
   /// "signed out" state at someone who is signed in.
   loaded: boolean;
   setVote: (slug: string, vote: VoteKind | null) => void;
+  /// Same as setVote, for a comment. Keyed by comment id.
+  setCommentVote: (commentId: string, vote: VoteKind | null) => void;
   setPseudonym: (pseudonym: string) => void;
   setBio: (bio: string) => void;
   setRole: (role: string | null) => void;
@@ -162,6 +164,18 @@ export function ViewerProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const setCommentVote = useCallback((commentId: string, vote: VoteKind | null) => {
+    setState((prev) => {
+      const commentVotes = { ...prev.commentVotes };
+      if (vote === null) {
+        delete commentVotes[commentId];
+      } else {
+        commentVotes[commentId] = vote;
+      }
+      return { ...prev, commentVotes };
+    });
+  }, []);
+
   const setPseudonym = useCallback((pseudonym: string) => {
     setState((prev) => ({ ...prev, pseudonym }));
   }, []);
@@ -196,8 +210,8 @@ export function ViewerProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ ...state, loaded, setVote, setPseudonym, setBio, setRole, setGoogleVisibility, setPrivacy, clearNotifications, refresh }),
-    [state, loaded, setVote, setPseudonym, setBio, setRole, setGoogleVisibility, setPrivacy, clearNotifications, refresh],
+    () => ({ ...state, loaded, setVote, setCommentVote, setPseudonym, setBio, setRole, setGoogleVisibility, setPrivacy, clearNotifications, refresh }),
+    [state, loaded, setVote, setCommentVote, setPseudonym, setBio, setRole, setGoogleVisibility, setPrivacy, clearNotifications, refresh],
   );
 
   return <ViewerContext.Provider value={value}>{children}</ViewerContext.Provider>;

@@ -56,6 +56,10 @@ export interface ViewerState {
   unreadInbox: number;
   /// The viewer's own votes, keyed by problem slug.
   votes: Record<string, VoteKind>;
+  /// The viewer's own votes on comments, keyed by comment id. Fetched whole,
+  /// like `votes`: a person's comment votes number in the tens, and one fetch
+  /// beats a query per discussion thread.
+  commentVotes: Record<string, VoteKind>;
 }
 
 export const SIGNED_OUT: ViewerState = {
@@ -79,4 +83,5 @@ export const SIGNED_OUT: ViewerState = {
   notifications: 0,
   unreadInbox: 0,
   votes: {},
+  commentVotes: {},
 };

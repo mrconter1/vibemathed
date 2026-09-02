@@ -375,6 +375,8 @@ export async function getComments(slug: string): Promise<CommentView[]> {
   cacheTag(`comments-${slug}`);
   cacheLife("hours");
 
+  // Flat and chronological; the client builds the tree and applies the
+  // reader's sort (src/lib/comment-tree.ts). One list serves every order.
   const rows = await prisma.comment.findMany({
     where: { problem: { slug } },
     orderBy: { createdAt: "asc" },
@@ -385,20 +387,32 @@ export async function getComments(slug: string): Promise<CommentView[]> {
       body: true,
       createdAt: true,
       editedAt: true,
+      parentId: true,
+      upvotes: true,
+      downvotes: true,
+      deletedAt: true,
       user: { select: { pseudonym: true } },
     },
   });
 
-  return rows.map((c) => ({
-    id: c.id,
-    authorId: c.userId,
-    authorName: resolveSnapshot(c.userName, c.userId !== null),
-    authorPseudonym: c.user?.pseudonym ?? null,
-    html: renderCommentHtml(c.body),
-    source: c.body,
-    createdAt: formatCommentDateTime(c.createdAt),
-    edited: c.editedAt !== null,
-  }));
+  return rows.map((c) => {
+    const deleted = c.deletedAt !== null;
+    return {
+      id: c.id,
+      authorId: c.userId,
+      authorName: resolveSnapshot(c.userName, c.userId !== null),
+      authorPseudonym: c.user?.pseudonym ?? null,
+      html: deleted ? "" : renderCommentHtml(c.body),
+      source: deleted ? "" : c.body,
+      createdAt: formatCommentDateTime(c.createdAt),
+      createdAtIso: c.createdAt.toISOString(),
+      edited: c.editedAt !== null,
+      parentId: c.parentId,
+      upvotes: c.upvotes,
+      downvotes: c.downvotes,
+      deleted,
+    };
+  });
 }
 
 /// The changelog for one entry, newest first.

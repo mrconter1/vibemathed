@@ -294,8 +294,44 @@ model Comment {
   createdAt DateTime  @default(now())
   editedAt  DateTime?
 
+  /// Threading. Null is a top-level comment; every comment that existed
+  /// before threading arrived (2 Sep 2026) is one, which is the whole
+  /// conversion. SetNull rather than Cascade so that hard-deleting a parent
+  /// can never take someone else's reply with it - though in practice a
+  /// parent with replies is blanked, not deleted (see deleteComment).
+  parentId String?   @db.Uuid
+  parent   Comment?  @relation("CommentThread", fields: [parentId], references: [id], onDelete: SetNull)
+  replies  Comment[] @relation("CommentThread")
+
+  /// Denormalised tallies, moved in the same transaction as the vote row, the
+  /// same way Problem.upvotes/downvotes are.
+  upvotes   Int @default(0)
+  downvotes Int @default(0)
+  votes     CommentVote[]
+
+  /// Soft delete, used only when the comment has replies: the body is blanked
+  /// and the row kept so the thread under it keeps its shape. A comment with
+  /// no replies is deleted outright, as before.
+  deletedAt DateTime?
+
   @@index([problemId])
   @@index([createdAt])
+  @@index([parentId])
+}
+
+/// One person's vote on one comment. Mirrors ProblemVote; no activity row,
+/// because the changelog is about the entry and a comment vote is not.
+model CommentVote {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  commentId String   @db.Uuid
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vote      VoteKind
+  createdAt DateTime @default(now())
+
+  @@unique([commentId, userId])
+  @@index([userId])
 }
 
 /// A reader flagging an entry for curator attention. Deliberately NOT public
@@ -486,6 +522,7 @@ model User {
   inbox             DirectMessage[]   @relation("DirectMessageRecipient")
   sentMessages      DirectMessage[]   @relation("DirectMessageSender")
   reviewNotes       ReviewNote[]
+  commentVotes      CommentVote[]
 }
 
 /// A curator's working note on a submission under review. Internal: shown on

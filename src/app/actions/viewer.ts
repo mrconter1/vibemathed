@@ -23,7 +23,7 @@ export async function getViewerState(): Promise<ViewerState> {
 
   const userId = session.user.id;
 
-  const [votes, pendingReviews, openReports, unread, me, oldestPending] = await Promise.all([
+  const [votes, pendingReviews, openReports, unread, me, oldestPending, commentVotes] = await Promise.all([
     prisma.problemVote.findMany({
       where: { userId },
       select: { vote: true, problem: { select: { slug: true } } },
@@ -77,6 +77,10 @@ export async function getViewerState(): Promise<ViewerState> {
           select: { createdAt: true },
         })
       : Promise.resolve(null),
+    prisma.commentVote.findMany({
+      where: { userId },
+      select: { commentId: true, vote: true },
+    }),
   ]);
 
   // Decisions on your own submissions count as unread too, on the same
@@ -112,5 +116,6 @@ export async function getViewerState(): Promise<ViewerState> {
     notifications,
     unreadInbox,
     votes: Object.fromEntries(votes.map((v) => [v.problem.slug, v.vote])),
+    commentVotes: Object.fromEntries(commentVotes.map((v) => [v.commentId, v.vote])),
   };
 }
