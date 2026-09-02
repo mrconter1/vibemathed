@@ -63,6 +63,10 @@ async function Queue() {
   const pending: PendingEntry[] = rows.map((r) => ({
     slug: r.slug,
     name: r.name,
+    // Every field that can hold math is rendered HERE, on the server. The
+    // client component below must not import KaTeX, and until this was done
+    // for the name and the note it did, through TeX, on exactly this page.
+    nameHtml: texToHtml(r.name),
     field: r.field,
     solveType: r.solveType,
     solveDate: r.solveDate,
@@ -73,7 +77,7 @@ async function Queue() {
     statementHtml: r.statement ? texToHtml(r.statement) : null,
     sourceUrl: r.sourceUrl,
     sourceName: r.sourceName,
-    submitterNote: r.submitterNote,
+    submitterNoteHtml: r.submitterNote ? texToHtml(r.submitterNote, { linkify: true }) : null,
     submittedBy: resolveSnapshot(r.submittedBy?.pseudonym ?? null, r.submittedBy !== null),
     // Raw pseudonym for the profile link; null when there is no account to
     // link (the display name then renders unlinked).

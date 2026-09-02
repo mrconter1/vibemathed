@@ -7,11 +7,19 @@ import { approveSubmission, rejectSubmission } from "@/app/actions/submit-proble
 import { APPROVE_REASONS, REJECT_REASONS } from "@/lib/messages";
 import { MessageDialog } from "@/components/MessageDialog";
 import { useViewer } from "@/components/ViewerProvider";
-import { TeX } from "@/components/TeX";
+
+// No TeX import here on purpose. This is a client component, and TeX pulls
+// KaTeX (~280 kB) into whatever bundle imports it. Everything with math in it
+// arrives from the server already rendered: statementHtml, nameHtml and
+// submitterNoteHtml below. This file used to import TeX for the name and the
+// note anyway, which shipped KaTeX to the browser on the one page where the
+// comment saying "must not pull in KaTeX" lived.
 
 export interface PendingEntry {
   slug: string;
   name: string;
+  /// The name rendered through texToHtml on the server; see statementHtml.
+  nameHtml: string;
   field: string | null;
   solveType: string;
   solveDate: string;
@@ -23,10 +31,10 @@ export interface PendingEntry {
   sourceUrl: string;
   sourceName: string;
   /// For the reviewer, never published - but submitters write real math in
-  /// it ($R_{dih}$ and friends), so it renders through TeX like the name
-  /// does. "Never appears on the entry" was a reason not to cache it, not a
-  /// reason to show the reviewer raw source.
-  submitterNote: string | null;
+  /// it ($R_{dih}$ and friends), so it is rendered like the name is. "Never
+  /// appears on the entry" was a reason not to cache it, not a reason to show
+  /// the reviewer raw source. Pre-rendered on the server, same as the rest.
+  submitterNoteHtml: string | null;
   submittedBy: string;
   /// Current pseudonym for the profile link, or null when unlinkable.
   submittedByPseudonym: string | null;
@@ -91,7 +99,10 @@ export function ReviewQueue({ pending }: { pending: PendingEntry[] }) {
           className="rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3.5"
         >
           <div className="flex flex-wrap items-baseline gap-x-2.5">
-            <h2 className="font-serif text-base text-[var(--ink)]"><TeX>{p.name}</TeX></h2>
+            <h2
+              className="font-serif text-base text-[var(--ink)]"
+              dangerouslySetInnerHTML={{ __html: p.nameHtml }}
+            />
             <span className="text-xs text-[var(--ink-muted)]">
               by{" "}
               {p.submittedByPseudonym ? (
@@ -136,10 +147,10 @@ export function ReviewQueue({ pending }: { pending: PendingEntry[] }) {
             </a>
           </p>
 
-          {p.submitterNote && (
+          {p.submitterNoteHtml && (
             <p className="mt-2 rounded-md border border-[color-mix(in_srgb,var(--accent-blue)_40%,transparent)] bg-[color-mix(in_srgb,var(--accent-blue)_6%,transparent)] px-2.5 py-1.5 text-xs leading-relaxed text-[var(--ink-secondary)]">
               <span className="font-medium text-[var(--ink)]">Note from submitter: </span>
-              <TeX>{p.submitterNote}</TeX>
+              <span dangerouslySetInnerHTML={{ __html: p.submitterNoteHtml }} />
             </p>
           )}
 
