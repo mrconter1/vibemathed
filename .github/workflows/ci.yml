@@ -57,6 +57,12 @@ jobs:
       - name: Types
         run: npm run typecheck
 
+      # Unit tests for the pure modules: the TeX tokenizer, relative time,
+      # list settings, source buckets, slugs. No database, no browser. Added
+      # after a tokenizer bug shipped that any one of these would have caught.
+      - name: Tests
+        run: npm test
+
       # The seed baseline is committed, so a malformed edit would only surface
       # at `db:seed` time on someone else's machine. Parsing it here is cheap
       # and catches a truncated or conflict-marked file immediately.

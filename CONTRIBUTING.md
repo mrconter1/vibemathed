@@ -33,6 +33,19 @@ are the authority, not memory.
 For anything non-trivial, open an issue first and say what you intend to
 change. A short conversation is cheaper than a rejected pull request.
 
+## Checks
+
+CI runs `npm run lint`, `npm run typecheck` and `npm test` on every pull
+request, and `main` will not merge without them. Run all three locally before
+pushing.
+
+The tests are unit tests for the pure modules under `src/lib` (and the pure
+functions that live beside components, like `texToHtml`): `src/**/*.test.ts`,
+run by [Vitest](https://vitest.dev). They need no database and no browser.
+When you fix a bug in a pure function, add the case that would have caught it
+to the matching test file; the first tests in this repo exist because a TeX
+tokenizer bug shipped that any of them would have stopped.
+
 ## Setup
 
 There is no bundled local database. Point `DATABASE_URL` at any

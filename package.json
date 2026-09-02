@@ -15,7 +15,8 @@
     "db:studio": "prisma studio",
     "db:export": "tsx scripts/export-problems.ts",
     "check:limits": "tsx scripts/check-field-limits.ts",
-    "audit:lengths": "tsx scripts/audit-field-lengths.ts"
+    "audit:lengths": "tsx scripts/audit-field-lengths.ts",
+    "test": "vitest run"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -41,7 +42,8 @@
     "eslint-config-next": "16.2.10",
     "tailwindcss": "^4",
     "tsx": "^4.23.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.11"
   },
   "allowScripts": {
     "@prisma/client@6.19.2": true,
