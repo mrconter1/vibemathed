@@ -12,6 +12,7 @@ import {
   emptySubmission,
   type SubmissionValues,
 } from "@/lib/submission";
+import { ArxivFill } from "@/components/ArxivFill";
 import { DuplicateHint } from "@/components/DuplicateHint";
 import { EntryFields } from "@/components/EntryFields";
 import { useViewer } from "@/components/ViewerProvider";
@@ -189,6 +190,13 @@ export function SubmitForm() {
           </button>
         </div>
       )}
+
+      {/* Most submissions start from an arXiv paper; let it fill the fields
+          transcription gets wrong (issue #5). */}
+      <ArxivFill
+        values={values}
+        onFill={(patch) => setValues((v) => ({ ...v, ...patch }) as SubmissionValues)}
+      />
 
       {/* Grouped rather than one run of 32 inputs, and the rarely-needed nine
           sit behind a disclosure. Native <details> so it opens without JS. */}
