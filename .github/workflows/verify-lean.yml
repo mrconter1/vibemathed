@@ -1,0 +1,107 @@
+# Rebuilds someone else's Lean development, here, so an entry can be
+# Site-confirmed on evidence this site produced rather than on the author's
+# own CI badge.
+#
+# The methodology's Site-confirmed tier means "this site reproduced the
+# artifact": re-ran a certificate, rebuilt a formalization and audited which
+# axioms its theorems really use. Nobody here has a Lean toolchain, and a
+# Mathlib build on a laptop is the slow way; this is the reproducible way. The
+# run log is public and stable, so a verification note can link it.
+#
+# Manual only. Give it a repository and a ref (a tag or a commit, ideally the
+# immutable release the entry cites), and optionally the Lean file whose
+# `#print axioms` lines are the audit. It checks the code out, installs the
+# toolchain the repository pins in lean-toolchain, restores the Mathlib cache
+# so the build is minutes rather than hours, builds every module, prints the
+# axioms, and replays the declarations through leanchecker when the library
+# name is given.
+#
+# What this does NOT do, and the reviewing checklist says so: it checks the
+# proof against the statement the author wrote. Whether that statement says
+# what the informal problem says is the other half of Lean-verified, and no
+# workflow can do it.
+
+name: verify-lean
+
+on:
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: "GitHub repository, owner/name"
+        required: true
+        type: string
+      ref:
+        description: "Tag or commit to verify (use the release the entry cites)"
+        required: true
+        type: string
+      audit_file:
+        description: "Lean file of #print axioms lines, relative to the repo root (blank to skip)"
+        required: false
+        default: ""
+        type: string
+      library:
+        description: "Lean library name to replay with leanchecker (blank to skip)"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: "verify ${{ inputs.repository }}@${{ inputs.ref }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Check out the development under review
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ inputs.repository }}
+          ref: ${{ inputs.ref }}
+          # No token: the repository under review is public, and a fork's
+          # code must never see this repository's credentials.
+          persist-credentials: false
+
+      - name: Record exactly what is being verified
+        run: |
+          echo "repository: ${{ inputs.repository }}"
+          echo "ref:        ${{ inputs.ref }}"
+          echo "commit:     $(git rev-parse HEAD)"
+          echo "toolchain:  $(cat lean-toolchain)"
+
+      # The toolchain the repository pins, not one we choose. lean-action
+      # reads lean-toolchain from the checkout.
+      - name: Install the pinned Lean toolchain
+        uses: leanprover/lean-action@v1
+        with:
+          auto-config: false
+          use-github-cache: true
+          use-mathlib-cache: false
+
+      - name: Restore the Mathlib binary cache
+        run: lake exe cache get || lake exe cache --cache-from=legacy get
+
+      - name: Build every module
+        run: lake build
+
+      - name: Audit the axioms of the headline theorems
+        if: inputs.audit_file != ''
+        run: lake env lean "${{ inputs.audit_file }}"
+
+      - name: Replay declarations through leanchecker
+        if: inputs.library != ''
+        run: lake env leanchecker "${{ inputs.library }}"
+
+      - name: Summary
+        run: |
+          {
+            echo "## verify-lean"
+            echo
+            echo "- repository: \`${{ inputs.repository }}\`"
+            echo "- ref: \`${{ inputs.ref }}\` (commit \`$(git rev-parse HEAD)\`)"
+            echo "- toolchain: \`$(cat lean-toolchain)\`"
+            echo "- lake build: passed"
+            if [ -n "${{ inputs.audit_file }}" ]; then echo "- axiom audit: \`${{ inputs.audit_file }}\` (see the step log for the #print axioms output)"; fi
+            if [ -n "${{ inputs.library }}" ]; then echo "- leanchecker replay: \`${{ inputs.library }}\` passed"; fi
+          } >> "$GITHUB_STEP_SUMMARY"
