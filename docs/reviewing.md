@@ -182,11 +182,28 @@ immediately.
 ## Sweeps
 
 Automated conjecture programs (Graffiti, Written on the Wall, TxGraffiti) are
-now being refuted in bulk by agents, one repository claiming 197. Each one
-qualifies and each one scores 5. The policy for how they enter the catalog,
-individually or grouped per sweep, is pending; until it is decided, publish
-individually only when the certificate has been re-run here, and raise the
-question in the message.
+now refuted in bulk by agents; one repository claims 197. Each one qualifies
+and each one scores 5. The policy, decided 2 September 2026 and written into
+the methodology:
+
+- **One entry per conjecture**, as the Erdős imports are. The dataset stays
+  one row per problem, and a later submission of the same conjecture is
+  caught by the duplicate scan. (A grouped "sweep" entry was considered and
+  rejected: it breaks the one-problem model, hides per-conjecture duplicates,
+  and has no honest significance score.)
+- **Site-confirmed or better, every one.** Re-run the certificate here, or
+  confirm a machine-checked proof. An unreviewed batch of 197 is not
+  accepted one by one; it is not accepted at all.
+- **Imported as a batch by a curator** from the repository's own manifest or
+  README, with a script under `scripts/` that records what was re-run. Not
+  filed one form at a time. When a submitter files one by hand, publish it
+  if it passes, and ask them for the manifest.
+- **The sweep is the source name** on every entry, so the sweep can be read
+  as a whole through the list's search.
+
+Volume is handled by the significance score, which is a sort and a filter.
+If the home list's default view ever needs to hide the 5s, that is a product
+decision to take separately, not a reason to leave qualifying results out.
 
 ## Where the reasoning goes
 

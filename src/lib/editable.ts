@@ -221,7 +221,10 @@ export const EDITABLE_FIELDS: FieldSpec[] = [
     label: "Statement",
     kind: "textarea",
     maxLength: 1200,
-    help: "Plain-language statement. Math works: $inline$ or $$display$$.",
+    // Spelled out after two abstracts were pasted here in one night. The
+    // field is the question, not the answer: what was proved belongs under
+    // "What was actually shown", and the abstract belongs in the source.
+    help: "The problem as it was posed, in plain language. Not the paper's abstract, and not what was proved - that goes under \"What was actually shown\". Math works: $inline$ or $$display$$.",
   },
   { key: "posedBy", label: "Posed by", kind: "text", maxLength: 200 },
   { key: "yearPosed", label: "Year posed", kind: "number", help: "Four-digit year, or blank if unknown." },

@@ -248,6 +248,23 @@ export default function MethodologyPage() {
           submitter by pseudonym. Every entry must cite a real, checkable
           primary source.
         </p>
+        <p>
+          <strong className="text-[var(--ink)]">Sweeps of machine-generated
+          conjectures</strong> - Graffiti, Written on the Wall, TxGraffiti - are
+          now refuted by agents by the hundred. Each one is a stated open
+          question with a checkable answer, so each one qualifies, and each one
+          scores 5. They enter the record one entry per conjecture, as the Erdős
+          problems do, so the dataset stays one row per problem and a later
+          submission of the same conjecture is caught as a duplicate. Three
+          conditions: every entry is Site-confirmed or better, its certificate
+          re-run here or its proof machine-checked, because an unreviewed batch
+          is not a record of anything; a sweep is imported as a batch by a
+          curator from the repository&apos;s own manifest rather than filed one
+          form at a time; and every entry names its sweep as the source, so the
+          sweep can be read as a whole. Volume is handled by the significance
+          score, which is a sort and a filter, not by leaving qualifying results
+          out.
+        </p>
       </Section>
 
       <GroupLabel>What each label means</GroupLabel>
