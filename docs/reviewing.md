@@ -9,6 +9,18 @@ days. The header shows an orange **N to review** pill to admins while
 anything is waiting, with the oldest wait in its tooltip. The review page is
 `/admin/submissions`. Approving publishes immediately.
 
+**Who reviews.** Members with the staff role *moderator* or *admin*, set by
+an admin from the member's profile page (the "Curator controls" box, visible
+to admins only), plus the founders listed in the `ADMIN_EMAILS` environment
+variable. Moderators review; admins also verify members, record citation
+counts and grant roles. *Developer* is a credit on the About page, not a
+permission.
+
+**Notes.** Every submission on the review page has a "Curator notes" box.
+Use it: what you checked, what you are waiting on, why you think the tier is
+wrong. The submitter never sees these and they never reach the entry. The
+next reviewer does see them, which is the point.
+
 A review is not a referee report. It answers four questions: is this in
 scope, is it already here, does the evidence support the labels, and is the
 entry written so a reader can check it. Most rejections are scope decisions.

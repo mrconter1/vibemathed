@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CitationBox } from "@/components/CitationBox";
+import { getTeam } from "@/lib/data";
+import { STAFF_ROLE, isStaffRole } from "@/lib/curators";
 
 // Deliberately short. What the site is, who runs it and how, and how open it
 // is. Everything procedural lives on the methodology page.
@@ -112,7 +114,15 @@ const CARDS: { title: string; body: React.ReactNode; wide?: boolean }[] = [
   },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  // Who keeps the site, from the database rather than a hardcoded list, so
+  // adding a moderator is a profile edit and not a deploy. Cached under the
+  // "users" tag, which member management drops.
+  const team = await getTeam();
+  const groups = (["admin", "moderator", "developer"] as const)
+    .map((role) => ({ role, members: team.filter((m) => m.staffRole === role) }))
+    .filter((g) => g.members.length > 0);
+
   return (
     // Top-aligned on purpose. The content used to be centred in the leftover
     // viewport height, which meant opening the citation grew the block in both
@@ -125,6 +135,68 @@ export default function AboutPage() {
         Mathematics that no human had settled, now settled with a model in the
         loop, written down carefully.
       </p>
+
+      {/* The people, first. A record is only as trustworthy as whoever
+          reviews it, so who that is belongs above what the site says about
+          itself. Pseudonyms link to profiles, where the verified badge and
+          the member's own bio do the introducing. */}
+      {groups.length > 0 && (
+        <section
+          aria-label="Who keeps the site"
+          className="mt-4 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-4 sm:px-5 sm:py-5"
+        >
+          <h2 className="font-serif text-base text-[var(--ink)]">Who keeps it</h2>
+          <dl className="mt-2 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-[auto_1fr]">
+            {groups.map((g) => (
+              <div key={g.role} className="contents">
+                <dt className="text-[var(--ink-muted)]">
+                  {isStaffRole(g.role) ? STAFF_ROLE[g.role].label : g.role}
+                  {g.members.length > 1 ? "s" : ""}
+                </dt>
+                <dd className="flex flex-wrap gap-x-3 gap-y-1">
+                  {g.members.map((m) => (
+                    <span key={m.pseudonym} className="inline-flex items-center gap-1.5">
+                      <Link
+                        href={`/user/${encodeURIComponent(m.pseudonym)}`}
+                        className={linkClass}
+                      >
+                        {m.pseudonym}
+                      </Link>
+                      {m.verified && (
+                        <span
+                          className="rounded-full border px-1.5 text-[10px] font-medium"
+                          style={{
+                            color: "var(--status-good)",
+                            borderColor: "color-mix(in srgb, var(--status-good) 40%, transparent)",
+                          }}
+                        >
+                          Verified
+                        </span>
+                      )}
+                    </span>
+                  ))}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-2.5 text-xs text-[var(--ink-muted)]">
+            Moderators review submissions against the{" "}
+            <Link href="/methodology" className={linkClass}>
+              methodology
+            </Link>{" "}
+            and the public{" "}
+            <a
+              href="https://github.com/mrconter1/vibemathed/blob/main/docs/reviewing.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={linkClass}
+            >
+              reviewing checklist
+            </a>
+            . Verified means a curator checked the person&apos;s identity or affiliation.
+          </p>
+        </section>
+      )}
 
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
         {CARDS.map((c) => (

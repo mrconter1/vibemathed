@@ -505,6 +505,11 @@ export interface UserProfile {
   /// Curator-set identity check, and what was checked.
   verified: boolean;
   verifiedNote: string | null;
+  /// Curator-set team role (see STAFF_ROLES), or null.
+  staffRole: string | null;
+  /// Curator-set citation snapshot and its provenance, or null.
+  citations: number | null;
+  citationsNote: string | null;
   /// Whether the member publishes their comment history here. When false,
   /// `comments` is empty and the page omits the section rather than showing an
   /// empty one - an absent section is unremarkable, an empty one looks broken
@@ -660,6 +665,9 @@ export async function getUserProfile(
       role: true,
       verified: true,
       verifiedNote: true,
+      staffRole: true,
+      citations: true,
+      citationsNote: true,
       name: true,
       email: true,
       showGoogleName: true,
@@ -734,6 +742,9 @@ export async function getUserProfile(
     role: user.role,
     verified: user.verified,
     verifiedNote: user.verifiedNote,
+    staffRole: user.staffRole,
+    citations: user.citations,
+    citationsNote: user.citationsNote,
     showComments: user.showComments,
     googleName: user.showGoogleName ? user.name : null,
     googleEmail: user.showGoogleEmail ? user.email : null,
@@ -799,6 +810,38 @@ export async function getStatementHtmlMap(): Promise<Record<string, string>> {
 /// Nothing revalidates a tag on sign-up (accounts are created inside the
 /// Auth.js adapter), so freshness rests on the one-minute cache life alone -
 /// which is plenty for a headline count.
+export interface TeamMember {
+  pseudonym: string;
+  staffRole: string;
+  verified: boolean;
+  /// The self-written bio, so the About page can say who someone is in their
+  /// own words rather than ours.
+  bio: string | null;
+}
+
+/// Everyone with a staff role, for the About page. Admins first, then
+/// moderators, then developers; alphabetical within a role. Tagged "users"
+/// like the profiles, so a role change shows up as soon as it is saved.
+export async function getTeam(): Promise<TeamMember[]> {
+  "use cache";
+  cacheTag("users");
+  cacheLife("hours");
+
+  const rows = await prisma.user.findMany({
+    where: { staffRole: { not: null }, pseudonym: { not: null } },
+    select: { pseudonym: true, staffRole: true, verified: true, bio: true },
+  });
+  const order: Record<string, number> = { admin: 0, moderator: 1, developer: 2 };
+  return rows
+    .filter((r): r is typeof r & { pseudonym: string; staffRole: string } => !!r.pseudonym && !!r.staffRole)
+    .map((r) => ({ pseudonym: r.pseudonym, staffRole: r.staffRole, verified: r.verified, bio: r.bio }))
+    .sort(
+      (a, b) =>
+        (order[a.staffRole] ?? 9) - (order[b.staffRole] ?? 9) ||
+        a.pseudonym.localeCompare(b.pseudonym),
+    );
+}
+
 export async function getUserCount(): Promise<number> {
   "use cache";
   cacheTag("users");

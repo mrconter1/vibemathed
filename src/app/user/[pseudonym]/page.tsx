@@ -11,6 +11,8 @@ import { MEMBER_ROLE, VERIFIED_HELP, type MemberRole } from "@/lib/roles";
 import { InfoTip } from "@/components/Tooltip";
 import { TeX } from "@/components/TeX";
 import { ProfileEditor } from "@/components/ProfileEditor";
+import { MemberAdmin } from "@/components/MemberAdmin";
+import { STAFF_ROLE, isStaffRole } from "@/lib/curators";
 import { LINK_KEYS, LINK_SPECS, linkDisplay } from "@/lib/profile-links";
 
 // A member's public page: pseudonym, join date, published entries, comments
@@ -151,12 +153,38 @@ export default async function UserPage({
               <InfoTip content={profile.verifiedNote ?? VERIFIED_HELP} label="Verified" />
             </span>
           )}
+          {/* Team role, curator-set. Orange like the header's review pill:
+              the colour the site uses for "this person does work here". */}
+          {isStaffRole(profile.staffRole) && (
+            <span
+              className="inline-flex items-center gap-1 rounded-full border px-2 py-px text-[11px] font-medium"
+              style={{
+                color: "var(--accent-orange)",
+                borderColor: "color-mix(in srgb, var(--accent-orange) 40%, transparent)",
+              }}
+              title={STAFF_ROLE[profile.staffRole].help}
+            >
+              {STAFF_ROLE[profile.staffRole].label}
+            </span>
+          )}
         </div>
         {/* Self-declared, unverifiable, and labelled plainly for that reason. */}
         {profile.role && MEMBER_ROLE[profile.role as MemberRole] && (
           <p className="mt-1.5 text-sm text-[var(--ink-secondary)]">
             {MEMBER_ROLE[profile.role as MemberRole].label}
             <span className="text-[var(--ink-muted)]"> (self-declared)</span>
+          </p>
+        )}
+        {/* Curator-set snapshot of a public citation count, with where and
+            when it was read. Only ever shown alongside a verified badge in
+            practice, since the admin form asks for the source, but the field
+            does not depend on it. */}
+        {profile.citations !== null && (
+          <p className="mt-1.5 text-sm text-[var(--ink-secondary)]">
+            {profile.citations.toLocaleString("en-US")} citations
+            {profile.citationsNote && (
+              <span className="text-[var(--ink-muted)]"> ({profile.citationsNote})</span>
+            )}
           </p>
         )}
         {/* Self-written, plain text, capped short - see BIO_MAX. */}
@@ -204,6 +232,8 @@ export default async function UserPage({
         {/* Renders only for the member whose page this is; see the note in
             ProfileEditor about why the check is client-side. */}
         <ProfileEditor pseudonym={profile.pseudonym} links={profile.links} />
+        {/* Renders only for admins, same client-side reasoning. */}
+        <MemberAdmin pseudonym={profile.pseudonym} />
       </header>
 
       <dl className="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-5">
