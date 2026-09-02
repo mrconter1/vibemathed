@@ -38,6 +38,12 @@ export function SiteFooter() {
             Contributing
           </Link>
           <span aria-hidden>·</span>
+          {/* Beside Methodology's neighbours: the site asks every entry for
+              an AI disclosure, so its own belongs where the rules live. */}
+          <Link href="/ai-disclosure" className={link}>
+            AI disclosure
+          </Link>
+          <span aria-hidden>·</span>
           <a href="/api/dataset" className={link}>
             Dataset (CC BY 4.0)
           </a>
