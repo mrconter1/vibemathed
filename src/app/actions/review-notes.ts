@@ -11,6 +11,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { canReview } from "@/lib/curators";
 import { formatCommentDateTime } from "@/lib/comment-render";
+import { REVIEW_NOTE_MAX } from "@/lib/review-notes";
 
 export interface ReviewNoteView {
   id: string;
@@ -20,8 +21,6 @@ export interface ReviewNoteView {
 }
 
 export type ReviewNoteResult = { ok: true; note: ReviewNoteView } | { ok: false; error: string };
-
-export const REVIEW_NOTE_MAX = 1000;
 
 export async function addReviewNote(slug: string, raw: string): Promise<ReviewNoteResult> {
   const session = await auth();

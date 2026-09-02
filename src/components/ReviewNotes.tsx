@@ -5,7 +5,8 @@
 // model for why they exist now that review is a shared job.
 
 import { useState } from "react";
-import { REVIEW_NOTE_MAX, addReviewNote, type ReviewNoteView } from "@/app/actions/review-notes";
+import { addReviewNote, type ReviewNoteView } from "@/app/actions/review-notes";
+import { REVIEW_NOTE_MAX } from "@/lib/review-notes";
 
 export function ReviewNotes({ slug, initial }: { slug: string; initial: ReviewNoteView[] }) {
   const [notes, setNotes] = useState(initial);
