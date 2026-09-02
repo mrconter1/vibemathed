@@ -12,6 +12,7 @@
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
+    "db:seed:dev": "NODE_ENV=development prisma db seed",
     "db:studio": "prisma studio",
     "db:export": "tsx scripts/export-problems.ts",
     "check:limits": "tsx scripts/check-field-limits.ts",
