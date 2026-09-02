@@ -102,6 +102,17 @@ welcome when it exists. Be warm about it. The submitter usually knows.
 Two in two days in September 2026, both at Unreviewed, both from unidentified
 agents, is what produced the rule.
 
+**Volume is a signal.** When one author's AI-written output is large and
+spans unrelated fields in a short window, weigh what one person can actually
+have checked in that time. The author's own statement of having verified the
+work already carries no weight on the ladder; in this situation, check
+statement fidelity harder, prefer a finite certificate you can re-run over a
+long argument you cannot, and hold anything landmark-tier without exception.
+This is not a judgement of the person. It is arithmetic about days and pages,
+and the same arithmetic would apply to anyone. The first entry withdrawn
+under this reading was a disproof of the Yau-Tian-Donaldson conjecture,
+listed as a candidate for two weeks before the rule existed.
+
 ## 5. The verification tier
 
 Check the tier the submitter chose against the ladder on the methodology
