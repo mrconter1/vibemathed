@@ -812,6 +812,12 @@ export async function getStatementHtmlMap(): Promise<Record<string, string>> {
 /// which is plenty for a headline count.
 export interface TeamMember {
   pseudonym: string;
+  /// What to print: the member's real name when they have chosen to show it
+  /// (User.showGoogleName), otherwise the pseudonym. The pseudonym is the
+  /// only identity anyone gets without that choice - see src/lib/identity.ts -
+  /// and being on the team does not change that. The profile link is always
+  /// by pseudonym.
+  displayName: string;
   staffRole: string;
   verified: boolean;
   /// The self-written bio, so the About page can say who someone is in their
@@ -829,16 +835,29 @@ export async function getTeam(): Promise<TeamMember[]> {
 
   const rows = await prisma.user.findMany({
     where: { staffRole: { not: null }, pseudonym: { not: null } },
-    select: { pseudonym: true, staffRole: true, verified: true, bio: true },
+    select: {
+      pseudonym: true,
+      staffRole: true,
+      verified: true,
+      bio: true,
+      name: true,
+      showGoogleName: true,
+    },
   });
   const order: Record<string, number> = { admin: 0, moderator: 1, developer: 2 };
   return rows
     .filter((r): r is typeof r & { pseudonym: string; staffRole: string } => !!r.pseudonym && !!r.staffRole)
-    .map((r) => ({ pseudonym: r.pseudonym, staffRole: r.staffRole, verified: r.verified, bio: r.bio }))
+    .map((r) => ({
+      pseudonym: r.pseudonym,
+      displayName: r.showGoogleName && r.name?.trim() ? r.name.trim() : r.pseudonym,
+      staffRole: r.staffRole,
+      verified: r.verified,
+      bio: r.bio,
+    }))
     .sort(
       (a, b) =>
         (order[a.staffRole] ?? 9) - (order[b.staffRole] ?? 9) ||
-        a.pseudonym.localeCompare(b.pseudonym),
+        a.displayName.localeCompare(b.displayName),
     );
 }
 

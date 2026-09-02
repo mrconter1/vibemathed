@@ -146,34 +146,43 @@ export default async function AboutPage() {
           className="mt-4 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-4 sm:px-5 sm:py-5"
         >
           <h2 className="font-serif text-base text-[var(--ink)]">Who keeps it</h2>
-          <dl className="mt-2 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-[auto_1fr]">
+          <dl className="mt-2 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-[auto_1fr]">
             {groups.map((g) => (
               <div key={g.role} className="contents">
                 <dt className="text-[var(--ink-muted)]">
                   {isStaffRole(g.role) ? STAFF_ROLE[g.role].label : g.role}
                   {g.members.length > 1 ? "s" : ""}
                 </dt>
-                <dd className="flex flex-wrap gap-x-3 gap-y-1">
+                {/* One row per person: name, badge, then who they are in
+                    their own words. The name is the real one only when the
+                    member has chosen to show it; the link is always by
+                    pseudonym. */}
+                <dd className="flex flex-col gap-2">
                   {g.members.map((m) => (
-                    <span key={m.pseudonym} className="inline-flex items-center gap-1.5">
-                      <Link
-                        href={`/user/${encodeURIComponent(m.pseudonym)}`}
-                        className={linkClass}
-                      >
-                        {m.pseudonym}
-                      </Link>
-                      {m.verified && (
-                        <span
-                          className="rounded-full border px-1.5 text-[10px] font-medium"
-                          style={{
-                            color: "var(--status-good)",
-                            borderColor: "color-mix(in srgb, var(--status-good) 40%, transparent)",
-                          }}
+                    <div key={m.pseudonym}>
+                      <span className="inline-flex items-center gap-1.5">
+                        <Link
+                          href={`/user/${encodeURIComponent(m.pseudonym)}`}
+                          className={linkClass}
                         >
-                          Verified
-                        </span>
+                          {m.displayName}
+                        </Link>
+                        {m.verified && (
+                          <span
+                            className="rounded-full border px-1.5 text-[10px] font-medium"
+                            style={{
+                              color: "var(--status-good)",
+                              borderColor: "color-mix(in srgb, var(--status-good) 40%, transparent)",
+                            }}
+                          >
+                            Verified
+                          </span>
+                        )}
+                      </span>
+                      {m.bio && (
+                        <p className="mt-0.5 text-xs leading-snug text-[var(--ink-muted)]">{m.bio}</p>
                       )}
-                    </span>
+                    </div>
                   ))}
                 </dd>
               </div>
