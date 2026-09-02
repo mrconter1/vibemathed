@@ -4,20 +4,40 @@
 //
 // The initial list is server-rendered (and cached), so comments are in the
 // static shell and get indexed. This component layers the interactive parts on
-// top: posting, editing your own, deleting your own. Server actions return the
-// re-rendered HTML for a comment, so edits show their math immediately without
-// a page reload and without shipping KaTeX to the browser.
+// top: posting, replying, voting, editing your own, deleting your own. Server
+// actions return the re-rendered HTML for a comment, so edits show their math
+// immediately without a page reload and without shipping KaTeX to the browser.
+//
+// Threads. The server sends one flat list with a parentId per comment; the
+// tree is built here (src/lib/comment-tree.ts) and re-sorted when the reader
+// picks a different order, with no round trip. Nesting indents up to
+// MAX_INDENT levels and then stops indenting - a twelve-deep exchange on a
+// phone would otherwise be a one-word column - and past that depth each reply
+// says who it answers instead.
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
+import type { VoteKind } from "@prisma/client";
 import {
   addComment,
   deleteComment,
   editComment,
 } from "@/app/actions/comments";
+import { voteOnComment } from "@/app/actions/vote";
 import { COMMENT_MAX_LENGTH, type CommentView } from "@/lib/comments";
+import {
+  COMMENT_SORTS,
+  buildCommentTree,
+  commentScore,
+  countLive,
+  countReplies,
+  isCommentSort,
+  type CommentNode,
+  type CommentSort,
+} from "@/lib/comment-tree";
 import { useViewer } from "@/components/ViewerProvider";
 import { Icon } from "@/components/Icons";
+import { useBeforePaint } from "@/lib/before-paint";
 
 const textareaClass =
   "w-full min-h-[96px] resize-y rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 py-2 text-sm leading-relaxed text-[var(--ink)] transition-colors placeholder:text-[var(--ink-muted)] hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]";
@@ -40,6 +60,14 @@ const editIconBtn =
 const deleteBtn =
   "inline-flex items-center rounded-md border border-[var(--ink-muted)] px-2 py-1 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--status-critical)] hover:text-[var(--status-critical)] disabled:opacity-40";
 
+/// How many levels indent before replies stop moving right. Five is about the
+/// most a phone can show before the text column is narrower than a word.
+const MAX_INDENT = 5;
+
+/// Remembered per browser: someone who reads Top once probably wants Top.
+const SORT_KEY = "vibemathed:comment-sort";
+const DEFAULT_SORT: CommentSort = "newest";
+
 /// The ten that actually get used under a result. No search, no categories,
 /// no picker library: typing ":" is a shortcut for people who already know
 /// what they want, and a grid of 1800 emoji would be slower than the keyboard.
@@ -52,6 +80,7 @@ const EMOJI = ["👍", "🎉", "🔥", "👏", "🤯", "🤔", "😂", "🙌", "
 function Composer({
   initial,
   submitLabel,
+  placeholder,
   busy,
   onSubmit,
   onCancel,
@@ -59,6 +88,7 @@ function Composer({
 }: {
   initial?: string;
   submitLabel: string;
+  placeholder?: string;
   busy: boolean;
   /// Resolves true on success, so the composer knows to clear itself - a
   /// posted comment must not linger in the box.
@@ -115,7 +145,7 @@ function Composer({
         }}
         onBlur={() => setPicker(false)}
         autoFocus={autoFocus}
-        placeholder="Add a comment. Math works: wrap it in $…$ or $$…$$."
+        placeholder={placeholder ?? "Add a comment. Math works: wrap it in $…$ or $$…$$."}
         aria-label="Comment"
         className={textareaClass}
         onKeyDown={(e) => {
@@ -191,25 +221,146 @@ function Composer({
   );
 }
 
-function Comment({
+function Arrow({ dir }: { dir: "up" | "down" }) {
+  return (
+    <svg width={10} height={10} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d={dir === "up" ? "M8 3l5.5 8H2.5L8 3z" : "M8 13L2.5 5h11L8 13z"} />
+    </svg>
+  );
+}
+
+/// Up, score, down - one compact row, the way most discussion sites lay it
+/// out. The tally is optimistic and rolled back if the server disagrees, same
+/// as the entry votes.
+function CommentVotes({
   comment,
   slug,
-  onChanged,
-  onRemoved,
+  onCounts,
 }: {
   comment: CommentView;
   slug: string;
+  onCounts: (upvotes: number, downvotes: number) => void;
+}) {
+  const { signedIn, loaded, commentVotes, setCommentVote } = useViewer();
+  const mine = commentVotes[comment.id] ?? null;
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  function cast(vote: VoteKind) {
+    if (!signedIn) {
+      setError("Sign in to vote.");
+      return;
+    }
+    const previous = mine;
+    const next = previous === vote ? null : vote;
+    // Optimistic: move the tally now, confirm or roll back after.
+    let up = comment.upvotes;
+    let down = comment.downvotes;
+    if (previous === "up") up -= 1;
+    if (previous === "down") down -= 1;
+    if (next === "up") up += 1;
+    if (next === "down") down += 1;
+    setCommentVote(comment.id, next);
+    onCounts(Math.max(0, up), Math.max(0, down));
+    setError(null);
+
+    startTransition(async () => {
+      const result = await voteOnComment(comment.id, vote, slug);
+      if (!result.ok) {
+        setCommentVote(comment.id, previous);
+        onCounts(comment.upvotes, comment.downvotes);
+        setError(result.error);
+        return;
+      }
+      setCommentVote(comment.id, result.userVote);
+      onCounts(result.upvotes, result.downvotes);
+    });
+  }
+
+  const btn =
+    "inline-flex h-6 w-6 items-center justify-center rounded border transition-colors disabled:opacity-50";
+  const inactive =
+    "border-[var(--hairline)] text-[var(--ink-muted)] hover:border-[var(--ink-muted)] hover:text-[var(--ink)]";
+  const score = commentScore(comment);
+
+  return (
+    <span className="inline-flex items-center gap-1">
+      <button
+        type="button"
+        onClick={() => cast("up")}
+        disabled={pending || !loaded}
+        aria-pressed={mine === "up"}
+        aria-label={`Upvote (${comment.upvotes})`}
+        title={signedIn ? "Upvote" : "Sign in to vote"}
+        className={`${btn} ${
+          mine === "up"
+            ? "border-[var(--status-good)] bg-[color-mix(in_srgb,var(--status-good)_10%,transparent)] text-[var(--status-good)]"
+            : inactive
+        }`}
+      >
+        <Arrow dir="up" />
+      </button>
+      <span
+        className={`min-w-[1.5ch] text-center text-[11px] font-medium tabular-nums ${
+          score > 0
+            ? "text-[var(--status-good)]"
+            : score < 0
+              ? "text-[var(--status-critical)]"
+              : "text-[var(--ink-muted)]"
+        }`}
+        title={`${comment.upvotes} up, ${comment.downvotes} down`}
+      >
+        {score}
+      </span>
+      <button
+        type="button"
+        onClick={() => cast("down")}
+        disabled={pending || !loaded}
+        aria-pressed={mine === "down"}
+        aria-label={`Downvote (${comment.downvotes})`}
+        title={signedIn ? "Downvote" : "Sign in to vote"}
+        className={`${btn} ${
+          mine === "down"
+            ? "border-[var(--status-critical)] bg-[color-mix(in_srgb,var(--status-critical)_10%,transparent)] text-[var(--status-critical)]"
+            : inactive
+        }`}
+      >
+        <Arrow dir="down" />
+      </button>
+      {error && <span className="ml-1 text-[11px] text-[var(--status-critical)]">{error}</span>}
+    </span>
+  );
+}
+
+function CommentItem({
+  node,
+  slug,
+  parentName,
+  onChanged,
+  onRemoved,
+  onReply,
+}: {
+  node: CommentNode;
+  slug: string;
+  /// Who this answers, shown only once indentation has stopped conveying it.
+  parentName: string | null;
   onChanged: (c: CommentView) => void;
   onRemoved: (id: string) => void;
+  onReply: (parentId: string, text: string) => Promise<boolean>;
 }) {
-  const { userId } = useViewer();
+  const { comment, depth, replies } = node;
+  const { userId, signedIn, loaded } = useViewer();
   const [editing, setEditing] = useState(false);
+  const [replying, setReplying] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   // Ownership is re-checked on the server; this only controls the affordance.
   const mine = userId !== null && comment.authorId === userId;
+  const indented = depth > 0 && depth <= MAX_INDENT;
+  const replyCount = countReplies(node);
 
   async function save(text: string): Promise<boolean> {
     setBusy(true);
@@ -234,11 +385,32 @@ function Comment({
       setError(result.error);
       return;
     }
-    onRemoved(comment.id);
+    if (result.removed) onRemoved(comment.id);
+    else onChanged(result.comment);
+  }
+
+  async function reply(text: string): Promise<boolean> {
+    setBusy(true);
+    setError(null);
+    const ok = await onReply(comment.id, text);
+    setBusy(false);
+    if (ok) {
+      setReplying(false);
+      setCollapsed(false);
+    }
+    return ok;
   }
 
   return (
-    <article className="border-t border-[var(--hairline)] py-4 first:border-t-0 first:pt-0">
+    <article
+      className={`${
+        indented
+          ? "mt-3 border-l-2 border-[var(--hairline)] pl-3 sm:pl-4"
+          : depth === 0
+            ? "border-t border-[var(--hairline)] py-4 first:border-t-0 first:pt-0"
+            : "mt-3"
+      }`}
+    >
       <div className="flex flex-wrap items-baseline gap-x-2 text-xs">
         {comment.authorPseudonym ? (
           <Link
@@ -250,9 +422,14 @@ function Comment({
         ) : (
           <span className="font-medium text-[var(--ink)]">{comment.authorName}</span>
         )}
+        {depth > MAX_INDENT && parentName && (
+          <span className="text-[var(--ink-muted)]">replying to {parentName}</span>
+        )}
         <span className="text-[var(--ink-muted)]">{comment.createdAt}</span>
-        {comment.edited && <span className="text-[var(--ink-muted)]">· edited</span>}
-        {mine && !editing && (
+        {comment.edited && !comment.deleted && (
+          <span className="text-[var(--ink-muted)]">· edited</span>
+        )}
+        {mine && !editing && !comment.deleted && (
           <span className="ml-auto flex items-center gap-1">
             <button
               type="button"
@@ -265,13 +442,8 @@ function Comment({
             </button>
             {confirmDelete ? (
               <>
-                <button
-                  type="button"
-                  className={deleteBtn}
-                  disabled={busy}
-                  onClick={remove}
-                >
-                  Really delete?
+                <button type="button" className={deleteBtn} disabled={busy} onClick={remove}>
+                  {replyCount > 0 ? "Really delete? Replies stay." : "Really delete?"}
                 </button>
                 <button
                   type="button"
@@ -283,11 +455,7 @@ function Comment({
                 </button>
               </>
             ) : (
-              <button
-                type="button"
-                className={deleteBtn}
-                onClick={() => setConfirmDelete(true)}
-              >
+              <button type="button" className={deleteBtn} onClick={() => setConfirmDelete(true)}>
                 Delete
               </button>
             )}
@@ -295,7 +463,11 @@ function Comment({
         )}
       </div>
 
-      {editing ? (
+      {comment.deleted ? (
+        <p className="mt-1.5 text-sm italic text-[var(--ink-muted)]">
+          Deleted by its author. The replies below stay.
+        </p>
+      ) : editing ? (
         <div className="mt-2">
           <Composer
             initial={comment.source}
@@ -316,9 +488,63 @@ function Comment({
         />
       )}
 
-      {error && (
-        <p className="mt-1.5 text-[11px] text-[var(--status-critical)]">{error}</p>
+      {!editing && !comment.deleted && (
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <CommentVotes
+            comment={comment}
+            slug={slug}
+            onCounts={(upvotes, downvotes) => onChanged({ ...comment, upvotes, downvotes })}
+          />
+          {loaded && signedIn && !replying && (
+            <button type="button" className={quietBtn} onClick={() => setReplying(true)}>
+              Reply
+            </button>
+          )}
+          {replyCount > 0 && (
+            <button
+              type="button"
+              className={quietBtn}
+              onClick={() => setCollapsed((c) => !c)}
+              aria-expanded={!collapsed}
+            >
+              {collapsed
+                ? `Show ${replyCount} ${replyCount === 1 ? "reply" : "replies"}`
+                : `Hide ${replyCount === 1 ? "reply" : "replies"}`}
+            </button>
+          )}
+        </div>
       )}
+
+      {replying && (
+        <div className="mt-2">
+          <Composer
+            submitLabel="Post reply"
+            placeholder={`Reply to ${comment.authorName}. Math works: $…$ or $$…$$.`}
+            busy={busy}
+            onSubmit={reply}
+            onCancel={() => {
+              setReplying(false);
+              setError(null);
+            }}
+            autoFocus
+          />
+        </div>
+      )}
+
+      {error && <p className="mt-1.5 text-[11px] text-[var(--status-critical)]">{error}</p>}
+
+      {!collapsed &&
+        replies.map((child) => (
+          <CommentItem
+            key={child.comment.id}
+            node={child}
+            slug={slug}
+            parentName={comment.authorName}
+            onChanged={onChanged}
+            onRemoved={onRemoved}
+            onReply={onReply}
+          />
+        ))}
     </article>
   );
 }
@@ -332,13 +558,43 @@ export function CommentsSection({
 }) {
   const { signedIn, loaded } = useViewer();
   const [comments, setComments] = useState(initial);
+  const [sort, setSort] = useState<CommentSort>(DEFAULT_SORT);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function post(text: string): Promise<boolean> {
+  // The remembered sort, restored before paint so a returning reader does not
+  // see the list reorder itself. One-time hydration from storage is the
+  // sanctioned exception to the set-state-in-effect rule (same pattern as the
+  // list settings). Storage may be blocked; then the default simply stands.
+  useBeforePaint(() => {
+    try {
+      const stored = localStorage.getItem(SORT_KEY);
+      if (isCommentSort(stored) && stored !== DEFAULT_SORT) setSort(stored);
+    } catch {
+      // Nothing to restore.
+    }
+  }, []);
+
+  function chooseSort(next: CommentSort) {
+    setSort(next);
+    try {
+      localStorage.setItem(SORT_KEY, next);
+    } catch {
+      // A sort that is not remembered is still applied.
+    }
+  }
+
+  const tree = useMemo(() => buildCommentTree(comments, sort), [comments, sort]);
+  const live = countLive(comments);
+
+  const onChanged = (updated: CommentView) =>
+    setComments((prev) => prev.map((x) => (x.id === updated.id ? updated : x)));
+  const onRemoved = (id: string) => setComments((prev) => prev.filter((x) => x.id !== id));
+
+  async function post(text: string, parentId: string | null = null): Promise<boolean> {
     setBusy(true);
     setError(null);
-    const result = await addComment(slug, text);
+    const result = await addComment(slug, text, parentId);
     setBusy(false);
     if (!result.ok) {
       setError(result.error);
@@ -350,30 +606,50 @@ export function CommentsSection({
 
   return (
     <section id="discussion" className="mt-10 scroll-mt-20">
-      <h2 className="font-serif text-lg text-[var(--ink)]">
-        Discussion
-        {comments.length > 0 && (
-          <span className="ml-2 font-sans text-sm font-normal text-[var(--ink-muted)]">
-            {comments.length}
-          </span>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="font-serif text-lg text-[var(--ink)]">
+          Discussion
+          {live > 0 && (
+            <span className="ml-2 font-sans text-sm font-normal text-[var(--ink-muted)]">{live}</span>
+          )}
+        </h2>
+        {comments.length > 1 && (
+          <div
+            role="radiogroup"
+            aria-label="Sort comments"
+            className="inline-flex items-center gap-0.5 rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] p-0.5 text-xs"
+          >
+            {COMMENT_SORTS.map((s) => (
+              <button
+                key={s.key}
+                type="button"
+                role="radio"
+                aria-checked={sort === s.key}
+                onClick={() => chooseSort(s.key)}
+                className={`rounded px-2 py-0.5 transition-colors ${
+                  sort === s.key
+                    ? "bg-[color-mix(in_srgb,var(--ink)_8%,transparent)] text-[var(--ink)]"
+                    : "text-[var(--ink-muted)] hover:text-[var(--ink)]"
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
         )}
-      </h2>
+      </div>
 
-      {comments.length > 0 && (
+      {tree.length > 0 && (
         <div className="mt-3">
-          {comments.map((c) => (
-            <Comment
-              key={c.id}
-              comment={c}
+          {tree.map((node) => (
+            <CommentItem
+              key={node.comment.id}
+              node={node}
               slug={slug}
-              onChanged={(updated) =>
-                setComments((prev) =>
-                  prev.map((x) => (x.id === updated.id ? updated : x)),
-                )
-              }
-              onRemoved={(id) =>
-                setComments((prev) => prev.filter((x) => x.id !== id))
-              }
+              parentName={null}
+              onChanged={onChanged}
+              onRemoved={onRemoved}
+              onReply={(parentId, text) => post(text, parentId)}
             />
           ))}
         </div>
@@ -384,7 +660,7 @@ export function CommentsSection({
           <div className="h-24 rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)]" />
         ) : signedIn ? (
           <>
-            <Composer submitLabel="Post comment" busy={busy} onSubmit={post} />
+            <Composer submitLabel="Post comment" busy={busy} onSubmit={(t) => post(t)} />
             {error && (
               <p className="mt-1.5 text-xs text-[var(--status-critical)]">{error}</p>
             )}
