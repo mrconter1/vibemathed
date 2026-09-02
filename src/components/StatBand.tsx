@@ -29,7 +29,12 @@ interface Tile {
   href?: string;
 }
 
-function computeTiles(problems: ProblemWithVotes[], users: number, pending: number): Tile[] {
+function computeTiles(
+  problems: ProblemWithVotes[],
+  users: number,
+  pending: number,
+  verified: number,
+): Tile[] {
   const resolved = problems.filter((p) => p.resolution === "resolved").length;
   const lean = problems.filter((p) => p.verification === "lean-verified").length;
   const votes = problems.reduce((sum, p) => sum + p.upvotes + p.downvotes, 0);
@@ -78,7 +83,9 @@ function computeTiles(problems: ProblemWithVotes[], users: number, pending: numb
       icon: "users",
       label: "Community members",
       value: String(users),
-      sub: `${votes} votes · ${comments} comments`,
+      // Verified first: it is the one figure here that says something about
+      // who the community is rather than how much it clicks.
+      sub: `${verified} verified · ${votes} votes · ${comments} comments`,
       // The count is every registered account; the directory lists the ones
       // who opted to appear and says how many more hold an account without
       // having published yet. So the two numbers differ, and the destination
@@ -92,17 +99,20 @@ export function StatBand({
   problems,
   users,
   pending,
+  verified,
 }: {
   problems: ProblemWithVotes[];
   users: number;
   /// Submissions awaiting review, from getPendingCount.
   pending: number;
+  /// Members a curator has verified, from getVerifiedCount.
+  verified: number;
 }) {
   if (problems.length === 0) return null;
 
   return (
     <dl className="contents">
-      {computeTiles(problems, users, pending).map((t) => (
+      {computeTiles(problems, users, pending, verified).map((t) => (
         <div
           key={t.label}
           className="flex flex-col justify-center rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-3"

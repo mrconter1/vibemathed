@@ -850,6 +850,19 @@ export async function getUserCount(): Promise<number> {
   return prisma.user.count();
 }
 
+/// Members whose identity or affiliation a curator has checked. Counted
+/// across the whole membership, listed or not: the number discloses no name.
+/// "Verified members", never "verified mathematicians" - the badge says
+/// someone checked who they are, not what they do, and the second verified
+/// member is a physicist.
+export async function getVerifiedCount(): Promise<number> {
+  "use cache";
+  cacheTag("users");
+  cacheLife("minutes");
+
+  return prisma.user.count({ where: { verified: true } });
+}
+
 /// How many submissions are waiting for a curator.
 ///
 /// Public on purpose. The size of the queue used to be admin-only on the

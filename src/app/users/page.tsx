@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getMemberDirectory } from "@/lib/data";
+import { getMemberDirectory, getVerifiedCount } from "@/lib/data";
 import { SITE_URL } from "@/lib/site";
 import { Icon } from "@/components/Icons";
 import { MEMBER_ROLE, VERIFIED_HELP, type MemberRole } from "@/lib/roles";
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 };
 
 export default async function UsersPage() {
-  const members = await getMemberDirectory();
+  const [members, verified] = await Promise.all([getMemberDirectory(), getVerifiedCount()]);
 
   const contributors = members.filter((m) => m.contributions > 0);
   const quiet = members.length - contributors.length;
@@ -45,6 +45,16 @@ export default async function UsersPage() {
         record, most active first. Members choose whether to appear here; the
         list is not the whole membership.
       </p>
+      {/* The count is across everyone, listed or not; the number names nobody.
+          "Members", not "mathematicians": the badge says a curator checked
+          who someone is, not what they do. */}
+      {verified > 0 && (
+        <p className="mt-1.5 flex items-center gap-1 text-sm text-[var(--ink-secondary)]">
+          <span className="font-medium text-[var(--status-good)]">{verified}</span>
+          {verified === 1 ? " member is verified" : " members are verified"}
+          <InfoTip content={VERIFIED_HELP} label="Verified" />
+        </p>
+      )}
 
       {members.length === 0 ? (
         <p className="mt-8 text-sm text-[var(--ink-muted)]">
