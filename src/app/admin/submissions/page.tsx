@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { auth } from "@/auth";
-import { isAdmin } from "@/lib/admin";
+import { canReview } from "@/lib/curators";
 import { prisma } from "@/lib/prisma";
 import { formatCommentDateTime } from "@/lib/comment-render";
 import { resolveSnapshot } from "@/lib/identity";
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 /// removes any chance of one leaking into a public response.
 async function Queue() {
   const session = await auth();
-  if (!isAdmin(session?.user?.email)) {
+  if (!canReview(session?.user)) {
     return (
       <div>
         <p className="text-sm text-[var(--ink-secondary)]">
@@ -57,6 +57,10 @@ async function Queue() {
       submitterNote: true,
       createdAt: true,
       submittedBy: { select: { pseudonym: true } },
+      reviewNotes: {
+        orderBy: { createdAt: "asc" },
+        select: { id: true, userName: true, body: true, createdAt: true },
+      },
     },
   });
 
@@ -86,6 +90,12 @@ async function Queue() {
     // Date AND time: three spam entries in one night made clear that "when
     // exactly" matters when reviewing a queue.
     submittedAt: formatCommentDateTime(r.createdAt),
+    notes: r.reviewNotes.map((n) => ({
+      id: n.id,
+      userName: n.userName ?? "Curator",
+      body: n.body,
+      createdAt: formatCommentDateTime(n.createdAt),
+    })),
   }));
 
   return (

@@ -7,6 +7,8 @@ import { approveSubmission, rejectSubmission } from "@/app/actions/submit-proble
 import { APPROVE_REASONS, REJECT_REASONS } from "@/lib/messages";
 import { MessageDialog } from "@/components/MessageDialog";
 import { useViewer } from "@/components/ViewerProvider";
+import { ReviewNotes } from "@/components/ReviewNotes";
+import type { ReviewNoteView } from "@/app/actions/review-notes";
 
 // No TeX import here on purpose. This is a client component, and TeX pulls
 // KaTeX (~280 kB) into whatever bundle imports it. Everything with math in it
@@ -42,6 +44,8 @@ export interface PendingEntry {
   /// pseudonym: a member with no display name yet is still reachable.
   canDeliver: boolean;
   submittedAt: string;
+  /// Curators' internal notes so far, oldest first. See ReviewNotes.
+  notes: ReviewNoteView[];
 }
 
 export function ReviewQueue({ pending }: { pending: PendingEntry[] }) {
@@ -153,6 +157,8 @@ export function ReviewQueue({ pending }: { pending: PendingEntry[] }) {
               <span dangerouslySetInnerHTML={{ __html: p.submitterNoteHtml }} />
             </p>
           )}
+
+          <ReviewNotes slug={p.slug} initial={p.notes} />
 
           <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[var(--hairline)] pt-3">
             <button
