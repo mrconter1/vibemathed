@@ -89,7 +89,17 @@ async function Queue() {
       <p className="mb-6 max-w-2xl text-sm leading-relaxed text-[var(--ink-secondary)]">
         {pending.length === 0
           ? "The queue is empty."
-          : `${pending.length} ${pending.length === 1 ? "entry is" : "entries are"} waiting. Check the source before approving - approving publishes immediately.`}
+          : `${pending.length} ${pending.length === 1 ? "entry is" : "entries are"} waiting. Check the source before approving - approving publishes immediately.`}{" "}
+        The checklist is{" "}
+        <a
+          href="https://github.com/mrconter1/vibemathed/blob/main/docs/reviewing.md"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[var(--accent-blue)] hover:underline"
+        >
+          docs/reviewing.md
+        </a>
+        .
       </p>
       <ReviewQueue pending={pending} />
     </>

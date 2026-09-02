@@ -222,6 +222,21 @@ export default function MethodologyPage() {
           may not have been the AI-assisted one. Crouzeix&apos;s conjecture is
           the worked example.
         </p>
+        <p>
+          <strong className="text-[var(--ink)]">Extraordinary claims are held, not
+          listed.</strong> A claim that would be a major result by any expert&apos;s
+          standard - a famous conjecture, a problem with decades of failed
+          attempts, an object the field expected not to exist - is not published
+          at Unreviewed, and not published as a Candidate either, because a
+          listing here puts the site&apos;s name beside a claim it has not read.
+          It waits until a named expert with no stake in it has checked the
+          argument or a formal proof exists, and the submitter is told so in as
+          many words, with the way back. The test is the size of the claim, not
+          the credentials behind it: the rule is the same for a preprint by
+          known authors and for an anonymous agent. This record is not where a
+          landmark result is announced; it is where the announcement is
+          recorded once it has stood up.
+        </p>
       </Section>
 
       <Section title="Where entries come from">

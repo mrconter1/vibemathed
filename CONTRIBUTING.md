@@ -17,6 +17,10 @@ What qualifies and how every label is assigned is documented in the
 [methodology](https://vibemathed.com/methodology). Read it before submitting -
 most rejections are scope decisions, not quality judgements.
 
+**Reviewing** - if you are a curator, the checklist a submission is read
+against is [`docs/reviewing.md`](docs/reviewing.md). It is public on purpose:
+a submitter who has read it knows what a review will ask.
+
 **Code contributions** - the site itself - are what this file is about.
 
 ## Before you write code
