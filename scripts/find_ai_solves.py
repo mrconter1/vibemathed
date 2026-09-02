@@ -35,6 +35,18 @@
   8. Trackers: Star Fleet Math's proposed-solution list (Erdős numbers),
      Epoch AI's FrontierMath open-problems pages, and 1stproof.org's
      batch/announcement links - new items only.
+  9. Registries: the Palomar registry's recent.json (new Lean developments
+     registered with a comparator-separated statement - the first two
+     Palomar-listed entries in the catalog both arrived as reader
+     submissions, which is how this source was found to be missing);
+     erdosproblems.com's forum index, read for proof-claim anchors, so a
+     claim filed on a problem page surfaces here the day it is filed rather
+     than when Tao's ledger next mentions it (the prime-gaps claim of
+     26 Aug 2026 was missed for four days that way); and watched GitLab
+     projects, which the GitHub-only repo watcher could not see (AI
+     Village's graffiti-verification, 197 claimed refutations). The first
+     run records a baseline and prints counts only; later runs print new
+     items.
 
 Zero dependencies (stdlib only). A state file remembers everything already
 reported, so repeated runs only surface NEW finds. Every source fails soft:
@@ -207,6 +219,18 @@ WATCHED_REPOS = [
     "octonion/mathematics",
 ]
 
+# Registries (source 9). Palomar publishes its whole recent window as one JSON
+# document on a data host; the site itself is client-rendered and useless to
+# curl. erdosproblems.com has no claims feed, but its forum index links every
+# proof claim as an anchor on the problem's thread, which is enough to notice a
+# new one. GitLab projects expose a keyless activity Atom feed at <path>.atom.
+PALOMAR_RECENT_URL = "https://data.palomar-registry.org/recent.json"
+ERDOS_FORUM_URL = "https://www.erdosproblems.com/forum/"
+ERDOS_CLAIM_RE = re.compile(r'href="/forum/thread/(\d+)/proof-claims#proof-claim-(\d+)"')
+WATCHED_GITLAB_REPOS = [
+    "ai-village-agents/village/graffiti-verification",
+]
+
 STARFLEET_URL = "https://www.starfleetmath.com/"
 EPOCH_URL = "https://epoch.ai/frontiermath/open-problems"
 FIRSTPROOF_URLS = [
@@ -265,6 +289,12 @@ def load_state() -> dict:
     state.setdefault("seen_index", [])
     state.setdefault("seen_repo_commits", [])
     state.setdefault("seen_tracker_items", [])
+    # Registries keep a baseline flag as well as a seen-list: the erdosproblems
+    # forum index carries every proof claim ever filed, and printing all of
+    # them on the first run would bury the report. The first run records them
+    # and prints a count; only later runs print items.
+    state.setdefault("seen_registry_items", [])
+    state.setdefault("registry_baselined", False)
     # Last date the default (non --since) arXiv harvest completed through.
     # A run after a gap resumes from here instead of losing the gap days.
     state.setdefault("arxiv_oai_until", "")
@@ -843,6 +873,98 @@ def repo_commits(repo: str, days: int) -> list[dict]:
     return out
 
 
+# ------------------------------------------------------------- registries ----
+
+def palomar_recent(days: int) -> list[dict]:
+    """Palomar registrations published within the window.
+
+    One JSON document carries the registry's recent window; each entry names
+    its source repository and pinned commit, its authors, the compared theorem
+    names and a trust level. A registration is a strong signal on its own - it
+    means a comparator-separated Lean statement exists - and the repository is
+    what lets it be matched against the catalog.
+    """
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    data = json.loads(fetch(PALOMAR_RECENT_URL))
+    out = []
+    for e in data.get("entries", []):
+        stamp = e.get("published_at") or ""
+        try:
+            when = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if when < cutoff:
+            continue
+        src = e.get("source") or {}
+        names = ((e.get("formalization") or {}).get("theorem_names")) or []
+        out.append({
+            "id": e.get("id", ""),
+            "title": e.get("title", ""),
+            "repo": (src.get("repository") or "").lower(),
+            "authors": ", ".join(a.get("name", "") for a in e.get("authors", []) if a.get("name")),
+            "theorems": len(names),
+            "trust": (e.get("trust") or {}).get("level", "?"),
+            "date": stamp[:10],
+            "url": f"https://palomar-registry.org/entry?id={e.get('id', '')}",
+        })
+    return out
+
+
+def erdos_proof_claims() -> list[dict]:
+    """Every proof claim linked from the erdosproblems.com forum index.
+
+    The index links each claim as /forum/thread/<problem>/proof-claims
+    #proof-claim-<id>, so the set of ids is the set of claims; the caller
+    diffs it against the last run. This is the whole list, not a window, which
+    is why the registries section keeps a baseline.
+    """
+    html = fetch(ERDOS_FORUM_URL)
+    pairs = sorted({(int(n), int(c)) for n, c in ERDOS_CLAIM_RE.findall(html)})
+    if not pairs:
+        raise RuntimeError("no proof-claim anchors found - page structure changed?")
+    return [{
+        "problem": n,
+        "claim": c,
+        "url": f"https://www.erdosproblems.com/forum/thread/{n}/proof-claims#proof-claim-{c}",
+    } for n, c in pairs]
+
+
+def gitlab_activity(repo: str, days: int) -> list[dict]:
+    """Activity on a watched GitLab project within the window, from its Atom feed.
+
+    The project feed mixes pushes with issues and comments, which for a
+    results repository is fine: any of them means someone is working on it.
+    Same shape as repo_commits so the report can treat the two alike.
+    """
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    atom = {"a": "http://www.w3.org/2005/Atom"}
+    root = ET.fromstring(fetch(f"https://gitlab.com/{repo}.atom"))
+    out = []
+    for e in root.findall("a:entry", atom):
+        stamp = e.findtext("a:updated", "", atom)
+        try:
+            when = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if when < cutoff:
+            continue
+        link = e.find("a:link", atom)
+        url = link.get("href", "") if link is not None else ""
+        # GitLab's entry ids are tag URIs ("tag:gitlab.com,2026-09-01:..."),
+        # so the whole string is the key; trimming it to a suffix collapsed
+        # every event on one day into one id.
+        eid = e.findtext("a:id", "", atom) or url
+        msg = re.sub(r"\s+", " ", e.findtext("a:title", "", atom) or "").strip()
+        out.append({
+            "key": f"gitlab:{repo}@{eid}",
+            "repo": repo,
+            "msg": msg[:110],
+            "url": url,
+            "date": stamp[:10],
+        })
+    return out
+
+
 # --------------------------------------------------------------- trackers ----
 
 def starfleet_numbers() -> list[int]:
@@ -893,8 +1015,8 @@ def main() -> int:
     ap.add_argument("--until", help="YYYY-MM-DD; end of the --since window (default: today)")
     ap.add_argument("--reset", action="store_true", help="forget previously seen items")
     ap.add_argument(
-        "--sources", default="arxiv,github,erdos,zenodo,feeds,index,repos,trackers",
-        help="comma list: arxiv, github, erdos, zenodo, feeds, index, repos, trackers",
+        "--sources", default="arxiv,github,erdos,zenodo,feeds,index,repos,trackers,registries",
+        help="comma list: arxiv, github, erdos, zenodo, feeds, index, repos, trackers, registries",
     )
     args = ap.parse_args()
     wanted = {s.strip() for s in args.sources.split(",") if s.strip()}
@@ -1190,6 +1312,57 @@ def main() -> int:
             print(f"_(First Proof scan failed: {e})_")
         print(f"\n_({shown} new tracker items)_\n")
         state["seen_tracker_items"] = sorted(seen)
+        save_state(state)
+
+    if "registries" in wanted:
+        print("## Registries (Palomar, erdosproblems.com proof claims, watched GitLab)\n")
+        seen = set(state["seen_registry_items"])
+        baseline = not state["registry_baselined"]
+        shown = 0
+        # (label, key, line, already-tracked) for everything found this run.
+        found: list[tuple[str, str, bool]] = []
+        try:
+            for e in palomar_recent(args.days):
+                tracked = e["repo"] in known["gh"]
+                found.append((
+                    f"palomar:{e['id']}",
+                    f"- **Palomar** [{e['id']}]({e['url']}) `{e['title']}` - {e['authors'] or 'no author listed'}, "
+                    f"{e['theorems']} compared theorems, trust {e['trust']}, {e['date']}",
+                    tracked,
+                ))
+        except Exception as e:
+            print(f"_(Palomar scan failed: {e})_")
+        try:
+            for c in erdos_proof_claims():
+                found.append((
+                    f"erdos-claim:{c['claim']}",
+                    f"- **erdosproblems.com** proof claim on [Erdős #{c['problem']}]({c['url']})",
+                    c["problem"] in known["erdos"],
+                ))
+        except Exception as e:
+            print(f"_(erdosproblems forum scan failed: {e})_")
+        for repo in WATCHED_GITLAB_REPOS:
+            try:
+                for a in gitlab_activity(repo, args.days):
+                    found.append((a["key"], f"- **{a['repo']}** [{a['msg']}]({a['url']}) - {a['date']}", False))
+            except Exception as e:
+                print(f"_({repo} feed failed: {e})_")
+        fresh = [f for f in found if f[0] not in seen]
+        if baseline:
+            # First run: everything on the erdosproblems index is "new", and
+            # printing several hundred claims would bury the report. Record
+            # them and report the count; the next run prints only additions.
+            print(f"_(baseline recorded: {len(fresh)} registry items seen for the first "
+                  f"time and not printed - future runs print new ones)_\n")
+            seen.update(f[0] for f in fresh)
+            state["registry_baselined"] = True
+        else:
+            for key, line, tracked in fresh:
+                seen.add(key)
+                shown += 1
+                print(line + (" **[already in catalog]**" if tracked else ""))
+            print(f"\n_({shown} new registry items)_\n")
+        state["seen_registry_items"] = sorted(seen)
         save_state(state)
 
     if "feeds" in wanted:
