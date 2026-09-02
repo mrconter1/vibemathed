@@ -5,8 +5,35 @@ import {
   normalizeListSettings,
   parseSelection,
   selectionMatches,
+  solveDateSortKey,
   toggleSelection,
 } from "@/lib/list-settings";
+
+describe("solveDateSortKey", () => {
+  it("leaves a full date alone", () => {
+    expect(solveDateSortKey("2026-08-31")).toBe("2026-08-31");
+  });
+
+  it("pads a month to its last day so it sorts inside its month", () => {
+    const key = solveDateSortKey("2026-08");
+    expect(key > "2026-07-31").toBe(true);
+    expect(key >= "2026-08-30").toBe(true);
+    expect(key < "2026-09-01").toBe(true);
+  });
+
+  it("pads a year to its last day", () => {
+    const key = solveDateSortKey("2025");
+    expect(key > "2025-11-30").toBe(true);
+    expect(key < "2026-01-01").toBe(true);
+  });
+
+  it("orders a month-precision August above all of July, in one sort", () => {
+    // Newest first, the list's default. Before the fix "2026-08" came last.
+    const dates = ["2026-08-29", "2026-08", "2026-07-31"];
+    const sorted = dates.slice().sort((a, b) => solveDateSortKey(b).localeCompare(solveDateSortKey(a)));
+    expect(sorted).toEqual(["2026-08", "2026-08-29", "2026-07-31"]);
+  });
+});
 
 describe("selections", () => {
   it("reads 'all' and nothing as no condition", () => {

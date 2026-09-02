@@ -232,13 +232,31 @@ export function readSettingsCookie(value: string | undefined): ListSettings {
   }
 }
 
+/// A solve date as a sort key. Dates come at three precisions - YYYY,
+/// YYYY-MM, YYYY-MM-DD - and sorting them as strings put every imprecise
+/// date BELOW every precise one in its own period: "2026-08" sorted after
+/// "2026-08-31" and after "2026-07-31", so an August result with a
+/// month-precision date landed on page 7, under all of July. Eighteen entries
+/// were affected, and one submitter reported his entry missing.
+///
+/// A vague date is padded to the END of its period: a result known only to
+/// have happened in August sorts with the last day of August, which is the
+/// latest it could have been and keeps it inside its own month in either
+/// direction. Only the sort is touched: the displayed date and the
+/// date-window filters still see the raw value.
+export function solveDateSortKey(solveDate: string): string {
+  if (solveDate.length === 4) return `${solveDate}-12-31`;
+  if (solveDate.length === 7) return `${solveDate}-31`;
+  return solveDate;
+}
+
 /// The value a card sorts on. Shared so the server can order the list the
 /// same way the client will, which is what lets the page inline statement
 /// math for the entries that will actually be on screen.
 export function sortValue(p: CardEntry, key: SortKey, period: Period): string | number {
   switch (key) {
     case "solveDate":
-      return p.solveDate;
+      return solveDateSortKey(p.solveDate);
     case "added":
       // ISO timestamps sort correctly as strings.
       return p.addedAt;
