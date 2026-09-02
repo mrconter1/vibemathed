@@ -35,6 +35,10 @@ export interface ViewerState {
   /// Submissions awaiting review. Always 0 for non-admins, so the count is
   /// never disclosed to anyone who could not act on it.
   pendingReviews: number;
+  /// When the oldest of those was submitted, as ISO. Null when the queue is
+  /// empty or the viewer is not an admin. The count says there is work; this
+  /// says whether it is late, which is the number that decides urgency.
+  oldestPendingAt: string | null;
   /// Entry reports awaiting a curator. Same admin-only rule as pendingReviews.
   openReports: number;
   /// Unread notifications for THIS viewer: comments by others, newer than
@@ -62,6 +66,7 @@ export const SIGNED_OUT: ViewerState = {
   showComments: true,
   isAdmin: false,
   pendingReviews: 0,
+  oldestPendingAt: null,
   openReports: 0,
   notifications: 0,
   unreadInbox: 0,

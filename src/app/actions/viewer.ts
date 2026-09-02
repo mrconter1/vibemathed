@@ -21,7 +21,7 @@ export async function getViewerState(): Promise<ViewerState> {
 
   const userId = session.user.id;
 
-  const [votes, pendingReviews, openReports, unread, me] = await Promise.all([
+  const [votes, pendingReviews, openReports, unread, me, oldestPending] = await Promise.all([
     prisma.problemVote.findMany({
       where: { userId },
       select: { vote: true, problem: { select: { slug: true } } },
@@ -66,6 +66,15 @@ export async function getViewerState(): Promise<ViewerState> {
         notificationsSeenAt: true,
       },
     }),
+    // The oldest wait, for the header's review pill. Admin-only for the same
+    // reason as the count.
+    admin
+      ? prisma.problem.findFirst({
+          where: { status: "pending" },
+          orderBy: { createdAt: "asc" },
+          select: { createdAt: true },
+        })
+      : Promise.resolve(null),
   ]);
 
   // Decisions on your own submissions count as unread too, on the same
@@ -94,6 +103,7 @@ export async function getViewerState(): Promise<ViewerState> {
     showComments: me?.showComments ?? true,
     isAdmin: admin,
     pendingReviews,
+    oldestPendingAt: oldestPending?.createdAt.toISOString() ?? null,
     openReports,
     notifications,
     unreadInbox,

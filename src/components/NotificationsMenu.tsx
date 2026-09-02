@@ -51,14 +51,20 @@ export function NotificationsMenu() {
     openReports,
     clearNotifications,
   } = useViewer();
-  // Curator queues are notifications too, so they belong on the bell rather
-  // than on the account button. They are NOT cleared by opening the panel -
+  // Curator queues still LIST here, so the panel stays the one place that
+  // shows everything actionable. They are NOT cleared by opening the panel -
   // a queue stops counting when it is actually emptied, not when it is seen.
   const queued = isAdmin ? pendingReviews + openReports : 0;
-  // Mail is NOT counted here: the envelope beside this bell carries it. The
-  // bell counts what happened near you; the envelope, what was written to
-  // you.
-  const badge = notifications + queued;
+  // What the badge COUNTS is narrower. Pending submissions used to be summed
+  // in, and the digit was read as comment noise: three submissions waited a
+  // day under a bell that said "3". They now have a pill of their own in the
+  // header (ReviewBadge), so counting them here too would show the same work
+  // twice. Reports stay counted; they have no other home yet.
+  //
+  // Mail is NOT counted here either: the envelope beside this bell carries
+  // it. The bell counts what happened near you; the envelope, what was
+  // written to you; the pill, what is waiting for you.
+  const badge = notifications + (isAdmin ? openReports : 0);
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<NotificationItem[] | null>(null);
   const [error, setError] = useState<string | null>(null);

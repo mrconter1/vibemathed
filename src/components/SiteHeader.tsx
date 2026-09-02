@@ -4,6 +4,7 @@ import { DiscordLink } from "@/components/DiscordLink";
 import { InboxButton } from "@/components/InboxButton";
 import { NavLinks } from "@/components/NavLinks";
 import { NotificationsMenu } from "@/components/NotificationsMenu";
+import { ReviewBadge } from "@/components/ReviewBadge";
 import { SubmitButton } from "@/components/SubmitButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -51,6 +52,10 @@ export function SiteHeader() {
               signed-out reader gets the plus and the sign-in button, which is
               the right order of discovery. */}
           <SubmitButton />
+          {/* Curators only, and only while something is waiting: the review
+              queue as a pill of its own, because folded into the bell it was
+              a digit nobody read as "work for you". See ReviewBadge. */}
+          <ReviewBadge />
           {/* Both render nothing for signed-out visitors. Mail before the
               bell: it is the more personal of the two. */}
           <InboxButton />
