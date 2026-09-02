@@ -6,6 +6,7 @@ import { auth } from "@/auth";
 import { sendDirectMessage } from "@/app/actions/inbox";
 import { isAdmin } from "@/lib/admin";
 import { canonical, charLength } from "@/lib/char-length";
+import { formatCommentDate } from "@/lib/comment-render";
 import { prisma } from "@/lib/prisma";
 import { isHttpUrl, isValidSolveDate, parseLinks } from "@/lib/editable";
 import {
@@ -189,6 +190,43 @@ export async function submitProblem(values: SubmissionValues): Promise<SubmitRes
 
   updateTag("submissions");
   return { ok: true, slug };
+}
+
+export interface MyPendingSubmission {
+  name: string;
+  fieldGroup: string | null;
+  submittedAtIso: string;
+  /// Absolute date, the fallback RelativeTime shows for anything older than a
+  /// week.
+  submittedAt: string;
+}
+
+/// The viewer's own submissions that are still waiting for a curator.
+///
+/// Exists because the wait was invisible from the submitter's side. After the
+/// success screen there was nowhere to see that an entry was still queued, so
+/// a day's silence read as the site having lost it or broken - which is what
+/// a submitter concluded, in public, in September 2026. The inbox renders this
+/// above the conversation list, with the expected turnaround, until the
+/// decision arrives there as a message.
+///
+/// Scoped to the signed-in user; returns nothing rather than an error when
+/// signed out, since the caller renders nothing either way.
+export async function getMyPendingSubmissions(): Promise<MyPendingSubmission[]> {
+  const session = await auth();
+  if (!session?.user?.id) return [];
+
+  const rows = await prisma.problem.findMany({
+    where: { status: "pending", submittedById: session.user.id },
+    orderBy: { createdAt: "asc" },
+    select: { name: true, fieldGroup: true, createdAt: true },
+  });
+  return rows.map((r) => ({
+    name: r.name,
+    fieldGroup: r.fieldGroup,
+    submittedAtIso: r.createdAt.toISOString(),
+    submittedAt: formatCommentDate(r.createdAt),
+  }));
 }
 
 async function requireAdmin() {

@@ -106,6 +106,20 @@ export function SubmitForm() {
           It stays private until a reviewer approves it. Once live it will credit you
           by pseudonym.
         </p>
+        {/* The wait, named. A day of silence after this screen used to read
+            as the entry being lost; now the reader knows how long is normal,
+            where to see it while it waits, and where the answer will land. */}
+        <p className="mt-1 text-xs text-[var(--ink-secondary)]">
+          Most entries are reviewed within two days. Your{" "}
+          <Link href="/inbox" className="text-[var(--accent-blue)] hover:underline">
+            inbox
+          </Link>{" "}
+          shows it while it waits and carries the decision either way, and the public{" "}
+          <Link href="/queue" className="text-[var(--accent-blue)] hover:underline">
+            review queue
+          </Link>{" "}
+          lists everything waiting.
+        </p>
         {/* The highest-intent moment on the site: someone has just
             contributed and is waiting on a human. Worth one line. */}
         <p className="mt-2 text-xs text-[var(--ink-secondary)]">

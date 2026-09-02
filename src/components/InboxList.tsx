@@ -40,6 +40,7 @@ import {
   type InboxSummary,
 } from "@/app/actions/inbox";
 import { INBOX_HOME_EVENT, MESSAGE_MAX, SUBJECT_MAX } from "@/lib/messages";
+import { MySubmissions } from "@/components/MySubmissions";
 import { useViewer } from "@/components/ViewerProvider";
 import { TeX } from "@/components/TeX";
 
@@ -824,6 +825,9 @@ export function InboxList() {
           </button>
         )}
       </div>
+      {/* The reader's own queued entries, above the mail, on the list view
+          only: an open conversation is about one thing and this is not it. */}
+      {listView && <MySubmissions />}
       {body}
     </div>
   );
