@@ -77,6 +77,11 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
       d.age !== null && d.significance !== null,
   );
   const pending = enriched.length - plottable.length;
+  // Dropped before `enriched` even exists: partials and variants improve a
+  // bound or answer a nearby question, so "age at resolution" is not defined
+  // for them. Counted so the footnote can say so instead of implying they
+  // were dropped for missing data.
+  const excluded = problems.length - enriched.length;
   const anyClaimed = plottable.some((d) => d.claimed);
 
   const xMax = niceMax(Math.max(1, ...plottable.map((d) => d.age)), 20);
@@ -390,9 +395,18 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
         )}
       </div>
 
-      {pending > 0 && (
+      {/* Both reasons a point is missing, separately, because conflating them
+          misleads. This used to read "N of M entries lack a posed year or a
+          score", with M the whole catalog - so it silently attributed the
+          partials' exclusion to missing data and made the count look wrong.
+          A reader reported exactly that about the zeta-zeros entry, which is
+          out for the first reason, not the second. */}
+      {(excluded > 0 || pending > 0) && (
         <p className="mt-2 text-xs text-[var(--ink-muted)]">
-          {`${pending} of ${problems.length} entries lack a posed year or a score, so aren't plotted.`}
+          {excluded > 0 &&
+            `${excluded} entries are partial results or variants, which have no age at resolution. `}
+          {pending > 0 &&
+            `${pending} of the remaining ${enriched.length} lack a posed year or a score.`}
         </p>
       )}
 
