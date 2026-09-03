@@ -33,11 +33,26 @@ are the authority, not memory.
 For anything non-trivial, open an issue first and say what you intend to
 change. A short conversation is cheaper than a rejected pull request.
 
+## Which branch
+
+**Branch from `main` and open your pull request against `main`.** That is
+where everything lands first, and it is always the furthest ahead, so your
+branch never carries anyone else's history and your diff is only your own
+commits.
+
+`production` is what vibemathed.com serves. Code reaches it by a deliberate
+promotion from `main`, never by momentum. You will not normally touch it.
+
+Do not target `staging`. It is being retired; anything opened against it
+should be retargeted to `main`.
+[`docs/branch-flow.md`](docs/branch-flow.md) explains the reasoning and lists
+the migration steps still outstanding.
+
 ## Checks
 
 CI runs `npm run lint`, `npm run typecheck` and `npm test` on every pull
-request, and `main` will not merge without them. Run all three locally before
-pushing.
+request, and neither `main` nor `production` will merge without them. Run all
+three locally before pushing.
 
 The tests are unit tests for the pure modules under `src/lib` (and the pure
 functions that live beside components, like `texToHtml`): `src/**/*.test.ts`,

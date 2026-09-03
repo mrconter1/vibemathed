@@ -100,10 +100,12 @@ Catalog contributions - new entries, corrections, challenges to a claim - go
 through the site rather than through git, because the catalog lives in a
 database: see [vibemathed.com/contributing](https://vibemathed.com/contributing).
 
-For code, see [CONTRIBUTING.md](CONTRIBUTING.md). Pull requests go to `staging`
-first, which runs at its own URL against its own database
-([`docs/staging.md`](docs/staging.md)), and are promoted to `main` from there.
-`main` requires a green CI run and one approval.
+For code, see [CONTRIBUTING.md](CONTRIBUTING.md). **Pull requests go to
+`main`**, which is where everything lands first; `production` is what
+vibemathed.com serves, and reaching it is a deliberate promotion. Both require
+a green CI run and one approval. [`docs/branch-flow.md`](docs/branch-flow.md)
+explains why, and lists the two migration steps still outstanding - until they
+are done, `main` is still the branch that deploys to production.
 
 ## License
 
