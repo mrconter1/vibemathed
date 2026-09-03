@@ -76,26 +76,59 @@ Done:
 - [x] `production` protected: `checks` required and strict, one approving
       review, stale reviews dismissed, no force pushes, no deletions.
 - [x] Open pull requests retargeted from `staging` to `main`.
+- [x] Staging OAuth clients created and their four credentials set. The table
+      in [`staging.md`](staging.md) still calls them pending; it is stale.
 
-Remaining, and both need the operator:
+Remaining. The first of these did not exist when the plan was written:
 
-- [ ] **Move the staging environment from the `staging` branch to `main`.**
-      Seven branch-scoped variables in Vercel are bound to the branch *name*
-      `staging`: `DATABASE_URL`, `AUTH_SECRET`, `AUTH_URL`, and the Google and
-      GitHub client ids and secrets. They must be rebound to `main`, and
-      `AUTH_URL` must change from
-      `https://vibemathed-git-staging-rasmus-projects-f85c1805.vercel.app` to
-      `https://vibemathed-git-main-rasmus-projects-f85c1805.vercel.app`.
-- [ ] **Register that URL as a redirect URI in the Google and GitHub OAuth
-      applications.** This is the step nobody but the operator can do, and
-      skipping it breaks sign-in on staging without breaking anything else,
-      which is a confusing failure. Do it before the rebind, not after.
+- [ ] **Catch `production` up to `main`, before anything else.** The plan
+      assumed the flip would happen while both branches pointed at the same
+      commit. That expired ten minutes after `production` was cut: `main`
+      took `e384575` and `3ee2e37`, and the deployment vibemathed.com serves
+      was built five minutes after the second of them. Flipping now would
+      point production at `51baf67` and roll the live site back two commits,
+      taking the raised submission limit with it. `51baf67` is an ancestor of
+      `3ee2e37`, so this is a fast-forward and not a merge. PR #16 does it.
+- [ ] **Register the `main` branch alias as a redirect URI in the two
+      *staging* OAuth applications** - not the production ones, since it is
+      the staging credentials that are moving to `main`:
+      `https://vibemathed-git-main-rasmus-projects-f85c1805.vercel.app/api/auth/callback/google`
+      and the matching `/github`. This is the step nobody but the operator can
+      do, and skipping it breaks sign-in on staging without breaking anything
+      else, which is a confusing failure. Do it before the rebind, not after.
+- [ ] **Move the staging environment from the `staging` branch to `main`** by
+      *editing the branch on each of the seven existing variables* in the
+      Vercel dashboard, and changing `AUTH_URL` from the `staging` alias to
+      the `main` one.
+
+      Do not attempt this by pulling the values and adding them back. Six of
+      the seven are stored as Secret, which is write-only: `vercel env pull`
+      writes `[SENSITIVE]` placeholders for them, and no dashboard page or API
+      call will reveal them either. Editing the branch on the existing
+      variable is the only path that preserves the value. `AUTH_URL` is the
+      one readable exception, and it is the one that has to change anyway.
+
+      The CLI cannot do this - `vercel env` has add, rm, ls and pull, and no
+      edit - so it is the dashboard or a `PATCH` to
+      `/v10/projects/{id}/env/{envId}`.
 - [ ] **Change the Vercel project's production branch from `main` to
-      `production`.** Safe at the moment both point at the same commit; do it
-      then, and confirm vibemathed.com is unchanged before pushing anything
-      new to `main`.
-- [ ] Retire the `staging` branch once its environment has moved. Delete it
-      rather than leaving a third long-lived branch to drift.
+      `production`.** Do it once the branches agree, and confirm
+      vibemathed.com is unchanged before pushing anything new to `main`.
+- [ ] Retire the `staging` branch once its environment has moved, and delete
+      the seven now-unused branch-scoped variables with it. Delete the branch
+      rather than leaving a third long-lived one to drift.
 
 Until those are done, `main` is still the production branch, and a push to
 `main` still deploys to vibemathed.com.
+
+### One thing to fix while in that settings page
+
+Seven variables are scoped to Preview with *no* branch, including a
+`DATABASE_URL`. Those apply to every preview deployment, which after the flip
+means `main` and every pull request. If that one points at the production
+database then a preview can write to the live catalog, which is precisely what
+[`staging.md`](staging.md) says a test environment must never do.
+
+Its value cannot be read back, so the answer is not to check it but to set it:
+point the unscoped Preview `DATABASE_URL` at the staging database deliberately.
+Then it does not matter what it used to be.
