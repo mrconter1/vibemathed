@@ -1,6 +1,14 @@
 "use client";
 
-import { useDeferredValue, useEffect, useState } from "react";
+import {
+  useDeferredValue,
+  useEffect,
+  useState,
+  type ChangeEvent,
+  type FocusEventHandler,
+  type KeyboardEventHandler,
+  type Ref,
+} from "react";
 import { renderTexToHtml } from "@/lib/tex-render";
 
 export function TeXPreviewTextarea({
@@ -9,12 +17,28 @@ export function TeXPreviewTextarea({
   onChange,
   className,
   label,
+  rows = 7,
+  heightClass = "min-h-40",
+  monospace = false,
+  textareaRef,
+  placeholder,
+  autoFocus,
+  onBlur,
+  onKeyDown,
 }: {
   id: string;
   value: string;
-  onChange: (value: string) => void;
+  onChange: (value: string, event: ChangeEvent<HTMLTextAreaElement>) => void;
   className: string;
   label: string;
+  rows?: number;
+  heightClass?: string;
+  monospace?: boolean;
+  textareaRef?: Ref<HTMLTextAreaElement>;
+  placeholder?: string;
+  autoFocus?: boolean;
+  onBlur?: FocusEventHandler<HTMLTextAreaElement>;
+  onKeyDown?: KeyboardEventHandler<HTMLTextAreaElement>;
 }) {
   const [activeTab, setActiveTab] = useState<"text" | "preview">("text");
   const deferredValue = useDeferredValue(value);
@@ -102,12 +126,18 @@ export function TeXPreviewTextarea({
           aria-labelledby={`${id}-text-tab`}
         >
           <textarea
+            ref={textareaRef}
             id={id}
             value={value}
-            rows={7}
-            onChange={(event) => onChange(event.target.value)}
-            className={`${className} min-h-40 resize-y font-mono`}
+            rows={rows}
+            onChange={(event) => onChange(event.target.value, event)}
+            className={`${className} ${heightClass} resize-y ${monospace ? "font-mono" : ""}`}
             aria-describedby={`${id}-preview-help`}
+            aria-label={label}
+            placeholder={placeholder}
+            autoFocus={autoFocus}
+            onBlur={onBlur}
+            onKeyDown={onKeyDown}
           />
         </div>
       ) : (
@@ -115,7 +145,7 @@ export function TeXPreviewTextarea({
           role="tabpanel"
           id={`${id}-preview-panel`}
           aria-labelledby={`${id}-preview-tab`}
-          className="math-prose min-h-40 rounded border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 py-2 text-sm leading-relaxed text-[var(--ink-secondary)]"
+          className={`math-prose ${heightClass} rounded border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 py-2 text-sm leading-relaxed text-[var(--ink-secondary)]`}
           aria-busy={loading}
         >
           {error ? (

@@ -97,6 +97,7 @@ export function EntryFields({
                   onChange={(next) => onChange(spec.key, next)}
                   className={controlClass}
                   label={spec.label}
+                  monospace
                 />
               ) : (
                 <textarea

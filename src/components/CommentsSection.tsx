@@ -6,7 +6,8 @@
 // static shell and get indexed. This component layers the interactive parts on
 // top: posting, replying, voting, editing your own, deleting your own. Server
 // actions return the re-rendered HTML for a comment, so edits show their math
-// immediately without a page reload and without shipping KaTeX to the browser.
+// immediately without a page reload. The composer lazy-loads browser KaTeX
+// only if its LaTeX preview tab is opened.
 //
 // Threads. The server sends one flat list with a parentId per comment; the
 // tree is built here (src/lib/comment-tree.ts) and re-sorted when the reader
@@ -15,7 +16,7 @@
 // phone would otherwise be a one-word column - and past that depth each reply
 // says who it answers instead.
 
-import { useMemo, useRef, useState, useTransition } from "react";
+import { useId, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import type { VoteKind } from "@prisma/client";
 import {
@@ -37,6 +38,7 @@ import {
 } from "@/lib/comment-tree";
 import { useViewer } from "@/components/ViewerProvider";
 import { Icon } from "@/components/Icons";
+import { TeXPreviewTextarea } from "@/components/TeXPreviewTextarea";
 import { useBeforePaint } from "@/lib/before-paint";
 
 const textareaClass =
@@ -100,6 +102,7 @@ function Composer({
   // Open only while the caret sits directly after a just-typed ":".
   const [picker, setPicker] = useState(false);
   const taRef = useRef<HTMLTextAreaElement>(null);
+  const textareaId = useId();
   const empty = text.trim().length === 0;
   const tooLong = text.trim().length > COMMENT_MAX_LENGTH;
 
@@ -132,22 +135,26 @@ function Composer({
 
   return (
     <div className="relative">
-      <textarea
-        ref={taRef}
+      <TeXPreviewTextarea
+        id={textareaId}
+        label="Comment"
+        textareaRef={taRef}
         value={text}
-        onChange={(e) => {
-          const v = e.target.value;
+        onChange={(value, event) => {
           // Insertion only: deleting back onto a ":" should not spring the
           // picker open under the reader's cursor.
-          const typed = v.length > text.length;
-          setText(v);
-          setPicker(typed && v.slice(0, e.target.selectionStart).endsWith(":"));
+          const typed = value.length > text.length;
+          setText(value);
+          setPicker(
+            typed && value.slice(0, event.target.selectionStart).endsWith(":"),
+          );
         }}
         onBlur={() => setPicker(false)}
         autoFocus={autoFocus}
         placeholder={placeholder ?? "Add a comment. Math works: wrap it in $…$ or $$…$$."}
-        aria-label="Comment"
         className={textareaClass}
+        rows={3}
+        heightClass="min-h-[96px]"
         onKeyDown={(e) => {
           // Ctrl/Cmd+Enter submits, matching most comment boxes.
           if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && !empty && !tooLong) {
