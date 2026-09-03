@@ -1,9 +1,8 @@
 # Branch flow
 
-**Status: agreed and half-migrated. The last two steps need the operator's
-hands; until they are done, `main` is still the production branch and the
-"how it works" section below describes the target, not the present.** The
-"Where it stands" section at the bottom says exactly which is which.
+**Status: in force since the evening of 3 September 2026.** The "Where it
+stands" section at the bottom is the migration record, kept because what it
+found on the way is worth more than a tidy checklist.
 
 ## The problem this fixes
 
@@ -97,10 +96,13 @@ Also done, 3 September evening:
       vibemathed.com did not move. It failed first - see below - which is the
       new flow doing its job on day one.
 
-Remaining:
+- [x] `staging` branch deleted. It had its own classic protection rule with
+      deletions disallowed, which nobody had noticed because nothing had ever
+      tried; the rule went first, then the branch. Its variables were already
+      gone (they are the seven that moved).
 
-- [ ] Retire `staging`: delete the branch. Its variables are already gone
-      (they are the seven that moved).
+Nothing remains. The flow described at the top of this document is the one in
+force.
 
 ### What the first staging build found
 
