@@ -522,7 +522,8 @@ export default function MethodologyPage() {
 
       <Section title="The dataset">
         <p>
-          Everything on this site is free to reuse under{" "}
+          What this site wrote - the classifications, the scores, the notes,
+          the structure - is free to reuse under{" "}
           <a
             href="https://creativecommons.org/licenses/by/4.0/"
             target="_blank"
@@ -531,7 +532,13 @@ export default function MethodologyPage() {
           >
             CC BY 4.0
           </a>
-          , and the complete, always-current dataset is one request away:{" "}
+          . Quoted material from the papers is not ours to license and stays
+          with its authors; the{" "}
+          <Link href="/data-license" className="text-[var(--accent-blue)] hover:underline">
+            licensing page
+          </Link>{" "}
+          draws the line. The complete, always-current dataset is one request
+          away:{" "}
           <a
             href="/api/dataset"
             className="text-[var(--accent-blue)] hover:underline"

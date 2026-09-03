@@ -1,9 +1,14 @@
 import { getPublishedProblems } from "@/lib/data";
 
-// The reusable dataset the footer and methodology promise (CC BY 4.0), served
-// live from the same cached read the site renders from - so it can never go
-// stale the way a checked-in JSON file would. Engagement trend windows are
-// omitted (ephemeral); lifetime tallies are included as a snapshot.
+// The reusable dataset the footer and methodology point at, served live from
+// the same cached read the site renders from - so it can never go stale the
+// way a checked-in JSON file would. Engagement trend windows are omitted
+// (ephemeral); lifetime tallies are included as a snapshot.
+//
+// The `license` field names /data-license rather than a licence deed. This
+// response mixes what the site wrote with material quoted from papers, and a
+// flat "CC BY 4.0" here was the most consequential place the old blanket
+// claim appeared: machine consumers read it and acted on it.
 
 export async function GET() {
   const problems = await getPublishedProblems();
@@ -60,7 +65,13 @@ export async function GET() {
     {
       title: "VibeMathed - math problems solved with AI",
       url: "https://vibemathed.com",
-      license: "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)",
+      // NOT a blanket licence. This field used to read "CC BY 4.0" flat,
+      // which told every machine consumer that quoted abstracts were ours to
+      // sublicense. It points at the page that draws the line instead, and
+      // names what CC BY does cover.
+      license: "https://vibemathed.com/data-license",
+      licenseSummary:
+        "VibeMathed-authored content (classifications, scores, notes, structure) is CC BY 4.0. Quoted third-party material remains under its own rights.",
       methodology: "https://vibemathed.com/methodology",
       generated: new Date().toISOString(),
       count: data.length,

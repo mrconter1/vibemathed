@@ -158,7 +158,10 @@ export default async function Home() {
         sameAs: ["https://github.com/mrconter1/vibemathed"],
       },
       isAccessibleForFree: true,
-      license: "https://creativecommons.org/licenses/by/4.0/",
+      // The licensing page, not the CC BY deed: the dataset mixes material
+      // this site wrote with material quoted from papers, and a flat CC BY
+      // here asserted a licence over both.
+      license: "https://vibemathed.com/data-license",
       variableMeasured: `${problems.length} resolved problems`,
     },
   ];

@@ -12,6 +12,7 @@ import {
   DEFAULT_TOPIC,
   REPLY_MAX,
   isContactTopic,
+  isRightsTopic,
   topicHint,
 } from "@/lib/contact";
 import { useViewer } from "@/components/ViewerProvider";
@@ -72,6 +73,18 @@ export function ContactForm() {
             ? `Any reply will go to ${replyTo.trim()}.`
             : "You did not leave a reply address, so treat this as one-way."}
         </p>
+        {/* A rights notice deserves to be told what happens next, because the
+            person sending one is waiting on an outcome rather than a chat. */}
+        {isRightsTopic(topic) && (
+          <p className="mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
+            This one is treated as a rights notice: a curator reads it ahead of
+            ordinary mail, and we will correct, annotate, restrict or remove
+            the material as the case requires.{" "}
+            {replyTo.trim()
+              ? "You will be told what was done."
+              : "Leave a reply address next time if you want to hear the outcome."}
+          </p>
+        )}
         <button
           type="button"
           onClick={() => setSent(false)}

@@ -32,6 +32,16 @@ export const MESSAGE_KINDS = {
   "contact-verification": "Contact form: Profile verification",
   "contact-data": "Contact form: Dataset, API or reuse",
   "contact-press": "Contact form: Press or research",
+  /// The rights notices. Headed "Rights notice", not "Contact form", because
+  /// a curator scanning the inbox has to be able to tell at a glance that one
+  /// of these is not ordinary mail: it comes from someone whose work,
+  /// reputation or personal data is affected, and it needs answering rather
+  /// than filing.
+  "contact-copyright": "Rights notice: Copyright or attribution",
+  "contact-reputation": "Rights notice: Unlawful or damaging statement",
+  "contact-personal-data": "Rights notice: Personal data or privacy",
+  "contact-impersonation": "Rights notice: Impersonation",
+  "contact-security": "Rights notice: Security vulnerability",
 } as const;
 
 /// The message kind for a contact-form topic.

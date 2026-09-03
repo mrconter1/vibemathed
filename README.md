@@ -28,8 +28,10 @@ how every label is assigned.
 
 ## Data
 
-The complete dataset is free to reuse under CC BY 4.0:
-[vibemathed.com/api/dataset](https://vibemathed.com/api/dataset).
+The complete dataset is one request away:
+[vibemathed.com/api/dataset](https://vibemathed.com/api/dataset). What the site
+wrote is CC BY 4.0; quoted material from the papers is not ours to license. See
+[vibemathed.com/data-license](https://vibemathed.com/data-license).
 
 The database is the source of truth. [`src/data/problems.json`](src/data/problems.json)
 is the seed baseline and disaster-recovery snapshot, refreshed with
@@ -105,5 +107,12 @@ first, which runs at its own URL against its own database
 
 ## License
 
-Code is MIT (see [LICENSE](LICENSE)). The catalog content served by the site
-and the [dataset](https://vibemathed.com/api/dataset) are CC BY 4.0.
+Code is MIT (see [LICENSE](LICENSE)).
+
+Catalog content is mixed and the distinction matters: the classifications,
+verification tiers, significance scores, curator notes and the structure of the
+dataset are VibeMathed's own and are CC BY 4.0. Material quoted from the papers
+an entry cites - abstracts, passages, figures - belongs to its authors and is
+not relicensed by appearing here. [vibemathed.com/data-license](https://vibemathed.com/data-license)
+is the canonical statement, and `/api/dataset` points at it rather than
+asserting one licence over both.

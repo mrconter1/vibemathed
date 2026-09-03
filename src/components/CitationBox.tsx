@@ -1,9 +1,11 @@
 "use client";
 
-// How to cite the site and its dataset. This exists because the dataset is
-// CC BY 4.0: reuse is free but attribution is a licence condition, so the
-// attribution should be one copy away rather than something each reader
-// invents.
+// How to cite the site and its dataset. This exists because attribution is a
+// licence condition on the part of the catalog VibeMathed wrote: reuse of the
+// classifications, scores and notes is free under CC BY 4.0 provided the
+// source is named, so the attribution should be one copy away rather than
+// something each reader invents. The `note` field points at /data-license,
+// because quoted material from the papers is not covered by that licence.
 //
 // BibTeX only. This started with Harvard and APA alongside it, which was
 // padding: the readership writes LaTeX, and anyone who needs another style
@@ -38,7 +40,7 @@ function bibtex(accessed: Date | null): string {
     "  year         = {2026},",
     `  howpublished = {\\url{${SITE_URL}}},`,
     `  urldate      = {${accessed ? accessed.toISOString().slice(0, 10) : "YYYY-MM-DD"}},`,
-    "  note         = {Dataset available under CC BY 4.0}",
+    `  note         = {VibeMathed-authored content CC BY 4.0; see ${SITE_URL}/data-license}`,
     "}",
   ].join("\n");
 }

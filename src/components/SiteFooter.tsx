@@ -45,8 +45,15 @@ export function SiteFooter() {
           </Link>
           <span aria-hidden>·</span>
           <a href="/api/dataset" className={link}>
-            Dataset (CC BY 4.0)
+            Dataset
           </a>
+          <span aria-hidden>·</span>
+          {/* Was "Dataset (CC BY 4.0)". The parenthetical asserted one licence
+              over material this site does not own; the page says what is
+              actually covered. */}
+          <Link href="/data-license" className={link}>
+            Licensing
+          </Link>
           <span aria-hidden>·</span>
           <a
             href="https://github.com/mrconter1/vibemathed"
@@ -72,6 +79,13 @@ export function SiteFooter() {
           <span aria-hidden>·</span>
           <Link href="/contact" className={link}>
             Contact
+          </Link>
+          <span aria-hidden>·</span>
+          {/* A rightsholder should find the route from any page, without
+              reading a policy first and without an account. Deep-links to
+              the copyright topic, which is the commonest of the five. */}
+          <Link href="/contact?topic=copyright" className={link}>
+            Report a rights issue
           </Link>
           <span aria-hidden>·</span>
           {/* Plain anchor, not Link: this is a file, not a route, and the

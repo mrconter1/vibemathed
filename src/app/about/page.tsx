@@ -69,7 +69,8 @@ const CARDS: { title: string; body: React.ReactNode; wide?: boolean }[] = [
     title: "Free to reuse",
     body: (
       <>
-        The complete dataset is free to reuse under{" "}
+        The classifications, scores and notes this site wrote are free to reuse
+        under{" "}
         <a
           href="https://creativecommons.org/licenses/by/4.0/"
           target="_blank"
@@ -82,7 +83,11 @@ const CARDS: { title: string; body: React.ReactNode; wide?: boolean }[] = [
         <a href="/api/dataset" className={linkClass}>
           /api/dataset
         </a>
-        , and the source code is public on{" "}
+        ; quoted material from the papers stays with its authors, as the{" "}
+        <Link href="/data-license" className={linkClass}>
+          licensing page
+        </Link>{" "}
+        explains. The source code is public on{" "}
         <a
           href="https://github.com/mrconter1/vibemathed"
           target="_blank"
@@ -203,6 +208,24 @@ export default async function AboutPage() {
               reviewing checklist
             </a>
             . Verified means a curator checked the person&apos;s identity or affiliation.
+          </p>
+          {/* Who is answerable for the site, said plainly. Everyone else on
+              the list above helps; being listed does not make someone an
+              operator of the service, and a volunteer should not inherit that
+              by contributing. */}
+          <p className="mt-2 text-xs leading-relaxed text-[var(--ink-muted)]">
+            VibeMathed is operated by{" "}
+            <strong className="font-medium text-[var(--ink-secondary)]">
+              Rasmus Lindahl
+            </strong>
+            , in Sweden, as a non-commercial personal project. Everyone else
+            named here contributes as a volunteer: moderating, reviewing or
+            writing code does not make someone an operator of the service or
+            answerable for it. Rights and legal notices go to{" "}
+            <Link href="/contact?topic=copyright" className={linkClass}>
+              contact
+            </Link>
+            , which needs no account.
           </p>
         </section>
       )}
