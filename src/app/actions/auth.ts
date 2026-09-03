@@ -66,16 +66,17 @@ export async function signInAsDevelopmentUser(formData: FormData) {
   const sessionToken = randomUUID();
   const expires = new Date(Date.now() + AUTH_SESSION_MAX_AGE_SECONDS * 1000);
 
-  const createSession = prisma.session.create({
-    data: { sessionToken, userId: user.id, expires },
-  });
   if (previousToken) {
     await prisma.$transaction([
       prisma.session.deleteMany({ where: { sessionToken: previousToken } }),
-      createSession,
+      prisma.session.create({
+        data: { sessionToken, userId: user.id, expires },
+      }),
     ]);
   } else {
-    await createSession;
+    await prisma.session.create({
+      data: { sessionToken, userId: user.id, expires },
+    });
   }
 
   cookieStore.set(DEVELOPMENT_SESSION_COOKIE, sessionToken, {
