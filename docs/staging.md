@@ -1,10 +1,10 @@
-> **Being superseded.** The staging *environment* stays; the `staging`
-> *branch* is going away. Under the flow agreed on 3 September 2026 the
-> staging environment hangs off `main` instead, and `production` becomes the
-> branch that serves vibemathed.com. See
-> [`branch-flow.md`](branch-flow.md) for the reasoning and for the two
-> migration steps still outstanding. Everything below still describes how the
-> environment behaves; only the branch it is bound to changes.
+> **Superseded on 3 September 2026.** The staging *environment* now hangs off
+> `main`, at `https://vibemathed-git-main-rasmus-projects-f85c1805.vercel.app`,
+> and `production` is the branch that serves vibemathed.com. Read `staging`
+> below as `main`, and the staging alias as the `main` alias. The OAuth
+> clients, database and variables described here are the same ones, rebound.
+> See [`branch-flow.md`](branch-flow.md) for why and for what was found on the
+> way.
 
 # The staging environment
 
@@ -121,8 +121,8 @@ printf '<value>' | vercel env add NAME preview --git-branch staging --sensitive
 | `DATABASE_URL` | the staging database URL | set |
 | `AUTH_SECRET` | a fresh secret - not production's | set |
 | `AUTH_URL` | the branch alias | set |
-| `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | the Google client from step 3 | pending |
-| `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | the staging GitHub app from step 3 | pending |
+| `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | the Google client from step 3 | set |
+| `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | the staging GitHub app from step 3 | set |
 
 Until the last two are set, the staging branch inherits the Preview-scoped
 production OAuth credentials, whose callbacks do not include the staging

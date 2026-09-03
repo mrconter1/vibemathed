@@ -83,25 +83,36 @@ Done:
 - [x] The `main` branch alias registered as a redirect URI in both *staging*
       OAuth applications, Google and GitHub.
 
-Remaining, in this order. The order matters and is not the one this document
-originally gave - see the note below.
+Also done, 3 September evening:
 
-- [ ] **Point the unscoped Preview `DATABASE_URL` at the staging database.**
-      Seven variables sit on Preview with no branch, and they govern every
-      deployment that is not production. The moment `main` stops being the
-      production branch, that includes `main` and every pull request. If this
-      one still points at the production database then a preview can write to
-      the live catalog. Its value cannot be read back to check, so set it
-      rather than check it, and do it first so the window never opens.
-- [ ] **Change the Vercel project's production branch from `main` to
-      `production`.** Dashboard only. Changing the setting does not itself
-      redeploy, so vibemathed.com keeps serving the build it has until
-      something lands on `production`.
-- [ ] **Rebind the seven `staging`-scoped variables to `main`**, and change
-      `AUTH_URL` to the `main` alias. `scripts/` has no home for this; it was
-      done from a one-off script against the REST API.
-- [ ] Retire `staging`: delete the branch and any variables left pointing at
-      it.
+- [x] Unscoped Preview `DATABASE_URL` pointed at `vibemathed_staging`, so no
+      pull request preview can reach the live catalog.
+- [x] Vercel production branch changed from `main` to `production`. Confirmed
+      via the API; no deployment was triggered and vibemathed.com kept serving
+      the build it had.
+- [x] The seven `staging`-scoped variables rebound to `main` and `AUTH_URL`
+      changed to the `main` alias. Confirmed the hard way: Auth.js on the
+      alias reports both providers' `callbackUrl` under the `main` hostname.
+- [x] First `main` deployment under the new flow built, as a preview, and
+      vibemathed.com did not move. It failed first - see below - which is the
+      new flow doing its job on day one.
+
+Remaining:
+
+- [ ] Retire `staging`: delete the branch. Its variables are already gone
+      (they are the seven that moved).
+
+### What the first staging build found
+
+It failed with `P2022 column User.staffRole does not exist` and `P2021 table
+FieldProvenance does not exist`. The staging *database* had drifted: every
+schema change of the past week had been pushed to production only, and since
+nothing recent ever deployed to `staging`, nobody could have seen it. Fixed by
+`db:push` + `db:seed` against `vibemathed_staging`, using
+`scripts/schema-lock.mjs` to unlock all sixteen tables at once first (the
+README's one-table ALTER fails once per drifted table). Rule going forward:
+**a schema change is pushed to staging before it is pushed to production**, or
+the next `main` build fails the same way.
 
 ### Two things that make this harder than it looks
 
