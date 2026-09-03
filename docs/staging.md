@@ -1,3 +1,11 @@
+> **Being superseded.** The staging *environment* stays; the `staging`
+> *branch* is going away. Under the flow agreed on 3 September 2026 the
+> staging environment hangs off `main` instead, and `production` becomes the
+> branch that serves vibemathed.com. See
+> [`branch-flow.md`](branch-flow.md) for the reasoning and for the two
+> migration steps still outstanding. Everything below still describes how the
+> environment behaves; only the branch it is bound to changes.
+
 # The staging environment
 
 Staging is a full copy of the site running the `staging` branch, at a fixed
