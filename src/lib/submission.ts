@@ -162,10 +162,11 @@ export function emptySubmission(): SubmissionValues {
 export { MESSAGE_MAX as REVIEW_MESSAGE_MAX } from "@/lib/messages";
 
 export const SUBMISSION_WINDOW_MS = 24 * 60 * 60 * 1000;
-/// Raised from 3 to 10. Three was set when the queue was the bottleneck; the
+/// Raised 3 -> 5 -> 10. Three was set when the queue was the bottleneck; the
 /// people actually hitting it turned out to be the regulars sending several
 /// good entries in a sitting, which is the traffic this site wants, not the
-/// flooding the throttle exists to stop.
+/// flooding the throttle exists to stop. Ten because the most prolific
+/// submitter reached five in a day with a 4% rejection rate.
 export const SUBMISSIONS_PER_WINDOW = 10;
 
 /// URL-safe id derived from the entry name. Uniqueness is enforced by the
