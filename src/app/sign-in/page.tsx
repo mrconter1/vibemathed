@@ -5,8 +5,8 @@ import {
   signInWithGitHub,
   signInWithGoogle,
 } from "@/app/actions/auth";
+import { DEVELOPMENT_USERS } from "@/lib/dev-users";
 import { prisma } from "@/lib/prisma";
-import { DEVELOPMENT_USERS } from "../../../prisma/seeds_development";
 
 export const metadata: Metadata = {
   title: "Sign in",

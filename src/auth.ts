@@ -68,7 +68,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     session({ session, user }) {
       // Build a fresh payload rather than returning the adapter's runtime
       // object. With database sessions that object also carries the session
-      // token and every User column; neither belongs in /api/auth/session.
+      // token and every User column; neither belongs in /api/auth/session. The
+      // allowlist keeps standard identity fields for Auth.js, id/pseudonym for
+      // site identity, email for env-admin checks, and staffRole for curator
+      // permissions. Any future session field must be added here deliberately.
       return {
         expires: session.expires,
         user: {

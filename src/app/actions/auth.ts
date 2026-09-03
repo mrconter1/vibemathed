@@ -4,8 +4,8 @@ import { randomUUID } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { AUTH_SESSION_MAX_AGE_SECONDS, signIn, signOut } from "@/auth";
+import { DEVELOPMENT_USERS } from "@/lib/dev-users";
 import { prisma } from "@/lib/prisma";
-import { DEVELOPMENT_USERS } from "../../../prisma/seeds_development";
 
 const DEVELOPMENT_SESSION_COOKIE = "authjs.session-token";
 const DEVELOPMENT_USER_EMAILS = DEVELOPMENT_USERS.map((user) => user.email);
