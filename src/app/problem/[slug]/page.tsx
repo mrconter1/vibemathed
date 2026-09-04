@@ -16,6 +16,7 @@ import {
 import { formatCommentDate } from "@/lib/comment-render";
 import { toEditableValues } from "@/lib/editable";
 import { groupLinksByKind, inferLinkKind } from "@/lib/link-kinds";
+import { RecordMembership } from "@/components/RecordMembership";
 import { SITE_URL } from "@/lib/site";
 import { withFallbackParam } from "@/lib/static-params";
 import { Icon, type IconName } from "@/components/Icons";
@@ -407,6 +408,10 @@ export default async function ProblemPage({
             why-they-connect note in a hover card. Renders nothing when the
             entry has no relations, which is most of the catalog. */}
         <RelatedEntries relations={relations} />
+
+        {/* Which record(s) this entry is a step on, if any. Almost always
+            nothing; when it renders it is the most useful line on the page. */}
+        <RecordMembership slug={slug} />
 
         {/* Contributor credit. Deliberately readable rather than a muted
             footnote: the person who brought this entry in gets named, here and

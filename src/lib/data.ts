@@ -996,3 +996,200 @@ export async function getPublishedSlugs(): Promise<string[]> {
   });
   return rows.map((r) => r.slug);
 }
+
+// ---------------------------------------------------------------------------
+// Records: a named quantity with a direction and a staircase of best known
+// values (src/lib/records.ts). Read-only here; records are created and rowed
+// by curator scripts, so the cache tag is "records" and a script that writes
+// them is expected to call updateTag("records") or wait for a deploy.
+
+export interface RecordRowView {
+  id: string;
+  date: string;
+  valueTex: string;
+  valueNumeric: number | null;
+  rank: number | null;
+  attribution: string;
+  sourceUrl: string | null;
+  status: string;
+  note: string | null;
+  /// Present when the row is a catalog entry.
+  entry: {
+    slug: string;
+    name: string;
+    shortName: string;
+    model: string;
+    verification: string;
+    aiContribution: string | null;
+    solveDate: string;
+  } | null;
+}
+
+export interface RecordSummary {
+  slug: string;
+  name: string;
+  shortName: string;
+  quantity: string;
+  direction: "min" | "max";
+  fieldGroup: string | null;
+  significance: number | null;
+  rows: RecordRowView[];
+}
+
+export interface RecordView extends RecordSummary {
+  statement: string | null;
+  field: string | null;
+  significanceNote: string | null;
+  historyNote: string | null;
+}
+
+const RECORD_ROW_SELECT = {
+  id: true,
+  date: true,
+  valueTex: true,
+  valueNumeric: true,
+  rank: true,
+  attribution: true,
+  sourceUrl: true,
+  status: true,
+  note: true,
+  problem: {
+    select: {
+      slug: true,
+      name: true,
+      shortName: true,
+      model: true,
+      verification: true,
+      aiContribution: true,
+      solveDate: true,
+      status: true,
+    },
+  },
+} satisfies Prisma.RecordRowSelect;
+
+type RecordRowRaw = Prisma.RecordRowGetPayload<{ select: typeof RECORD_ROW_SELECT }>;
+
+function toRecordRow(r: RecordRowRaw): RecordRowView {
+  // An entry that has been unpublished since the row was made must not leak
+  // through the record page: the row stays (it is a fact about the record)
+  // but points nowhere.
+  const p = r.problem && r.problem.status === "published" ? r.problem : null;
+  return {
+    id: r.id,
+    date: r.date,
+    valueTex: r.valueTex,
+    valueNumeric: r.valueNumeric,
+    rank: r.rank,
+    attribution: r.attribution,
+    sourceUrl: r.sourceUrl,
+    status: r.status,
+    note: r.note,
+    entry: p
+      ? {
+          slug: p.slug,
+          name: p.name,
+          shortName: p.shortName,
+          model: p.model,
+          verification: p.verification,
+          aiContribution: p.aiContribution,
+          solveDate: p.solveDate,
+        }
+      : null,
+  };
+}
+
+export async function getRecords(): Promise<RecordSummary[]> {
+  "use cache";
+  cacheTag("records");
+  cacheLife("hours");
+
+  const rows = await prisma.record.findMany({
+    select: {
+      slug: true,
+      name: true,
+      shortName: true,
+      quantity: true,
+      direction: true,
+      fieldGroup: true,
+      significance: true,
+      rows: { select: RECORD_ROW_SELECT },
+    },
+    orderBy: { name: "asc" },
+  });
+  return rows.map((r) => ({
+    slug: r.slug,
+    name: r.name,
+    shortName: r.shortName,
+    quantity: r.quantity,
+    direction: r.direction === "min" ? "min" : "max",
+    fieldGroup: r.fieldGroup,
+    significance: r.significance,
+    rows: r.rows.map(toRecordRow),
+  }));
+}
+
+export async function getRecordBySlug(slug: string): Promise<RecordView | null> {
+  "use cache";
+  cacheTag("records", `record-${slug}`);
+  cacheLife("hours");
+
+  const r = await prisma.record.findUnique({
+    where: { slug },
+    select: {
+      slug: true,
+      name: true,
+      shortName: true,
+      quantity: true,
+      statement: true,
+      direction: true,
+      field: true,
+      fieldGroup: true,
+      significance: true,
+      significanceNote: true,
+      historyNote: true,
+      rows: { select: RECORD_ROW_SELECT },
+    },
+  });
+  if (!r) return null;
+  return {
+    slug: r.slug,
+    name: r.name,
+    shortName: r.shortName,
+    quantity: r.quantity,
+    statement: r.statement,
+    direction: r.direction === "min" ? "min" : "max",
+    field: r.field,
+    fieldGroup: r.fieldGroup,
+    significance: r.significance,
+    significanceNote: r.significanceNote,
+    historyNote: r.historyNote,
+    rows: r.rows.map(toRecordRow),
+  };
+}
+
+/// The records an entry is a row on, for the one-line pointer on its page.
+/// Almost every entry has none, so this must stay cheap: one indexed lookup.
+export async function getRecordsForProblem(slug: string): Promise<
+  { slug: string; shortName: string; direction: "min" | "max"; rows: RecordRowView[]; rowId: string }[]
+> {
+  "use cache";
+  cacheTag("records", `problem-${slug}`);
+  cacheLife("hours");
+
+  const hits = await prisma.recordRow.findMany({
+    where: { problem: { slug } },
+    select: {
+      id: true,
+      record: {
+        select: { slug: true, shortName: true, direction: true, rows: { select: RECORD_ROW_SELECT } },
+      },
+    },
+  });
+  return hits.map((h) => ({
+    slug: h.record.slug,
+    shortName: h.record.shortName,
+    direction: h.record.direction === "min" ? "min" : "max",
+    rows: h.record.rows.map(toRecordRow),
+    rowId: h.id,
+  }));
+}
