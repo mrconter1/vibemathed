@@ -1,12 +1,15 @@
 import Link from "next/link";
-import { DISCORD_INVITE } from "@/lib/community";
 
-/// One footer for the whole site: a single-sentence definition and the link
-/// row. The longer prose moved to the About page. Nothing here points at a
-/// person: the GitHub link is the repository, and Contact is the on-site
-/// inbox, so no private address is published.
+/// One footer for the whole site: a short definition followed by links grouped
+/// by why somebody would look for them. Primary sections and the public social
+/// outposts stay in the header instead of being duplicated here.
 export function SiteFooter() {
-  const link = "text-[var(--accent-blue)] hover:underline";
+  const link =
+    "w-fit text-[var(--accent-blue)] transition-colors hover:text-[var(--ink)] hover:underline";
+  const heading =
+    "text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--ink-muted)]";
+  const list = "mt-2 flex flex-col items-start gap-1.5";
+
   return (
     <footer className="mt-16 border-t border-[var(--hairline)]">
       <div className="mx-auto w-full max-w-6xl px-4 py-8 text-xs leading-relaxed text-[var(--ink-muted)] sm:px-8">
@@ -14,87 +17,78 @@ export function SiteFooter() {
           A community-curated record of math problems first solved with AI in
           the loop.
         </p>
-        <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
-          <Link href="/about" className={link}>
-            About
-          </Link>
-          <span aria-hidden>·</span>
-          <Link href="/methodology" className={link}>
-            Methodology
-          </Link>
-          <span aria-hidden>·</span>
-          {/* Footer rather than the nav bar: the directory is a secondary
-              page, and a fifth top-level item would crowd the bar on a phone
-              for something most readers never need. The link that matters is
-              the contextual one, beside Recent activity. */}
-          <Link href="/users" className={link}>
-            Members
-          </Link>
-          <span aria-hidden>·</span>
-          {/* Beside Members rather than next to Submit: this covers every way
-              in, including the sceptical ones and the code, whereas Submit is
-              one specific route that already has its own link below. */}
-          <Link href="/contributing" className={link}>
-            Contributing
-          </Link>
-          <span aria-hidden>·</span>
-          {/* Beside Methodology's neighbours: the site asks every entry for
-              an AI disclosure, so its own belongs where the rules live. */}
-          <Link href="/ai-disclosure" className={link}>
-            AI disclosure
-          </Link>
-          <span aria-hidden>·</span>
-          <a href="/api/dataset" className={link}>
-            Dataset
-          </a>
-          <span aria-hidden>·</span>
-          {/* Was "Dataset (CC BY 4.0)". The parenthetical asserted one licence
-              over material this site does not own; the page says what is
-              actually covered. */}
-          <Link href="/data-license" className={link}>
-            Licensing
-          </Link>
-          <span aria-hidden>·</span>
-          <a
-            href="https://github.com/mrconter1/vibemathed"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={link}
-          >
-            GitHub
-          </a>
-          <span aria-hidden>·</span>
-          <a
-            href={DISCORD_INVITE}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={link}
-          >
-            Discord
-          </a>
-          <span aria-hidden>·</span>
-          <Link href="/submit" className={link}>
-            Submit
-          </Link>
-          <span aria-hidden>·</span>
-          <Link href="/contact" className={link}>
-            Contact
-          </Link>
-          <span aria-hidden>·</span>
-          {/* A rightsholder should find the route from any page, without
-              reading a policy first and without an account. Deep-links to
-              the copyright topic, which is the commonest of the five. */}
-          <Link href="/contact?topic=copyright" className={link}>
-            Report a rights issue
-          </Link>
-          <span aria-hidden>·</span>
-          {/* Plain anchor, not Link: this is a file, not a route, and the
-              router should hand it to the reader's feed client rather than
-              try to navigate to it. */}
-          <a href="/feed.xml" className={link}>
-            RSS
-          </a>
-        </p>
+
+        <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-4">
+          <nav aria-labelledby="footer-contribute">
+            <h2 id="footer-contribute" className={heading}>
+              Contribute
+            </h2>
+            <div className={list}>
+              <Link href="/contributing" className={link}>
+                Contributing
+              </Link>
+              <Link href="/submit" className={link}>
+                Submit an entry
+              </Link>
+              <a
+                href="https://github.com/mrconter1/vibemathed"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={link}
+              >
+                GitHub
+              </a>
+            </div>
+          </nav>
+
+          <nav aria-labelledby="footer-data">
+            <h2 id="footer-data" className={heading}>
+              Data
+            </h2>
+            <div className={list}>
+              {/* A file rather than an app route: let the browser or feed
+                  reader handle it directly. */}
+              <a href="/feed.xml" className={link}>
+                RSS
+              </a>
+              <a href="/api/dataset" className={link}>
+                Dataset
+              </a>
+            </div>
+          </nav>
+
+          <nav aria-labelledby="footer-policies">
+            <h2 id="footer-policies" className={heading}>
+              Policies
+            </h2>
+            <div className={list}>
+              <Link href="/ai-disclosure" className={link}>
+                AI disclosure
+              </Link>
+              <Link href="/data-license" className={link}>
+                Data licensing
+              </Link>
+              {/* Privacy and Terms join this group when their pages are ready
+                  to publish; neither draft is surfaced prematurely. */}
+            </div>
+          </nav>
+
+          <nav aria-labelledby="footer-problems-rights">
+            <h2 id="footer-problems-rights" className={heading}>
+              Contact
+            </h2>
+            <div className={list}>
+              <Link href="/contact" className={link}>
+                Contact us
+              </Link>
+              {/* A rightsholder should find the direct route from every page,
+                  without first working out that the general form handles it. */}
+              <Link href="/contact?topic=copyright" className={link}>
+                Report a rights issue
+              </Link>
+            </div>
+          </nav>
+        </div>
       </div>
     </footer>
   );

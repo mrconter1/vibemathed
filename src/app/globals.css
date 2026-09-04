@@ -509,12 +509,12 @@ select option::checkmark {
  * and for anyone without JavaScript.
  */
 /*
- * The header's X mark has two builds, and the theme picks one. Light gets the
- * app icon as X ships it: a solid tile with the mark knocked out. Dark gets an
- * outlined frame with a filled mark, because inverting the light version
- * produces a solid white slab - the loudest object in the header, and the only
- * control there that is a filled block rather than a bordered shell like the
- * plus, the bell and the theme button.
+ * The X mark has two builds, and the theme picks one. Light gets the app icon
+ * as X ships it: a solid tile with the mark knocked out. Dark gets an outlined
+ * frame with a filled mark, because inverting the light version produces a
+ * solid white slab - the loudest object in the header, and the only control
+ * there that is a filled block rather than a bordered shell like the plus, the
+ * bell and the theme button.
  *
  * Same mechanism as the sun/moon pair below: both ship in the markup and CSS
  * reveals one, so nothing has to wait for JavaScript to know the theme.
