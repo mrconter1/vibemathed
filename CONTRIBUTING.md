@@ -71,7 +71,8 @@ enough for development.
 cp .env.example .env    # then fill it in; the Prisma CLI reads .env, not .env.local
 npm install
 npm run db:push         # sync schema (there is no migrations directory)
-npm run db:seed         # load problems.json - idempotent
+npm run db:seed         # seed problems.json - idempotent
+npm run db:seed:dev     # seed dev-specific data such as test users - idempotent
 npm run dev
 ```
 
