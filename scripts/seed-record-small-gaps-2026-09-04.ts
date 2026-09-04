@@ -13,23 +13,24 @@
 // Every row's source was opened and read. Values, dates and attributions are
 // from those sources, not from memory.
 //
-// NOT YET APPLIED. Three things need deciding first, all recorded in the
-// report to the operator on 4 September 2026:
+// Apply AFTER scripts/import-bounded-gaps-2026-09-04.ts has run against
+// production and staging has been reseeded from a fresh export - the three AI
+// rows point at catalog entries by slug, and this script refuses to run until
+// they resolve. What follows is the reasoning that produced them:
 //
-//   1. The 186 row. That submission was HELD this morning, partly on the
+//   1. The 186 row was HELD on the morning of 4 September, partly on my
 //      finding that the paper behind it was not public. That finding was
-//      WRONG: the paper is "Improved short gaps between primes" (OpenAI,
-//      dated 30 August 2026) at the sibling URL of the long-gaps PDF this
-//      site verified the same day. The row below is `candidate` on the
-//      assumption the hold stands; if the hold is reversed it becomes an
-//      entry row and, on value, the frontier.
-//   2. The 212 and 236 rows are AI results with no catalog entry. They are
-//      written here as published rows with no `problemSlug`, which the schema
-//      allows but which sits awkwardly with the rule that a record exists
-//      only once an entry sits on it. Submitting them as entries first is the
-//      cleaner path.
-//   3. Whether a record may carry an AI row that is not a catalog entry at
-//      all. This script is the first case that asks the question.
+//      wrong - the paper is "Improved short gaps between primes" (OpenAI,
+//      30 August 2026), at the sibling URL of the long-gaps PDF this site
+//      verified the same day. The import script reverses that hold, so the
+//      row is `published` here and, on value, the frontier.
+//   2. The 212 and 236 results had no catalog entry; the import script
+//      creates both, so every AI row on this record is an entry. The human
+//      rungs - Zhang, Polymath8a, Maynard, Polymath8b, Stadlmann - stay
+//      cited historical rows, because the catalog records AI-in-the-loop
+//      results and Zhang 2013 is not one.
+//   3. Hence no row here is an AI result without an entry, which is the rule
+//      a record is meant to satisfy.
 //
 // Dry run by default. Pass --apply to write.
 
@@ -117,27 +118,27 @@ const ROWS: Row[] = [
     valueTex: "$236$",
     valueNumeric: 236,
     attribution: "Kintali, with AI",
-    sourceUrl: KINTALI,
     status: "published",
-    note: "Announced on X, building on Stadlmann's work. Not in this catalog yet; no preprint identified at the time of writing.",
+    problemSlug: "bounded-prime-gaps-at-most-236",
+    note: "Announced on X, building on Stadlmann's work. Held the record for two days.",
   },
   {
     date: "2026-09-03",
     valueTex: "$212$",
     valueNumeric: 212,
     attribution: "Charton, Hong, Lau, Ono, Remy, Siu, Swaminathan, Thorner and Xie (Axiom Math)",
-    sourceUrl: AXIOM,
     status: "published",
-    note: "Builds on Stadlmann. From the group whose AxiomProver had formalised the 246 bound in Lean weeks earlier. Not in this catalog yet.",
+    problemSlug: "bounded-prime-gaps-at-most-212",
+    note: "Builds on Stadlmann. AxiomProver generated the Lean certificate of the deduction; the mathematics is the authors'.",
   },
   {
     date: "2026-08-30",
     valueTex: "$186$",
     valueNumeric: 186,
     attribution: "GPT 6 Astra (OpenAI)",
-    sourceUrl: OPENAI_186,
-    status: "candidate",
-    note: "Held from publication pending review, not counted as the record here. The paper is dated 30 August, before Stadlmann's 240, but the Lean development and the repository appeared on 2 September. Its formal proof is conditional on three unformalised inputs: two Kloosterman-type bounds and a package of numerical inequalities.",
+    status: "published",
+    problemSlug: "prime-gaps-at-most-186",
+    note: "The paper is dated 30 August, before Stadlmann's 240, though the Lean development and repository appeared on 2 September. Its formal proof is conditional on three unformalised inputs: two Kloosterman-type bounds and a package of numerical inequalities, so the entry is Lean-checked rather than Lean-verified.",
   },
 ];
 
