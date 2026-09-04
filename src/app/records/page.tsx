@@ -116,14 +116,18 @@ export default async function RecordsPage() {
                     {r.fieldGroup ? ` · ${r.fieldGroup}` : ""}
                   </p>
                 </div>
-                {/* Deliberately NOT .math-prose: that class scrolls its
-                    overflow, which is right for a paragraph and wrong here -
-                    a strip that grows a scrollbar per row is unreadable (and
-                    is what the first version did on the long-gaps record).
-                    The compact form plus `overflow-hidden` keeps the row one
-                    line; the full display value lives on the record page. */}
-                <div className="min-w-0 basis-full overflow-hidden text-sm text-[var(--ink)] sm:basis-56 sm:text-right">
-                  <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+                {/* Two things this cell must NOT do, both learned the hard way
+                    on the long-gaps record. It must not use .math-prose, which
+                    sets overflow-x: auto and gives every row its own
+                    scrollbar. And it must not clip with text-ellipsis:
+                    rendered math is a tree of absolutely positioned spans, so
+                    cutting it off does not truncate a string, it strews
+                    subscripts across the row. So the value WRAPS instead - the
+                    compact form is a flat inline expression with no stacked
+                    fraction, which is exactly what wraps cleanly - and the
+                    strip takes a second line when it has to. */}
+                <div className="min-w-0 basis-full text-sm leading-snug text-[var(--ink)] sm:basis-64 sm:text-right">
+                  <div className="[&_.katex]:whitespace-normal">
                     {best ? (
                       <TeX>{best.valueShortTex ?? best.valueTex}</TeX>
                     ) : (
@@ -167,7 +171,8 @@ function LatestRow({ record, row }: { record: RecordSummary; row: RecordRowView 
         {record.shortName}
       </Link>
       <span>→</span>
-      <span className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-[var(--ink)]">
+      {/* Wraps rather than clips, for the reason given on the strip above. */}
+      <span className="min-w-0 text-[var(--ink)] [&_.katex]:whitespace-normal">
         <TeX>{row.valueShortTex ?? row.valueTex}</TeX>
       </span>
       <span className="text-xs">

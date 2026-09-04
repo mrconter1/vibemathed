@@ -41,9 +41,6 @@ const APPLY = process.argv.includes("--apply");
 
 const WIKI_GAP = "https://en.wikipedia.org/wiki/Prime_gap";
 const STADLMANN = "https://arxiv.org/abs/2608.31126";
-const KINTALI = "https://x.com/ShivaKintali/status/2095547543061135765";
-const AXIOM = "https://primegaps.axiommath.ai/";
-const OPENAI_186 = "https://cdn.openai.com/pdf/51126fac-1b68-4128-9666-c908bcc16033/short_gaps.pdf";
 
 type Row = {
   date: string;

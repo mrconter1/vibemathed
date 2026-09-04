@@ -186,6 +186,26 @@ const NEW_ENTRIES: { slug: string; fields: Record<string, unknown>; links: { lab
   },
 ];
 
+/// Writes the "approved" changelog row with raw SQL, naming only columns that
+/// exist in BOTH schemas.
+///
+/// Why: the Records feature added a nullable `recordId` to ProblemActivity,
+/// and that schema is pushed to staging but not to production, because the
+/// branch carrying the code has not merged. The generated client is built
+/// from the branch schema, so `prisma.problemActivity.create()` sends
+/// `recordId` and production rejects it (P2022). Naming the columns
+/// explicitly sidesteps the drift without a production DDL change ahead of
+/// the code that needs it. Delete this and use the client again once the
+/// records branch is merged and production has the column.
+async function logApproved(problemId: string, userId: string, userName: string | null) {
+  await prisma.$executeRawUnsafe(
+    `INSERT INTO "ProblemActivity" ("problemId", "userId", "userName", "type") VALUES ($1, $2, $3, 'approved')`,
+    problemId,
+    userId,
+    userName,
+  );
+}
+
 async function main() {
   const [{ db }] = await prisma.$queryRawUnsafe<{ db: string }[]>("SELECT current_database() AS db");
   console.log(`database: ${db}${db === "vibemathed" ? "  (PRODUCTION)" : ""}\n`);
@@ -248,9 +268,6 @@ async function main() {
           links: { create: REVERSE_186.links.map((l, i) => ({ ...l, position: n + i })) },
         } as never,
       }),
-      prisma.problemActivity.create({
-        data: { problemId: held.id, userId: admin!.id, userName: admin!.pseudonym, type: "approved" },
-      }),
       prisma.directMessage.create({
         data: {
           userId: held.submittedById!,
@@ -263,6 +280,7 @@ async function main() {
         },
       }),
     ]);
+    await logApproved(held.id, admin!.id, admin!.pseudonym);
     console.log(`applied: reversed ${REVERSE_186.slug}`);
   }
 
@@ -278,9 +296,7 @@ async function main() {
         links: { create: e.links.map((l, position) => ({ ...l, position })) },
       } as unknown as Prisma.ProblemCreateInput,
     });
-    await prisma.problemActivity.create({
-      data: { problemId: created.id, userId: admin!.id, userName: admin!.pseudonym, type: "approved" },
-    });
+    await logApproved(created.id, admin!.id, admin!.pseudonym);
     console.log(`applied: created ${e.slug}`);
   }
 

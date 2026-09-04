@@ -2280,6 +2280,106 @@
     "significanceNote": "A question posed explicitly in a well-cited lower-bounds paper, familiar to the optimization-theory community but recent and specialist."
   },
   {
+    "slug": "bounded-prime-gaps-at-most-212",
+    "name": "A new bound for small gaps between primes: $H_1 \\le 212$",
+    "shortName": "Prime gaps at most 212",
+    "problemNumber": null,
+    "field": "Analytic number theory",
+    "fieldGroup": "Number theory",
+    "resolution": "partial",
+    "statement": "Write $H_1 = \\liminf_{n\\to\\infty}(p_{n+1}-p_n)$. Stadlmann had recently proved $H_1 \\le 240$, improving the bound $246$ of Polymath8b. Building on her work, this paper proves $H_1 \\le 212$: infinitely many pairs of consecutive primes are at most $212$ apart.",
+    "posedBy": "Alphonse de Polignac (the twin prime conjecture); the bounded form since Goldston, Pintz and Yıldırım",
+    "yearPosed": 1849,
+    "solveType": "proved",
+    "solveDate": "2026-09-03",
+    "model": "AxiomProver",
+    "modelMaker": "Axiom Math",
+    "humanCollaborators": [
+      "François Charton",
+      "Letong Hong",
+      "Kenny Lau",
+      "Ken Ono",
+      "Guillaume Remy",
+      "Ho Chung Siu",
+      "Ashvin A. Swaminathan",
+      "Jesse Thorner",
+      "Yunzhou Xie"
+    ],
+    "aiRole": "The mathematics is the authors'. The AI contribution is the formal certificate, and the paper is precise about it in Appendix A: \"AxiomProver, an AI system under development by AxiomMath, autonomously generated from natural-language specifications a Lean certificate of the deduction of Theorem 1.1.\" The certificate takes as hypotheses the five Type I, Type II and Type III equidistribution estimates of Section 5, the bilinear Bombieri-Vinogradov theorem below the half-level, the Harman decomposition, and the variational certificate. Nothing in the paper claims the model found the argument, and the abstract does not mention AI at all.\n\nThe same group's AxiomProver had formalised the twelve-year-old 246 bound in Lean a few weeks earlier, which is the work this builds its tooling on.",
+    "verification": "lean-checked",
+    "verificationNote": "A preprint one day old, not peer reviewed. Its Lean certificate was produced by AxiomProver and is conditional on the equidistribution estimates and the Bombieri-Vinogradov theorem stated in the paper, so it certifies the deduction rather than the analytic inputs. Nine authors, several of whom work on exactly this, take responsibility for the mathematics. No independent expert has read it on the record, and this site has not rebuilt the certificate.",
+    "publication": "preprint",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://primegaps.axiommath.ai/bgp212.pdf",
+    "sourceName": "A new bound for small gaps between primes",
+    "resultNote": "$H_1 \\le 212$, improving Stadlmann's $240$ of three days earlier and the $246$ of Polymath8b that had stood since 2014. The twin prime conjecture, $H_1 = 2$, is untouched. Held the record for hours at most: OpenAI's paper claiming $186$ is dated 30 August, four days before this one, though its Lean development appeared on 2 September.",
+    "ageNote": "Dated from Polignac's 1849 conjecture. The modern quantitative form dates from Goldston, Pintz and Yıldırım in 2005 and became a finite bound with Zhang in 2013.",
+    "aiContribution": "ai-assisted",
+    "significance": 62,
+    "significanceNote": "The closest mathematics has come to the twin prime conjecture, and the most-watched number in analytic number theory since Zhang in 2013. Level with the site's other bounded-gaps entries: the weight is the question's, not any one step's.",
+    "links": [
+      {
+        "label": "PrimeGapsLib, the Lean library",
+        "url": "https://github.com/AxiomMath/PrimeGapsLib"
+      },
+      {
+        "label": "Blueprint of the 246 formalisation this builds on",
+        "url": "https://primegaps.axiommath.ai/"
+      },
+      {
+        "label": "Stadlmann's 240, the bound this improves on",
+        "url": "https://arxiv.org/abs/2608.31126"
+      }
+    ]
+  },
+  {
+    "slug": "bounded-prime-gaps-at-most-236",
+    "name": "Bounded prime gaps: $H_1 \\le 236$",
+    "shortName": "Prime gaps at most 236",
+    "problemNumber": null,
+    "field": "Analytic number theory",
+    "fieldGroup": "Number theory",
+    "resolution": "candidate",
+    "statement": "Write $H_1 = \\liminf_{n\\to\\infty}(p_{n+1}-p_n)$. Announced on 1 September 2026: $H_1 \\le 236$, building on Stadlmann's $240$ of the previous day.",
+    "posedBy": "Alphonse de Polignac (the twin prime conjecture); the bounded form since Goldston, Pintz and Yıldırım",
+    "yearPosed": 1849,
+    "solveType": "proved",
+    "solveDate": "2026-09-01",
+    "model": "unspecified AI agents",
+    "modelMaker": null,
+    "humanCollaborators": [
+      "Shiva Kintali"
+    ],
+    "aiRole": "Kintali's own words on X: \"I showed that H1 <= 236 with the help of AI, building on Julia Stadlmann's work.\" He describes the method as the GPY approach with the Maynard-Tao sieve, and says he then stopped his AI agents and moved to another problem. That is the whole of the public disclosure: no model is named, the division of labour is not described, and there is no preprint.",
+    "verification": "unreviewed",
+    "verificationNote": "The thinnest source of the three 2026 bounded-gaps entries, and recorded as Candidate for that reason. An announcement on X with no preprint, no named model and no argument in public. It is recorded because a bound is a bound and this one held the record for two days between Stadlmann's 240 and Axiom Math's 212; it is not recorded as settled. If a preprint appears, this entry should be revisited.",
+    "publication": "announcement",
+    "resolutionMethod": "argument",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://x.com/ShivaKintali/status/2095547543061135765",
+    "sourceName": "Shiva Kintali on X",
+    "resultNote": "$H_1 \\le 236$, between Stadlmann's $240$ of 31 August and Axiom Math's $212$ of 3 September. Superseded within two days, which Kintali noted himself.",
+    "ageNote": "Dated from Polignac's 1849 conjecture. The modern quantitative form dates from Goldston, Pintz and Yıldırım in 2005 and became a finite bound with Zhang in 2013.",
+    "aiContribution": "ai-assisted",
+    "significance": 62,
+    "significanceNote": "The closest mathematics has come to the twin prime conjecture. Level with the site's other bounded-gaps entries: the weight belongs to the question, and a step that stood for two days weighs the same as one that stood for twelve years in that respect.",
+    "links": [
+      {
+        "label": "Stadlmann's 240, the bound this improves on",
+        "url": "https://arxiv.org/abs/2608.31126"
+      }
+    ]
+  },
+  {
     "slug": "brezis-degree-inequality-constants",
     "name": "Brezis's Problems on Degenerate Constants in Degree Inequalities",
     "shortName": "Brezis degree constants",
@@ -18960,6 +19060,82 @@
     "aiContribution": "ai-co-developed",
     "significance": 20,
     "significanceNote": "Named by the authors of the preceding work as one of the prominent remaining open cases in the primariness programme."
+  },
+  {
+    "slug": "prime-gaps-at-most-186",
+    "name": "Prime Gaps at Most 186",
+    "shortName": "Prime Gaps at Most 186",
+    "problemNumber": null,
+    "field": "Analytic number theory",
+    "fieldGroup": "Number theory",
+    "resolution": "partial",
+    "statement": "For the sequence of primes $p_n$, the project derives\n$$\\liminf_{n\\to\\infty}(p_{n+1}-p_n)\\le186.$$\nMore precisely, assuming three explicit analytic/numerical inputs, it proves $\\mathrm{DHL}[40,2]$: every admissible set of forty integer shifts has infinitely many translates containing at least two primes. Applying this to an explicit admissible $40$-tuple of diameter $186$ yields infinitely many consecutive prime gaps of size at most $186$. The Lean development verifies the deduction from the stated inputs; the two Kloosterman-type estimates and the finite physical-integral/cap bounds remain external assumptions.",
+    "posedBy": "Alphonse de Polignac (the twin prime conjecture); the bounded form since Goldston, Pintz and Yıldırım",
+    "yearPosed": 1849,
+    "solveType": "proved",
+    "solveDate": "2026-09-03",
+    "model": "GPT 6 Astra",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [],
+    "aiRole": "The project metadata identifies GPT 6 Astra, operating through Codex, as the agent used for the formalization workflow. Its stated task was to formalize the source statements faithfully, simplify the proofs, and retain unresolved finite-field and numerical inputs as explicit axioms. The resulting development was refined through human-guided edits and automated proof checks. The repository metadata attributes both the project and its source article “Improved Gaps Between Primes” to OpenAI.",
+    "verification": "lean-checked",
+    "verificationNote": "Lean-checked, not Lean-verified, and the distinction is the whole of it. The Lean development in openai/PrimeGaps186 reports zero sorry in its three main declarations, and Comparator and Lean's kernel accept them - but all three depend on three project-specific axioms: a rank-three hyper-Kloosterman bound, a rank-two Kloosterman correlation bound, and a package of 104 outer, 45 inner and 3 cap numerical inequalities. So the kernel has checked that those three statements imply DHL[40,2] and the bound; it has not checked them. The first two are tied to established literature and the third is recomputed by a Python and FLINT certificate that does not discharge its Lean axiom. No independent expert has read the paper on the record.",
+    "publication": "announcement",
+    "resolutionMethod": "construction",
+    "citations": null,
+    "citationsPaper": null,
+    "citationsSource": null,
+    "citationsUrl": null,
+    "renownLangs": 0,
+    "sourceUrl": "https://github.com/openai/PrimeGaps186",
+    "sourceName": "Github",
+    "resultNote": "Assuming three explicit input statements, the project proves $\\mathrm{DHL}[40,2]$: every admissible $40$-tuple contains at least two primes infinitely often after translation. An explicit admissible $40$-tuple of diameter $186$ then gives\n$$\\liminf_{n\\to\\infty}(p_{n+1}-p_n)\\le186.$$\nThe Lean proof of the implication from the three inputs to the final theorem is kernel-checked. Two inputs are Kloosterman-type estimates cited to Katz/Deligne and Fouvry--Kowalski--Michel; the third consists of finitely many numerical integral and cap inequalities backed by a Python/FLINT certificate.",
+    "ageNote": "Dated from Polignac's 1849 conjecture, the origin of the question this bounds. The modern quantitative form dates from Goldston, Pintz and Yıldırım in 2005 and became a finite bound with Zhang in 2013.",
+    "aiContribution": "ai-discovered",
+    "significance": 62,
+    "significanceNote": "The closest mathematics has come to the twin prime conjecture, and the most-watched number in analytic number theory since Zhang broke it open in 2013. If this bound holds it is the current record, ahead of Axiom Math's 212 and Stadlmann's 240, both of which appeared after this paper was dated.",
+    "links": [
+      {
+        "label": "Lean proof",
+        "url": "https://github.com/openai/PrimeGaps186/blob/main/PrimeGaps186.lean"
+      },
+      {
+        "label": "Lean proof",
+        "url": "https://github.com/openai/PrimeGaps186/blob/main/Challenge.lean"
+      },
+      {
+        "label": "Formalization metadata",
+        "url": "https://github.com/openai/PrimeGaps186/blob/main/formalization.yaml"
+      },
+      {
+        "label": "Certificate",
+        "url": "https://github.com/openai/PrimeGaps186/blob/main/prime_gap_186_certificate.py"
+      },
+      {
+        "label": "Preprint",
+        "url": "https://github.com/openai/PrimeGaps186/blob/main/short_gaps_numerics.pdf"
+      },
+      {
+        "label": "Improved short gaps between primes (OpenAI, 30 August 2026)",
+        "url": "https://cdn.openai.com/pdf/51126fac-1b68-4128-9666-c908bcc16033/short_gaps.pdf"
+      },
+      {
+        "label": "Lean development, openai/PrimeGaps186",
+        "url": "https://github.com/openai/PrimeGaps186"
+      },
+      {
+        "label": "Challenge.lean, the statements the comparator checks",
+        "url": "https://github.com/openai/PrimeGaps186/blob/main/Challenge.lean"
+      },
+      {
+        "label": "Numerical certificate",
+        "url": "https://github.com/openai/PrimeGaps186/blob/main/prime_gap_186_certificate.py"
+      },
+      {
+        "label": "Stadlmann's 240, the bound this improves on",
+        "url": "https://arxiv.org/abs/2608.31126"
+      }
+    ]
   },
   {
     "slug": "prime-values-of-digital-functions-along-the-primes",
