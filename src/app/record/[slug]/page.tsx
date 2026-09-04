@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getRecordBySlug, getRecords, type RecordRowView } from "@/lib/data";
+import { getActivity, getComments, getRecordBySlug, getRecords, type RecordRowView } from "@/lib/data";
 import { competes, frontier, padDate, sortRows, steps } from "@/lib/records";
 import { RecordChart } from "@/components/RecordChart";
 import { TeX } from "@/components/TeX";
+import { Changelog } from "@/components/Changelog";
+import { CommentsSection } from "@/components/CommentsSection";
+import { ReportEntryDialog } from "@/components/ReportEntryDialog";
+import { recordSubject } from "@/lib/subject";
 
 export async function generateStaticParams() {
   const records = await getRecords();
@@ -38,7 +42,18 @@ const STATUS_LABEL: Record<string, string> = {
 
 export default async function RecordPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const r = await getRecordBySlug(slug);
+  // A record carries the same community machinery as an entry: a changelog,
+  // a discussion, and a way to flag it. More important here than on an entry,
+  // in fact - a record asserts dated facts about other people's mathematics,
+  // so "who put this number here, and when" has to be answerable, and a
+  // reader who knows the history better than the curator needs a way to say
+  // so. See src/lib/subject.ts for how one set of tables serves both.
+  const subject = recordSubject(slug);
+  const [r, comments, activity] = await Promise.all([
+    getRecordBySlug(slug),
+    getComments(subject),
+    getActivity(subject),
+  ]);
   if (!r) notFound();
 
   const best = frontier(r.rows, r.direction);
@@ -66,6 +81,9 @@ export default async function RecordPage({ params }: { params: Promise<{ slug: s
             significance {r.significance}
           </span>
         )}
+        <span className="ml-auto">
+          <ReportEntryDialog subject={subject} label="Report an issue with this record" />
+        </span>
       </div>
       <h1 className="mt-1 font-serif text-2xl text-[var(--ink)] sm:text-3xl">{r.name}</h1>
       <p className="math-prose mt-2 max-w-3xl text-sm leading-relaxed text-[var(--ink-secondary)]">
@@ -156,6 +174,13 @@ export default async function RecordPage({ params }: { params: Promise<{ slug: s
           <p className="mt-2 max-w-3xl text-xs leading-relaxed text-[var(--ink-muted)]">{r.historyNote}</p>
         )}
       </section>
+
+      {/* Who changed what, and when. A record's rows are curator-entered
+          assertions about dated facts, so this is the accountability the page
+          rests on rather than a nicety. */}
+      <Changelog activity={activity} />
+
+      <CommentsSection subject={subject} initial={comments} />
     </main>
   );
 }

@@ -4,22 +4,30 @@ import { auth } from "@/auth";
 import { sendDirectMessage } from "@/app/actions/inbox";
 import { canReview } from "@/lib/curators";
 import { prisma } from "@/lib/prisma";
+import { isSubject, type Subject } from "@/lib/subject";
 
-// Entry reports: a reader flags an entry for curator attention, with a
+// Reports: a reader flags an entry OR a record for curator attention, with a
 // free-text explanation. Reports are private - no activity row, no public
-// rendering - and rate-limited like submissions.
+// rendering - and rate-limited like submissions. Both kinds land in the same
+// curator queue; the daily limit is per person, not per kind.
 
 const MAX_PER_DAY = 3;
 const BODY_MAX = 1000;
 
 export type ReportResult = { ok: true } | { ok: false; error: string };
 
-export async function reportProblem(slug: string, body: string): Promise<ReportResult> {
+export async function reportSubject(subject: Subject, body: string): Promise<ReportResult> {
   const session = await auth();
   if (!session?.user?.id) {
     return { ok: false, error: "Sign in to report." };
   }
   const userId = session.user.id;
+
+  // The subject arrives from a client component, so it is untrusted input and
+  // is validated rather than cast.
+  if (!isSubject(subject)) {
+    return { ok: false, error: "Could not tell what you are reporting." };
+  }
 
   const text = body.trim();
   if (!text) {
@@ -29,12 +37,12 @@ export async function reportProblem(slug: string, body: string): Promise<ReportR
     return { ok: false, error: `Keep it under ${BODY_MAX} characters.` };
   }
 
-  const problem = await prisma.problem.findFirst({
-    where: { slug, status: "published" },
-    select: { id: true },
-  });
-  if (!problem) {
-    return { ok: false, error: "That entry no longer exists." };
+  const target =
+    subject.kind === "problem"
+      ? await prisma.problem.findFirst({ where: { slug: subject.slug, status: "published" }, select: { id: true } })
+      : await prisma.record.findUnique({ where: { slug: subject.slug }, select: { id: true } });
+  if (!target) {
+    return { ok: false, error: `That ${subject.kind === "problem" ? "entry" : "record"} no longer exists.` };
   }
 
   // Rolling 24h window, same shape as the submission limit. Admins are
@@ -55,7 +63,7 @@ export async function reportProblem(slug: string, body: string): Promise<ReportR
   try {
     await prisma.problemReport.create({
       data: {
-        problemId: problem.id,
+        ...(subject.kind === "problem" ? { problemId: target.id } : { recordId: target.id }),
         userId,
         userName: session.user.pseudonym ?? null,
         body: text,
@@ -63,7 +71,7 @@ export async function reportProblem(slug: string, body: string): Promise<ReportR
     });
     return { ok: true };
   } catch (error) {
-    console.error("reportProblem failed", error);
+    console.error("reportSubject failed", error);
     return { ok: false, error: "Could not send the report. Please try again." };
   }
 }

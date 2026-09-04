@@ -16,6 +16,7 @@
 import type { Prisma } from "@prisma/client";
 import { cacheLife, cacheTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { activityTag, commentsTag, subjectWhere, type Subject } from "@/lib/subject";
 import type { ProfileLinks } from "@/lib/profile-links";
 import {
   CHANGELOG_TYPES,
@@ -199,7 +200,8 @@ async function countsSince(since: Date): Promise<WindowCounts> {
 
   const commentCounts = new Map<string, number>();
   for (const row of comments) {
-    commentCounts.set(row.problemId, row._count._all);
+    // Record comments group under a null problemId; entry counts skip them.
+    if (row.problemId !== null) commentCounts.set(row.problemId, row._count._all);
   }
 
   return { score, comments: commentCounts };
@@ -371,15 +373,15 @@ export async function getRelations(slug: string): Promise<RelationView[]> {
 /// page's static shell (which also means comments get indexed). Whether the
 /// viewer may edit a given comment is decided on the client by comparing
 /// `authorId` against their own id.
-export async function getComments(slug: string): Promise<CommentView[]> {
+export async function getComments(subject: Subject): Promise<CommentView[]> {
   "use cache";
-  cacheTag(`comments-${slug}`);
+  cacheTag(commentsTag(subject));
   cacheLife("hours");
 
   // Flat and chronological; the client builds the tree and applies the
   // reader's sort (src/lib/comment-tree.ts). One list serves every order.
   const rows = await prisma.comment.findMany({
-    where: { problem: { slug } },
+    where: subjectWhere(subject),
     orderBy: { createdAt: "asc" },
     select: {
       id: true,
@@ -438,13 +440,13 @@ export async function getProvenance(slug: string): Promise<ProvenanceView[]> {
 }
 
 /// The changelog for one entry, newest first.
-export async function getActivity(slug: string): Promise<ActivityView[]> {
+export async function getActivity(subject: Subject): Promise<ActivityView[]> {
   "use cache";
-  cacheTag(`activity-${slug}`);
+  cacheTag(activityTag(subject));
   cacheLife("hours");
 
   const rows = await prisma.problemActivity.findMany({
-    where: { problem: { slug }, type: { in: [...CHANGELOG_TYPES] } },
+    where: { ...subjectWhere(subject), type: { in: [...CHANGELOG_TYPES] } },
     orderBy: { createdAt: "desc" },
     take: 200,
     select: {
@@ -513,19 +515,29 @@ export async function getRecentActivity(
   });
 
   return collapseBursts(
-    rows.map((a) => ({
-      id: a.id,
-      userName: resolveSnapshot(a.userName, a.userId !== null),
-      userPseudonym: a.user?.pseudonym ?? null,
-      type: a.type,
-      field: a.field,
-      oldValue: a.oldValue,
-      newValue: a.newValue,
-      createdAt: relativeFallback(a.createdAt, formatCommentDate(a.createdAt)),
-      createdAtIso: a.createdAt.toISOString(),
-      problemName: a.problem.name,
-      problemSlug: a.problem.slug,
-    })),
+    // Entries only: the `problem` filter above already excludes record rows,
+    // and this narrows the type to match. Record edits show on the record's
+    // own changelog. Folding them into the site feed needs the feed to carry
+    // a subject kind, which is a separate change.
+    rows.flatMap((a) =>
+      a.problem === null
+        ? []
+        : [
+            {
+              id: a.id,
+              userName: resolveSnapshot(a.userName, a.userId !== null),
+              userPseudonym: a.user?.pseudonym ?? null,
+              type: a.type,
+              field: a.field,
+              oldValue: a.oldValue,
+              newValue: a.newValue,
+              createdAt: relativeFallback(a.createdAt, formatCommentDate(a.createdAt)),
+              createdAtIso: a.createdAt.toISOString(),
+              problemName: a.problem.name,
+              problemSlug: a.problem.slug,
+            },
+          ],
+    ),
   ).slice(0, limit);
 }
 
@@ -802,25 +814,43 @@ export async function getUserProfile(
       score: e.upvotes - e.downvotes,
     })),
     entryScore: entries.reduce((sum, e) => sum + e.upvotes - e.downvotes, 0),
-    comments: comments.map((c) => ({
-      id: c.id,
-      html: renderCommentHtml(c.body),
-      createdAt: formatCommentDateTime(c.createdAt),
-      problemName: c.problem.name,
-      problemSlug: c.problem.slug,
-    })),
+    // Entries only. `publishedOnly` above filters on the `problem` relation,
+    // which already excludes comments left on a record; this narrows the type
+    // to match. Showing record comments here means giving this list a subject
+    // kind, which is a separate change.
+    comments: comments.flatMap((c) =>
+      c.problem === null
+        ? []
+        : [
+            {
+              id: c.id,
+              html: renderCommentHtml(c.body),
+              createdAt: formatCommentDateTime(c.createdAt),
+              problemName: c.problem.name,
+              problemSlug: c.problem.slug,
+            },
+          ],
+    ),
     commentCount,
     editCount,
-    edits: edits.map((a) => ({
-      id: a.id,
-      field: a.field,
-      // Absolute here on purpose: the profile prints this string as-is, with
-      // no RelativeTime around it to keep it current, so relative wording
-      // would freeze at whatever the cache was built at.
-      createdAt: formatCommentDate(a.createdAt),
-      problemName: a.problem.name,
-      problemSlug: a.problem.slug,
-    })),
+    // Entries only, same reasoning as `comments` above.
+    edits: edits.flatMap((a) =>
+      a.problem === null
+        ? []
+        : [
+            {
+              id: a.id,
+              field: a.field,
+              // Absolute here on purpose: the profile prints this string
+              // as-is, with no RelativeTime around it to keep it current, so
+              // relative wording would freeze at whatever the cache was
+              // built at.
+              createdAt: formatCommentDate(a.createdAt),
+              problemName: a.problem.name,
+              problemSlug: a.problem.slug,
+            },
+          ],
+    ),
   };
 }
 

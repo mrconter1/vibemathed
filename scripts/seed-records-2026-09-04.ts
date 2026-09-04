@@ -173,7 +173,10 @@ async function main() {
   const [{ db }] = await prisma.$queryRawUnsafe<{ db: string }[]>("SELECT current_database() AS db");
   if (db !== "vibemathed_staging") throw new Error(`refusing: connected to "${db}", not vibemathed_staging`);
 
-  const curator = await prisma.user.findFirst({ where: { pseudonym: "Rasmus Lindahl" }, select: { id: true } });
+  const curator = await prisma.user.findFirst({
+    where: { pseudonym: "Rasmus Lindahl" },
+    select: { id: true },
+  });
 
   // Resolve every entry slug first so a typo fails before anything is written.
   const slugs = RECORDS.flatMap((r) => r.rows.map((x) => x.problemSlug).filter((s): s is string => !!s));
@@ -248,6 +251,25 @@ async function main() {
         };
       }),
     });
+    // The changelog. A record page without one asks a reader to trust dated
+    // assertions from nobody in particular, so `created` is written on the
+    // first seed and `updated` on every reseed after it - the row count is
+    // recorded because that is what a reseed actually changes.
+    const already = await prisma.problemActivity.count({
+      where: { recordId: rec.id, type: "created" },
+    });
+    await prisma.problemActivity.create({
+      data: {
+        recordId: rec.id,
+        userId: curator?.id ?? null,
+        userName: curator ? "Rasmus Lindahl" : "Curator",
+        type: already === 0 ? "created" : "updated",
+        ...(already === 0
+          ? {}
+          : { field: "rows", oldValue: null, newValue: `${r.rows.length} rows reseeded` }),
+      },
+    });
+
     console.log(`applied: ${r.slug} with ${r.rows.length} rows`);
   }
   console.log("\nAPPLIED to vibemathed_staging");

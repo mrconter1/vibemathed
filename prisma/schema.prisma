@@ -284,8 +284,16 @@ model ProblemVote {
 
 model Comment {
   id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  problemId String  @db.Uuid
-  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  /// Exactly one of `problemId` / `recordId` is set: a comment hangs off an
+  /// entry or off a record. Two nullable columns rather than two tables,
+  /// because threading, voting, editing, deletion, notifications and
+  /// moderation are identical for both, and a second set of tables would mean
+  /// a second implementation of all of it. src/lib/subject.ts holds the
+  /// discriminator the application passes around.
+  problemId String?  @db.Uuid
+  problem   Problem? @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  recordId  String?  @db.Uuid
+  record    Record?  @relation(fields: [recordId], references: [id], onDelete: Cascade)
   userId    String?
   user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
   /// Pseudonym snapshot, so a deleted account doesn't orphan the thread.
@@ -317,6 +325,7 @@ model Comment {
   deletedAt DateTime?
 
   @@index([problemId])
+  @@index([recordId])
   @@index([createdAt])
   @@index([parentId])
 }
@@ -378,8 +387,13 @@ model SiteMessage {
 
 model ProblemReport {
   id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  problemId String  @db.Uuid
-  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  /// Exactly one of `problemId` / `recordId`, as on Comment. A record's
+  /// historical rows assert facts about other people's mathematics, so being
+  /// able to flag one is not optional.
+  problemId String?  @db.Uuid
+  problem   Problem? @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  recordId  String?  @db.Uuid
+  record    Record?  @relation(fields: [recordId], references: [id], onDelete: Cascade)
   userId    String?
   user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
   /// Pseudonym snapshot, same convention as Comment.userName.
@@ -393,6 +407,7 @@ model ProblemReport {
   /// The admin badge count and queue read.
   @@index([status])
   @@index([problemId])
+  @@index([recordId])
   /// The per-user daily rate limit read.
   @@index([userId, createdAt])
 }
@@ -400,8 +415,13 @@ model ProblemReport {
 /// Replaces git history as the record of who changed what.
 model ProblemActivity {
   id        String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  problemId String       @db.Uuid
-  problem   Problem      @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  /// Exactly one of `problemId` / `recordId`, as on Comment. A record is
+  /// curator-edited and asserts dated facts, so its changelog matters more
+  /// than an entry's, not less.
+  problemId String?       @db.Uuid
+  problem   Problem?     @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  recordId  String?  @db.Uuid
+  record    Record?  @relation(fields: [recordId], references: [id], onDelete: Cascade)
   userId    String?
   user      User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
   /// Pseudonym snapshot at time of action; survives user deletion.
@@ -416,6 +436,7 @@ model ProblemActivity {
   createdAt DateTime     @default(now())
 
   @@index([problemId])
+  @@index([recordId])
   @@index([createdAt])
 }
 
@@ -734,7 +755,10 @@ model Record {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 
-  rows RecordRow[]
+  rows       RecordRow[]
+  comments   Comment[]
+  activities ProblemActivity[]
+  reports    ProblemReport[]
 
   @@index([fieldGroup])
 }

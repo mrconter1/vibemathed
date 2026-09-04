@@ -7,7 +7,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { reportProblem } from "@/app/actions/report";
+import { reportSubject } from "@/app/actions/report";
+import type { Subject } from "@/lib/subject";
 import { Icon } from "@/components/Icons";
 import { useViewer } from "@/components/ViewerProvider";
 
@@ -18,8 +19,20 @@ export const CORNER_ICON_BUTTON =
 
 const BODY_MAX = 1000;
 
-export function ReportEntryDialog({ slug }: { slug: string }) {
+export function ReportEntryDialog({
+  subject,
+  label = "Report an issue",
+}: {
+  subject: Subject;
+  /// The trigger's wording. A record's issues are usually a wrong value or a
+  /// misattributed historical row, not a bad claim, so the record page says
+  /// so instead of reusing the entry wording.
+  label?: string;
+}) {
   const { signedIn, loaded } = useViewer();
+  // "entry" or "record", for the wording. The dialog is the same machinery
+  // either way; only the noun and the examples of what to report differ.
+  const noun = subject.kind === "record" ? "record" : "entry";
   const [open, setOpen] = useState(false);
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
@@ -51,7 +64,7 @@ export function ReportEntryDialog({ slug }: { slug: string }) {
   async function send() {
     setSending(true);
     setError(null);
-    const result = await reportProblem(slug, body);
+    const result = await reportSubject(subject, body);
     setSending(false);
     if (!result.ok) {
       setError(result.error);
@@ -85,8 +98,8 @@ export function ReportEntryDialog({ slug }: { slug: string }) {
         type="button"
         onClick={openDialog}
         className={CORNER_ICON_BUTTON}
-        title="Report an issue"
-        aria-label="Report an issue with this entry"
+        title={label}
+        aria-label={`${label} with this ${noun}`}
       >
         <Icon name="flag" size={14} />
       </button>
@@ -102,15 +115,15 @@ export function ReportEntryDialog({ slug }: { slug: string }) {
           <div
             role="dialog"
             aria-modal="true"
-            aria-label="Report this entry"
+            aria-label={`Report this ${noun}`}
             className="relative flex max-h-[88dvh] w-full flex-col rounded-t-lg border border-[var(--hairline)] bg-[var(--paper)] sm:max-w-md sm:rounded-lg"
           >
             <header className="border-b border-[var(--hairline)] px-5 py-3.5">
-              <h2 className="font-serif text-lg text-[var(--ink)]">Report this entry</h2>
+              <h2 className="font-serif text-lg text-[var(--ink)]">Report this {noun}</h2>
               <p className="mt-1 text-[11px] leading-relaxed text-[var(--ink-muted)]">
-                Tell the curators what is wrong - a broken source, a misstated
-                result, a claim that does not hold. Reports go straight to
-                review and are never shown publicly. Up to three per day.
+                {subject.kind === "record"
+                  ? "Tell the curators what is wrong - a value that is off, a step misattributed, a result missing from the history, a source that does not say what the row claims. Reports go straight to review and are never shown publicly. Up to three per day."
+                  : "Tell the curators what is wrong - a broken source, a misstated result, a claim that does not hold. Reports go straight to review and are never shown publicly. Up to three per day."}
               </p>
             </header>
 
