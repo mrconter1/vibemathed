@@ -37,10 +37,18 @@ export function NavLinks() {
   const path = usePathname();
 
   return (
-    // Layout classes cooperate with SiteHeader's wrapping bar: on mobile the
+    // Layout classes cooperate with SiteHeader's wrapping bar: below `lg` the
     // nav takes a full-width second row (the negative margin re-aligns the
     // first link's text with the logo despite the links' own padding); from
     // `lg` it sits inline between the logo and the account button.
+    //
+    // The inline breakpoint used to be `sm`. Promoting Members to the bar and
+    // seating Discord and X beside About made the row too wide for a tablet,
+    // so tablets now get the two-row layout phones always had. That is a
+    // deliberate trade: the member directory is a first-class destination as
+    // the community grows, and it outranks one row of chrome at 640-1024px.
+    // The footer's earlier note that Members should stay out of the bar was
+    // written before that was true.
     <nav
       className="order-3 -ml-1.5 flex w-full flex-wrap items-center gap-x-0 gap-y-1 lg:order-2 lg:ml-0 lg:w-auto lg:flex-nowrap lg:gap-1"
       aria-label="Site"

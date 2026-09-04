@@ -8,6 +8,27 @@ const communityLink =
 /// The site's two public community outposts, adjacent to the site sections but
 /// visually independent from them. Both marks get the generous footprint of
 /// the original production X link rather than sharing a labeled container.
+///
+/// Inside the nav rather than in the action cluster on the right, because they
+/// belong to the same "where else this site lives" group as the sections, and
+/// the cluster is for things you DO here. On a phone the nav is its own
+/// full-width row, so keeping them here means they stay beside About in both
+/// layouts instead of drifting to the other end of the header.
+///
+/// Icons rather than words: at this size the marks are more recognisable than
+/// their names, and two more labels would crowd a row that already carries
+/// five. Discord keeps its blurple and X its true black (inverting to white in
+/// the dark theme, per X's own guidance) because these are other people's
+/// marks in their own colours, which is what makes them findable at a glance.
+/// Both dim on hover, the inverse of the word links beside them: those start
+/// recessed and darken because they are ink; a brand mark starts solid, and
+/// dimming is the interaction every other logo-link on the web uses.
+///
+/// The X knockout is a real hole, via a mask, not an X painted in the paper
+/// colour: the header is translucent and sits over whatever the page has
+/// scrolled under it, so a painted X would be a visibly wrong shade the moment
+/// anything passed beneath. The two builds (solid tile in light, outlined in
+/// dark) are explained beside `.x-mark-hollow` in globals.css.
 export function CommunityLinks() {
   return (
     <span role="group" aria-label="Community" className="ml-1 flex shrink-0 items-center gap-0.5">
