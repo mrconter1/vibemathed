@@ -146,7 +146,10 @@ const RECORDS: Rec[] = [
   },
   {
     slug: "long-prime-gaps",
-    name: "Lower bound for the largest prime gap",
+    // The title of Ford, Green, Konyagin, Maynard and Tao's paper, and of
+    // OpenAI's "Improved long gaps between primes". Name a record what its
+    // field calls it, not what it does.
+    name: "Long gaps between primes",
     shortName: "Long prime gaps",
     quantity: "The best proved lower bound on $G(X) = \\max_{p_{n+1} \\le X} (p_{n+1} - p_n)$, the largest gap between consecutive primes below $X$, for all large $X$.",
     statement:

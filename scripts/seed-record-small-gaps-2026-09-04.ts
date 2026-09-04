@@ -56,7 +56,11 @@ type Row = {
 
 const SLUG = "bounded-prime-gaps";
 
-const NAME = "Smallest proved bound on infinitely recurring prime gaps";
+// The field's own name (Wikipedia's section title, Polymath's phrasing, and
+// what Axiom Math calls "the BGP246 theorem"). An earlier invented name -
+// "Smallest proved bound on infinitely recurring prime gaps" - was so unclear
+// that a search engine answered 246 and then asked which problem was meant.
+const NAME = "Bounded gaps between primes";
 const SHORT = "Bounded prime gaps";
 const QUANTITY =
   "$H_1 = \\liminf_{n \\to \\infty} (p_{n+1} - p_n)$: the smallest $H$ for which infinitely many pairs of consecutive primes are at most $H$ apart.";
