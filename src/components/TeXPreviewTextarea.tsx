@@ -3,9 +3,11 @@
 import {
   useDeferredValue,
   useEffect,
+  useRef,
   useState,
   type ChangeEvent,
   type FocusEventHandler,
+  type KeyboardEvent as ReactKeyboardEvent,
   type KeyboardEventHandler,
   type Ref,
 } from "react";
@@ -17,8 +19,8 @@ export function TeXPreviewTextarea({
   onChange,
   className,
   label,
-  rows = 7,
-  heightClass = "min-h-40",
+  rows = 3,
+  heightClass = "min-h-[72px]",
   monospace = false,
   textareaRef,
   placeholder,
@@ -41,6 +43,8 @@ export function TeXPreviewTextarea({
   onKeyDown?: KeyboardEventHandler<HTMLTextAreaElement>;
 }) {
   const [activeTab, setActiveTab] = useState<"text" | "preview">("text");
+  const textTabRef = useRef<HTMLButtonElement>(null);
+  const previewTabRef = useRef<HTMLButtonElement>(null);
   const deferredValue = useDeferredValue(value);
   const [rendered, setRendered] = useState({ source: "", html: "", error: "" });
 
@@ -84,16 +88,31 @@ export function TeXPreviewTextarea({
   const error = current ? rendered.error : "";
   const loading = deferredValue !== "" && !current;
 
+  function moveTab(event: ReactKeyboardEvent<HTMLButtonElement>) {
+    let next: "text" | "preview" | null = null;
+    if (event.key === "ArrowLeft" || event.key === "Home") next = "text";
+    if (event.key === "ArrowRight" || event.key === "End") next = "preview";
+    if (!next) return;
+
+    event.preventDefault();
+    setActiveTab(next);
+    const target = next === "text" ? textTabRef : previewTabRef;
+    requestAnimationFrame(() => target.current?.focus());
+  }
+
   return (
     <div className="mt-1">
       <div className="mb-1 flex gap-1" role="tablist" aria-label={`${label} view`}>
         <button
+          ref={textTabRef}
           type="button"
           role="tab"
           id={`${id}-text-tab`}
           aria-controls={`${id}-text-panel`}
           aria-selected={activeTab === "text"}
+          tabIndex={activeTab === "text" ? 0 : -1}
           onClick={() => setActiveTab("text")}
+          onKeyDown={moveTab}
           className={`rounded px-2.5 py-1 text-xs transition-colors ${
             activeTab === "text"
               ? "bg-[var(--ink)] text-[var(--paper)]"
@@ -103,12 +122,15 @@ export function TeXPreviewTextarea({
           Text
         </button>
         <button
+          ref={previewTabRef}
           type="button"
           role="tab"
           id={`${id}-preview-tab`}
           aria-controls={`${id}-preview-panel`}
           aria-selected={activeTab === "preview"}
+          tabIndex={activeTab === "preview" ? 0 : -1}
           onClick={() => setActiveTab("preview")}
+          onKeyDown={moveTab}
           className={`rounded px-2.5 py-1 text-xs transition-colors ${
             activeTab === "preview"
               ? "bg-[var(--ink)] text-[var(--paper)]"
@@ -119,49 +141,49 @@ export function TeXPreviewTextarea({
         </button>
       </div>
 
-      {activeTab === "text" ? (
-        <div
-          role="tabpanel"
-          id={`${id}-text-panel`}
-          aria-labelledby={`${id}-text-tab`}
-        >
-          <textarea
-            ref={textareaRef}
-            id={id}
-            value={value}
-            rows={rows}
-            onChange={(event) => onChange(event.target.value, event)}
-            className={`${className} ${heightClass} resize-y ${monospace ? "font-mono" : ""}`}
-            aria-describedby={`${id}-preview-help`}
-            aria-label={label}
-            placeholder={placeholder}
-            autoFocus={autoFocus}
-            onBlur={onBlur}
-            onKeyDown={onKeyDown}
-          />
-        </div>
-      ) : (
-        <div
-          role="tabpanel"
-          id={`${id}-preview-panel`}
-          aria-labelledby={`${id}-preview-tab`}
-          className={`math-prose ${heightClass} rounded border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 py-2 text-sm leading-relaxed text-[var(--ink-secondary)]`}
-          aria-busy={loading}
-        >
-          {error ? (
-            <p className="text-[var(--status-critical)]" role="status">
-              {error}
-            </p>
-          ) : html ? (
-            <span dangerouslySetInnerHTML={{ __html: html }} />
-          ) : (
-            <p className="text-[var(--ink-muted)]">
-              Nothing to preview yet. Plain text is fine; use $...$ for inline
-              math and $$...$$ for display math.
-            </p>
-          )}
-        </div>
-      )}
+      <div
+        role="tabpanel"
+        id={`${id}-text-panel`}
+        aria-labelledby={`${id}-text-tab`}
+        hidden={activeTab !== "text"}
+      >
+        <textarea
+          ref={textareaRef}
+          id={id}
+          value={value}
+          rows={rows}
+          onChange={(event) => onChange(event.target.value, event)}
+          className={`${className} ${heightClass} resize-y ${monospace ? "font-mono" : ""}`}
+          aria-describedby={`${id}-preview-help`}
+          aria-label={label}
+          placeholder={placeholder}
+          autoFocus={autoFocus}
+          onBlur={onBlur}
+          onKeyDown={onKeyDown}
+        />
+      </div>
+
+      <div
+        role="tabpanel"
+        id={`${id}-preview-panel`}
+        aria-labelledby={`${id}-preview-tab`}
+        hidden={activeTab !== "preview"}
+        className={`math-prose ${heightClass} rounded border border-[var(--hairline)] bg-[var(--paper-raised)] px-3 py-2 text-sm leading-relaxed text-[var(--ink-secondary)]`}
+        aria-busy={loading}
+      >
+        {error ? (
+          <p className="text-[var(--status-critical)]" role="status">
+            {error}
+          </p>
+        ) : html ? (
+          <span dangerouslySetInnerHTML={{ __html: html }} />
+        ) : (
+          <p className="text-[var(--ink-muted)]">
+            Nothing to preview yet. Plain text is fine; use $...$ for inline
+            math and $$...$$ for display math.
+          </p>
+        )}
+      </div>
 
       <p id={`${id}-preview-help`} className="sr-only">
         Select the LaTeX preview tab to see a read-only rendering.
