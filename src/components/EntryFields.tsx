@@ -54,7 +54,7 @@ export function EntryFields({
   /// and no relations field either.
   ownSlug?: string;
   /// Opt every textarea in this field set into the Text / LaTeX preview
-  /// control. The submission form enables it; edit dialogs remain unchanged.
+  /// control. Submission and existing-entry authoring forms enable it.
   texPreview?: boolean;
 }) {
   return (

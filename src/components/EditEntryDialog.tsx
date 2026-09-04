@@ -135,6 +135,7 @@ export function EditEntryDialog({
                 }
                 idPrefix="edit"
                 ownSlug={slug}
+                texPreview
               />
             </div>
 
