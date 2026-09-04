@@ -1,6 +1,6 @@
 import katex from "katex";
-import { linkifyEscaped } from "@/lib/linkify";
-import { TEX_TOKENS, isDisplayMath, isInlineMath, unescapeDollars } from "@/lib/tex-tokens";
+import { renderTexToHtml } from "@/lib/tex-render";
+import { unescapeDollars } from "@/lib/tex-tokens";
 
 // Server-rendered math. This is a server component, so KaTeX runs at build time
 // and the rendered markup ships in the static HTML - no client JS, no flash of
@@ -9,12 +9,6 @@ import { TEX_TOKENS, isDisplayMath, isInlineMath, unescapeDollars } from "@/lib/
 
 function render(tex: string, display: boolean): string {
   return katex.renderToString(tex, { throwOnError: false, displayMode: display });
-}
-
-// Non-math segments become raw HTML too, so they must be escaped here - React
-// is no longer doing it for us.
-function escapeHtml(s: string): string {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 /// Renders `$inline$` / `$$display$$` math to an HTML string, escaping
@@ -28,28 +22,7 @@ function escapeHtml(s: string): string {
 /// inside a stretched <a>, and an anchor nested in an anchor is invalid HTML.
 /// Prose fields ask for it; titles do not.
 export function texToHtml(children: string, opts?: { linkify?: boolean }): string {
-  const parts = children.split(TEX_TOKENS);
-  const isDisplay = isDisplayMath;
-  return parts
-    .map((part, i) => {
-      if (isDisplay(part)) return render(part.slice(2, -2), true);
-      if (isInlineMath(part)) return render(part.slice(1, -1), false);
-      // Newlines are meaningful here, and used to vanish: HTML collapses them,
-      // so a statement written as a list rendered as one run-on paragraph.
-      // Thirteen statements, ten AI-role notes and eight verification notes
-      // were affected. A blank line yields two breaks, which reads as a
-      // paragraph gap without nesting a <p> inside the <p> these render in.
-      //
-      // KaTeX display math is already a block, so a newline touching one would
-      // add a second gap - those get dropped rather than doubled.
-      let text = part;
-      if (isDisplay(parts[i - 1] ?? "")) text = text.replace(/^\n/, "");
-      if (isDisplay(parts[i + 1] ?? "")) text = text.replace(/\n$/, "");
-      const escaped = escapeHtml(text);
-      const linked = opts?.linkify ? linkifyEscaped(escaped) : escaped;
-      return unescapeDollars(linked).replace(/\n/g, "<br>");
-    })
-    .join("");
+  return renderTexToHtml(children, render, opts);
 }
 
 export function TeX({ children, linkify }: { children: string; linkify?: boolean }) {

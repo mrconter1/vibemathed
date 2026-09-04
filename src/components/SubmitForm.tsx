@@ -17,8 +17,6 @@ import { DuplicateHint } from "@/components/DuplicateHint";
 import { EntryFields } from "@/components/EntryFields";
 import { useViewer } from "@/components/ViewerProvider";
 
-
-
 export function SubmitForm() {
   const { signedIn, loaded, isAdmin } = useViewer();
   const [values, setValues] = useState<SubmissionValues>(emptySubmission);
@@ -210,6 +208,7 @@ export function SubmitForm() {
               setValues((v) => ({ ...v, [key]: value }) as SubmissionValues)
             }
             idPrefix="submit"
+            texPreview
             // Under the title only. Duplicates are the commonest avoidable
             // rejection, and the title is the field that can predict one.
             renderAfter={(key) =>
