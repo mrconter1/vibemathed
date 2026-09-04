@@ -753,6 +753,12 @@ model RecordRow {
   date String @db.String(10)
   /// The value as written: "$2.371177$", "$\ge 31$", "$\log X\,\log_2 X\,\log_4 X/(\log_3 X)^2$".
   valueTex String @db.String(200)
+  /// A compact one-line form of the same value, for the strips on /records
+  /// and any other narrow slot. Only expression-valued records need one: a
+  /// display fraction is two lines tall and wider than a 160px column, and a
+  /// value a reader has to scroll sideways to see is not a value they read.
+  /// Falls back to `valueTex` when null.
+  valueShortTex String? @db.String(200)
   /// Comparable value where one exists. Null for expressions, which compare by
   /// `rank` instead. A record whose rows all have one sorts by it.
   valueNumeric Float?

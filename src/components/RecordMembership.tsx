@@ -39,8 +39,8 @@ export async function RecordMembership({ slug }: { slug: string }) {
             {mine && (
               <>
                 {" · "}
-                <span className="math-prose text-[var(--ink)]">
-                  <TeX>{mine.valueTex}</TeX>
+                <span className="text-[var(--ink)]">
+                  <TeX>{mine.valueShortTex ?? mine.valueTex}</TeX>
                 </span>
               </>
             )}

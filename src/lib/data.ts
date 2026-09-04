@@ -1007,6 +1007,8 @@ export interface RecordRowView {
   id: string;
   date: string;
   valueTex: string;
+  /// Compact form for narrow slots; falls back to valueTex when absent.
+  valueShortTex: string | null;
   valueNumeric: number | null;
   rank: number | null;
   attribution: string;
@@ -1047,6 +1049,7 @@ const RECORD_ROW_SELECT = {
   id: true,
   date: true,
   valueTex: true,
+  valueShortTex: true,
   valueNumeric: true,
   rank: true,
   attribution: true,
@@ -1078,6 +1081,7 @@ function toRecordRow(r: RecordRowRaw): RecordRowView {
     id: r.id,
     date: r.date,
     valueTex: r.valueTex,
+    valueShortTex: r.valueShortTex,
     valueNumeric: r.valueNumeric,
     rank: r.rank,
     attribution: r.attribution,

@@ -20,6 +20,8 @@ const APPLY = process.argv.includes("--apply");
 type Row = {
   date: string;
   valueTex: string;
+  /// Compact one-line form for narrow slots; only expression records need one.
+  valueShortTex?: string;
   valueNumeric?: number;
   rank?: number;
   attribution: string;
@@ -102,8 +104,8 @@ const RECORDS: Rec[] = [
     historyNote:
       "Historical rows follow the account in the Wikipedia article on the Riemann hypothesis (Hardy, Selberg, Levinson, Conrey, Pratt-Robles-Zaharescu-Zeindler) with Levinson's 1974 Advances in Mathematics title as the source of the one-third figure. Hardy's and Selberg's results have no proportion to plot and are recorded as ranks below Levinson.",
     rows: [
-      { date: "1914", valueTex: "infinitely many", rank: 1, attribution: "Hardy", sourceUrl: WIKI_RH, status: "historical", note: "Infinitely many zeros on the line; no proportion." },
-      { date: "1942", valueTex: "a positive proportion", rank: 2, attribution: "Selberg", sourceUrl: WIKI_RH, status: "historical", note: "A small positive proportion, not made explicit." },
+      { date: "1914", valueTex: "infinitely many", valueShortTex: "infinitely many", rank: 1, attribution: "Hardy", sourceUrl: WIKI_RH, status: "historical", note: "Infinitely many zeros on the line; no proportion." },
+      { date: "1942", valueTex: "a positive proportion", valueShortTex: "positive", rank: 2, attribution: "Selberg", sourceUrl: WIKI_RH, status: "historical", note: "A small positive proportion, not made explicit." },
       { date: "1974", valueTex: "$> 1/3$", valueNumeric: 0.3333, attribution: "Levinson", sourceUrl: "https://doi.org/10.1016/0001-8708(74)90074-7", status: "historical", note: "More than one-third of the zeros of Riemann's zeta function are on σ = 1/2." },
       { date: "1989", valueTex: "$> 2/5$", valueNumeric: 0.4, attribution: "Conrey", sourceUrl: WIKI_RH, status: "historical" },
       { date: "2020", valueTex: "$> 5/12 \\approx 41.7\\%$", valueNumeric: 0.4167, attribution: "Pratt, Robles, Zaharescu and Zeindler", sourceUrl: WIKI_RH, status: "historical" },
@@ -158,11 +160,11 @@ const RECORDS: Rec[] = [
     historyNote:
       "Historical rows follow the Wikipedia article on prime gaps and the erdosproblems.com record for Problem #4. Rankin 1938 and FGKMT 2018 are the two shapes of the bound; the 2014 result (Ford-Green-Konyagin-Tao, and independently Maynard) improved the constant to arbitrarily large rather than the shape, and is recorded as its own row.",
     rows: [
-      { date: "1938", valueTex: "$\\gg \\dfrac{\\log X \\, \\log_2 X \\, \\log_4 X}{(\\log_3 X)^2}$", rank: 1, attribution: "Rankin", sourceUrl: WIKI_GAP, status: "historical", note: "Improving Westzynthius and Erdős. The constant was later pushed to any c < e^γ." },
-      { date: "2014", valueTex: "same shape, constant arbitrarily large", rank: 2, attribution: "Ford, Green, Konyagin and Tao; independently Maynard", sourceUrl: ERDOS4, status: "historical", note: "Erdős's 10,000 dollar problem: the constant c in Rankin's bound can be taken arbitrarily large." },
-      { date: "2018", valueTex: "$\\gg \\dfrac{\\log X \\, \\log_2 X \\, \\log_4 X}{\\log_3 X}$", rank: 3, attribution: "Ford, Green, Konyagin, Maynard and Tao", sourceUrl: WIKI_GAP, status: "historical", note: "Gains a factor of log_3 X over Rankin." },
-      { date: "2026-08-25", valueTex: "$\\gg \\dfrac{\\log X \\, \\log_2 X}{\\log_4 X}$", rank: 4, attribution: "GPT 5.6 Sol with DottedCalculator and Alexeev", problemSlug: "tilted-residue-class-construction-for-long-prime-free-intervals" },
-      { date: "2026-09-03", valueTex: "$\\gg \\dfrac{\\log X \\, (\\log_2 X)^2 \\, \\log_4 X}{(\\log_3 X)^2}$", rank: 5, attribution: "GPT 6 Astra", problemSlug: "improved-maximal-prime-gap-lower-bound" },
+      { date: "1938", valueTex: "$\\gg \\dfrac{\\log X \\, \\log_2 X \\, \\log_4 X}{(\\log_3 X)^2}$", valueShortTex: "$\\gg \\log X \\log_2 X \\log_4 X / (\\log_3 X)^2$", rank: 1, attribution: "Rankin", sourceUrl: WIKI_GAP, status: "historical", note: "Improving Westzynthius and Erdős. The constant was later pushed to any c < e^γ." },
+      { date: "2014", valueTex: "same shape, constant arbitrarily large", valueShortTex: "constant unbounded", rank: 2, attribution: "Ford, Green, Konyagin and Tao; independently Maynard", sourceUrl: ERDOS4, status: "historical", note: "Erdős's 10,000 dollar problem: the constant c in Rankin's bound can be taken arbitrarily large." },
+      { date: "2018", valueTex: "$\\gg \\dfrac{\\log X \\, \\log_2 X \\, \\log_4 X}{\\log_3 X}$", valueShortTex: "$\\gg \\log X \\log_2 X \\log_4 X / \\log_3 X$", rank: 3, attribution: "Ford, Green, Konyagin, Maynard and Tao", sourceUrl: WIKI_GAP, status: "historical", note: "Gains a factor of log_3 X over Rankin." },
+      { date: "2026-08-25", valueTex: "$\\gg \\dfrac{\\log X \\, \\log_2 X}{\\log_4 X}$", valueShortTex: "$\\gg \\log X \\log_2 X / \\log_4 X$", rank: 4, attribution: "GPT 5.6 Sol with DottedCalculator and Alexeev", problemSlug: "tilted-residue-class-construction-for-long-prime-free-intervals" },
+      { date: "2026-09-03", valueTex: "$\\gg \\dfrac{\\log X \\, (\\log_2 X)^2 \\, \\log_4 X}{(\\log_3 X)^2}$", valueShortTex: "$\\gg \\log X (\\log_2 X)^2 \\log_4 X / (\\log_3 X)^2$", rank: 5, attribution: "GPT 6 Astra", problemSlug: "improved-maximal-prime-gap-lower-bound" },
     ],
   },
 ];
@@ -235,6 +237,7 @@ async function main() {
           recordId: rec.id,
           date: x.date,
           valueTex: x.valueTex,
+          valueShortTex: x.valueShortTex ?? null,
           valueNumeric: x.valueNumeric ?? null,
           rank: x.rank ?? null,
           attribution: x.attribution,

@@ -116,9 +116,23 @@ export default async function RecordsPage() {
                     {r.fieldGroup ? ` · ${r.fieldGroup}` : ""}
                   </p>
                 </div>
-                <div className="math-prose basis-40 text-right text-sm text-[var(--ink)]">
-                  {best ? <TeX>{best.valueTex}</TeX> : <span className="text-[var(--ink-muted)]">no published value</span>}
-                  <div className="text-[11px] text-[var(--ink-muted)]">current best · {r.direction === "min" ? "lower is better" : "higher is better"}</div>
+                {/* Deliberately NOT .math-prose: that class scrolls its
+                    overflow, which is right for a paragraph and wrong here -
+                    a strip that grows a scrollbar per row is unreadable (and
+                    is what the first version did on the long-gaps record).
+                    The compact form plus `overflow-hidden` keeps the row one
+                    line; the full display value lives on the record page. */}
+                <div className="min-w-0 basis-full overflow-hidden text-sm text-[var(--ink)] sm:basis-56 sm:text-right">
+                  <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+                    {best ? (
+                      <TeX>{best.valueShortTex ?? best.valueTex}</TeX>
+                    ) : (
+                      <span className="text-[var(--ink-muted)]">no published value</span>
+                    )}
+                  </div>
+                  <div className="text-[11px] text-[var(--ink-muted)]">
+                    current best · {r.direction === "min" ? "lower is better" : "higher is better"}
+                  </div>
                 </div>
                 <RecordSparkline rows={r.rows} direction={r.direction} />
               </li>
@@ -153,8 +167,8 @@ function LatestRow({ record, row }: { record: RecordSummary; row: RecordRowView 
         {record.shortName}
       </Link>
       <span>→</span>
-      <span className="math-prose text-[var(--ink)]">
-        <TeX>{row.valueTex}</TeX>
+      <span className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-[var(--ink)]">
+        <TeX>{row.valueShortTex ?? row.valueTex}</TeX>
       </span>
       <span className="text-xs">
         by {e.model} ·{" "}
