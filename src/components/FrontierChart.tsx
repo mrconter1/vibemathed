@@ -25,6 +25,7 @@ import {
   dodge,
   fmtTick,
   offScale,
+  padDate,
   sortRows,
   steps,
   yAxis,
@@ -162,26 +163,6 @@ export function FrontierChart({
   const sy = (v: number) =>
     PAD.t + (1 - yPos(axis, v, direction)) * (H - PAD.t - PAD.b);
 
-  // The frontier path: horizontal to the next step's year, then vertical.
-  // Only steps with a value on this axis; a qualitative early step has no
-  // height for the line to be at, and a NaN in a path datum blanks the line.
-  const stepRows = stepped
-    .filter((s) => s.isStep && Number.isFinite(val(s.row)) && onChart(s.row))
-    .map((s) => s.row);
-  let d = "";
-  stepRows.forEach((r, i) => {
-    const x = sx(yearOf(r.date));
-    const y = sy(val(r));
-    if (i === 0) d += `M ${x.toFixed(1)} ${y.toFixed(1)}`;
-    else d += ` H ${x.toFixed(1)} V ${y.toFixed(1)}`;
-  });
-  // Extend the frontier to the right edge so "still the frontier" is visible.
-  if (stepRows.length) {
-    const last = stepRows[stepRows.length - 1];
-    d += ` H ${(W - PAD.r).toFixed(1)}`;
-    void last;
-  }
-
   // Axis ticks: decades on x; four ticks on y for numeric frontiers.
   const decadeStart = Math.ceil(x0 / 10) * 10;
   const xticks: number[] = [];
@@ -245,6 +226,28 @@ export function FrontierChart({
     PAD.l,
     W - PAD.r,
   );
+
+  // The frontier path, built from the dots' FINAL positions so every step
+  // dot sits on its corner. It used to be built from the raw dates before the
+  // dots were nudged apart, which left the 2026 AI steps floating beside the
+  // line. In date order, horizontal to the next step then vertical; x is
+  // clamped never to run backwards, because a nudge to the left would
+  // otherwise make the staircase double back on itself. Only steps with a
+  // value on this axis - a qualitative early step has no height for the line
+  // to be at, and a NaN in a path datum blanks the whole line.
+  const stepDots = drawn
+    .filter((p) => p.isStep && Number.isFinite(val(p.row)))
+    .sort((a, b) => padDate(a.row.date).localeCompare(padDate(b.row.date)));
+  let d = "";
+  let lastX = Number.NEGATIVE_INFINITY;
+  stepDots.forEach((p, i) => {
+    const x = Math.max(p.cx, lastX);
+    lastX = x;
+    if (i === 0) d += `M ${x.toFixed(1)} ${p.cy.toFixed(1)}`;
+    else d += ` H ${x.toFixed(1)} V ${p.cy.toFixed(1)}`;
+  });
+  // Extend the frontier to the right edge so "still the frontier" is visible.
+  if (stepDots.length) d += ` H ${(W - PAD.r).toFixed(1)}`;
 
   const points: ChartPoint[] = drawn.map(({ row, cx, cy }) =>
     chartPoint(row, (cx / W) * 100, (cy / H) * 100),
