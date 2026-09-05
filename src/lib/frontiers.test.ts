@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { frontier, isNumericRecord, padDate, sortRows, steps, yearOf, type RecordRowLike } from "./records";
+import { bestRow, isNumericRecord, padDate, sortRows, steps, yearOf, type FrontierRowLike } from "./frontiers";
 
-const row = (o: Partial<RecordRowLike> & { id: string }): RecordRowLike => ({
+const row = (o: Partial<FrontierRowLike> & { id: string }): FrontierRowLike => ({
   date: "2000",
   valueTex: "",
   valueNumeric: null,
@@ -17,7 +17,7 @@ describe("frontier", () => {
       row({ id: "b", date: "1990", valueNumeric: 2.3755 }),
       row({ id: "c", date: "2026", valueNumeric: 2.371177, status: "published" }),
     ];
-    expect(frontier(rows, "min")?.id).toBe("c");
+    expect(bestRow(rows, "min")?.id).toBe("c");
   });
 
   it("picks the largest value when higher is better", () => {
@@ -26,7 +26,7 @@ describe("frontier", () => {
       row({ id: "b", date: "2026", valueNumeric: 31, status: "published" }),
       row({ id: "c", date: "2026", valueNumeric: 30, status: "published" }),
     ];
-    expect(frontier(rows, "max")?.id).toBe("b");
+    expect(bestRow(rows, "max")?.id).toBe("b");
   });
 
   it("never lets a candidate or retracted row win", () => {
@@ -35,7 +35,7 @@ describe("frontier", () => {
       row({ id: "b", date: "2026", valueNumeric: 186, status: "candidate" }),
       row({ id: "c", date: "2026", valueNumeric: 100, status: "retracted" }),
     ];
-    expect(frontier(rows, "min")?.id).toBe("a");
+    expect(bestRow(rows, "min")?.id).toBe("a");
   });
 
   it("uses rank when there is no numeric value", () => {
@@ -45,12 +45,12 @@ describe("frontier", () => {
       row({ id: "astra", date: "2026", rank: 4, status: "published" }),
       row({ id: "tilted", date: "2026-08", rank: 3, status: "published" }),
     ];
-    expect(frontier(rows, "max")?.id).toBe("astra");
+    expect(bestRow(rows, "max")?.id).toBe("astra");
   });
 
   it("returns null when nothing competes", () => {
-    expect(frontier([row({ id: "x", status: "candidate", valueNumeric: 1 })], "max")).toBeNull();
-    expect(frontier([], "max")).toBeNull();
+    expect(bestRow([row({ id: "x", status: "candidate", valueNumeric: 1 })], "max")).toBeNull();
+    expect(bestRow([], "max")).toBeNull();
   });
 });
 

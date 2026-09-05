@@ -23,11 +23,11 @@ export interface OpenReport {
   /// False when the reporting account no longer exists, so there is nobody
   /// left to answer.
   canReply: boolean;
-  /// Where the reported thing lives - an entry or a record. Reports on both
+  /// Where the reported thing lives - an entry or a frontier. Reports on both
   /// land in this one queue, so the row cannot assume /problem/.
   subjectHref: string;
   subjectName: string;
-  /// "entry" or "record", shown as a chip so a curator can see at a glance
+  /// "entry" or "frontier", shown as a chip so a curator can see at a glance
   /// which kind of thing is being flagged.
   subjectKind: string;
   reportedAt: string;
@@ -74,13 +74,13 @@ export function ReportsList({ reports }: { reports: OpenReport[] }) {
         >
           <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
             <span className="flex flex-wrap items-baseline gap-2">
-              {/* Which kind of thing is flagged. A record report is usually
+              {/* Which kind of thing is flagged. A frontier report is usually
                   about a historical row's value or attribution, which is a
                   different job from checking an entry's claim, so the queue
                   says so rather than making the curator open it to find out. */}
-              {r.subjectKind === "record" && (
+              {r.subjectKind === "frontier" && (
                 <span className="rounded border border-[var(--accent-orange)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--accent-orange)]">
-                  Record
+                  Frontier
                 </span>
               )}
               <Link

@@ -1,22 +1,22 @@
-// The staircase: one record's history as a step chart. Server-rendered SVG,
+// The staircase: one frontier's history as a step chart. Server-rendered SVG,
 // same fixed-viewBox approach as the stats charts, no client bundle - the
-// chart has nothing to toggle, and a record page should be static HTML that
+// chart has nothing to toggle, and a frontier page should be static HTML that
 // indexes and prints.
 //
 // Three things the picture has to say without a legend being read:
-//   - the frontier is the line, and it only ever moves in the record's
+//   - the frontier is the line, and it only ever moves in the frontier's
 //     direction;
 //   - the AI rows are the coloured dots at the right-hand end, the human
 //     history is muted;
 //   - a candidate (a held or unreviewed claim) is hollow and off the line.
 //
-// Numeric records (an exponent, a rank, a proportion) get a real y axis.
-// Rank-only records (bounds that are expressions) get an ordinal axis: equal
+// Numeric frontiers (an exponent, a rank, a proportion) get a real y axis.
+// Rank-only frontiers (bounds that are expressions) get an ordinal axis: equal
 // spacing per rank, no numbers, because printing "rank 3" would suggest a
 // scale that does not exist.
 
-import { competes, isNumericRecord, sortRows, steps, yearOf, type RecordDirection } from "@/lib/records";
-import type { RecordRowView } from "@/lib/data";
+import { competes, isNumericRecord, sortRows, steps, yearOf, type FrontierDirection } from "@/lib/frontiers";
+import type { FrontierRowView } from "@/lib/data";
 
 const W = 640;
 const H = 300;
@@ -29,7 +29,7 @@ function fmt(v: number): string {
   return s.replace(/0+$/, "").replace(/\.$/, "");
 }
 
-export function RecordChart({ rows, direction }: { rows: RecordRowView[]; direction: RecordDirection }) {
+export function FrontierChart({ rows, direction }: { rows: FrontierRowView[]; direction: FrontierDirection }) {
   const numeric = isNumericRecord(rows);
   const sorted = sortRows(rows, direction);
   const stepped = steps(rows, direction);
@@ -42,9 +42,9 @@ export function RecordChart({ rows, direction }: { rows: RecordRowView[]; direct
   const sx = (y: number) => PAD.l + ((y - x0) / (x1 - x0)) * (W - PAD.l - PAD.r);
 
   // y: value (numeric) or rank (ordinal). Higher-is-better draws up; for a
-  // "min" record the axis is inverted so an improvement still goes UP - the
-  // reader's eye should not have to learn a new convention per record.
-  const val = (r: RecordRowView) => (numeric ? (r.valueNumeric ?? NaN) : (r.rank ?? NaN));
+  // "min" frontier the axis is inverted so an improvement still goes UP - the
+  // reader's eye should not have to learn a new convention per frontier.
+  const val = (r: FrontierRowView) => (numeric ? (r.valueNumeric ?? NaN) : (r.rank ?? NaN));
   const vals = sorted.map(val).filter((v) => Number.isFinite(v));
   let vmin = Math.min(...vals);
   let vmax = Math.max(...vals);
@@ -70,14 +70,14 @@ export function RecordChart({ rows, direction }: { rows: RecordRowView[]; direct
     if (i === 0) d += `M ${x.toFixed(1)} ${y.toFixed(1)}`;
     else d += ` H ${x.toFixed(1)} V ${y.toFixed(1)}`;
   });
-  // Extend the frontier to the right edge so "still the record" is visible.
+  // Extend the frontier to the right edge so "still the frontier" is visible.
   if (stepRows.length) {
     const last = stepRows[stepRows.length - 1];
     d += ` H ${(W - PAD.r).toFixed(1)}`;
     void last;
   }
 
-  // Axis ticks: decades on x; four ticks on y for numeric records.
+  // Axis ticks: decades on x; four ticks on y for numeric frontiers.
   const decadeStart = Math.ceil(x0 / 10) * 10;
   const xticks: number[] = [];
   for (let y = decadeStart; y <= x1; y += 10) xticks.push(y);
@@ -88,7 +88,7 @@ export function RecordChart({ rows, direction }: { rows: RecordRowView[]; direct
       viewBox={`0 0 ${W} ${H}`}
       className="h-auto w-full"
       role="img"
-      aria-label={`Record history, ${sorted.length} points from ${sorted[0].date.slice(0, 4)} to ${sorted[sorted.length - 1].date.slice(0, 4)}`}
+      aria-label={`Frontier history, ${sorted.length} points from ${sorted[0].date.slice(0, 4)} to ${sorted[sorted.length - 1].date.slice(0, 4)}`}
     >
       {/* gridlines + x ticks */}
       {xticks.map((y) => (

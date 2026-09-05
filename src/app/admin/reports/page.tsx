@@ -43,7 +43,7 @@ async function Queue() {
       userName: true,
       user: { select: { pseudonym: true } },
       problem: { select: { slug: true, name: true } },
-      record: { select: { slug: true, name: true } },
+      frontier: { select: { slug: true, name: true } },
     },
   });
 
@@ -60,8 +60,8 @@ async function Queue() {
     // A report hangs off exactly one of the two; the record side exists
     // because a record's historical rows assert facts about other people's
     // work, which is precisely what somebody will want to flag.
-    subjectHref: r.problem ? `/problem/${r.problem.slug}` : `/record/${r.record?.slug ?? ""}`,
-    subjectName: r.problem?.name ?? r.record?.name ?? "(deleted)",
+    subjectHref: r.problem ? `/problem/${r.problem.slug}` : `/frontier/${r.frontier?.slug ?? ""}`,
+    subjectName: r.problem?.name ?? r.frontier?.name ?? "(deleted)",
     subjectKind: r.problem ? "entry" : "record",
     reportedAt: formatCommentDateTime(r.createdAt),
   }));

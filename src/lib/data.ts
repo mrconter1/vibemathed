@@ -1029,11 +1029,11 @@ export async function getPublishedSlugs(): Promise<string[]> {
 
 // ---------------------------------------------------------------------------
 // Records: a named quantity with a direction and a staircase of best known
-// values (src/lib/records.ts). Read-only here; records are created and rowed
-// by curator scripts, so the cache tag is "records" and a script that writes
-// them is expected to call updateTag("records") or wait for a deploy.
+// values (src/lib/frontiers.ts). Read-only here; records are created and rowed
+// by curator scripts, so the cache tag is "frontiers" and a script that writes
+// them is expected to call updateTag("frontiers") or wait for a deploy.
 
-export interface RecordRowView {
+export interface FrontierRowView {
   id: string;
   date: string;
   valueTex: string;
@@ -1057,7 +1057,7 @@ export interface RecordRowView {
   } | null;
 }
 
-export interface RecordSummary {
+export interface FrontierSummary {
   slug: string;
   name: string;
   shortName: string;
@@ -1065,17 +1065,17 @@ export interface RecordSummary {
   direction: "min" | "max";
   fieldGroup: string | null;
   significance: number | null;
-  rows: RecordRowView[];
+  rows: FrontierRowView[];
 }
 
-export interface RecordView extends RecordSummary {
+export interface FrontierView extends FrontierSummary {
   statement: string | null;
   field: string | null;
   significanceNote: string | null;
   historyNote: string | null;
 }
 
-const RECORD_ROW_SELECT = {
+const FRONTIER_ROW_SELECT = {
   id: true,
   date: true,
   valueTex: true,
@@ -1098,11 +1098,11 @@ const RECORD_ROW_SELECT = {
       status: true,
     },
   },
-} satisfies Prisma.RecordRowSelect;
+} satisfies Prisma.FrontierRowSelect;
 
-type RecordRowRaw = Prisma.RecordRowGetPayload<{ select: typeof RECORD_ROW_SELECT }>;
+type FrontierRowRaw = Prisma.FrontierRowGetPayload<{ select: typeof FRONTIER_ROW_SELECT }>;
 
-function toRecordRow(r: RecordRowRaw): RecordRowView {
+function toFrontierRow(r: FrontierRowRaw): FrontierRowView {
   // An entry that has been unpublished since the row was made must not leak
   // through the record page: the row stays (it is a fact about the record)
   // but points nowhere.
@@ -1132,12 +1132,12 @@ function toRecordRow(r: RecordRowRaw): RecordRowView {
   };
 }
 
-export async function getRecords(): Promise<RecordSummary[]> {
+export async function getFrontiers(): Promise<FrontierSummary[]> {
   "use cache";
-  cacheTag("records");
+  cacheTag("frontiers");
   cacheLife("hours");
 
-  const rows = await prisma.record.findMany({
+  const rows = await prisma.frontier.findMany({
     select: {
       slug: true,
       name: true,
@@ -1146,7 +1146,7 @@ export async function getRecords(): Promise<RecordSummary[]> {
       direction: true,
       fieldGroup: true,
       significance: true,
-      rows: { select: RECORD_ROW_SELECT },
+      rows: { select: FRONTIER_ROW_SELECT },
     },
     orderBy: { name: "asc" },
   });
@@ -1158,16 +1158,16 @@ export async function getRecords(): Promise<RecordSummary[]> {
     direction: r.direction === "min" ? "min" : "max",
     fieldGroup: r.fieldGroup,
     significance: r.significance,
-    rows: r.rows.map(toRecordRow),
+    rows: r.rows.map(toFrontierRow),
   }));
 }
 
-export async function getRecordBySlug(slug: string): Promise<RecordView | null> {
+export async function getFrontierBySlug(slug: string): Promise<FrontierView | null> {
   "use cache";
-  cacheTag("records", `record-${slug}`);
+  cacheTag("frontiers", `frontier-${slug}`);
   cacheLife("hours");
 
-  const r = await prisma.record.findUnique({
+  const r = await prisma.frontier.findUnique({
     where: { slug },
     select: {
       slug: true,
@@ -1181,7 +1181,7 @@ export async function getRecordBySlug(slug: string): Promise<RecordView | null> 
       significance: true,
       significanceNote: true,
       historyNote: true,
-      rows: { select: RECORD_ROW_SELECT },
+      rows: { select: FRONTIER_ROW_SELECT },
     },
   });
   if (!r) return null;
@@ -1197,33 +1197,33 @@ export async function getRecordBySlug(slug: string): Promise<RecordView | null> 
     significance: r.significance,
     significanceNote: r.significanceNote,
     historyNote: r.historyNote,
-    rows: r.rows.map(toRecordRow),
+    rows: r.rows.map(toFrontierRow),
   };
 }
 
 /// The records an entry is a row on, for the one-line pointer on its page.
 /// Almost every entry has none, so this must stay cheap: one indexed lookup.
-export async function getRecordsForProblem(slug: string): Promise<
-  { slug: string; shortName: string; direction: "min" | "max"; rows: RecordRowView[]; rowId: string }[]
+export async function getFrontiersForProblem(slug: string): Promise<
+  { slug: string; shortName: string; direction: "min" | "max"; rows: FrontierRowView[]; rowId: string }[]
 > {
   "use cache";
-  cacheTag("records", `problem-${slug}`);
+  cacheTag("frontiers", `problem-${slug}`);
   cacheLife("hours");
 
-  const hits = await prisma.recordRow.findMany({
+  const hits = await prisma.frontierRow.findMany({
     where: { problem: { slug } },
     select: {
       id: true,
-      record: {
-        select: { slug: true, shortName: true, direction: true, rows: { select: RECORD_ROW_SELECT } },
+      frontier: {
+        select: { slug: true, shortName: true, direction: true, rows: { select: FRONTIER_ROW_SELECT } },
       },
     },
   });
   return hits.map((h) => ({
-    slug: h.record.slug,
-    shortName: h.record.shortName,
-    direction: h.record.direction === "min" ? "min" : "max",
-    rows: h.record.rows.map(toRecordRow),
+    slug: h.frontier.slug,
+    shortName: h.frontier.shortName,
+    direction: h.frontier.direction === "min" ? "min" : "max",
+    rows: h.frontier.rows.map(toFrontierRow),
     rowId: h.id,
   }));
 }

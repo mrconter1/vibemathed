@@ -83,7 +83,7 @@ async function main() {
   if (!curator) throw new Error("curator not found on this database");
 
   // `select` is not decoration: an unconstrained update RETURNS every scalar
-  // column, and production does not yet have ProblemReport.recordId, which
+  // column, and production does not yet have ProblemReport.frontierId, which
   // this branch's generated client knows about. Third time this drift has
   // bitten a script today; it goes away when PR #22 merges and the schema
   // catches up.

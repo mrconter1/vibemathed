@@ -59,11 +59,11 @@ async function main() {
   const [{ db }] = await prisma.$queryRawUnsafe<{ db: string }[]>("SELECT current_database() AS db");
   console.log(`database: ${db}\n`);
 
-  const rec = await prisma.record.findUnique({ where: { slug: RECORD }, select: { id: true, name: true } });
+  const rec = await prisma.frontier.findUnique({ where: { slug: RECORD }, select: { id: true, name: true } });
   if (!rec) throw new Error(`record not found: ${RECORD}`);
 
-  const row = await prisma.recordRow.findFirst({
-    where: { recordId: rec.id, problem: { slug: ENTRY } },
+  const row = await prisma.frontierRow.findFirst({
+    where: { frontierId: rec.id, problem: { slug: ENTRY } },
     select: { id: true, status: true, valueNumeric: true },
   });
   if (!row) throw new Error("the 186 row is not on that record");
@@ -75,8 +75,8 @@ async function main() {
   if (NOTE.length > 400 || HISTORY_NOTE.length > 600) throw new Error("field limit exceeded");
 
   // Show the frontier both ways, so the effect is visible before writing.
-  const rows = await prisma.recordRow.findMany({
-    where: { recordId: rec.id },
+  const rows = await prisma.frontierRow.findMany({
+    where: { frontierId: rec.id },
     select: { valueNumeric: true, status: true, attribution: true },
   });
   const best = (skip186: boolean) =>
@@ -96,13 +96,13 @@ async function main() {
     select: { id: true, pseudonym: true },
   });
 
-  await prisma.recordRow.update({
+  await prisma.frontierRow.update({
     where: { id: row.id },
     data: { status: "candidate", note: NOTE },
   });
-  await prisma.record.update({ where: { id: rec.id }, data: { historyNote: HISTORY_NOTE } });
+  await prisma.frontier.update({ where: { id: rec.id }, data: { historyNote: HISTORY_NOTE } });
   await prisma.$executeRawUnsafe(
-    `INSERT INTO "ProblemActivity" ("recordId", "userId", "userName", "type", "field", "oldValue", "newValue") VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+    `INSERT INTO "ProblemActivity" ("frontierId", "userId", "userName", "type", "field", "oldValue", "newValue") VALUES ($1, $2, $3, $4, $5, $6, $7)`,
     rec.id,
     curator?.id ?? null,
     curator?.pseudonym ?? "Curator",

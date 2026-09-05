@@ -55,7 +55,7 @@ async function main() {
 
   const found: { id: string; slug: string; oldName: string; name: string }[] = [];
   for (const r of RENAMES) {
-    const rec = await prisma.record.findUnique({ where: { slug: r.slug }, select: { id: true, name: true } });
+    const rec = await prisma.frontier.findUnique({ where: { slug: r.slug }, select: { id: true, name: true } });
     if (!rec) throw new Error(`record not found: ${r.slug}`);
     console.log(`${r.slug}`);
     console.log(`  from: ${rec.name}`);
@@ -69,12 +69,12 @@ async function main() {
   }
 
   for (const r of found) {
-    await prisma.record.update({ where: { id: r.id }, data: { name: r.name } });
+    await prisma.frontier.update({ where: { id: r.id }, data: { name: r.name } });
     // The record's changelog: a rename is exactly the kind of curator edit it
     // exists to hold. Explicit columns, because production may not yet have
-    // ProblemActivity.recordId (see PR #22).
+    // ProblemActivity.frontierId (see PR #22).
     await prisma.$executeRawUnsafe(
-      `INSERT INTO "ProblemActivity" ("recordId", "userId", "userName", "type", "field", "oldValue", "newValue") VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      `INSERT INTO "ProblemActivity" ("frontierId", "userId", "userName", "type", "field", "oldValue", "newValue") VALUES ($1, $2, $3, $4, $5, $6, $7)`,
       r.id,
       curator?.id ?? null,
       curator?.pseudonym ?? "Curator",

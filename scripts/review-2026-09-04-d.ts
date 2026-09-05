@@ -196,7 +196,7 @@ async function main() {
       }),
     ]);
     // Activity row written separately with explicit columns: production does
-    // not yet have ProblemActivity.recordId, which the generated client on
+    // not yet have ProblemActivity.frontierId, which the generated client on
     // this branch insists on sending. Remove once PR #22 has merged and the
     // production schema has caught up.
     await prisma.$executeRawUnsafe(

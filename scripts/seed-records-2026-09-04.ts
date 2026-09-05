@@ -206,7 +206,7 @@ async function main() {
   }
 
   for (const r of RECORDS) {
-    const rec = await prisma.record.upsert({
+    const rec = await prisma.frontier.upsert({
       where: { slug: r.slug },
       create: {
         slug: r.slug,
@@ -235,12 +235,12 @@ async function main() {
         historyNote: r.historyNote,
       },
     });
-    await prisma.recordRow.deleteMany({ where: { recordId: rec.id } });
-    await prisma.recordRow.createMany({
+    await prisma.frontierRow.deleteMany({ where: { frontierId: rec.id } });
+    await prisma.frontierRow.createMany({
       data: r.rows.map((x) => {
         const p = x.problemSlug ? byslug.get(x.problemSlug)! : null;
         return {
-          recordId: rec.id,
+          frontierId: rec.id,
           date: x.date,
           valueTex: x.valueTex,
           valueShortTex: x.valueShortTex ?? null,
@@ -259,11 +259,11 @@ async function main() {
     // first seed and `updated` on every reseed after it - the row count is
     // recorded because that is what a reseed actually changes.
     const already = await prisma.problemActivity.count({
-      where: { recordId: rec.id, type: "created" },
+      where: { frontierId: rec.id, type: "created" },
     });
     await prisma.problemActivity.create({
       data: {
-        recordId: rec.id,
+        frontierId: rec.id,
         userId: curator?.id ?? null,
         userName: curator ? "Rasmus Lindahl" : "Curator",
         type: already === 0 ? "created" : "updated",

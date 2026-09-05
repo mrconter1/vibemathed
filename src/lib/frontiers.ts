@@ -8,10 +8,10 @@
 // else. Storing a "current" flag would be a second source of truth that goes
 // stale the moment a row is added, retracted or re-dated.
 
-export type RecordDirection = "min" | "max";
-export type RecordRowStatus = "published" | "candidate" | "historical" | "retracted";
+export type FrontierDirection = "min" | "max";
+export type FrontierRowStatus = "published" | "candidate" | "historical" | "retracted";
 
-export interface RecordRowLike {
+export interface FrontierRowLike {
   id: string;
   date: string;
   valueTex: string;
@@ -32,7 +32,7 @@ export function competes(status: string): boolean {
 /// has one; the curator-set rank otherwise. Mixing the two inside one record
 /// is a curation error, so a record is expected to be all-numeric or all-rank;
 /// when it is mixed, numeric rows sort ahead of rank rows rather than throwing.
-export function score(row: RecordRowLike, direction: RecordDirection): number {
+export function score(row: FrontierRowLike, direction: FrontierDirection): number {
   if (row.valueNumeric !== null && Number.isFinite(row.valueNumeric)) {
     return direction === "min" ? -row.valueNumeric : row.valueNumeric;
   }
@@ -43,7 +43,7 @@ export function score(row: RecordRowLike, direction: RecordDirection): number {
 /// Chronological order; ties broken by score so a same-day improvement lands
 /// after the value it beat. Dates are ISO-prefix strings ("YYYY", "YYYY-MM",
 /// "YYYY-MM-DD") and compare lexically once padded to the same shape.
-export function sortRows<T extends RecordRowLike>(rows: T[], direction: RecordDirection): T[] {
+export function sortRows<T extends FrontierRowLike>(rows: T[], direction: FrontierDirection): T[] {
   return [...rows].sort((a, b) => {
     const da = padDate(a.date);
     const db = padDate(b.date);
@@ -62,8 +62,8 @@ export function padDate(d: string): string {
   return d;
 }
 
-/// The current best among competing rows, or null for a record with none.
-export function frontier<T extends RecordRowLike>(rows: T[], direction: RecordDirection): T | null {
+/// The current best among competing rows, or null for a frontier with none.
+export function bestRow<T extends FrontierRowLike>(rows: T[], direction: FrontierDirection): T | null {
   let best: T | null = null;
   let bestScore = Number.NEGATIVE_INFINITY;
   for (const r of rows) {
@@ -81,9 +81,9 @@ export function frontier<T extends RecordRowLike>(rows: T[], direction: RecordDi
 /// best known at the moment it appeared. Rows that did not improve the record
 /// when they landed are still drawn (a reader should see them) but do not
 /// step the line. Candidates and retractions are never steps.
-export function steps<T extends RecordRowLike>(
+export function steps<T extends FrontierRowLike>(
   rows: T[],
-  direction: RecordDirection,
+  direction: FrontierDirection,
 ): { row: T; isStep: boolean }[] {
   const sorted = sortRows(rows, direction);
   let bestSoFar = Number.NEGATIVE_INFINITY;
@@ -108,7 +108,7 @@ export function yearOf(date: string): number {
 
 /// Whether every competing row carries a comparable number, which decides if
 /// the chart has a real y axis or an ordinal one.
-export function isNumericRecord(rows: RecordRowLike[]): boolean {
+export function isNumericRecord(rows: FrontierRowLike[]): boolean {
   const c = rows.filter((r) => competes(r.status));
   return c.length > 0 && c.every((r) => r.valueNumeric !== null);
 }

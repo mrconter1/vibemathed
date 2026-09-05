@@ -180,7 +180,7 @@ async function main() {
     select: { id: true },
   });
 
-  const rec = await prisma.record.upsert({
+  const rec = await prisma.frontier.upsert({
     where: { slug: SLUG },
     create: {
       slug: SLUG,
@@ -201,12 +201,12 @@ async function main() {
     update: { statement: STATEMENT, quantity: QUANTITY },
   });
 
-  await prisma.recordRow.deleteMany({ where: { recordId: rec.id } });
-  await prisma.recordRow.createMany({
+  await prisma.frontierRow.deleteMany({ where: { frontierId: rec.id } });
+  await prisma.frontierRow.createMany({
     data: ROWS.map((r) => {
       const p = r.problemSlug ? found.find((f) => f.slug === r.problemSlug)! : null;
       return {
-        recordId: rec.id,
+        frontierId: rec.id,
         date: r.date,
         valueTex: r.valueTex,
         valueShortTex: r.valueShortTex ?? null,
@@ -220,10 +220,10 @@ async function main() {
     }),
   });
 
-  const already = await prisma.problemActivity.count({ where: { recordId: rec.id, type: "created" } });
+  const already = await prisma.problemActivity.count({ where: { frontierId: rec.id, type: "created" } });
   await prisma.problemActivity.create({
     data: {
-      recordId: rec.id,
+      frontierId: rec.id,
       userId: curator?.id ?? null,
       userName: curator ? "Rasmus Lindahl" : "Curator",
       type: already === 0 ? "created" : "updated",

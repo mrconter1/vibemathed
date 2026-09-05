@@ -237,7 +237,7 @@ async function main() {
   });
 
   for (const r of RECORDS) {
-    const rec = await prisma.record.upsert({
+    const rec = await prisma.frontier.upsert({
       where: { slug: r.slug },
       create: {
         slug: r.slug,
@@ -262,12 +262,12 @@ async function main() {
         historyNote: r.historyNote,
       },
     });
-    await prisma.recordRow.deleteMany({ where: { recordId: rec.id } });
-    await prisma.recordRow.createMany({
+    await prisma.frontierRow.deleteMany({ where: { frontierId: rec.id } });
+    await prisma.frontierRow.createMany({
       data: r.rows.map((x) => {
         const p = x.problemSlug ? found.find((f) => f.slug === x.problemSlug)! : null;
         return {
-          recordId: rec.id,
+          frontierId: rec.id,
           date: x.date,
           valueTex: x.valueTex,
           valueShortTex: x.valueShortTex ?? null,
@@ -280,9 +280,9 @@ async function main() {
         };
       }),
     });
-    const already = await prisma.problemActivity.count({ where: { recordId: rec.id, type: "created" } });
+    const already = await prisma.problemActivity.count({ where: { frontierId: rec.id, type: "created" } });
     await prisma.$executeRawUnsafe(
-      `INSERT INTO "ProblemActivity" ("recordId", "userId", "userName", "type") VALUES ($1, $2, $3, $4)`,
+      `INSERT INTO "ProblemActivity" ("frontierId", "userId", "userName", "type") VALUES ($1, $2, $3, $4)`,
       rec.id,
       curator?.id ?? null,
       curator?.pseudonym ?? "Curator",

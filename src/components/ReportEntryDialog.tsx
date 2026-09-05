@@ -30,9 +30,9 @@ export function ReportEntryDialog({
   label?: string;
 }) {
   const { signedIn, loaded } = useViewer();
-  // "entry" or "record", for the wording. The dialog is the same machinery
+  // "entry" or "frontier", for the wording. The dialog is the same machinery
   // either way; only the noun and the examples of what to report differ.
-  const noun = subject.kind === "record" ? "record" : "entry";
+  const noun = subject.kind === "frontier" ? "frontier" : "entry";
   const [open, setOpen] = useState(false);
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
@@ -121,7 +121,7 @@ export function ReportEntryDialog({
             <header className="border-b border-[var(--hairline)] px-5 py-3.5">
               <h2 className="font-serif text-lg text-[var(--ink)]">Report this {noun}</h2>
               <p className="mt-1 text-[11px] leading-relaxed text-[var(--ink-muted)]">
-                {subject.kind === "record"
+                {subject.kind === "frontier"
                   ? "Tell the curators what is wrong - a value that is off, a step misattributed, a result missing from the history, a source that does not say what the row claims. Reports go straight to review and are never shown publicly. Up to three per day."
                   : "Tell the curators what is wrong - a broken source, a misstated result, a claim that does not hold. Reports go straight to review and are never shown publicly. Up to three per day."}
               </p>

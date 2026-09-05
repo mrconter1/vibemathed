@@ -1,28 +1,28 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getActivity, getComments, getRecordBySlug, getRecords, type RecordRowView } from "@/lib/data";
-import { competes, frontier, padDate, sortRows, steps } from "@/lib/records";
-import { RecordChart } from "@/components/RecordChart";
+import { getActivity, getComments, getFrontierBySlug, getFrontiers, type FrontierRowView } from "@/lib/data";
+import { competes, bestRow, padDate, sortRows, steps } from "@/lib/frontiers";
+import { FrontierChart } from "@/components/FrontierChart";
 import { TeX } from "@/components/TeX";
 import { Changelog } from "@/components/Changelog";
 import { CommentsSection } from "@/components/CommentsSection";
 import { ReportEntryDialog } from "@/components/ReportEntryDialog";
-import { recordSubject } from "@/lib/subject";
+import { frontierSubject } from "@/lib/subject";
 
 export async function generateStaticParams() {
-  const records = await getRecords();
-  return records.map((r) => ({ slug: r.slug }));
+  const frontiers = await getFrontiers();
+  return frontiers.map((r) => ({ slug: r.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const r = await getRecordBySlug(slug);
-  if (!r) return { title: "Record not found" };
+  const r = await getFrontierBySlug(slug);
+  if (!r) return { title: "Frontier not found" };
   return {
-    title: `${r.name} · Records`,
+    title: `${r.name} · Frontiers`,
     description: r.statement ?? r.quantity,
-    alternates: { canonical: `/record/${r.slug}` },
+    alternates: { canonical: `/frontier/${r.slug}` },
   };
 }
 
@@ -42,21 +42,21 @@ const STATUS_LABEL: Record<string, string> = {
 
 export default async function RecordPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  // A record carries the same community machinery as an entry: a changelog,
+  // A frontier carries the same community machinery as an entry: a changelog,
   // a discussion, and a way to flag it. More important here than on an entry,
-  // in fact - a record asserts dated facts about other people's mathematics,
+  // in fact - a frontier asserts dated facts about other people's mathematics,
   // so "who put this number here, and when" has to be answerable, and a
   // reader who knows the history better than the curator needs a way to say
   // so. See src/lib/subject.ts for how one set of tables serves both.
-  const subject = recordSubject(slug);
+  const subject = frontierSubject(slug);
   const [r, comments, activity] = await Promise.all([
-    getRecordBySlug(slug),
+    getFrontierBySlug(slug),
     getComments(subject),
     getActivity(subject),
   ]);
   if (!r) notFound();
 
-  const best = frontier(r.rows, r.direction);
+  const best = bestRow(r.rows, r.direction);
   const stepped = steps(r.rows, r.direction);
   const stepOf = new Map(stepped.map((s) => [s.row.id, s.isStep]));
   // Table newest first: the reader came for the latest step.
@@ -67,13 +67,13 @@ export default async function RecordPage({ params }: { params: Promise<{ slug: s
 
   return (
     <main className="mx-auto w-full max-w-4xl px-4 pb-12 pt-5 sm:px-8 sm:pt-6">
-      <Link href="/records" className="text-sm text-[var(--accent-blue)] hover:underline">
-        ← All records
+      <Link href="/frontiers" className="text-sm text-[var(--accent-blue)] hover:underline">
+        ← All frontiers
       </Link>
 
       <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <span className="rounded border border-[var(--accent-orange)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--accent-orange)]">
-          Record
+          Frontier
         </span>
         {r.fieldGroup && <span className="text-xs text-[var(--ink-muted)]">{r.fieldGroup}</span>}
         {r.significance !== null && (
@@ -82,7 +82,7 @@ export default async function RecordPage({ params }: { params: Promise<{ slug: s
           </span>
         )}
         <span className="ml-auto">
-          <ReportEntryDialog subject={subject} label="Report an issue with this record" />
+          <ReportEntryDialog subject={subject} label="Report an issue with this frontier" />
         </span>
       </div>
       <h1 className="mt-1 font-serif text-2xl text-[var(--ink)] sm:text-3xl">{r.name}</h1>
@@ -130,9 +130,9 @@ export default async function RecordPage({ params }: { params: Promise<{ slug: s
       </div>
 
       <section className="mt-6 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-3 sm:p-4">
-        <RecordChart rows={r.rows} direction={r.direction} />
+        <FrontierChart rows={r.rows} direction={r.direction} />
         <p className="mt-2 text-[11px] text-[var(--ink-muted)]">
-          The line is the record over time. Filled dots are steps that moved it; muted dots are results that did not.
+          The line is the frontier over time. Filled dots are steps that moved it; muted dots are results that did not.
           Orange dots are catalog entries, results with AI in the loop. Hollow dots are candidates under review and
           never move the line. Hover a dot for its value and attribution.
         </p>
@@ -140,15 +140,15 @@ export default async function RecordPage({ params }: { params: Promise<{ slug: s
 
       {r.statement && (
         <section className="mt-6">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--ink-muted)]">About this record</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--ink-muted)]">About this frontier</h2>
           <p className="math-prose mt-2 max-w-3xl text-sm leading-relaxed text-[var(--ink-secondary)]">
             <TeX linkify>{r.statement}</TeX>
           </p>
         </section>
       )}
 
-      <section className="mt-6" aria-labelledby="record-rows">
-        <h2 id="record-rows" className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--ink-muted)]">
+      <section className="mt-6" aria-labelledby="frontier-rows">
+        <h2 id="frontier-rows" className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--ink-muted)]">
           Every step, newest first
         </h2>
         <div className="mt-2 overflow-x-auto rounded-lg border border-[var(--hairline)]">
@@ -175,7 +175,7 @@ export default async function RecordPage({ params }: { params: Promise<{ slug: s
         )}
       </section>
 
-      {/* Who changed what, and when. A record's rows are curator-entered
+      {/* Who changed what, and when. A frontier's rows are curator-entered
           assertions about dated facts, so this is the accountability the page
           rests on rather than a nicety. */}
       <Changelog activity={activity} />
@@ -185,7 +185,7 @@ export default async function RecordPage({ params }: { params: Promise<{ slug: s
   );
 }
 
-function Row({ row, isStep, isBest }: { row: RecordRowView; isStep: boolean; isBest: boolean }) {
+function Row({ row, isStep, isBest }: { row: FrontierRowView; isStep: boolean; isBest: boolean }) {
   const ai = !!row.entry;
   const dim = !competes(row.status) || (!isStep && !ai);
   return (

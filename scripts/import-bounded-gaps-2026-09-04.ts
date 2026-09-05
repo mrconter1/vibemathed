@@ -189,11 +189,11 @@ const NEW_ENTRIES: { slug: string; fields: Record<string, unknown>; links: { lab
 /// Writes the "approved" changelog row with raw SQL, naming only columns that
 /// exist in BOTH schemas.
 ///
-/// Why: the Records feature added a nullable `recordId` to ProblemActivity,
+/// Why: the Records feature added a nullable `frontierId` to ProblemActivity,
 /// and that schema is pushed to staging but not to production, because the
 /// branch carrying the code has not merged. The generated client is built
 /// from the branch schema, so `prisma.problemActivity.create()` sends
-/// `recordId` and production rejects it (P2022). Naming the columns
+/// `frontierId` and production rejects it (P2022). Naming the columns
 /// explicitly sidesteps the drift without a production DDL change ahead of
 /// the code that needs it. Delete this and use the client again once the
 /// records branch is merged and production has the column.

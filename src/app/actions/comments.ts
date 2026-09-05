@@ -119,20 +119,20 @@ export async function addComment(
   const target =
     subject.kind === "problem"
       ? await prisma.problem.findFirst({ where: { slug: subject.slug, status: "published" }, select: { id: true } })
-      : await prisma.record.findUnique({ where: { slug: subject.slug }, select: { id: true } });
+      : await prisma.frontier.findUnique({ where: { slug: subject.slug }, select: { id: true } });
   if (!target) {
     return { ok: false, error: `That ${subject.kind === "problem" ? "entry" : "record"} no longer exists.` };
   }
-  const key = subject.kind === "problem" ? { problemId: target.id } : { recordId: target.id };
+  const key = subject.kind === "problem" ? { problemId: target.id } : { frontierId: target.id };
 
   // A reply must answer a comment on THIS subject. Checked here rather than
   // trusted from the client, since a comment id is guessable in principle.
   if (parentId !== null) {
     const parent = await prisma.comment.findUnique({
       where: { id: parentId },
-      select: { problemId: true, recordId: true, deletedAt: true },
+      select: { problemId: true, frontierId: true, deletedAt: true },
     });
-    const parentSubjectId = subject.kind === "problem" ? parent?.problemId : parent?.recordId;
+    const parentSubjectId = subject.kind === "problem" ? parent?.problemId : parent?.frontierId;
     if (!parent || parentSubjectId !== target.id) {
       return { ok: false, error: "The comment you are replying to no longer exists." };
     }
@@ -211,7 +211,7 @@ export async function editComment(
       // parameter. Derived rather than passed: a client-supplied slug here
       // would let one page's edit invalidate another page's cache.
       problem: { select: { slug: true } },
-      record: { select: { slug: true } },
+      frontier: { select: { slug: true } },
     },
   });
   if (!existing) {
@@ -273,7 +273,7 @@ export async function deleteComment(commentId: string): Promise<DeleteResult> {
     where: { id: commentId },
     select: {
       problemId: true,
-      recordId: true,
+      frontierId: true,
       userId: true,
       userName: true,
       createdAt: true,
@@ -283,7 +283,7 @@ export async function deleteComment(commentId: string): Promise<DeleteResult> {
       downvotes: true,
       _count: { select: { replies: true } },
       problem: { select: { slug: true } },
-      record: { select: { slug: true } },
+      frontier: { select: { slug: true } },
     },
   });
   if (!existing) {
@@ -306,7 +306,7 @@ export async function deleteComment(commentId: string): Promise<DeleteResult> {
   // the two are written back to back in addComment.
   const activityMatch = {
     problemId: existing.problemId,
-    recordId: existing.recordId,
+    frontierId: existing.frontierId,
     userId: existing.userId,
     type: "commented" as const,
     createdAt: {

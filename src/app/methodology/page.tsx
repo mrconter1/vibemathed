@@ -119,7 +119,7 @@ const CONTENTS: { group: string; titles: string[] }[] = [
       "Years open",
     ],
   },
-  { group: "Beyond one entry", titles: ["Records"] },
+  { group: "Beyond one entry", titles: ["Frontiers"] },
   { group: "The data", titles: ["The dataset"] },
 ];
 
@@ -521,50 +521,50 @@ export default function MethodologyPage() {
 
       <GroupLabel>The data</GroupLabel>
 
-      <Section title="Records">
+      <Section title="Frontiers">
         <p>
           Some questions are not answered, they are approached. The exponent of
           matrix multiplication has been creeping since 1969 and will not stop
           at a theorem; the proportion of zeta zeros proved to lie on the
           critical line went from a third to two thirds over fifty years. For
           those, a single entry says almost nothing on its own. A{" "}
-          <strong className="text-[var(--ink)]">record</strong> is the named
+          <strong className="text-[var(--ink)]">frontier</strong> is the named
           quantity itself, with a direction and the sequence of best known
           values, and the entry becomes one step on it.
         </p>
         <p>
-          <strong className="text-[var(--ink)]">A record exists only once a
+          <strong className="text-[var(--ink)]">A frontier exists only once a
           catalog entry sits on it.</strong> That is the rule that keeps this
           site what it is. The historical steps are there as context for an AI
           result, not as content in their own right, and this is not a general
           leaderboard of human mathematics. Every historical row cites the
           source its value was read from, and where that source is a later
           paper&apos;s account of what it improved rather than the original,
-          the record&apos;s history note says so.
+          the frontier&apos;s history note says so.
         </p>
         <p>
           <strong className="text-[var(--ink)]">The current best is derived,
-          never declared.</strong> A record stores a direction and its rows;
+          never declared.</strong> A frontier stores a direction and its rows;
           which row leads follows from those two things. A row marked a{" "}
           <em>candidate</em> is drawn but never counted: that is where a claim
           sits when it has been catalogued as an entry but the field has not
-          accepted it as the record, which is a statement about what other
+          accepted it as the frontier, which is a statement about what other
           mathematicians have said, not about how much this site believes it.
         </p>
         <p>
           This also settles something the scope rule above left ambiguous. A
           record-improving result on a quantity the field tracks is in scope
           and is listed as Partial, because there is a stated question with a
-          published sequence of answers and this is the next one. A record
+          published sequence of answers and this is the next one. A frontier
           improvement on a quantity nobody tracks is not, because there is no
-          question, only a bigger example. Whether a record exists is the test.
+          question, only a bigger example. Whether a frontier exists is the test.
         </p>
         <p>
-          Records are curated rather than submitted. The judgement they need -
+          Frontiers are curated rather than submitted. The judgement they need -
           which quantity, which direction, which rungs are real - is not
           something a submission form can ask for, and a wrong historical row
           is a claim about somebody else&apos;s mathematics. If an entry
-          belongs on a record that does not exist yet, say so in the
+          belongs on a frontier that does not exist yet, say so in the
           submission and it will be considered.
         </p>
       </Section>

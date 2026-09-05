@@ -1,18 +1,18 @@
-// A record's staircase at thumbnail size, for the strips on /records. Same
-// derivation as RecordChart (steps, direction), stripped of axes and labels;
+// A frontier's staircase at thumbnail size, for the strips on /frontiers. Same
+// derivation as FrontierChart (steps, direction), stripped of axes and labels;
 // the only thing it has to convey is the shape and where the AI dots are.
 
-import { isNumericRecord, steps, yearOf, type RecordDirection } from "@/lib/records";
-import type { RecordRowView } from "@/lib/data";
+import { isNumericRecord, steps, yearOf, type FrontierDirection } from "@/lib/frontiers";
+import type { FrontierRowView } from "@/lib/data";
 
 const W = 160;
 const H = 40;
 const P = 4;
 
-export function RecordSparkline({ rows, direction }: { rows: RecordRowView[]; direction: RecordDirection }) {
+export function FrontierSparkline({ rows, direction }: { rows: FrontierRowView[]; direction: FrontierDirection }) {
   const numeric = isNumericRecord(rows);
   const stepped = steps(rows, direction);
-  const val = (r: RecordRowView) => (numeric ? (r.valueNumeric ?? NaN) : (r.rank ?? NaN));
+  const val = (r: FrontierRowView) => (numeric ? (r.valueNumeric ?? NaN) : (r.rank ?? NaN));
   const pts = stepped.filter((s) => Number.isFinite(val(s.row)));
   if (pts.length === 0) return null;
 

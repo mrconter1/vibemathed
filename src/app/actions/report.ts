@@ -40,7 +40,7 @@ export async function reportSubject(subject: Subject, body: string): Promise<Rep
   const target =
     subject.kind === "problem"
       ? await prisma.problem.findFirst({ where: { slug: subject.slug, status: "published" }, select: { id: true } })
-      : await prisma.record.findUnique({ where: { slug: subject.slug }, select: { id: true } });
+      : await prisma.frontier.findUnique({ where: { slug: subject.slug }, select: { id: true } });
   if (!target) {
     return { ok: false, error: `That ${subject.kind === "problem" ? "entry" : "record"} no longer exists.` };
   }
@@ -63,7 +63,7 @@ export async function reportSubject(subject: Subject, body: string): Promise<Rep
   try {
     await prisma.problemReport.create({
       data: {
-        ...(subject.kind === "problem" ? { problemId: target.id } : { recordId: target.id }),
+        ...(subject.kind === "problem" ? { problemId: target.id } : { frontierId: target.id }),
         userId,
         userName: session.user.pseudonym ?? null,
         body: text,

@@ -200,7 +200,7 @@ model Problem {
   reviewNotes ReviewNote[]
   provenance  FieldProvenance[]
   messages   DirectMessage[]
-  recordRows  RecordRow[]
+  frontierRows FrontierRow[]
   relationsFrom ProblemRelation[] @relation("RelationFrom")
   relationsTo   ProblemRelation[] @relation("RelationTo")
 
@@ -284,16 +284,16 @@ model ProblemVote {
 
 model Comment {
   id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  /// Exactly one of `problemId` / `recordId` is set: a comment hangs off an
-  /// entry or off a record. Two nullable columns rather than two tables,
+  /// Exactly one of `problemId` / `frontierId` is set: a comment hangs off an
+  /// entry or off a frontier. Two nullable columns rather than two tables,
   /// because threading, voting, editing, deletion, notifications and
   /// moderation are identical for both, and a second set of tables would mean
   /// a second implementation of all of it. src/lib/subject.ts holds the
   /// discriminator the application passes around.
   problemId String?  @db.Uuid
   problem   Problem? @relation(fields: [problemId], references: [id], onDelete: Cascade)
-  recordId  String?  @db.Uuid
-  record    Record?  @relation(fields: [recordId], references: [id], onDelete: Cascade)
+  frontierId  String?  @db.Uuid
+  frontier  Frontier? @relation(fields: [frontierId], references: [id], onDelete: Cascade)
   userId    String?
   user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
   /// Pseudonym snapshot, so a deleted account doesn't orphan the thread.
@@ -325,7 +325,7 @@ model Comment {
   deletedAt DateTime?
 
   @@index([problemId])
-  @@index([recordId])
+  @@index([frontierId])
   @@index([createdAt])
   @@index([parentId])
 }
@@ -387,13 +387,13 @@ model SiteMessage {
 
 model ProblemReport {
   id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  /// Exactly one of `problemId` / `recordId`, as on Comment. A record's
+  /// Exactly one of `problemId` / `frontierId`, as on Comment. A frontier's
   /// historical rows assert facts about other people's mathematics, so being
   /// able to flag one is not optional.
   problemId String?  @db.Uuid
   problem   Problem? @relation(fields: [problemId], references: [id], onDelete: Cascade)
-  recordId  String?  @db.Uuid
-  record    Record?  @relation(fields: [recordId], references: [id], onDelete: Cascade)
+  frontierId  String?  @db.Uuid
+  frontier  Frontier? @relation(fields: [frontierId], references: [id], onDelete: Cascade)
   userId    String?
   user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
   /// Pseudonym snapshot, same convention as Comment.userName.
@@ -407,7 +407,7 @@ model ProblemReport {
   /// The admin badge count and queue read.
   @@index([status])
   @@index([problemId])
-  @@index([recordId])
+  @@index([frontierId])
   /// The per-user daily rate limit read.
   @@index([userId, createdAt])
 }
@@ -415,13 +415,13 @@ model ProblemReport {
 /// Replaces git history as the record of who changed what.
 model ProblemActivity {
   id        String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  /// Exactly one of `problemId` / `recordId`, as on Comment. A record is
+  /// Exactly one of `problemId` / `frontierId`, as on Comment. A frontier is
   /// curator-edited and asserts dated facts, so its changelog matters more
   /// than an entry's, not less.
   problemId String?       @db.Uuid
   problem   Problem?     @relation(fields: [problemId], references: [id], onDelete: Cascade)
-  recordId  String?  @db.Uuid
-  record    Record?  @relation(fields: [recordId], references: [id], onDelete: Cascade)
+  frontierId  String?  @db.Uuid
+  frontier  Frontier? @relation(fields: [frontierId], references: [id], onDelete: Cascade)
   userId    String?
   user      User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
   /// Pseudonym snapshot at time of action; survives user deletion.
@@ -436,7 +436,7 @@ model ProblemActivity {
   createdAt DateTime     @default(now())
 
   @@index([problemId])
-  @@index([recordId])
+  @@index([frontierId])
   @@index([createdAt])
 }
 
@@ -719,15 +719,15 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-/// A record: one named quantity with a direction and a history of best known
+/// A frontier: one named quantity with a direction and a history of best known
 /// values. The site's thesis in one picture - decades of human steps on a
-/// bound, then the AI step at the end - so a record exists only once a
+/// bound, then the AI step at the end - so a frontier exists only once a
 /// catalog entry sits on it; historical rows are context for that entry, not
 /// content in their own right. Curator-created, never submitted directly.
 ///
-/// `Problem` is untouched: an entry is a row on a record, the record is not a
-/// kind of entry. Deleting a record deletes its rows and nothing else.
-model Record {
+/// `Problem` is untouched: an entry is a row on a frontier, the frontier is not a
+/// kind of entry. Deleting a frontier deletes its rows and nothing else.
+model Frontier {
   id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   slug String @unique
 
@@ -737,7 +737,7 @@ model Record {
   /// What the quantity is, TeX allowed: "the exponent $\omega$ of matrix
   /// multiplication", "the proportion of nontrivial zeros on the critical line".
   quantity  String @db.String(300)
-  /// Plain-language statement of what the record measures and why it matters.
+  /// Plain-language statement of what the frontier measures and why it matters.
   statement String? @db.String(1500)
   /// "min" when lower is better (an exponent, an upper bound), "max" when
   /// higher is better (a lower bound, a rank, a proportion).
@@ -755,7 +755,7 @@ model Record {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 
-  rows       RecordRow[]
+  rows       FrontierRow[]
   comments   Comment[]
   activities ProblemActivity[]
   reports    ProblemReport[]
@@ -763,15 +763,15 @@ model Record {
   @@index([fieldGroup])
 }
 
-/// One point on a record's staircase. Either a catalog entry (problemId set)
+/// One point on a frontier's staircase. Either a catalog entry (problemId set)
 /// or a cited historical result (problemId null, sourceUrl required by the
 /// seed scripts though not by the schema). The current best is DERIVED from
 /// the published rows and their values, never stored: a stored frontier is a
 /// second source of truth that goes stale.
-model RecordRow {
+model FrontierRow {
   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  recordId String @db.Uuid
-  record   Record @relation(fields: [recordId], references: [id], onDelete: Cascade)
+  frontierId String @db.Uuid
+  frontier Frontier @relation(fields: [frontierId], references: [id], onDelete: Cascade)
 
   /// ISO date, or "YYYY-MM" / "YYYY" when that is all the source gives.
   date String @db.String(10)
@@ -799,14 +799,14 @@ model RecordRow {
   note   String? @db.String(400)
 
   /// Set when this row IS a catalog entry; the row then inherits the entry's
-  /// model, verification and links on the record page.
+  /// model, verification and links on the frontier page.
   problemId String?  @db.Uuid
   problem   Problem? @relation(fields: [problemId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
 
-  @@unique([recordId, problemId])
-  @@index([recordId, date])
+  @@unique([frontierId, problemId])
+  @@index([frontierId, date])
   @@index([problemId])
 }
 
