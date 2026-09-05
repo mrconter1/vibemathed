@@ -408,7 +408,16 @@ export function toEditableValues(source: Pick<MathProblem, EditableKey>): Editab
   return out;
 }
 
-export const MAX_LINKS = 8;
+/// Extra links per entry, beyond the primary source. Was 8; raised on
+/// 5 September 2026 when the K8-e release arrived carrying six links (proof,
+/// checker, problem record, review archive, companion, PR) and the two
+/// Astra disproofs each needed the compared statement, the development, the
+/// Formal Conjectures source and the evaluation repository on top of the
+/// announcement. Eight was low for exactly the well-documented entries the
+/// site wants more of. Sixteen keeps a cap, since a link list is curated
+/// evidence rather than a bibliography, and the editor still adds rows one at
+/// a time.
+export const MAX_LINKS = 16;
 
 /// Serializes link rows for transport through the string-keyed form values.
 export function encodeLinks(links: LinkRef[]): string {
