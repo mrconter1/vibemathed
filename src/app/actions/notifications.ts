@@ -75,18 +75,28 @@ export async function getNotifications(): Promise<NotificationsResult> {
   // both meant one action produced two notifications, the bell's being a
   // truncated copy of the inbox's. The inbox owns this now.
 
-  const items: NotificationItem[] = rows.map((r) => ({
-    id: r.id,
-    kind: "comment" as const,
-    entrySlug: r.problem.slug,
-    entryName: r.problem.name,
-    author: r.user?.pseudonym ?? r.userName ?? "deleted account",
-    snippet:
-      r.body.length > SNIPPET_MAX ? `${r.body.slice(0, SNIPPET_MAX)}…` : r.body,
-    when: relativeFallback(r.createdAt, formatCommentDate(r.createdAt)),
-    iso: r.createdAt.toISOString(),
-    isNew: r.createdAt > me.notificationsSeenAt,
-  }));
+  // Entries only: the `problem` filter on the query above excludes comments
+  // left on a record, and this narrows the type to match. Record comments do
+  // not notify yet - the feed's item carries an entry slug and the panel
+  // builds /problem/... from it, so widening this means giving the item a
+  // subject kind first.
+  const items: NotificationItem[] = rows.flatMap((r) =>
+    r.problem === null
+      ? []
+      : [
+          {
+            id: r.id,
+            kind: "comment" as const,
+            entrySlug: r.problem.slug,
+            entryName: r.problem.name,
+            author: r.user?.pseudonym ?? r.userName ?? "deleted account",
+            snippet: r.body.length > SNIPPET_MAX ? `${r.body.slice(0, SNIPPET_MAX)}…` : r.body,
+            when: relativeFallback(r.createdAt, formatCommentDate(r.createdAt)),
+            iso: r.createdAt.toISOString(),
+            isNew: r.createdAt > me.notificationsSeenAt,
+          },
+        ],
+  );
 
   const merged = items
     .sort((a, b) => (a.isNew === b.isNew ? 0 : a.isNew ? -1 : 1))

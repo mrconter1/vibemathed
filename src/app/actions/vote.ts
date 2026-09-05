@@ -4,6 +4,7 @@ import { updateTag } from "next/cache";
 import type { VoteKind } from "@prisma/client";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { commentsTag, isSubject, type Subject } from "@/lib/subject";
 
 export type VoteResult =
   | { ok: true; userVote: VoteKind | null; upvotes: number; downvotes: number }
@@ -12,12 +13,13 @@ export type VoteResult =
 /// Casts, switches, or undoes the viewer's vote on one comment. Same shape as
 /// voteOnProblem: vote row and denormalised tally move in one transaction.
 /// No activity row - the changelog is about the entry, not its discussion.
-/// `slug` is only for cache invalidation; the comment is looked up by id and
-/// the entry it belongs to must be published.
+/// `subject` names what the comment hangs off - an entry or a record. It is
+/// used to check the comment really belongs there and to bust the right cache;
+/// the comment itself is looked up by id.
 export async function voteOnComment(
   commentId: string,
   vote: VoteKind,
-  slug: string,
+  subject: Subject,
 ): Promise<VoteResult> {
   const session = await auth();
   if (!session?.user?.id) {
@@ -25,8 +27,18 @@ export async function voteOnComment(
   }
   const userId = session.user.id;
 
+  if (!isSubject(subject)) {
+    return { ok: false, error: "Could not tell what you are voting on." };
+  }
   const comment = await prisma.comment.findFirst({
-    where: { id: commentId, deletedAt: null, problem: { slug, status: "published" } },
+    where: {
+      id: commentId,
+      deletedAt: null,
+      // An entry must be published; a record has no draft state.
+      ...(subject.kind === "problem"
+        ? { problem: { slug: subject.slug, status: "published" } }
+        : { record: { slug: subject.slug } }),
+    },
     select: { id: true },
   });
   if (!comment) {
@@ -75,7 +87,7 @@ export async function voteOnComment(
     });
 
     // Only the discussion changes; the entry cards do not show comment votes.
-    updateTag(`comments-${slug}`);
+    updateTag(commentsTag(subject));
     return { ok: true, ...outcome };
   } catch (error) {
     console.error("voteOnComment failed", error);

@@ -1,9 +1,8 @@
 # Branch flow
 
-**Status: agreed and half-migrated. The last two steps need the operator's
-hands; until they are done, `main` is still the production branch and the
-"how it works" section below describes the target, not the present.** The
-"Where it stands" section at the bottom says exactly which is which.
+**Status: in force since the evening of 3 September 2026.** The "Where it
+stands" section at the bottom is the migration record, kept because what it
+found on the way is worth more than a tidy checklist.
 
 ## The problem this fixes
 
@@ -72,30 +71,71 @@ ceremony it will be bypassed within a week.
 
 Done:
 
-- [x] `production` branch created at `51baf67`, the then-current `main`.
-- [x] `production` protected: `checks` required and strict, one approving
-      review, stale reviews dismissed, no force pushes, no deletions.
+- [x] `production` branch created, protected (`checks` required and strict, one
+      approving review, stale reviews dismissed, no force pushes, no deletions).
 - [x] Open pull requests retargeted from `staging` to `main`.
+- [x] `production` caught up to `main` (PR #16). This step was not in the
+      original plan: it assumed the flip would happen while both branches
+      pointed at the same commit, and that expired ten minutes after
+      `production` was cut. Trees are now identical, so the flip changes
+      nothing a reader would see.
+- [x] The `main` branch alias registered as a redirect URI in both *staging*
+      OAuth applications, Google and GitHub.
 
-Remaining, and both need the operator:
+Also done, 3 September evening:
 
-- [ ] **Move the staging environment from the `staging` branch to `main`.**
-      Seven branch-scoped variables in Vercel are bound to the branch *name*
-      `staging`: `DATABASE_URL`, `AUTH_SECRET`, `AUTH_URL`, and the Google and
-      GitHub client ids and secrets. They must be rebound to `main`, and
-      `AUTH_URL` must change from
-      `https://vibemathed-git-staging-rasmus-projects-f85c1805.vercel.app` to
-      `https://vibemathed-git-main-rasmus-projects-f85c1805.vercel.app`.
-- [ ] **Register that URL as a redirect URI in the Google and GitHub OAuth
-      applications.** This is the step nobody but the operator can do, and
-      skipping it breaks sign-in on staging without breaking anything else,
-      which is a confusing failure. Do it before the rebind, not after.
-- [ ] **Change the Vercel project's production branch from `main` to
-      `production`.** Safe at the moment both point at the same commit; do it
-      then, and confirm vibemathed.com is unchanged before pushing anything
-      new to `main`.
-- [ ] Retire the `staging` branch once its environment has moved. Delete it
-      rather than leaving a third long-lived branch to drift.
+- [x] Unscoped Preview `DATABASE_URL` pointed at `vibemathed_staging`, so no
+      pull request preview can reach the live catalog.
+- [x] Vercel production branch changed from `main` to `production`. Confirmed
+      via the API; no deployment was triggered and vibemathed.com kept serving
+      the build it had.
+- [x] The seven `staging`-scoped variables rebound to `main` and `AUTH_URL`
+      changed to the `main` alias. Confirmed the hard way: Auth.js on the
+      alias reports both providers' `callbackUrl` under the `main` hostname.
+- [x] First `main` deployment under the new flow built, as a preview, and
+      vibemathed.com did not move. It failed first - see below - which is the
+      new flow doing its job on day one.
 
-Until those are done, `main` is still the production branch, and a push to
-`main` still deploys to vibemathed.com.
+- [x] `staging` branch deleted. It had its own classic protection rule with
+      deletions disallowed, which nobody had noticed because nothing had ever
+      tried; the rule went first, then the branch. Its variables were already
+      gone (they are the seven that moved).
+
+Nothing remains. The flow described at the top of this document is the one in
+force.
+
+### What the first staging build found
+
+It failed with `P2022 column User.staffRole does not exist` and `P2021 table
+FieldProvenance does not exist`. The staging *database* had drifted: every
+schema change of the past week had been pushed to production only, and since
+nothing recent ever deployed to `staging`, nobody could have seen it. Fixed by
+`db:push` + `db:seed` against `vibemathed_staging`, using
+`scripts/schema-lock.mjs` to unlock all sixteen tables at once first (the
+README's one-table ALTER fails once per drifted table). Rule going forward:
+**a schema change is pushed to staging before it is pushed to production**, or
+the next `main` build fails the same way.
+
+### Two things that make this harder than it looks
+
+**The rebind must come after the flip, not before.** Vercel refuses to scope a
+Preview variable to whatever branch is currently the Production Branch:
+
+    400 Cannot set Production Branch "main" for a Preview Environment Variable.
+
+Which is reasonable - `main` produces no preview deployments while it is the
+production branch, so the variable would be dead. But it means the two steps
+have to happen in the opposite order to the one that reads naturally, and
+between them `main` briefly has no branch-scoped variables of its own. That is
+the whole reason the `DATABASE_URL` fix is listed first.
+
+**The rebind cannot be done by removing and re-adding.** Six of the seven are
+stored as Secret, which is write-only: `vercel env pull` writes `[SENSITIVE]`
+placeholders, and no dashboard page or API response will reveal them either.
+The CLI cannot re-scope them - `vercel env update` changes a *value*, and the
+git branch is how it addresses the variable rather than something it can set.
+The only path that keeps the value is `PATCH /v10/projects/{id}/env/{envId}`
+with `gitBranch`, or the equivalent edit in the dashboard.
+
+Until the flip, `main` is still the production branch and a push to `main`
+still deploys to vibemathed.com.

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { AuthMenu } from "@/components/AuthMenu";
-import { DiscordLink } from "@/components/DiscordLink";
 import { InboxButton } from "@/components/InboxButton";
 import { NavLinks } from "@/components/NavLinks";
 import { NotificationsMenu } from "@/components/NotificationsMenu";
@@ -11,9 +10,9 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 /// Persistent site chrome. Sticky and translucent on the same paper surface as
 /// the page - the site is one continuous sheet, not a bar floating above a card.
 ///
-/// One row does not fit a phone (logo + three links + the account button need
-/// ~420px), so below `sm` the bar wraps to two rows: logo and account button on
-/// the first, nav on its own full-width second row. The `order-*` classes keep
+/// One row does not fit compact screens, so below `lg` the bar wraps to two
+/// rows: logo and account controls on the first, navigation on its own
+/// full-width second row. The `order-*` classes keep
 /// the DOM order (logo, nav, account) sensible for tabbing while placing the
 /// nav last visually only when wrapped.
 export function SiteHeader() {
@@ -23,7 +22,7 @@ export function SiteHeader() {
           wraps to two lines on a phone; gap-x keeps the nav clear of the
           tagline on one line. Both were tight enough that the subtitle and
           the buttons read as one block. */}
-      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-3 gap-y-1.5 px-4 py-2.5 sm:flex-nowrap sm:gap-x-8 sm:px-8">
+      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-3 gap-y-1.5 px-4 py-2.5 sm:px-8 lg:flex-nowrap lg:gap-x-8">
         {/* The hover is the colour swap in globals.css, not an opacity fade.
             Dimming the whole block read as the header going away; trading the
             two halves reads as it answering. */}
@@ -47,7 +46,7 @@ export function SiteHeader() {
 
         <NavLinks />
 
-        <div className="order-2 ml-auto flex items-center gap-1 sm:order-3 sm:gap-2">
+        <div className="order-2 ml-auto flex items-center gap-1 sm:gap-2 lg:order-3">
           {/* Leftmost, and the only action here that everyone sees: a
               signed-out reader gets the plus and the sign-in button, which is
               the right order of discovery. */}
@@ -60,15 +59,9 @@ export function SiteHeader() {
               bell: it is the more personal of the two. */}
           <InboxButton />
           <NotificationsMenu />
-          {/* The community invite, in the slot the theme toggle used to hold.
-              Theme is a set-once preference and now lives in the account menu,
-              which is where GitHub, Reddit and YouTube all keep appearance; a
-              header slot is better spent on something a stranger should
-              notice. Signed-out readers keep the toggle here instead - it
-              renders itself only when there is no account menu to hold it, so
-              reading in the dark is still not a privilege of having an
-              account. */}
-          <DiscordLink />
+          {/* Theme is a set-once preference in the account menu. Signed-out
+              readers keep the toggle here, so reading in the dark is still
+              not a privilege of having an account. */}
           <ThemeToggle />
           <AuthMenu />
         </div>

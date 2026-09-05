@@ -6,7 +6,8 @@
 // static shell and get indexed. This component layers the interactive parts on
 // top: posting, replying, voting, editing your own, deleting your own. Server
 // actions return the re-rendered HTML for a comment, so edits show their math
-// immediately without a page reload and without shipping KaTeX to the browser.
+// immediately without a page reload. The composer lazy-loads browser KaTeX
+// only if its LaTeX preview tab is opened.
 //
 // Threads. The server sends one flat list with a parentId per comment; the
 // tree is built here (src/lib/comment-tree.ts) and re-sorted when the reader
@@ -15,7 +16,7 @@
 // phone would otherwise be a one-word column - and past that depth each reply
 // says who it answers instead.
 
-import { useMemo, useRef, useState, useTransition } from "react";
+import { useId, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import type { VoteKind } from "@prisma/client";
 import {
@@ -36,7 +37,9 @@ import {
   type CommentSort,
 } from "@/lib/comment-tree";
 import { useViewer } from "@/components/ViewerProvider";
+import type { Subject } from "@/lib/subject";
 import { Icon } from "@/components/Icons";
+import { TeXPreviewTextarea } from "@/components/TeXPreviewTextarea";
 import { useBeforePaint } from "@/lib/before-paint";
 
 const textareaClass =
@@ -100,6 +103,7 @@ function Composer({
   // Open only while the caret sits directly after a just-typed ":".
   const [picker, setPicker] = useState(false);
   const taRef = useRef<HTMLTextAreaElement>(null);
+  const textareaId = useId();
   const empty = text.trim().length === 0;
   const tooLong = text.trim().length > COMMENT_MAX_LENGTH;
 
@@ -132,22 +136,26 @@ function Composer({
 
   return (
     <div className="relative">
-      <textarea
-        ref={taRef}
+      <TeXPreviewTextarea
+        id={textareaId}
+        label="Comment"
+        textareaRef={taRef}
         value={text}
-        onChange={(e) => {
-          const v = e.target.value;
+        onChange={(value, event) => {
           // Insertion only: deleting back onto a ":" should not spring the
           // picker open under the reader's cursor.
-          const typed = v.length > text.length;
-          setText(v);
-          setPicker(typed && v.slice(0, e.target.selectionStart).endsWith(":"));
+          const typed = value.length > text.length;
+          setText(value);
+          setPicker(
+            typed && value.slice(0, event.target.selectionStart).endsWith(":"),
+          );
         }}
         onBlur={() => setPicker(false)}
         autoFocus={autoFocus}
         placeholder={placeholder ?? "Add a comment. Math works: wrap it in $…$ or $$…$$."}
-        aria-label="Comment"
         className={textareaClass}
+        rows={3}
+        heightClass="min-h-[96px]"
         onKeyDown={(e) => {
           // Ctrl/Cmd+Enter submits, matching most comment boxes.
           if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && !empty && !tooLong) {
@@ -234,11 +242,11 @@ function Arrow({ dir }: { dir: "up" | "down" }) {
 /// as the entry votes.
 function CommentVotes({
   comment,
-  slug,
+  subject,
   onCounts,
 }: {
   comment: CommentView;
-  slug: string;
+  subject: Subject;
   onCounts: (upvotes: number, downvotes: number) => void;
 }) {
   const { signedIn, loaded, commentVotes, setCommentVote } = useViewer();
@@ -265,7 +273,7 @@ function CommentVotes({
     setError(null);
 
     startTransition(async () => {
-      const result = await voteOnComment(comment.id, vote, slug);
+      const result = await voteOnComment(comment.id, vote, subject);
       if (!result.ok) {
         setCommentVote(comment.id, previous);
         onCounts(comment.upvotes, comment.downvotes);
@@ -334,14 +342,14 @@ function CommentVotes({
 
 function CommentItem({
   node,
-  slug,
+  subject,
   parentName,
   onChanged,
   onRemoved,
   onReply,
 }: {
   node: CommentNode;
-  slug: string;
+  subject: Subject;
   /// Who this answers, shown only once indentation has stopped conveying it.
   parentName: string | null;
   onChanged: (c: CommentView) => void;
@@ -365,7 +373,7 @@ function CommentItem({
   async function save(text: string): Promise<boolean> {
     setBusy(true);
     setError(null);
-    const result = await editComment(comment.id, text, slug);
+    const result = await editComment(comment.id, text);
     setBusy(false);
     if (!result.ok) {
       setError(result.error);
@@ -379,7 +387,7 @@ function CommentItem({
   async function remove() {
     setBusy(true);
     setError(null);
-    const result = await deleteComment(comment.id, slug);
+    const result = await deleteComment(comment.id);
     setBusy(false);
     if (!result.ok) {
       setError(result.error);
@@ -492,7 +500,7 @@ function CommentItem({
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <CommentVotes
             comment={comment}
-            slug={slug}
+            subject={subject}
             onCounts={(upvotes, downvotes) => onChanged({ ...comment, upvotes, downvotes })}
           />
           {loaded && signedIn && !replying && (
@@ -538,7 +546,7 @@ function CommentItem({
           <CommentItem
             key={child.comment.id}
             node={child}
-            slug={slug}
+            subject={subject}
             parentName={comment.authorName}
             onChanged={onChanged}
             onRemoved={onRemoved}
@@ -550,10 +558,10 @@ function CommentItem({
 }
 
 export function CommentsSection({
-  slug,
+  subject,
   initial,
 }: {
-  slug: string;
+  subject: Subject;
   initial: CommentView[];
 }) {
   const { signedIn, loaded } = useViewer();
@@ -594,7 +602,7 @@ export function CommentsSection({
   async function post(text: string, parentId: string | null = null): Promise<boolean> {
     setBusy(true);
     setError(null);
-    const result = await addComment(slug, text, parentId);
+    const result = await addComment(subject, text, parentId);
     setBusy(false);
     if (!result.ok) {
       setError(result.error);
@@ -645,7 +653,7 @@ export function CommentsSection({
             <CommentItem
               key={node.comment.id}
               node={node}
-              slug={slug}
+              subject={subject}
               parentName={null}
               onChanged={onChanged}
               onRemoved={onRemoved}

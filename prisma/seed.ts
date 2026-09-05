@@ -10,6 +10,7 @@
 import { PrismaClient, type Prisma } from "@prisma/client";
 import { problems } from "../src/lib/curated";
 import type { MathProblem } from "../src/lib/problems";
+import { seedDevelopment } from "./seeds_development";
 
 const prisma = new PrismaClient();
 
@@ -140,6 +141,10 @@ async function main() {
       data: { relationsFrom: { deleteMany: {}, create: rows } },
     });
     edges += rows.length;
+  }
+
+  if (process.env.NODE_ENV === "development") {
+    await seedDevelopment(prisma);
   }
 
   const total = await prisma.problem.count();

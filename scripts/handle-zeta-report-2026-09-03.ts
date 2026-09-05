@@ -65,7 +65,7 @@ async function main() {
   });
   if (!report) throw new Error("no open report on that entry");
 
-  console.log(`report on: ${report.problem.name}`);
+  console.log(`report on: ${report.problem?.name ?? "(record)"}`);
   console.log(`from     : ${report.user?.pseudonym ?? "anonymous"}`);
   console.log(`body     : ${report.body.slice(0, 90)}`);
   console.log(`reply    : ${REPLY.length}/${MESSAGE_MAX}${REPLY.length > MESSAGE_MAX ? "  OVER" : ""}`);

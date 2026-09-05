@@ -8,6 +8,7 @@ import type { ReactNode } from "react";
 import { charLength } from "@/lib/char-length";
 import { LinkRows } from "@/components/LinkRows";
 import { RelationRows } from "@/components/RelationRows";
+import { TeXPreviewTextarea } from "@/components/TeXPreviewTextarea";
 
 export interface RenderableField {
   key: string;
@@ -37,6 +38,7 @@ export function EntryFields({
   idPrefix,
   renderAfter,
   ownSlug,
+  texPreview,
 }: {
   fields: RenderableField[];
   values: Record<string, string>;
@@ -51,6 +53,9 @@ export function EntryFields({
   /// search results. Absent on the submission form, which has no slug yet -
   /// and no relations field either.
   ownSlug?: string;
+  /// Opt every textarea in this field set into the Text / LaTeX preview
+  /// control. Submission and existing-entry authoring forms enable it.
+  texPreview?: boolean;
 }) {
   return (
     <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
@@ -85,13 +90,24 @@ export function EntryFields({
                 onChange={(next) => onChange(spec.key, next)}
               />
             ) : spec.kind === "textarea" ? (
-              <textarea
-                id={id}
-                value={value}
-                rows={3}
-                onChange={(e) => onChange(spec.key, e.target.value)}
-                className={`${controlClass} mt-1 resize-y`}
-              />
+              texPreview ? (
+                <TeXPreviewTextarea
+                  id={id}
+                  value={value}
+                  onChange={(next) => onChange(spec.key, next)}
+                  className={controlClass}
+                  label={spec.label}
+                  monospace
+                />
+              ) : (
+                <textarea
+                  id={id}
+                  value={value}
+                  rows={3}
+                  onChange={(e) => onChange(spec.key, e.target.value)}
+                  className={`${controlClass} mt-1 resize-y`}
+                />
+              )
             ) : spec.kind === "choice" ? (
               <select
                 id={id}

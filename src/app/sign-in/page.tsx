@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { signInWithGitHub, signInWithGoogle } from "@/app/actions/auth";
+import {
+  signInAsDevelopmentUser,
+  signInWithGitHub,
+  signInWithGoogle,
+} from "@/app/actions/auth";
+import { DEVELOPMENT_USERS } from "@/lib/dev-users";
+import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "Sign in",
@@ -20,7 +26,19 @@ const BUTTON =
   "text-[var(--ink)] transition-colors hover:border-[var(--accent-blue)] " +
   "hover:text-[var(--accent-blue)]";
 
-export default function SignInPage() {
+export default async function SignInPage() {
+  const developmentUsers =
+    process.env.NODE_ENV === "development"
+      ? await prisma.user.findMany({
+          where: {
+            email: { in: DEVELOPMENT_USERS.map((user) => user.email) },
+            banned: false,
+          },
+          orderBy: { email: "asc" },
+          select: { id: true, email: true, pseudonym: true },
+        })
+      : [];
+
   return (
     <div className="flex min-h-[60vh] items-center justify-center px-4 py-10 sm:px-8">
       <main className="w-full max-w-md rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-6 py-8 sm:px-8">
@@ -77,6 +95,41 @@ export default function SignInPage() {
         <p className="mt-3 text-xs text-[var(--ink-muted)]">
           Either works. A shared verified email reaches the same account.
         </p>
+
+        {process.env.NODE_ENV === "development" ? (
+          <div className="mt-5 border-t border-[var(--hairline)] pt-5">
+            <p className="text-xs font-medium uppercase tracking-wide text-[var(--ink-muted)]">
+              Development only
+            </p>
+            <form action={signInAsDevelopmentUser} className="mt-2 flex gap-2">
+              <select
+                name="userId"
+                required
+                defaultValue=""
+                disabled={developmentUsers.length === 0}
+                className="min-w-0 flex-1 rounded-md border border-[var(--hairline)] bg-[var(--paper)] px-3 py-2 text-sm text-[var(--ink)]"
+              >
+                <option value="" disabled>
+                  {developmentUsers.length === 0
+                    ? "Run npm run db:seed:dev"
+                    : "Choose a user"}
+                </option>
+                {developmentUsers.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.pseudonym ?? user.email} ({user.email})
+                  </option>
+                ))}
+              </select>
+              <button
+                type="submit"
+                disabled={developmentUsers.length === 0}
+                className="rounded-md border border-[var(--hairline)] bg-[var(--paper-raised)] px-4 py-2 text-sm text-[var(--ink)] transition-colors hover:border-[var(--accent-blue)] hover:text-[var(--accent-blue)] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Log in
+              </button>
+            </form>
+          </div>
+        ) : null}
 
         {/* Full width, matching the two provider buttons above it, but quieter:
             no border and a muted label, so the card reads as two real choices

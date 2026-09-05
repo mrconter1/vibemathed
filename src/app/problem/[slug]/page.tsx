@@ -16,6 +16,8 @@ import {
 import { formatCommentDate } from "@/lib/comment-render";
 import { toEditableValues } from "@/lib/editable";
 import { groupLinksByKind, inferLinkKind } from "@/lib/link-kinds";
+import { FrontierMembership } from "@/components/FrontierMembership";
+import { problemSubject } from "@/lib/subject";
 import { SITE_URL } from "@/lib/site";
 import { withFallbackParam } from "@/lib/static-params";
 import { Icon, type IconName } from "@/components/Icons";
@@ -106,8 +108,8 @@ export default async function ProblemPage({
   // just returns empty lists from the secondary ones.
   const [p, comments, activity, relations, provenance] = await Promise.all([
     getProblemBySlug(slug),
-    getComments(slug),
-    getActivity(slug),
+    getComments(problemSubject(slug)),
+    getActivity(problemSubject(slug)),
     getRelations(slug),
     getProvenance(slug),
   ]);
@@ -230,7 +232,7 @@ export default async function ProblemPage({
               size="lg"
             />
             <div className="flex gap-1.5">
-              <ReportEntryDialog slug={p.slug} />
+              <ReportEntryDialog subject={problemSubject(p.slug)} />
               <EditEntryDialog slug={p.slug} initial={editable} />
             </div>
           </div>
@@ -408,6 +410,10 @@ export default async function ProblemPage({
             entry has no relations, which is most of the catalog. */}
         <RelatedEntries relations={relations} />
 
+        {/* Which record(s) this entry is a step on, if any. Almost always
+            nothing; when it renders it is the most useful line on the page. */}
+        <FrontierMembership slug={slug} />
+
         {/* Contributor credit. Deliberately readable rather than a muted
             footnote: the person who brought this entry in gets named, here and
             on their card on the front page. */}
@@ -437,7 +443,7 @@ export default async function ProblemPage({
 
       <Changelog activity={activity} />
 
-      <CommentsSection slug={p.slug} initial={comments} />
+      <CommentsSection subject={problemSubject(p.slug)} initial={comments} />
     </main>
   );
 }
