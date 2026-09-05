@@ -15,10 +15,9 @@
 //     history is muted;
 //   - a candidate (a held or unreviewed claim) is hollow and off the line.
 //
-// Numeric frontiers (an exponent, a rank, a proportion) get a real y axis.
-// Rank-only frontiers (bounds that are expressions) get an ordinal axis: equal
-// spacing per rank, no numbers, because printing "rank 3" would suggest a
-// scale that does not exist.
+// Only numeric frontiers (an exponent, a rank, a proportion, a bound) are
+// charted. A frontier whose values are expressions has no axis to put them
+// on and renders nothing here; its page says so and shows the table.
 
 import {
   chartScale,
@@ -124,6 +123,12 @@ export function FrontierChart({
   const sorted = sortRows(rows, direction);
   const stepped = steps(rows, direction);
   if (sorted.length === 0) return null;
+  // No chart for a frontier whose values are expressions rather than numbers
+  // (long gaps between primes: bounds like X log X log₂X / log₃X). An ordinal
+  // axis was tried and read as a fake scale - equal spacing per rank looks
+  // like a measurement of something. The table below the chart slot carries
+  // the history in the only honest form, the expressions themselves.
+  if (!numeric) return null;
 
   // x: fractional year, padded a little either side so end dots are not clipped.
   const years = sorted.map((r) => yearOf(r.date));

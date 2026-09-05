@@ -31,6 +31,9 @@ export function FrontierSparkline({
   direction: FrontierDirection;
 }) {
   const { numeric } = chartScale(rows);
+  // Rank-only frontiers have no chart (see FrontierChart), so no thumbnail
+  // either; the strip's value cell already shows the expression.
+  if (!numeric) return null;
   const stepped = steps(rows, direction);
   const val = (r: FrontierRowView) =>
     numeric ? (r.valueNumeric ?? NaN) : (r.rank ?? NaN);

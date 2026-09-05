@@ -8,7 +8,14 @@ import {
   getFrontiers,
   type FrontierRowView,
 } from "@/lib/data";
-import { competes, bestRow, padDate, sortRows, steps } from "@/lib/frontiers";
+import {
+  bestRow,
+  chartScale,
+  competes,
+  padDate,
+  sortRows,
+  steps,
+} from "@/lib/frontiers";
 import { FrontierChart } from "@/components/FrontierChart";
 import { TeX } from "@/components/TeX";
 import { Changelog } from "@/components/Changelog";
@@ -174,18 +181,26 @@ export default async function RecordPage({
         </dl>
       </div>
 
-      <section className="mt-6 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-3 sm:p-4">
-        <FrontierChart rows={r.rows} direction={r.direction} />
-        <p className="mt-2 text-[11px] text-[var(--ink-muted)]">
-          The line is the frontier over time. Filled dots are steps that moved
-          it; muted dots are results that did not. Orange dots are catalog
-          entries, results with AI in the loop. Hollow dots are candidates under
-          review and never move the line. Grey dots along the bottom edge are
-          results from before the quantity had a number, placed there because
-          they have no value on this axis. Hover a dot for its value and
-          attribution.
+      {chartScale(r.rows).numeric ? (
+        <section className="mt-6 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-3 sm:p-4">
+          <FrontierChart rows={r.rows} direction={r.direction} />
+          <p className="mt-2 text-[11px] text-[var(--ink-muted)]">
+            The line is the frontier over time. Filled dots are steps that moved
+            it; muted dots are results that did not. Orange dots are catalog
+            entries, results with AI in the loop. Hollow dots are candidates
+            under review and never move the line. Grey dots along the bottom
+            edge are results from before the quantity had a number, placed there
+            because they have no value on this axis. Hover a dot for its value
+            and attribution.
+          </p>
+        </section>
+      ) : (
+        <p className="mt-6 text-xs text-[var(--ink-muted)]">
+          No chart for this frontier: its values are expressions rather than
+          numbers, so there is no axis to plot them on. The steps are listed
+          below in order.
         </p>
-      </section>
+      )}
 
       {r.statement && (
         <section className="mt-6">
