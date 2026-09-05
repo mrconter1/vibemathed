@@ -7,6 +7,18 @@ const nextConfig: NextConfig = {
   // live vote tally and the viewer's own vote arrive separately.
   // Enables the `use cache` directive plus `cacheLife` / `cacheTag`.
   cacheComponents: true,
+
+  // The feature shipped to staging as "Records" for a day before it was
+  // renamed to "Frontiers". Nothing was on production under the old paths, so
+  // these exist only so a link someone already has in a Discord message or a
+  // browser tab lands somewhere. Permanent, because the old names are not
+  // coming back.
+  async redirects() {
+    return [
+      { source: "/records", destination: "/frontiers", permanent: true },
+      { source: "/record/:slug", destination: "/frontier/:slug", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

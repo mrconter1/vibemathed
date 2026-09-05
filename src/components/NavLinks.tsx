@@ -15,6 +15,9 @@ import { CommunityLinks } from "@/components/CommunityLinks";
 // convenience here: they are the argument for trusting the labels.
 const LINKS = [
   { href: "/", label: "Entries" },
+  // Frontiers are a different shape from entries (a quantity with a history,
+  // not a result), so they get their own section rather than a filter chip.
+  { href: "/frontiers", label: "Frontiers" },
   { href: "/users", label: "Members" },
   { href: "/stats", label: "Stats" },
   { href: "/methodology", label: "Methodology" },

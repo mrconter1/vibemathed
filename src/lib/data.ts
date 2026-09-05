@@ -16,6 +16,7 @@
 import type { Prisma } from "@prisma/client";
 import { cacheLife, cacheTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { activityTag, commentsTag, subjectWhere, type Subject } from "@/lib/subject";
 import type { ProfileLinks } from "@/lib/profile-links";
 import {
   CHANGELOG_TYPES,
@@ -199,7 +200,8 @@ async function countsSince(since: Date): Promise<WindowCounts> {
 
   const commentCounts = new Map<string, number>();
   for (const row of comments) {
-    commentCounts.set(row.problemId, row._count._all);
+    // Record comments group under a null problemId; entry counts skip them.
+    if (row.problemId !== null) commentCounts.set(row.problemId, row._count._all);
   }
 
   return { score, comments: commentCounts };
@@ -371,15 +373,15 @@ export async function getRelations(slug: string): Promise<RelationView[]> {
 /// page's static shell (which also means comments get indexed). Whether the
 /// viewer may edit a given comment is decided on the client by comparing
 /// `authorId` against their own id.
-export async function getComments(slug: string): Promise<CommentView[]> {
+export async function getComments(subject: Subject): Promise<CommentView[]> {
   "use cache";
-  cacheTag(`comments-${slug}`);
+  cacheTag(commentsTag(subject));
   cacheLife("hours");
 
   // Flat and chronological; the client builds the tree and applies the
   // reader's sort (src/lib/comment-tree.ts). One list serves every order.
   const rows = await prisma.comment.findMany({
-    where: { problem: { slug } },
+    where: subjectWhere(subject),
     orderBy: { createdAt: "asc" },
     select: {
       id: true,
@@ -438,13 +440,13 @@ export async function getProvenance(slug: string): Promise<ProvenanceView[]> {
 }
 
 /// The changelog for one entry, newest first.
-export async function getActivity(slug: string): Promise<ActivityView[]> {
+export async function getActivity(subject: Subject): Promise<ActivityView[]> {
   "use cache";
-  cacheTag(`activity-${slug}`);
+  cacheTag(activityTag(subject));
   cacheLife("hours");
 
   const rows = await prisma.problemActivity.findMany({
-    where: { problem: { slug }, type: { in: [...CHANGELOG_TYPES] } },
+    where: { ...subjectWhere(subject), type: { in: [...CHANGELOG_TYPES] } },
     orderBy: { createdAt: "desc" },
     take: 200,
     select: {
@@ -513,19 +515,29 @@ export async function getRecentActivity(
   });
 
   return collapseBursts(
-    rows.map((a) => ({
-      id: a.id,
-      userName: resolveSnapshot(a.userName, a.userId !== null),
-      userPseudonym: a.user?.pseudonym ?? null,
-      type: a.type,
-      field: a.field,
-      oldValue: a.oldValue,
-      newValue: a.newValue,
-      createdAt: relativeFallback(a.createdAt, formatCommentDate(a.createdAt)),
-      createdAtIso: a.createdAt.toISOString(),
-      problemName: a.problem.name,
-      problemSlug: a.problem.slug,
-    })),
+    // Entries only: the `problem` filter above already excludes record rows,
+    // and this narrows the type to match. Record edits show on the record's
+    // own changelog. Folding them into the site feed needs the feed to carry
+    // a subject kind, which is a separate change.
+    rows.flatMap((a) =>
+      a.problem === null
+        ? []
+        : [
+            {
+              id: a.id,
+              userName: resolveSnapshot(a.userName, a.userId !== null),
+              userPseudonym: a.user?.pseudonym ?? null,
+              type: a.type,
+              field: a.field,
+              oldValue: a.oldValue,
+              newValue: a.newValue,
+              createdAt: relativeFallback(a.createdAt, formatCommentDate(a.createdAt)),
+              createdAtIso: a.createdAt.toISOString(),
+              problemName: a.problem.name,
+              problemSlug: a.problem.slug,
+            },
+          ],
+    ),
   ).slice(0, limit);
 }
 
@@ -802,25 +814,43 @@ export async function getUserProfile(
       score: e.upvotes - e.downvotes,
     })),
     entryScore: entries.reduce((sum, e) => sum + e.upvotes - e.downvotes, 0),
-    comments: comments.map((c) => ({
-      id: c.id,
-      html: renderCommentHtml(c.body),
-      createdAt: formatCommentDateTime(c.createdAt),
-      problemName: c.problem.name,
-      problemSlug: c.problem.slug,
-    })),
+    // Entries only. `publishedOnly` above filters on the `problem` relation,
+    // which already excludes comments left on a record; this narrows the type
+    // to match. Showing record comments here means giving this list a subject
+    // kind, which is a separate change.
+    comments: comments.flatMap((c) =>
+      c.problem === null
+        ? []
+        : [
+            {
+              id: c.id,
+              html: renderCommentHtml(c.body),
+              createdAt: formatCommentDateTime(c.createdAt),
+              problemName: c.problem.name,
+              problemSlug: c.problem.slug,
+            },
+          ],
+    ),
     commentCount,
     editCount,
-    edits: edits.map((a) => ({
-      id: a.id,
-      field: a.field,
-      // Absolute here on purpose: the profile prints this string as-is, with
-      // no RelativeTime around it to keep it current, so relative wording
-      // would freeze at whatever the cache was built at.
-      createdAt: formatCommentDate(a.createdAt),
-      problemName: a.problem.name,
-      problemSlug: a.problem.slug,
-    })),
+    // Entries only, same reasoning as `comments` above.
+    edits: edits.flatMap((a) =>
+      a.problem === null
+        ? []
+        : [
+            {
+              id: a.id,
+              field: a.field,
+              // Absolute here on purpose: the profile prints this string
+              // as-is, with no RelativeTime around it to keep it current, so
+              // relative wording would freeze at whatever the cache was
+              // built at.
+              createdAt: formatCommentDate(a.createdAt),
+              problemName: a.problem.name,
+              problemSlug: a.problem.slug,
+            },
+          ],
+    ),
   };
 }
 
@@ -995,4 +1025,205 @@ export async function getPublishedSlugs(): Promise<string[]> {
     select: { slug: true },
   });
   return rows.map((r) => r.slug);
+}
+
+// ---------------------------------------------------------------------------
+// Records: a named quantity with a direction and a staircase of best known
+// values (src/lib/frontiers.ts). Read-only here; records are created and rowed
+// by curator scripts, so the cache tag is "frontiers" and a script that writes
+// them is expected to call updateTag("frontiers") or wait for a deploy.
+
+export interface FrontierRowView {
+  id: string;
+  date: string;
+  valueTex: string;
+  /// Compact form for narrow slots; falls back to valueTex when absent.
+  valueShortTex: string | null;
+  valueNumeric: number | null;
+  rank: number | null;
+  attribution: string;
+  sourceUrl: string | null;
+  status: string;
+  note: string | null;
+  /// Present when the row is a catalog entry.
+  entry: {
+    slug: string;
+    name: string;
+    shortName: string;
+    model: string;
+    verification: string;
+    aiContribution: string | null;
+    solveDate: string;
+  } | null;
+}
+
+export interface FrontierSummary {
+  slug: string;
+  name: string;
+  shortName: string;
+  quantity: string;
+  direction: "min" | "max";
+  fieldGroup: string | null;
+  significance: number | null;
+  rows: FrontierRowView[];
+}
+
+export interface FrontierView extends FrontierSummary {
+  statement: string | null;
+  field: string | null;
+  significanceNote: string | null;
+  historyNote: string | null;
+}
+
+const FRONTIER_ROW_SELECT = {
+  id: true,
+  date: true,
+  valueTex: true,
+  valueShortTex: true,
+  valueNumeric: true,
+  rank: true,
+  attribution: true,
+  sourceUrl: true,
+  status: true,
+  note: true,
+  problem: {
+    select: {
+      slug: true,
+      name: true,
+      shortName: true,
+      model: true,
+      verification: true,
+      aiContribution: true,
+      solveDate: true,
+      status: true,
+    },
+  },
+} satisfies Prisma.FrontierRowSelect;
+
+type FrontierRowRaw = Prisma.FrontierRowGetPayload<{ select: typeof FRONTIER_ROW_SELECT }>;
+
+function toFrontierRow(r: FrontierRowRaw): FrontierRowView {
+  // An entry that has been unpublished since the row was made must not leak
+  // through the record page: the row stays (it is a fact about the record)
+  // but points nowhere.
+  const p = r.problem && r.problem.status === "published" ? r.problem : null;
+  return {
+    id: r.id,
+    date: r.date,
+    valueTex: r.valueTex,
+    valueShortTex: r.valueShortTex,
+    valueNumeric: r.valueNumeric,
+    rank: r.rank,
+    attribution: r.attribution,
+    sourceUrl: r.sourceUrl,
+    status: r.status,
+    note: r.note,
+    entry: p
+      ? {
+          slug: p.slug,
+          name: p.name,
+          shortName: p.shortName,
+          model: p.model,
+          verification: p.verification,
+          aiContribution: p.aiContribution,
+          solveDate: p.solveDate,
+        }
+      : null,
+  };
+}
+
+export async function getFrontiers(): Promise<FrontierSummary[]> {
+  "use cache";
+  cacheTag("frontiers");
+  cacheLife("hours");
+
+  const rows = await prisma.frontier.findMany({
+    select: {
+      slug: true,
+      name: true,
+      shortName: true,
+      quantity: true,
+      direction: true,
+      fieldGroup: true,
+      significance: true,
+      rows: { select: FRONTIER_ROW_SELECT },
+    },
+    orderBy: { name: "asc" },
+  });
+  return rows.map((r) => ({
+    slug: r.slug,
+    name: r.name,
+    shortName: r.shortName,
+    quantity: r.quantity,
+    direction: r.direction === "min" ? "min" : "max",
+    fieldGroup: r.fieldGroup,
+    significance: r.significance,
+    rows: r.rows.map(toFrontierRow),
+  }));
+}
+
+export async function getFrontierBySlug(slug: string): Promise<FrontierView | null> {
+  "use cache";
+  cacheTag("frontiers", `frontier-${slug}`);
+  cacheLife("hours");
+
+  const r = await prisma.frontier.findUnique({
+    where: { slug },
+    select: {
+      slug: true,
+      name: true,
+      shortName: true,
+      quantity: true,
+      statement: true,
+      direction: true,
+      field: true,
+      fieldGroup: true,
+      significance: true,
+      significanceNote: true,
+      historyNote: true,
+      rows: { select: FRONTIER_ROW_SELECT },
+    },
+  });
+  if (!r) return null;
+  return {
+    slug: r.slug,
+    name: r.name,
+    shortName: r.shortName,
+    quantity: r.quantity,
+    statement: r.statement,
+    direction: r.direction === "min" ? "min" : "max",
+    field: r.field,
+    fieldGroup: r.fieldGroup,
+    significance: r.significance,
+    significanceNote: r.significanceNote,
+    historyNote: r.historyNote,
+    rows: r.rows.map(toFrontierRow),
+  };
+}
+
+/// The records an entry is a row on, for the one-line pointer on its page.
+/// Almost every entry has none, so this must stay cheap: one indexed lookup.
+export async function getFrontiersForProblem(slug: string): Promise<
+  { slug: string; shortName: string; direction: "min" | "max"; rows: FrontierRowView[]; rowId: string }[]
+> {
+  "use cache";
+  cacheTag("frontiers", `problem-${slug}`);
+  cacheLife("hours");
+
+  const hits = await prisma.frontierRow.findMany({
+    where: { problem: { slug } },
+    select: {
+      id: true,
+      frontier: {
+        select: { slug: true, shortName: true, direction: true, rows: { select: FRONTIER_ROW_SELECT } },
+      },
+    },
+  });
+  return hits.map((h) => ({
+    slug: h.frontier.slug,
+    shortName: h.frontier.shortName,
+    direction: h.frontier.direction === "min" ? "min" : "max",
+    rows: h.frontier.rows.map(toFrontierRow),
+    rowId: h.id,
+  }));
 }

@@ -43,6 +43,7 @@ async function Queue() {
       userName: true,
       user: { select: { pseudonym: true } },
       problem: { select: { slug: true, name: true } },
+      frontier: { select: { slug: true, name: true } },
     },
   });
 
@@ -56,8 +57,12 @@ async function Queue() {
     // The account, not the pseudonym: a member who has not been assigned a
     // display name yet is still reachable.
     canReply: r.userId !== null,
-    problemSlug: r.problem.slug,
-    problemName: r.problem.name,
+    // A report hangs off exactly one of the two; the record side exists
+    // because a record's historical rows assert facts about other people's
+    // work, which is precisely what somebody will want to flag.
+    subjectHref: r.problem ? `/problem/${r.problem.slug}` : `/frontier/${r.frontier?.slug ?? ""}`,
+    subjectName: r.problem?.name ?? r.frontier?.name ?? "(deleted)",
+    subjectKind: r.problem ? "entry" : "record",
     reportedAt: formatCommentDateTime(r.createdAt),
   }));
 

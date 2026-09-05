@@ -200,6 +200,7 @@ model Problem {
   reviewNotes ReviewNote[]
   provenance  FieldProvenance[]
   messages   DirectMessage[]
+  frontierRows FrontierRow[]
   relationsFrom ProblemRelation[] @relation("RelationFrom")
   relationsTo   ProblemRelation[] @relation("RelationTo")
 
@@ -283,8 +284,16 @@ model ProblemVote {
 
 model Comment {
   id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  problemId String  @db.Uuid
-  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  /// Exactly one of `problemId` / `frontierId` is set: a comment hangs off an
+  /// entry or off a frontier. Two nullable columns rather than two tables,
+  /// because threading, voting, editing, deletion, notifications and
+  /// moderation are identical for both, and a second set of tables would mean
+  /// a second implementation of all of it. src/lib/subject.ts holds the
+  /// discriminator the application passes around.
+  problemId String?  @db.Uuid
+  problem   Problem? @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  frontierId  String?  @db.Uuid
+  frontier  Frontier? @relation(fields: [frontierId], references: [id], onDelete: Cascade)
   userId    String?
   user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
   /// Pseudonym snapshot, so a deleted account doesn't orphan the thread.
@@ -316,6 +325,7 @@ model Comment {
   deletedAt DateTime?
 
   @@index([problemId])
+  @@index([frontierId])
   @@index([createdAt])
   @@index([parentId])
 }
@@ -377,8 +387,13 @@ model SiteMessage {
 
 model ProblemReport {
   id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  problemId String  @db.Uuid
-  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  /// Exactly one of `problemId` / `frontierId`, as on Comment. A frontier's
+  /// historical rows assert facts about other people's mathematics, so being
+  /// able to flag one is not optional.
+  problemId String?  @db.Uuid
+  problem   Problem? @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  frontierId  String?  @db.Uuid
+  frontier  Frontier? @relation(fields: [frontierId], references: [id], onDelete: Cascade)
   userId    String?
   user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
   /// Pseudonym snapshot, same convention as Comment.userName.
@@ -392,6 +407,7 @@ model ProblemReport {
   /// The admin badge count and queue read.
   @@index([status])
   @@index([problemId])
+  @@index([frontierId])
   /// The per-user daily rate limit read.
   @@index([userId, createdAt])
 }
@@ -399,8 +415,13 @@ model ProblemReport {
 /// Replaces git history as the record of who changed what.
 model ProblemActivity {
   id        String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  problemId String       @db.Uuid
-  problem   Problem      @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  /// Exactly one of `problemId` / `frontierId`, as on Comment. A frontier is
+  /// curator-edited and asserts dated facts, so its changelog matters more
+  /// than an entry's, not less.
+  problemId String?       @db.Uuid
+  problem   Problem?     @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  frontierId  String?  @db.Uuid
+  frontier  Frontier? @relation(fields: [frontierId], references: [id], onDelete: Cascade)
   userId    String?
   user      User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
   /// Pseudonym snapshot at time of action; survives user deletion.
@@ -415,6 +436,7 @@ model ProblemActivity {
   createdAt DateTime     @default(now())
 
   @@index([problemId])
+  @@index([frontierId])
   @@index([createdAt])
 }
 
@@ -696,3 +718,95 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+/// A frontier: one named quantity with a direction and a history of best known
+/// values. The site's thesis in one picture - decades of human steps on a
+/// bound, then the AI step at the end - so a frontier exists only once a
+/// catalog entry sits on it; historical rows are context for that entry, not
+/// content in their own right. Curator-created, never submitted directly.
+///
+/// `Problem` is untouched: an entry is a row on a frontier, the frontier is not a
+/// kind of entry. Deleting a frontier deletes its rows and nothing else.
+model Frontier {
+  id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug String @unique
+
+  name      String @db.String(120)
+  /// Short label for strips and chart titles.
+  shortName String @db.String(60)
+  /// What the quantity is, TeX allowed: "the exponent $\omega$ of matrix
+  /// multiplication", "the proportion of nontrivial zeros on the critical line".
+  quantity  String @db.String(300)
+  /// Plain-language statement of what the frontier measures and why it matters.
+  statement String? @db.String(1500)
+  /// "min" when lower is better (an exponent, an upper bound), "max" when
+  /// higher is better (a lower bound, a rank, a proportion).
+  direction String @db.String(3)
+  field     String? @db.String(80)
+  fieldGroup String?
+  /// Same 0-100 ladder as Problem.significance, and where that number really
+  /// belongs: the importance of the question, not of any one step on it.
+  significance     Int?
+  significanceNote String? @db.String(600)
+  /// How the historical rows were sourced and how far back they go.
+  historyNote String? @db.String(600)
+
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  rows       FrontierRow[]
+  comments   Comment[]
+  activities ProblemActivity[]
+  reports    ProblemReport[]
+
+  @@index([fieldGroup])
+}
+
+/// One point on a frontier's staircase. Either a catalog entry (problemId set)
+/// or a cited historical result (problemId null, sourceUrl required by the
+/// seed scripts though not by the schema). The current best is DERIVED from
+/// the published rows and their values, never stored: a stored frontier is a
+/// second source of truth that goes stale.
+model FrontierRow {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  frontierId String @db.Uuid
+  frontier Frontier @relation(fields: [frontierId], references: [id], onDelete: Cascade)
+
+  /// ISO date, or "YYYY-MM" / "YYYY" when that is all the source gives.
+  date String @db.String(10)
+  /// The value as written: "$2.371177$", "$\ge 31$", "$\log X\,\log_2 X\,\log_4 X/(\log_3 X)^2$".
+  valueTex String @db.String(200)
+  /// A compact one-line form of the same value, for the strips on /records
+  /// and any other narrow slot. Only expression-valued records need one: a
+  /// display fraction is two lines tall and wider than a 160px column, and a
+  /// value a reader has to scroll sideways to see is not a value they read.
+  /// Falls back to `valueTex` when null.
+  valueShortTex String? @db.String(200)
+  /// Comparable value where one exists. Null for expressions, which compare by
+  /// `rank` instead. A record whose rows all have one sorts by it.
+  valueNumeric Float?
+  /// Curator-set order among rows with no numeric value; higher is better in
+  /// the record's direction. Ignored when valueNumeric is present.
+  rank Int?
+  /// Who, as a reader would cite them: "Strassen", "Ford, Green, Konyagin,
+  /// Maynard and Tao", or the model name for an AI row without an entry.
+  attribution String @db.String(200)
+  sourceUrl   String?
+  /// "published" | "candidate" (a claim under review or held - drawn hollow,
+  /// never the frontier) | "historical" (a cited pre-AI result) | "retracted".
+  status String @db.String(12) @default("published")
+  note   String? @db.String(400)
+
+  /// Set when this row IS a catalog entry; the row then inherits the entry's
+  /// model, verification and links on the frontier page.
+  problemId String?  @db.Uuid
+  problem   Problem? @relation(fields: [problemId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@unique([frontierId, problemId])
+  @@index([frontierId, date])
+  @@index([problemId])
+}
+

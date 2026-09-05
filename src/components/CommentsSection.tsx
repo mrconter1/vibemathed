@@ -37,6 +37,7 @@ import {
   type CommentSort,
 } from "@/lib/comment-tree";
 import { useViewer } from "@/components/ViewerProvider";
+import type { Subject } from "@/lib/subject";
 import { Icon } from "@/components/Icons";
 import { TeXPreviewTextarea } from "@/components/TeXPreviewTextarea";
 import { useBeforePaint } from "@/lib/before-paint";
@@ -241,11 +242,11 @@ function Arrow({ dir }: { dir: "up" | "down" }) {
 /// as the entry votes.
 function CommentVotes({
   comment,
-  slug,
+  subject,
   onCounts,
 }: {
   comment: CommentView;
-  slug: string;
+  subject: Subject;
   onCounts: (upvotes: number, downvotes: number) => void;
 }) {
   const { signedIn, loaded, commentVotes, setCommentVote } = useViewer();
@@ -272,7 +273,7 @@ function CommentVotes({
     setError(null);
 
     startTransition(async () => {
-      const result = await voteOnComment(comment.id, vote, slug);
+      const result = await voteOnComment(comment.id, vote, subject);
       if (!result.ok) {
         setCommentVote(comment.id, previous);
         onCounts(comment.upvotes, comment.downvotes);
@@ -341,14 +342,14 @@ function CommentVotes({
 
 function CommentItem({
   node,
-  slug,
+  subject,
   parentName,
   onChanged,
   onRemoved,
   onReply,
 }: {
   node: CommentNode;
-  slug: string;
+  subject: Subject;
   /// Who this answers, shown only once indentation has stopped conveying it.
   parentName: string | null;
   onChanged: (c: CommentView) => void;
@@ -372,7 +373,7 @@ function CommentItem({
   async function save(text: string): Promise<boolean> {
     setBusy(true);
     setError(null);
-    const result = await editComment(comment.id, text, slug);
+    const result = await editComment(comment.id, text);
     setBusy(false);
     if (!result.ok) {
       setError(result.error);
@@ -386,7 +387,7 @@ function CommentItem({
   async function remove() {
     setBusy(true);
     setError(null);
-    const result = await deleteComment(comment.id, slug);
+    const result = await deleteComment(comment.id);
     setBusy(false);
     if (!result.ok) {
       setError(result.error);
@@ -499,7 +500,7 @@ function CommentItem({
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <CommentVotes
             comment={comment}
-            slug={slug}
+            subject={subject}
             onCounts={(upvotes, downvotes) => onChanged({ ...comment, upvotes, downvotes })}
           />
           {loaded && signedIn && !replying && (
@@ -545,7 +546,7 @@ function CommentItem({
           <CommentItem
             key={child.comment.id}
             node={child}
-            slug={slug}
+            subject={subject}
             parentName={comment.authorName}
             onChanged={onChanged}
             onRemoved={onRemoved}
@@ -557,10 +558,10 @@ function CommentItem({
 }
 
 export function CommentsSection({
-  slug,
+  subject,
   initial,
 }: {
-  slug: string;
+  subject: Subject;
   initial: CommentView[];
 }) {
   const { signedIn, loaded } = useViewer();
@@ -601,7 +602,7 @@ export function CommentsSection({
   async function post(text: string, parentId: string | null = null): Promise<boolean> {
     setBusy(true);
     setError(null);
-    const result = await addComment(slug, text, parentId);
+    const result = await addComment(subject, text, parentId);
     setBusy(false);
     if (!result.ok) {
       setError(result.error);
@@ -652,7 +653,7 @@ export function CommentsSection({
             <CommentItem
               key={node.comment.id}
               node={node}
-              slug={slug}
+              subject={subject}
               parentName={null}
               onChanged={onChanged}
               onRemoved={onRemoved}
