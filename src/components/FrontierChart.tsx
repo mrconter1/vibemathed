@@ -23,8 +23,11 @@
 import {
   chartScale,
   competes,
+  fmtTick,
   sortRows,
   steps,
+  yAxis,
+  yPos,
   yearOf,
   type FrontierDirection,
 } from "@/lib/frontiers";
@@ -110,16 +113,6 @@ export function chartPoint(
   };
 }
 
-/// Axis tick text. Percentages only on a proportion axis: the old rule turned
-/// any value in (0, 1) into a percentage, which printed the systole frontier's
-/// constants as "15.8%".
-function fmt(v: number, proportion: boolean): string {
-  if (proportion) return `${Math.round(v * 100)}%`;
-  if (Number.isInteger(v)) return String(v);
-  const s = v.toFixed(4);
-  return s.replace(/0+$/, "").replace(/\.$/, "");
-}
-
 export function FrontierChart({
   rows,
   direction,
@@ -144,35 +137,18 @@ export function FrontierChart({
   // reader's eye should not have to learn a new convention per frontier.
   const val = (r: FrontierRowView) =>
     numeric ? (r.valueNumeric ?? NaN) : (r.rank ?? NaN);
-  const vals = sorted.map(val).filter((v) => Number.isFinite(v));
-  let vmin = Math.min(...vals);
-  let vmax = Math.max(...vals);
-  if (proportion) {
-    // The scale means something on its own, so it is not fitted to the data:
-    // 0 is nothing proved, 100% is the conjecture. A reader should see how far
-    // there is still to go, not just the spread of what exists.
-    vmin = 0;
-    vmax = 1;
-  } else {
-    if (vmin === vmax) {
-      vmin -= 1;
-      vmax += 1;
-    }
-    const span = vmax - vmin;
-    vmin -= span * 0.08;
-    vmax += span * 0.08;
-  }
+  // Extent, linear/log and ticks all come from one place (lib/frontiers), so
+  // the sparkline projects identically. Rank axes have no ticks and are
+  // linear in rank.
+  const axis = yAxis(sorted.map(val), proportion);
   // Where a row with no value on this axis is drawn: the worst end, which is
   // the bottom for a "max" frontier and the top for a "min" one. For a
   // proportion that is literally true - Selberg's "positive proportion" is
   // κ > 0 - and for anything else it is the only honest place, since any other
   // height would claim a value the source did not give.
-  const floor = direction === "max" ? vmin : vmax;
-  const sy = (v: number) => {
-    const t = (v - vmin) / (vmax - vmin);
-    const up = direction === "max" ? t : 1 - t;
-    return PAD.t + (1 - up) * (H - PAD.t - PAD.b);
-  };
+  const floor = direction === "max" ? axis.lo : axis.hi;
+  const sy = (v: number) =>
+    PAD.t + (1 - yPos(axis, v, direction)) * (H - PAD.t - PAD.b);
 
   // The frontier path: horizontal to the next step's year, then vertical.
   // Only steps with a value on this axis; a qualitative early step has no
@@ -198,9 +174,7 @@ export function FrontierChart({
   const decadeStart = Math.ceil(x0 / 10) * 10;
   const xticks: number[] = [];
   for (let y = decadeStart; y <= x1; y += 10) xticks.push(y);
-  const yticks = numeric
-    ? [0, 1, 2, 3, 4].map((i) => vmin + (i / 4) * (vmax - vmin))
-    : [];
+  const yticks = numeric ? axis.ticks : [];
 
   // Geometry is computed once and consumed twice: by the SVG circles below, and
   // by the hover overlay, which needs the same coordinates as percentages. Two
@@ -303,7 +277,7 @@ export function FrontierChart({
               fontSize={11}
               fill="var(--ink-muted)"
             >
-              {fmt(v, proportion)}
+              {fmtTick(v, axis, proportion)}
             </text>
           </g>
         ))}

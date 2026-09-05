@@ -10,6 +10,8 @@
 import {
   chartScale,
   steps,
+  yAxis,
+  yPos,
   yearOf,
   type FrontierDirection,
 } from "@/lib/frontiers";
@@ -40,19 +42,16 @@ export function FrontierSparkline({
   const xs = pts.map((s) => yearOf(s.row.date));
   const x0 = Math.min(...xs);
   const x1 = Math.max(...xs) + 0.5;
-  const vs = pts.map((s) => val(s.row));
-  let vmin = Math.min(...vs);
-  let vmax = Math.max(...vs);
-  if (vmin === vmax) {
-    vmin -= 1;
-    vmax += 1;
-  }
+  // Same axis as the full chart, so the thumbnail's shape is the chart's
+  // shape (log where the chart is log). Not pinned for a proportion, though:
+  // at 40px tall the thumbnail has room to show the climb, not the distance
+  // to 100%.
+  const axis = yAxis(
+    pts.map((s) => val(s.row)),
+    false,
+  );
   const sx = (y: number) => P + ((y - x0) / (x1 - x0 || 1)) * (W - 2 * P);
-  const sy = (v: number) => {
-    const t = (v - vmin) / (vmax - vmin);
-    const up = direction === "max" ? t : 1 - t;
-    return P + (1 - up) * (H - 2 * P);
-  };
+  const sy = (v: number) => P + (1 - yPos(axis, v, direction)) * (H - 2 * P);
 
   const stepRows = pts.filter((s) => s.isStep).map((s) => s.row);
   let d = "";

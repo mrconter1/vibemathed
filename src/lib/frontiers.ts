@@ -147,3 +147,112 @@ export function chartScale(rows: FrontierRowLike[]): FrontierScale {
     proportion: nums.some((r) => /%/.test(r.valueTex)),
   };
 }
+
+/// The y axis of a numeric frontier: its extent, whether it is logarithmic,
+/// and where the ticks go. Pure so the chart and the sparkline draw the same
+/// axis and so the tick choices are testable without rendering SVG.
+///
+/// Three regimes:
+///   - a proportion is pinned to 0..1 (see chartScale);
+///   - data spanning two or more orders of magnitude is logarithmic. The
+///     bounded-gaps frontier runs from Zhang's 70,000,000 to 212; on a linear
+///     axis everything after 2013 is one flat line a pixel above the floor,
+///     which is the opposite of what the chart is for;
+///   - everything else is linear, fitted to the data with a small margin, and
+///     ticked at round numbers.
+///
+/// Ticks are "nice" (1, 2 or 5 times a power of ten, or powers of ten on a log
+/// axis) rather than quarter-points of the range, because "4700146.94" is not
+/// a number anyone reads and "15, 20, 25, 30" is.
+export interface YAxis {
+  lo: number;
+  hi: number;
+  log: boolean;
+  ticks: number[];
+}
+
+export function yAxis(values: number[], proportion: boolean): YAxis {
+  const vals = values.filter((v) => Number.isFinite(v));
+  if (vals.length === 0) return { lo: 0, hi: 1, log: false, ticks: [] };
+  if (proportion)
+    return { lo: 0, hi: 1, log: false, ticks: [0, 0.25, 0.5, 0.75, 1] };
+
+  const min = Math.min(...vals);
+  const max = Math.max(...vals);
+  const MARGIN = 0.08;
+
+  if (min > 0 && max / min >= 100) {
+    const decades = Math.log10(max / min);
+    const lo = min / 10 ** (decades * MARGIN);
+    const hi = max * 10 ** (decades * MARGIN);
+    // Powers of ten inside the DATA, not the margin: a tick at 100M above a
+    // maximum of 70M labels empty space.
+    const ticks: number[] = [];
+    for (let e = Math.ceil(Math.log10(min)); 10 ** e <= max; e++)
+      ticks.push(10 ** e);
+    return { lo, hi, log: true, ticks };
+  }
+
+  let lo = min;
+  let hi = max;
+  if (lo === hi) {
+    lo -= 1;
+    hi += 1;
+  }
+  const span = hi - lo;
+  lo -= span * MARGIN;
+  hi += span * MARGIN;
+  return { lo, hi, log: false, ticks: niceTicks(lo, hi, 4) };
+}
+
+/// Round ticks inside [lo, hi], about `n` of them: a step of 1, 2 or 5 times
+/// a power of ten, the classic axis rule.
+export function niceTicks(lo: number, hi: number, n: number): number[] {
+  const raw = (hi - lo) / n;
+  const mag = 10 ** Math.floor(Math.log10(raw));
+  const norm = raw / mag;
+  const step = (norm < 1.5 ? 1 : norm < 3 ? 2 : norm < 7 ? 5 : 10) * mag;
+  const dec = Math.max(0, -Math.floor(Math.log10(step) + 1e-9));
+  const out: number[] = [];
+  for (let k = Math.ceil(lo / step - 1e-9); k * step <= hi + 1e-9; k++) {
+    out.push(Number((k * step).toFixed(dec)));
+  }
+  return out;
+}
+
+/// Where a value sits on the axis, 0 at the bottom of the plot and 1 at the
+/// top, with "up" always meaning better: a "min" frontier is drawn inverted so
+/// an improvement rises on every chart alike.
+export function yPos(
+  axis: YAxis,
+  v: number,
+  direction: FrontierDirection,
+): number {
+  const t = axis.log
+    ? (Math.log10(v) - Math.log10(axis.lo)) /
+      (Math.log10(axis.hi) - Math.log10(axis.lo))
+    : (v - axis.lo) / (axis.hi - axis.lo);
+  return direction === "max" ? t : 1 - t;
+}
+
+/// Tick text. Only the decimals the tick step needs (a frontier of whole
+/// numbers gets none), thousands separated, and compact once the ticks
+/// themselves are in thousands or millions so a label never overruns the
+/// margin: "70,000,000" does not fit in 56 pixels and "70M" does.
+export function fmtTick(v: number, axis: YAxis, proportion: boolean): string {
+  if (proportion) return `${Math.round(v * 100)}%`;
+  const strip = (s: string) => s.replace(/\.?0+$/, "");
+  if (axis.log) {
+    if (v >= 1e6) return `${strip((v / 1e6).toFixed(2))}M`;
+    if (v >= 1e3) return `${strip((v / 1e3).toFixed(2))}k`;
+    return strip(v.toFixed(4));
+  }
+  const step = axis.ticks.length > 1 ? axis.ticks[1] - axis.ticks[0] : 1;
+  if (step >= 1e6) return `${strip((v / 1e6).toFixed(2))}M`;
+  if (step >= 1e3) return `${strip((v / 1e3).toFixed(2))}k`;
+  const dec = Math.max(0, -Math.floor(Math.log10(step) + 1e-9));
+  return v.toLocaleString("en-US", {
+    minimumFractionDigits: dec,
+    maximumFractionDigits: dec,
+  });
+}

@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   bestRow,
   chartScale,
+  fmtTick,
+  niceTicks,
   padDate,
+  yAxis,
+  yPos,
   sortRows,
   steps,
   yearOf,
@@ -147,6 +151,96 @@ describe("chartScale", () => {
         row({ id: "b", valueNumeric: 5, status: "candidate" }),
       ]).numeric,
     ).toBe(false);
+  });
+
+  it("reads a percent sign in any value as a proportion axis (yAxis pins it to 0..100%)", () => {
+    const axis = yAxis([0.3333, 0.4, 0.6725], true);
+    expect([axis.lo, axis.hi, axis.log]).toEqual([0, 1, false]);
+    expect(axis.ticks.map((t) => fmtTick(t, axis, true))).toEqual([
+      "0%",
+      "25%",
+      "50%",
+      "75%",
+      "100%",
+    ]);
+  });
+
+  it("goes logarithmic across orders of magnitude, with power-of-ten ticks", () => {
+    // Bounded gaps: Zhang's 70,000,000 down to 212. Linear, everything after
+    // 2013 is one flat pixel.
+    const axis = yAxis([70000000, 4680, 600, 246, 236, 212, 186], false);
+    expect(axis.log).toBe(true);
+    expect(axis.lo).toBeLessThan(186);
+    expect(axis.hi).toBeGreaterThan(70000000);
+    expect(axis.ticks.map((t) => fmtTick(t, axis, false))).toEqual([
+      "1k",
+      "10k",
+      "100k",
+      "1M",
+      "10M",
+    ]);
+    // Lower is better on this frontier, so 212 draws near the top and Zhang
+    // near the bottom.
+    expect(yPos(axis, 212, "min")).toBeGreaterThan(0.85);
+    expect(yPos(axis, 70000000, "min")).toBeLessThan(0.15);
+  });
+
+  it("uses whole-number ticks for a whole-number frontier", () => {
+    // Elliptic curve rank, 12..31.
+    const axis = yAxis([12, 15, 19, 21, 24, 28, 29, 31], false);
+    expect(axis.log).toBe(false);
+    expect(axis.ticks.map((t) => fmtTick(t, axis, false))).toEqual([
+      "15",
+      "20",
+      "25",
+      "30",
+    ]);
+    // Kissing number in dimension 19: a narrow band of five-digit values keeps
+    // its digits, separated, rather than collapsing to "11.7k".
+    const k = yAxis([11692, 11948], false);
+    expect(k.ticks.map((t) => fmtTick(t, k, false))).toEqual([
+      "11,700",
+      "11,800",
+      "11,900",
+    ]);
+  });
+
+  it("shows only the decimals the step needs", () => {
+    // Matrix multiplication exponent, 2.371..2.807: a step of 0.1 means one
+    // decimal, not "2.3728596".
+    const axis = yAxis([2.8074, 2.522, 2.3755, 2.371177], false);
+    expect(axis.ticks.map((t) => fmtTick(t, axis, false))).toEqual([
+      "2.4",
+      "2.5",
+      "2.6",
+      "2.7",
+      "2.8",
+    ]);
+    // Systole constants: in (0, 1) but NOT percentages.
+    const s = yAxis([0.1583, 0.5, 1], false);
+    expect(s.ticks.map((t) => fmtTick(t, s, false))).toEqual([
+      "0.2",
+      "0.4",
+      "0.6",
+      "0.8",
+      "1.0",
+    ]);
+  });
+
+  it("places the data at the edges with a margin", () => {
+    const axis = yAxis([12, 31], false);
+    expect(axis.lo).toBeLessThan(12);
+    expect(axis.lo).toBeGreaterThan(9);
+    expect(axis.hi).toBeGreaterThan(31);
+    expect(axis.hi).toBeLessThan(34);
+    expect(yPos(axis, 31, "max")).toBeGreaterThan(0.9);
+    expect(yPos(axis, 12, "max")).toBeLessThan(0.1);
+  });
+
+  it("niceTicks steps by 1, 2 or 5 times a power of ten", () => {
+    expect(niceTicks(0, 100, 4)).toEqual([0, 20, 40, 60, 80, 100]);
+    expect(niceTicks(0, 10, 4)).toEqual([0, 2, 4, 6, 8, 10]);
+    expect(niceTicks(0.9, 3.1, 4)).toEqual([1, 1.5, 2, 2.5, 3]);
   });
 
   it("reads a percent sign in any value as a proportion axis", () => {
