@@ -9,6 +9,7 @@
 
 import {
   chartScale,
+  dodge,
   offScale,
   steps,
   yAxis,
@@ -75,13 +76,21 @@ export function FrontierSparkline({
   });
   if (stepRows.length) d += ` H ${W - P}`;
 
-  const dots = pts
-    .filter((s) => s.row.entry)
-    .map((s) => ({
-      row: s.row,
-      cx: sx(yearOf(s.row.date)),
-      cy: sy(val(s.row)),
-    }));
+  // Same nudge as the chart: three AI rows four days apart are one blob at
+  // this size otherwise, and their hover targets one target.
+  const dots = dodge(
+    pts
+      .filter((s) => s.row.entry)
+      .map((s) => ({
+        row: s.row,
+        cx: sx(yearOf(s.row.date)),
+        cy: sy(val(s.row)),
+        r: 3,
+      })),
+    0,
+    W,
+    1,
+  );
 
   return (
     <div className="relative shrink-0" style={{ width: W, height: H }}>

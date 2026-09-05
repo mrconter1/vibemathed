@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   bestRow,
   chartScale,
+  dodge,
   fmtTick,
   niceTicks,
   offScale,
@@ -267,6 +268,37 @@ describe("chartScale", () => {
     expect(axis.hi).toBeLessThan(34);
     expect(yPos(axis, 31, "max")).toBeGreaterThan(0.9);
     expect(yPos(axis, 12, "max")).toBeLessThan(0.1);
+  });
+
+  it("dodge nudges overlapping dots apart and leaves the rest alone", () => {
+    // The four 2026 bounded-gaps rows as rendered: same x, a few px apart.
+    const dots = [
+      { id: "240", cx: 573.6, cy: 50.0, r: 3.5 },
+      { id: "236", cx: 573.7, cy: 48.9, r: 5.5 },
+      { id: "212", cx: 573.9, cy: 41.8, r: 5.5 },
+      { id: "186", cx: 573.5, cy: 33.1, r: 5.5 },
+    ];
+    const out = dodge(dots, 64, 620);
+    // Every pair now clears the other by at least the gap.
+    for (let i = 0; i < out.length; i++)
+      for (let j = 0; j < i; j++) {
+        const d = Math.hypot(out[i].cx - out[j].cx, out[i].cy - out[j].cy);
+        expect(d).toBeGreaterThanOrEqual(out[i].r + out[j].r + 2 - 1e-6);
+      }
+    // The first-painted dot never moves; y never moves.
+    expect(out[0].cx).toBe(573.6);
+    expect(out.map((d) => d.cy)).toEqual(dots.map((d) => d.cy));
+    // Nothing leaves the plot.
+    for (const d of out) {
+      expect(d.cx - d.r).toBeGreaterThanOrEqual(64);
+      expect(d.cx + d.r).toBeLessThanOrEqual(620);
+    }
+    // Dots already apart are untouched.
+    const apart = [
+      { cx: 100, cy: 100, r: 3 },
+      { cx: 200, cy: 100, r: 3 },
+    ];
+    expect(dodge(apart, 0, 640)).toEqual(apart);
   });
 
   it("niceTicks steps by 1, 2 or 5 times a power of ten", () => {

@@ -283,6 +283,52 @@ export function yPos(
   return direction === "max" ? t : 1 - t;
 }
 
+/// Nudge overlapping dots apart horizontally, in paint order, so every row is
+/// visible and hoverable. Bounded gaps moved four times between 30 August and
+/// 3 September 2026; on an axis spanning fifteen years those four days are
+/// less than half a pixel, so four dots sat on one spot and the last painted
+/// hid the rest - which is how the 186 candidate went missing under the 212.
+///
+/// Each dot is moved sideways by the least amount that clears every dot
+/// placed before it, to the right when there is room and to the left when the
+/// plot edge is closer. A nudge of ten pixels is a few weeks on that axis: a
+/// small lie about the date, told to avoid a large one about existence. The
+/// legend says the dots are nudged.
+export interface Dot {
+  cx: number;
+  cy: number;
+  r: number;
+}
+export function dodge<T extends Dot>(
+  dots: T[],
+  minX: number,
+  maxX: number,
+  gap = 2,
+): T[] {
+  const placed: T[] = [];
+  for (const d of dots) {
+    let cx = d.cx;
+    for (let pass = 0; pass < 4; pass++) {
+      let moved = false;
+      for (const q of placed) {
+        const need = d.r + q.r + gap;
+        const dy = d.cy - q.cy;
+        if (Math.abs(dy) >= need) continue;
+        const dx = cx - q.cx;
+        const wantDx = Math.sqrt(need * need - dy * dy);
+        if (Math.abs(dx) >= wantDx) continue;
+        const right = q.cx + wantDx;
+        const left = q.cx - wantDx;
+        cx = right + d.r <= maxX ? right : Math.max(minX + d.r, left);
+        moved = true;
+      }
+      if (!moved) break;
+    }
+    placed.push({ ...d, cx });
+  }
+  return placed;
+}
+
 /// Tick text. Only the decimals the tick step needs (a frontier of whole
 /// numbers gets none), thousands separated, and compact once the ticks
 /// themselves are in thousands or millions so a label never overruns the

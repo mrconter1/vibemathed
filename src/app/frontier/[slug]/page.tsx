@@ -190,8 +190,9 @@ export default async function RecordPage({
             entries, results with AI in the loop. Hollow dots are candidates
             under review and never move the line. Grey dots along the bottom
             edge are results from before the quantity had a number, placed there
-            because they have no value on this axis. Hover a dot for its value
-            and attribution.
+            because they have no value on this axis. Dots that would overlap are
+            nudged sideways a few pixels. Hover a dot for its value and
+            attribution.
           </p>
         </section>
       ) : (

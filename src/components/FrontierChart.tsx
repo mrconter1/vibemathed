@@ -22,6 +22,7 @@
 import {
   chartScale,
   competes,
+  dodge,
   fmtTick,
   offScale,
   sortRows,
@@ -190,52 +191,60 @@ export function FrontierChart({
   // Geometry is computed once and consumed twice: by the SVG circles below, and
   // by the hover overlay, which needs the same coordinates as percentages. Two
   // passes would be two chances for them to drift apart.
-  // Muted history first, so the AI dots paint on top of it.
-  const drawn = stepped
-    .slice()
-    .sort((a, b) => Number(!!a.row.entry) - Number(!!b.row.entry))
-    .map(({ row, isStep }) => ({ row, isStep, v: val(row) }))
-    // A competing row with no value on a numeric axis is still drawn, on the
-    // floor. Anything else without a value (a rank-only candidate on a numeric
-    // frontier, say) has nowhere to go and is left out.
-    .filter(
-      ({ row, v }) =>
-        onChart(row) && (Number.isFinite(v) || competes(row.status)),
-    )
-    .map(({ row, isStep, v }) => {
-      const cx = sx(yearOf(row.date));
-      // No value at all (a qualitative early step): drawn on the floor.
-      const offScale = !Number.isFinite(v);
-      const cy = sy(offScale ? floor : v);
-      const live = competes(row.status);
-      const ai = !!row.entry;
-      return {
-        row,
-        isStep,
-        cx,
-        cy,
-        live,
-        ai,
-        fill: offScale
-          ? "var(--paper-raised)"
-          : !live
+  // Paint order: muted history, then the AI dots, then candidates and
+  // retractions last - a hollow ring under a filled dot is invisible, and
+  // the 186 candidate went missing under the 212 exactly that way.
+  const layer = (r: FrontierRowView) =>
+    !competes(r.status) ? 2 : r.entry ? 1 : 0;
+  const drawn = dodge(
+    stepped
+      .slice()
+      .sort((a, b) => layer(a.row) - layer(b.row))
+      .map(({ row, isStep }) => ({ row, isStep, v: val(row) }))
+      // A competing row with no value on a numeric axis is still drawn, on the
+      // floor. Anything else without a value (a rank-only candidate on a numeric
+      // frontier, say) has nowhere to go and is left out.
+      .filter(
+        ({ row, v }) =>
+          onChart(row) && (Number.isFinite(v) || competes(row.status)),
+      )
+      .map(({ row, isStep, v }) => {
+        const cx = sx(yearOf(row.date));
+        // No value at all (a qualitative early step): drawn on the floor.
+        const offScale = !Number.isFinite(v);
+        const cy = sy(offScale ? floor : v);
+        const live = competes(row.status);
+        const ai = !!row.entry;
+        return {
+          row,
+          isStep,
+          cx,
+          cy,
+          live,
+          ai,
+          fill: offScale
             ? "var(--paper-raised)"
-            : ai
-              ? "var(--accent-orange)"
-              : isStep
-                ? "var(--ink)"
-                : "var(--ink-muted)",
-        stroke: offScale
-          ? "var(--ink-muted)"
-          : !live
-            ? "var(--status-warning)"
-            : ai
-              ? "var(--accent-orange)"
-              : "var(--ink)",
-        r: ai ? 5.5 : offScale ? 3 : isStep ? 3.5 : 2.5,
-        label: rowLabel(row),
-      };
-    });
+            : !live
+              ? "var(--paper-raised)"
+              : ai
+                ? "var(--accent-orange)"
+                : isStep
+                  ? "var(--ink)"
+                  : "var(--ink-muted)",
+          stroke: offScale
+            ? "var(--ink-muted)"
+            : !live
+              ? "var(--status-warning)"
+              : ai
+                ? "var(--accent-orange)"
+                : "var(--ink)",
+          r: ai ? 5.5 : offScale ? 3 : isStep ? 3.5 : 2.5,
+          label: rowLabel(row),
+        };
+      }),
+    PAD.l,
+    W - PAD.r,
+  );
 
   const points: ChartPoint[] = drawn.map(({ row, cx, cy }) =>
     chartPoint(row, (cx / W) * 100, (cy / H) * 100),
