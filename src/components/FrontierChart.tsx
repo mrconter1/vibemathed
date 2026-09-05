@@ -1,7 +1,12 @@
 // The staircase: one frontier's history as a step chart. Server-rendered SVG,
-// same fixed-viewBox approach as the stats charts, no client bundle - the
-// chart has nothing to toggle, and a frontier page should be static HTML that
-// indexes and prints.
+// same fixed-viewBox approach as the stats charts, because a frontier page
+// should be static HTML that indexes and prints.
+//
+// The picture is still drawn entirely here. Hovering a point shows a card with
+// the date, the value, who did it and how it was checked, and that layer alone
+// is a client component (FrontierChartPoints) sitting on top as an overlay -
+// see its header for why it is not inside the SVG. The <title> tooltips below
+// stay, so a reader with no JavaScript loses the card and nothing else.
 //
 // Three things the picture has to say without a legend being read:
 //   - the frontier is the line, and it only ever moves in the frontier's
@@ -15,12 +20,95 @@
 // spacing per rank, no numbers, because printing "rank 3" would suggest a
 // scale that does not exist.
 
-import { competes, isNumericRecord, sortRows, steps, yearOf, type FrontierDirection } from "@/lib/frontiers";
+import {
+  competes,
+  isNumericRecord,
+  sortRows,
+  steps,
+  yearOf,
+  type FrontierDirection,
+} from "@/lib/frontiers";
 import type { FrontierRowView } from "@/lib/data";
+import { deTeX, texToHtml } from "@/components/TeX";
+import { VERIFICATION } from "@/lib/display";
+import {
+  FrontierChartPoints,
+  type ChartPoint,
+} from "@/components/FrontierChartPoints";
 
 const W = 640;
 const H = 300;
 const PAD = { l: 64, r: 20, t: 16, b: 36 };
+
+/// A date for the hover card. Rows carry whatever precision their source had -
+/// a bare year for the older history, a full date for the recent rows - and the
+/// card shows exactly that, no more.
+function fmtDate(d: string): string {
+  if (d.length === 4) return d;
+  const dt = new Date(d.slice(0, 10));
+  if (Number.isNaN(dt.getTime())) return d;
+  return dt.toLocaleDateString("en-GB", {
+    day: d.length >= 10 ? "numeric" : undefined,
+    month: "short",
+    year: "numeric",
+  });
+}
+
+/// Shown as a chip on the card. "published" and "historical" are the ordinary
+/// cases and saying so adds nothing; the two exceptions are the whole point.
+const CARD_STATUS: Record<string, string> = {
+  candidate: "candidate",
+  retracted: "retracted",
+};
+
+/// One row as a line of text: the SVG <title> a no-JS reader gets, and the
+/// accessible name of the hover target. deTeX, not the raw TeX, because a
+/// screen reader given "\gg \dfrac{\log X}{\log_4 X}" reads it out backslash by
+/// backslash.
+function rowLabel(row: FrontierRowView): string {
+  const flag =
+    row.status === "candidate"
+      ? " - candidate, under review"
+      : row.status === "retracted"
+        ? " - retracted"
+        : "";
+  return `${row.date}: ${deTeX(row.valueTex)} (${row.attribution})${flag}`;
+}
+
+/// The hover card's payload for one row, positioned as a percentage of whatever
+/// box drew it. Exported because the sparkline on the frontiers landing page
+/// shows the same card from a different geometry, and the two must not describe
+/// the same row differently.
+///
+/// This runs on the server: it calls texToHtml, which is KaTeX. Building it in
+/// the client component instead would put the whole of KaTeX in the browser
+/// bundle to render one line of math.
+export function chartPoint(
+  row: FrontierRowView,
+  xPct: number,
+  yPct: number,
+): ChartPoint {
+  const ver = row.entry
+    ? VERIFICATION[row.entry.verification as keyof typeof VERIFICATION]
+    : undefined;
+  return {
+    id: row.id,
+    xPct,
+    yPct,
+    ai: !!row.entry,
+    label: rowLabel(row),
+    date: fmtDate(row.date),
+    valueHtml: texToHtml(row.valueTex),
+    attribution: row.attribution,
+    model: row.entry?.model ?? null,
+    verificationLabel: ver?.label ?? null,
+    verificationColor: ver?.color ?? null,
+    statusLabel: CARD_STATUS[row.status] ?? null,
+    note: row.note,
+    href: row.entry ? `/problem/${row.entry.slug}` : null,
+    sourceUrl: row.sourceUrl,
+  };
+}
 
 function fmt(v: number): string {
   if (Number.isInteger(v)) return String(v);
@@ -29,7 +117,13 @@ function fmt(v: number): string {
   return s.replace(/0+$/, "").replace(/\.$/, "");
 }
 
-export function FrontierChart({ rows, direction }: { rows: FrontierRowView[]; direction: FrontierDirection }) {
+export function FrontierChart({
+  rows,
+  direction,
+}: {
+  rows: FrontierRowView[];
+  direction: FrontierDirection;
+}) {
   const numeric = isNumericRecord(rows);
   const sorted = sortRows(rows, direction);
   const stepped = steps(rows, direction);
@@ -39,12 +133,14 @@ export function FrontierChart({ rows, direction }: { rows: FrontierRowView[]; di
   const years = sorted.map((r) => yearOf(r.date));
   const x0 = Math.floor(Math.min(...years)) - 1;
   const x1 = Math.ceil(Math.max(...years)) + 1;
-  const sx = (y: number) => PAD.l + ((y - x0) / (x1 - x0)) * (W - PAD.l - PAD.r);
+  const sx = (y: number) =>
+    PAD.l + ((y - x0) / (x1 - x0)) * (W - PAD.l - PAD.r);
 
   // y: value (numeric) or rank (ordinal). Higher-is-better draws up; for a
   // "min" frontier the axis is inverted so an improvement still goes UP - the
   // reader's eye should not have to learn a new convention per frontier.
-  const val = (r: FrontierRowView) => (numeric ? (r.valueNumeric ?? NaN) : (r.rank ?? NaN));
+  const val = (r: FrontierRowView) =>
+    numeric ? (r.valueNumeric ?? NaN) : (r.rank ?? NaN);
   const vals = sorted.map(val).filter((v) => Number.isFinite(v));
   let vmin = Math.min(...vals);
   let vmax = Math.max(...vals);
@@ -81,64 +177,146 @@ export function FrontierChart({ rows, direction }: { rows: FrontierRowView[]; di
   const decadeStart = Math.ceil(x0 / 10) * 10;
   const xticks: number[] = [];
   for (let y = decadeStart; y <= x1; y += 10) xticks.push(y);
-  const yticks = numeric ? [0, 1, 2, 3, 4].map((i) => vmin + (i / 4) * (vmax - vmin)) : [];
+  const yticks = numeric
+    ? [0, 1, 2, 3, 4].map((i) => vmin + (i / 4) * (vmax - vmin))
+    : [];
+
+  // Geometry is computed once and consumed twice: by the SVG circles below, and
+  // by the hover overlay, which needs the same coordinates as percentages. Two
+  // passes would be two chances for them to drift apart.
+  // Muted history first, so the AI dots paint on top of it.
+  const drawn = stepped
+    .slice()
+    .sort((a, b) => Number(!!a.row.entry) - Number(!!b.row.entry))
+    .map(({ row, isStep }) => ({ row, isStep, v: val(row) }))
+    .filter(({ v }) => Number.isFinite(v))
+    .map(({ row, isStep, v }) => {
+      const cx = sx(yearOf(row.date));
+      const cy = sy(v);
+      const live = competes(row.status);
+      const ai = !!row.entry;
+      return {
+        row,
+        isStep,
+        cx,
+        cy,
+        live,
+        ai,
+        fill: !live
+          ? "var(--paper-raised)"
+          : ai
+            ? "var(--accent-orange)"
+            : isStep
+              ? "var(--ink)"
+              : "var(--ink-muted)",
+        stroke: !live
+          ? "var(--status-warning)"
+          : ai
+            ? "var(--accent-orange)"
+            : "var(--ink)",
+        r: ai ? 5.5 : isStep ? 3.5 : 2.5,
+        label: rowLabel(row),
+      };
+    });
+
+  const points: ChartPoint[] = drawn.map(({ row, cx, cy }) =>
+    chartPoint(row, (cx / W) * 100, (cy / H) * 100),
+  );
 
   return (
-    <svg
-      viewBox={`0 0 ${W} ${H}`}
-      className="h-auto w-full"
-      role="img"
-      aria-label={`Frontier history, ${sorted.length} points from ${sorted[0].date.slice(0, 4)} to ${sorted[sorted.length - 1].date.slice(0, 4)}`}
-    >
-      {/* gridlines + x ticks */}
-      {xticks.map((y) => (
-        <g key={y}>
-          <line x1={sx(y)} x2={sx(y)} y1={PAD.t} y2={H - PAD.b} stroke="var(--hairline)" strokeWidth={1} />
-          <text x={sx(y)} y={H - PAD.b + 16} textAnchor="middle" fontSize={11} fill="var(--ink-muted)">
-            {y}
+    <div className="relative">
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        className="h-auto w-full"
+        role="img"
+        aria-label={`Frontier history, ${sorted.length} points from ${sorted[0].date.slice(0, 4)} to ${sorted[sorted.length - 1].date.slice(0, 4)}`}
+      >
+        {/* gridlines + x ticks */}
+        {xticks.map((y) => (
+          <g key={y}>
+            <line
+              x1={sx(y)}
+              x2={sx(y)}
+              y1={PAD.t}
+              y2={H - PAD.b}
+              stroke="var(--hairline)"
+              strokeWidth={1}
+            />
+            <text
+              x={sx(y)}
+              y={H - PAD.b + 16}
+              textAnchor="middle"
+              fontSize={11}
+              fill="var(--ink-muted)"
+            >
+              {y}
+            </text>
+          </g>
+        ))}
+        {/* y ticks */}
+        {yticks.map((v, i) => (
+          <g key={i}>
+            <line
+              x1={PAD.l}
+              x2={W - PAD.r}
+              y1={sy(v)}
+              y2={sy(v)}
+              stroke="var(--hairline)"
+              strokeWidth={1}
+              strokeDasharray="2 4"
+            />
+            <text
+              x={PAD.l - 8}
+              y={sy(v) + 4}
+              textAnchor="end"
+              fontSize={11}
+              fill="var(--ink-muted)"
+            >
+              {fmt(v)}
+            </text>
+          </g>
+        ))}
+        {!numeric && (
+          <text
+            x={PAD.l - 8}
+            y={PAD.t + 10}
+            textAnchor="end"
+            fontSize={10}
+            fill="var(--ink-muted)"
+          >
+            better ↑
           </text>
-        </g>
-      ))}
-      {/* y ticks */}
-      {yticks.map((v, i) => (
-        <g key={i}>
-          <line x1={PAD.l} x2={W - PAD.r} y1={sy(v)} y2={sy(v)} stroke="var(--hairline)" strokeWidth={1} strokeDasharray="2 4" />
-          <text x={PAD.l - 8} y={sy(v) + 4} textAnchor="end" fontSize={11} fill="var(--ink-muted)">
-            {fmt(v)}
-          </text>
-        </g>
-      ))}
-      {!numeric && (
-        <text x={PAD.l - 8} y={PAD.t + 10} textAnchor="end" fontSize={10} fill="var(--ink-muted)">
-          better ↑
-        </text>
-      )}
+        )}
 
-      {/* frontier */}
-      {d && <path d={d} fill="none" stroke="var(--ink)" strokeWidth={1.75} strokeLinejoin="miter" />}
+        {/* frontier */}
+        {d && (
+          <path
+            d={d}
+            fill="none"
+            stroke="var(--ink)"
+            strokeWidth={1.75}
+            strokeLinejoin="miter"
+          />
+        )}
 
-      {/* points, muted history first so AI dots paint on top */}
-      {stepped
-        .slice()
-        .sort((a, b) => Number(!!a.row.entry) - Number(!!b.row.entry))
-        .map(({ row, isStep }) => {
-          const v = val(row);
-          if (!Number.isFinite(v)) return null;
-          const cx = sx(yearOf(row.date));
-          const cy = sy(v);
-          const live = competes(row.status);
-          const ai = !!row.entry;
-          const fill = !live ? "var(--paper-raised)" : ai ? "var(--accent-orange)" : isStep ? "var(--ink)" : "var(--ink-muted)";
-          const stroke = !live ? "var(--status-warning)" : ai ? "var(--accent-orange)" : "var(--ink)";
-          const r = ai ? 5.5 : isStep ? 3.5 : 2.5;
-          const label = `${row.date}: ${row.valueTex.replace(/\$/g, "")} (${row.attribution})${row.status === "candidate" ? " - candidate, under review" : ""}${row.status === "retracted" ? " - retracted" : ""}`;
-          return (
-            <g key={row.id}>
-              <circle cx={cx} cy={cy} r={r} fill={fill} stroke={stroke} strokeWidth={ai ? 1.5 : 1} />
-              <title>{label}</title>
-            </g>
-          );
-        })}
-    </svg>
+        {/* points. The <title> is the no-JS tooltip and stays whatever the
+          overlay does. */}
+        {drawn.map(({ row, cx, cy, ai, fill, stroke, r, label }) => (
+          <g key={row.id}>
+            <circle
+              cx={cx}
+              cy={cy}
+              r={r}
+              fill={fill}
+              stroke={stroke}
+              strokeWidth={ai ? 1.5 : 1}
+            />
+            <title>{label}</title>
+          </g>
+        ))}
+      </svg>
+
+      <FrontierChartPoints points={points} />
+    </div>
   );
 }

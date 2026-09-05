@@ -19,7 +19,9 @@ export async function FrontierMembership({ slug }: { slug: string }) {
         const best = bestRow(r.rows, r.direction);
         const mine = r.rows.find((x) => x.id === r.rowId);
         const isBest = best?.id === r.rowId;
-        const isStep = steps(r.rows, r.direction).find((s) => s.row.id === r.rowId)?.isStep ?? false;
+        const isStep =
+          steps(r.rows, r.direction).find((s) => s.row.id === r.rowId)
+            ?.isStep ?? false;
         const label = isBest
           ? "current best"
           : isStep
@@ -33,7 +35,10 @@ export async function FrontierMembership({ slug }: { slug: string }) {
               Frontier
             </span>
             Step on{" "}
-            <Link href={`/frontier/${r.slug}`} className="font-medium text-[var(--ink)] hover:underline">
+            <Link
+              href={`/frontier/${r.slug}`}
+              className="font-medium text-[var(--ink)] hover:underline"
+            >
               {r.shortName}
             </Link>
             {mine && (
@@ -45,7 +50,9 @@ export async function FrontierMembership({ slug }: { slug: string }) {
               </>
             )}
             {" · "}
-            <span className={isBest ? "text-[var(--accent-orange)]" : ""}>{label}</span>
+            <span className={isBest ? "text-[var(--accent-orange)]" : ""}>
+              {label}
+            </span>
           </p>
         );
       })}
