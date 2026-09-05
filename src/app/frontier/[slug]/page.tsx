@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getActivity, getComments, getFrontierBySlug, getFrontiers, type FrontierRowView } from "@/lib/data";
+import {
+  getActivity,
+  getComments,
+  getFrontierBySlug,
+  getFrontiers,
+  type FrontierRowView,
+} from "@/lib/data";
 import { competes, bestRow, padDate, sortRows, steps } from "@/lib/frontiers";
 import { FrontierChart } from "@/components/FrontierChart";
 import { TeX } from "@/components/TeX";
@@ -15,7 +21,11 @@ export async function generateStaticParams() {
   return frontiers.map((r) => ({ slug: r.slug }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
   const { slug } = await params;
   const r = await getFrontierBySlug(slug);
   if (!r) return { title: "Frontier not found" };
@@ -30,7 +40,11 @@ function fmtDate(d: string): string {
   if (d.length === 4) return d;
   const dt = new Date(padDate(d).slice(0, 10));
   if (Number.isNaN(dt.getTime())) return d;
-  return dt.toLocaleDateString("en-GB", { day: d.length >= 10 ? "numeric" : undefined, month: "short", year: "numeric" });
+  return dt.toLocaleDateString("en-GB", {
+    day: d.length >= 10 ? "numeric" : undefined,
+    month: "short",
+    year: "numeric",
+  });
 }
 
 const STATUS_LABEL: Record<string, string> = {
@@ -40,7 +54,11 @@ const STATUS_LABEL: Record<string, string> = {
   retracted: "retracted",
 };
 
-export default async function RecordPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function RecordPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
   // A frontier carries the same community machinery as an entry: a changelog,
   // a discussion, and a way to flag it. More important here than on an entry,
@@ -67,7 +85,10 @@ export default async function RecordPage({ params }: { params: Promise<{ slug: s
 
   return (
     <main className="mx-auto w-full max-w-4xl px-4 pb-12 pt-5 sm:px-8 sm:pt-6">
-      <Link href="/frontiers" className="text-sm text-[var(--accent-blue)] hover:underline">
+      <Link
+        href="/frontiers"
+        className="text-sm text-[var(--accent-blue)] hover:underline"
+      >
         ← All frontiers
       </Link>
 
@@ -75,17 +96,29 @@ export default async function RecordPage({ params }: { params: Promise<{ slug: s
         <span className="rounded border border-[var(--accent-orange)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--accent-orange)]">
           Frontier
         </span>
-        {r.fieldGroup && <span className="text-xs text-[var(--ink-muted)]">{r.fieldGroup}</span>}
+        {r.fieldGroup && (
+          <span className="text-xs text-[var(--ink-muted)]">
+            {r.fieldGroup}
+          </span>
+        )}
         {r.significance !== null && (
-          <span className="text-xs text-[var(--ink-muted)]" title={r.significanceNote ?? undefined}>
+          <span
+            className="text-xs text-[var(--ink-muted)]"
+            title={r.significanceNote ?? undefined}
+          >
             significance {r.significance}
           </span>
         )}
         <span className="ml-auto">
-          <ReportEntryDialog subject={subject} label="Report an issue with this frontier" />
+          <ReportEntryDialog
+            subject={subject}
+            label="Report an issue with this frontier"
+          />
         </span>
       </div>
-      <h1 className="mt-1 font-serif text-2xl text-[var(--ink)] sm:text-3xl">{r.name}</h1>
+      <h1 className="mt-1 font-serif text-2xl text-[var(--ink)] sm:text-3xl">
+        {r.name}
+      </h1>
       <p className="math-prose mt-2 max-w-3xl text-sm leading-relaxed text-[var(--ink-secondary)]">
         <TeX>{r.quantity}</TeX>
       </p>
@@ -94,10 +127,15 @@ export default async function RecordPage({ params }: { params: Promise<{ slug: s
       <div className="mt-5 flex flex-wrap items-end gap-x-8 gap-y-3 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] px-5 py-4">
         <div>
           <div className="text-xs text-[var(--ink-muted)]">
-            Current best · {r.direction === "min" ? "lower is better" : "higher is better"}
+            Current best ·{" "}
+            {r.direction === "min" ? "lower is better" : "higher is better"}
           </div>
           <div className="math-prose mt-1 font-serif text-2xl text-[var(--ink)] sm:text-3xl">
-            {best ? <TeX>{best.valueTex}</TeX> : <span className="text-[var(--ink-muted)]">none published</span>}
+            {best ? (
+              <TeX>{best.valueTex}</TeX>
+            ) : (
+              <span className="text-[var(--ink-muted)]">none published</span>
+            )}
           </div>
           {best && (
             <div className="mt-1 text-sm text-[var(--ink-secondary)]">
@@ -105,7 +143,10 @@ export default async function RecordPage({ params }: { params: Promise<{ slug: s
               {best.entry && (
                 <>
                   {" · "}
-                  <Link href={`/problem/${best.entry.slug}`} className="text-[var(--accent-blue)] hover:underline">
+                  <Link
+                    href={`/problem/${best.entry.slug}`}
+                    className="text-[var(--accent-blue)] hover:underline"
+                  >
                     entry
                   </Link>
                 </>
@@ -120,11 +161,15 @@ export default async function RecordPage({ params }: { params: Promise<{ slug: s
           </div>
           <div>
             <dt className="text-[11px] text-[var(--ink-muted)]">by AI</dt>
-            <dd className="font-serif text-xl text-[var(--accent-orange)]">{nAi}</dd>
+            <dd className="font-serif text-xl text-[var(--accent-orange)]">
+              {nAi}
+            </dd>
           </div>
           <div>
             <dt className="text-[11px] text-[var(--ink-muted)]">since</dt>
-            <dd className="font-serif text-xl text-[var(--ink)]">{first ? first.date.slice(0, 4) : "–"}</dd>
+            <dd className="font-serif text-xl text-[var(--ink)]">
+              {first ? first.date.slice(0, 4) : "–"}
+            </dd>
           </div>
         </dl>
       </div>
@@ -132,15 +177,21 @@ export default async function RecordPage({ params }: { params: Promise<{ slug: s
       <section className="mt-6 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-3 sm:p-4">
         <FrontierChart rows={r.rows} direction={r.direction} />
         <p className="mt-2 text-[11px] text-[var(--ink-muted)]">
-          The line is the frontier over time. Filled dots are steps that moved it; muted dots are results that did not.
-          Orange dots are catalog entries, results with AI in the loop. Hollow dots are candidates under review and
-          never move the line. Hover a dot for its value and attribution.
+          The line is the frontier over time. Filled dots are steps that moved
+          it; muted dots are results that did not. Orange dots are catalog
+          entries, results with AI in the loop. Hollow dots are candidates under
+          review and never move the line. Grey dots along the bottom edge are
+          results from before the quantity had a number, placed there because
+          they have no value on this axis. Hover a dot for its value and
+          attribution.
         </p>
       </section>
 
       {r.statement && (
         <section className="mt-6">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--ink-muted)]">About this frontier</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--ink-muted)]">
+            About this frontier
+          </h2>
           <p className="math-prose mt-2 max-w-3xl text-sm leading-relaxed text-[var(--ink-secondary)]">
             <TeX linkify>{r.statement}</TeX>
           </p>
@@ -148,7 +199,10 @@ export default async function RecordPage({ params }: { params: Promise<{ slug: s
       )}
 
       <section className="mt-6" aria-labelledby="frontier-rows">
-        <h2 id="frontier-rows" className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--ink-muted)]">
+        <h2
+          id="frontier-rows"
+          className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--ink-muted)]"
+        >
           Every step, newest first
         </h2>
         <div className="mt-2 overflow-x-auto rounded-lg border border-[var(--hairline)]">
@@ -165,13 +219,20 @@ export default async function RecordPage({ params }: { params: Promise<{ slug: s
             </thead>
             <tbody className="divide-y divide-[var(--hairline)]">
               {rows.map((row) => (
-                <Row key={row.id} row={row} isStep={stepOf.get(row.id) ?? false} isBest={best?.id === row.id} />
+                <Row
+                  key={row.id}
+                  row={row}
+                  isStep={stepOf.get(row.id) ?? false}
+                  isBest={best?.id === row.id}
+                />
               ))}
             </tbody>
           </table>
         </div>
         {r.historyNote && (
-          <p className="mt-2 max-w-3xl text-xs leading-relaxed text-[var(--ink-muted)]">{r.historyNote}</p>
+          <p className="mt-2 max-w-3xl text-xs leading-relaxed text-[var(--ink-muted)]">
+            {r.historyNote}
+          </p>
         )}
       </section>
 
@@ -185,27 +246,56 @@ export default async function RecordPage({ params }: { params: Promise<{ slug: s
   );
 }
 
-function Row({ row, isStep, isBest }: { row: FrontierRowView; isStep: boolean; isBest: boolean }) {
+function Row({
+  row,
+  isStep,
+  isBest,
+}: {
+  row: FrontierRowView;
+  isStep: boolean;
+  isBest: boolean;
+}) {
   const ai = !!row.entry;
   const dim = !competes(row.status) || (!isStep && !ai);
   return (
-    <tr className={`${ai ? "bg-[var(--paper-raised)]" : ""} ${dim ? "text-[var(--ink-muted)]" : "text-[var(--ink)]"}`}>
-      <td className="whitespace-nowrap px-3 py-2 tabular-nums">{fmtDate(row.date)}</td>
+    <tr
+      className={`${ai ? "bg-[var(--paper-raised)]" : ""} ${dim ? "text-[var(--ink-muted)]" : "text-[var(--ink)]"}`}
+    >
+      <td className="whitespace-nowrap px-3 py-2 tabular-nums">
+        {fmtDate(row.date)}
+      </td>
       <td className="math-prose px-3 py-2">
         <TeX>{row.valueTex}</TeX>
-        {isBest && <span className="ml-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--accent-orange)]">best</span>}
-        {row.note && <div className="mt-0.5 text-xs text-[var(--ink-muted)]">{row.note}</div>}
+        {isBest && (
+          <span className="ml-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--accent-orange)]">
+            best
+          </span>
+        )}
+        {row.note && (
+          <div className="mt-0.5 text-xs text-[var(--ink-muted)]">
+            {row.note}
+          </div>
+        )}
       </td>
       <td className="px-3 py-2">
         {row.entry ? (
-          <Link href={`/problem/${row.entry.slug}`} className="text-[var(--accent-blue)] hover:underline">
+          <Link
+            href={`/problem/${row.entry.slug}`}
+            className="text-[var(--accent-blue)] hover:underline"
+          >
             {row.attribution}
           </Link>
         ) : (
           row.attribution
         )}
       </td>
-      <td className="px-3 py-2 text-xs">{row.entry ? row.entry.model : <span className="text-[var(--ink-muted)]">–</span>}</td>
+      <td className="px-3 py-2 text-xs">
+        {row.entry ? (
+          row.entry.model
+        ) : (
+          <span className="text-[var(--ink-muted)]">–</span>
+        )}
+      </td>
       <td className="px-3 py-2 text-xs">
         <span
           className={
@@ -220,15 +310,27 @@ function Row({ row, isStep, isBest }: { row: FrontierRowView; isStep: boolean; i
         >
           {STATUS_LABEL[row.status] ?? row.status}
         </span>
-        {row.entry && <div className="text-[var(--ink-muted)]">{row.entry.verification}</div>}
+        {row.entry && (
+          <div className="text-[var(--ink-muted)]">
+            {row.entry.verification}
+          </div>
+        )}
       </td>
       <td className="px-3 py-2 text-xs">
         {row.entry ? (
-          <Link href={`/problem/${row.entry.slug}`} className="text-[var(--accent-blue)] hover:underline">
+          <Link
+            href={`/problem/${row.entry.slug}`}
+            className="text-[var(--accent-blue)] hover:underline"
+          >
             entry
           </Link>
         ) : row.sourceUrl ? (
-          <a href={row.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-[var(--accent-blue)] hover:underline">
+          <a
+            href={row.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--accent-blue)] hover:underline"
+          >
             source ↗
           </a>
         ) : (

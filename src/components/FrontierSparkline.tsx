@@ -8,7 +8,7 @@
 // targets do not overlap at 160px wide.
 
 import {
-  isNumericRecord,
+  chartScale,
   steps,
   yearOf,
   type FrontierDirection,
@@ -28,10 +28,12 @@ export function FrontierSparkline({
   rows: FrontierRowView[];
   direction: FrontierDirection;
 }) {
-  const numeric = isNumericRecord(rows);
+  const { numeric } = chartScale(rows);
   const stepped = steps(rows, direction);
   const val = (r: FrontierRowView) =>
     numeric ? (r.valueNumeric ?? NaN) : (r.rank ?? NaN);
+  // Rows without a value on this scale (the qualitative early steps of a
+  // frontier that was quantified later) simply do not appear at thumbnail size.
   const pts = stepped.filter((s) => Number.isFinite(val(s.row)));
   if (pts.length === 0) return null;
 

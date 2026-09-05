@@ -9,7 +9,8 @@
 // stale the moment a row is added, retracted or re-dated.
 
 export type FrontierDirection = "min" | "max";
-export type FrontierRowStatus = "published" | "candidate" | "historical" | "retracted";
+export type FrontierRowStatus =
+  "published" | "candidate" | "historical" | "retracted";
 
 export interface FrontierRowLike {
   id: string;
@@ -32,7 +33,10 @@ export function competes(status: string): boolean {
 /// has one; the curator-set rank otherwise. Mixing the two inside one record
 /// is a curation error, so a record is expected to be all-numeric or all-rank;
 /// when it is mixed, numeric rows sort ahead of rank rows rather than throwing.
-export function score(row: FrontierRowLike, direction: FrontierDirection): number {
+export function score(
+  row: FrontierRowLike,
+  direction: FrontierDirection,
+): number {
   if (row.valueNumeric !== null && Number.isFinite(row.valueNumeric)) {
     return direction === "min" ? -row.valueNumeric : row.valueNumeric;
   }
@@ -43,7 +47,10 @@ export function score(row: FrontierRowLike, direction: FrontierDirection): numbe
 /// Chronological order; ties broken by score so a same-day improvement lands
 /// after the value it beat. Dates are ISO-prefix strings ("YYYY", "YYYY-MM",
 /// "YYYY-MM-DD") and compare lexically once padded to the same shape.
-export function sortRows<T extends FrontierRowLike>(rows: T[], direction: FrontierDirection): T[] {
+export function sortRows<T extends FrontierRowLike>(
+  rows: T[],
+  direction: FrontierDirection,
+): T[] {
   return [...rows].sort((a, b) => {
     const da = padDate(a.date);
     const db = padDate(b.date);
@@ -63,7 +70,10 @@ export function padDate(d: string): string {
 }
 
 /// The current best among competing rows, or null for a frontier with none.
-export function bestRow<T extends FrontierRowLike>(rows: T[], direction: FrontierDirection): T | null {
+export function bestRow<T extends FrontierRowLike>(
+  rows: T[],
+  direction: FrontierDirection,
+): T | null {
   let best: T | null = null;
   let bestScore = Number.NEGATIVE_INFINITY;
   for (const r of rows) {
@@ -106,9 +116,34 @@ export function yearOf(date: string): number {
   return y + (m - 1) / 12 + (d - 1) / 365;
 }
 
-/// Whether every competing row carries a comparable number, which decides if
-/// the chart has a real y axis or an ordinal one.
-export function isNumericRecord(rows: FrontierRowLike[]): boolean {
+/// What kind of y axis a frontier's chart gets.
+///
+/// `numeric` as soon as ANY competing row carries a number. The earlier rule
+/// demanded that every row have one, and the proportion-of-zeta-zeros frontier
+/// showed why that is wrong: Hardy's "infinitely many" (1914) and Selberg's "a
+/// positive proportion" (1942) are real steps in the history and have no
+/// number, so the whole chart fell back to ranks, where Levinson's 1/3 and
+/// everything after it became NaN and vanished. A history that starts before
+/// its quantity was quantified is the normal case, not a curation error. The
+/// rows without a number are drawn by the chart as markers on the baseline,
+/// off the line.
+///
+/// `proportion` when a curator has written at least one value as a percentage.
+/// That is the one honest signal: a value range inside [0, 1] is not, because
+/// the systole frontier's constants live there and are not percentages. A
+/// proportion axis is pinned to 0..100%, since the scale has a meaning of its
+/// own (100% is the Riemann hypothesis) that a data-fitted range would hide.
+export interface FrontierScale {
+  numeric: boolean;
+  proportion: boolean;
+}
+export function chartScale(rows: FrontierRowLike[]): FrontierScale {
   const c = rows.filter((r) => competes(r.status));
-  return c.length > 0 && c.every((r) => r.valueNumeric !== null);
+  const nums = c.filter(
+    (r) => r.valueNumeric !== null && Number.isFinite(r.valueNumeric),
+  );
+  return {
+    numeric: nums.length > 0,
+    proportion: nums.some((r) => /%/.test(r.valueTex)),
+  };
 }

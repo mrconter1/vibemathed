@@ -33,8 +33,15 @@ describe("deTeX", () => {
     expect(deTeX("$a \\quad b$")).toBe("a b");
   });
 
+  it("unescapes a literal percent sign", () => {
+    expect(deTeX("$> 67.25\\%$")).toBe("> 67.25%");
+    expect(deTeX("$> 5/12 \\approx 41.7\\%$")).toBe("> 5/12 ≈ 41.7%");
+  });
+
   it("leaves plain prose alone", () => {
-    expect(deTeX("Bounded gaps between primes")).toBe("Bounded gaps between primes");
+    expect(deTeX("Bounded gaps between primes")).toBe(
+      "Bounded gaps between primes",
+    );
   });
 
   it("still handles the whole long-gaps expression", () => {

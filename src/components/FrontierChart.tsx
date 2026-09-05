@@ -21,8 +21,8 @@
 // scale that does not exist.
 
 import {
+  chartScale,
   competes,
-  isNumericRecord,
   sortRows,
   steps,
   yearOf,
@@ -110,9 +110,12 @@ export function chartPoint(
   };
 }
 
-function fmt(v: number): string {
+/// Axis tick text. Percentages only on a proportion axis: the old rule turned
+/// any value in (0, 1) into a percentage, which printed the systole frontier's
+/// constants as "15.8%".
+function fmt(v: number, proportion: boolean): string {
+  if (proportion) return `${Math.round(v * 100)}%`;
   if (Number.isInteger(v)) return String(v);
-  if (v > 0 && v < 1) return `${(v * 100).toFixed(v * 100 < 10 ? 1 : 0)}%`;
   const s = v.toFixed(4);
   return s.replace(/0+$/, "").replace(/\.$/, "");
 }
@@ -124,7 +127,7 @@ export function FrontierChart({
   rows: FrontierRowView[];
   direction: FrontierDirection;
 }) {
-  const numeric = isNumericRecord(rows);
+  const { numeric, proportion } = chartScale(rows);
   const sorted = sortRows(rows, direction);
   const stepped = steps(rows, direction);
   if (sorted.length === 0) return null;
@@ -144,13 +147,27 @@ export function FrontierChart({
   const vals = sorted.map(val).filter((v) => Number.isFinite(v));
   let vmin = Math.min(...vals);
   let vmax = Math.max(...vals);
-  if (vmin === vmax) {
-    vmin -= 1;
-    vmax += 1;
+  if (proportion) {
+    // The scale means something on its own, so it is not fitted to the data:
+    // 0 is nothing proved, 100% is the conjecture. A reader should see how far
+    // there is still to go, not just the spread of what exists.
+    vmin = 0;
+    vmax = 1;
+  } else {
+    if (vmin === vmax) {
+      vmin -= 1;
+      vmax += 1;
+    }
+    const span = vmax - vmin;
+    vmin -= span * 0.08;
+    vmax += span * 0.08;
   }
-  const span = vmax - vmin;
-  vmin -= span * 0.08;
-  vmax += span * 0.08;
+  // Where a row with no value on this axis is drawn: the worst end, which is
+  // the bottom for a "max" frontier and the top for a "min" one. For a
+  // proportion that is literally true - Selberg's "positive proportion" is
+  // κ > 0 - and for anything else it is the only honest place, since any other
+  // height would claim a value the source did not give.
+  const floor = direction === "max" ? vmin : vmax;
   const sy = (v: number) => {
     const t = (v - vmin) / (vmax - vmin);
     const up = direction === "max" ? t : 1 - t;
@@ -158,7 +175,11 @@ export function FrontierChart({
   };
 
   // The frontier path: horizontal to the next step's year, then vertical.
-  const stepRows = stepped.filter((s) => s.isStep).map((s) => s.row);
+  // Only steps with a value on this axis; a qualitative early step has no
+  // height for the line to be at, and a NaN in a path datum blanks the line.
+  const stepRows = stepped
+    .filter((s) => s.isStep && Number.isFinite(val(s.row)))
+    .map((s) => s.row);
   let d = "";
   stepRows.forEach((r, i) => {
     const x = sx(yearOf(r.date));
@@ -189,10 +210,16 @@ export function FrontierChart({
     .slice()
     .sort((a, b) => Number(!!a.row.entry) - Number(!!b.row.entry))
     .map(({ row, isStep }) => ({ row, isStep, v: val(row) }))
-    .filter(({ v }) => Number.isFinite(v))
+    // A competing row with no value on a numeric axis is still drawn, on the
+    // floor. Anything else without a value (a rank-only candidate on a numeric
+    // frontier, say) has nowhere to go and is left out.
+    .filter(
+      ({ row, v }) => Number.isFinite(v) || (numeric && competes(row.status)),
+    )
     .map(({ row, isStep, v }) => {
       const cx = sx(yearOf(row.date));
-      const cy = sy(v);
+      const offScale = !Number.isFinite(v);
+      const cy = sy(offScale ? floor : v);
       const live = competes(row.status);
       const ai = !!row.entry;
       return {
@@ -202,19 +229,23 @@ export function FrontierChart({
         cy,
         live,
         ai,
-        fill: !live
+        fill: offScale
           ? "var(--paper-raised)"
-          : ai
-            ? "var(--accent-orange)"
-            : isStep
-              ? "var(--ink)"
-              : "var(--ink-muted)",
-        stroke: !live
-          ? "var(--status-warning)"
-          : ai
-            ? "var(--accent-orange)"
-            : "var(--ink)",
-        r: ai ? 5.5 : isStep ? 3.5 : 2.5,
+          : !live
+            ? "var(--paper-raised)"
+            : ai
+              ? "var(--accent-orange)"
+              : isStep
+                ? "var(--ink)"
+                : "var(--ink-muted)",
+        stroke: offScale
+          ? "var(--ink-muted)"
+          : !live
+            ? "var(--status-warning)"
+            : ai
+              ? "var(--accent-orange)"
+              : "var(--ink)",
+        r: ai ? 5.5 : offScale ? 3 : isStep ? 3.5 : 2.5,
         label: rowLabel(row),
       };
     });
@@ -272,7 +303,7 @@ export function FrontierChart({
               fontSize={11}
               fill="var(--ink-muted)"
             >
-              {fmt(v)}
+              {fmt(v, proportion)}
             </text>
           </g>
         ))}

@@ -8,7 +8,10 @@ import { unescapeDollars } from "@/lib/tex-tokens";
 // $$display$$ delimiters; everything outside them is emitted verbatim.
 
 function render(tex: string, display: boolean): string {
-  return katex.renderToString(tex, { throwOnError: false, displayMode: display });
+  return katex.renderToString(tex, {
+    throwOnError: false,
+    displayMode: display,
+  });
 }
 
 /// Renders `$inline$` / `$$display$$` math to an HTML string, escaping
@@ -21,12 +24,25 @@ function render(tex: string, display: boolean): string {
 /// always-on: this same function renders entry TITLES, which the list draws
 /// inside a stretched <a>, and an anchor nested in an anchor is invalid HTML.
 /// Prose fields ask for it; titles do not.
-export function texToHtml(children: string, opts?: { linkify?: boolean }): string {
+export function texToHtml(
+  children: string,
+  opts?: { linkify?: boolean },
+): string {
   return renderTexToHtml(children, render, opts);
 }
 
-export function TeX({ children, linkify }: { children: string; linkify?: boolean }) {
-  return <span dangerouslySetInnerHTML={{ __html: texToHtml(children, { linkify }) }} />;
+export function TeX({
+  children,
+  linkify,
+}: {
+  children: string;
+  linkify?: boolean;
+}) {
+  return (
+    <span
+      dangerouslySetInnerHTML={{ __html: texToHtml(children, { linkify }) }}
+    />
+  );
 }
 
 // Plain-text fallback for contexts that must not contain markup or "$" - meta
@@ -98,6 +114,9 @@ const REPLACEMENTS: [RegExp, string][] = [
   // so "\," survived it and was read aloud as a backslash.
   [/\\(?:quad|qquad)\b/g, " "],
   [/\\[,;:!]/g, " "],
+  // A literal percent sign is written "\%" in TeX. Left alone it read as
+  // "67.25\%" in the zeta frontier's accessible labels.
+  [/\\%/g, "%"],
 ];
 
 export function deTeX(s: string): string {
@@ -107,12 +126,14 @@ export function deTeX(s: string): string {
   let out = s.replace(/(?<!\\)\$\$?((?:\\.|[^$\\])+)\$\$?/g, "$1");
   for (const [re, rep] of REPLACEMENTS) out = out.replace(re, rep);
   out = unescapeDollars(out);
-  return out
-    // A literal newline in a meta description or an OG tag is not a line
-    // break, it is a broken tag.
-    .replace(/\s*\n\s*/g, " ")
-    .replace(/[{}]/g, "")
-    .replace(/\\[a-zA-Z]+/g, "")
-    .replace(/\s{2,}/g, " ")
-    .trim();
+  return (
+    out
+      // A literal newline in a meta description or an OG tag is not a line
+      // break, it is a broken tag.
+      .replace(/\s*\n\s*/g, " ")
+      .replace(/[{}]/g, "")
+      .replace(/\\[a-zA-Z]+/g, "")
+      .replace(/\s{2,}/g, " ")
+      .trim()
+  );
 }
