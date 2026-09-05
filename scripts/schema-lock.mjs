@@ -11,17 +11,26 @@
 //   DATABASE_URL="<url>" npx prisma db push
 //   DATABASE_URL="<url>" node scripts/schema-lock.mjs lock
 //
-// Refuses to touch anything but vibemathed_staging. Widen the check
-// deliberately if you need it elsewhere; do not remove it.
+// Refuses to touch anything but vibemathed_staging unless the run says
+// `--production` out loud, in which case the production database and only
+// the production database is allowed. The flag exists so that pointing
+// DATABASE_URL at the wrong place by accident still cannot unlock production;
+// it was added on 5 September 2026 for the Frontiers schema push, the first
+// schema change production has taken under the branch flow.
 import { PrismaClient } from "@prisma/client";
 
 const mode = process.argv[2];
 if (mode !== "unlock" && mode !== "lock") throw new Error("pass unlock or lock");
 const want = mode === "lock" ? "true" : "false";
+const production = process.argv.includes("--production");
 
 const url = process.env.DATABASE_URL ?? "";
 const db = url.match(/\/([^/?]+)\?/)?.[1];
-if (db !== "vibemathed_staging") throw new Error(`refusing: DATABASE_URL points at "${db}", not vibemathed_staging`);
+const allowed = production ? "vibemathed" : "vibemathed_staging";
+if (db !== allowed)
+  throw new Error(
+    `refusing: DATABASE_URL points at "${db}", not ${allowed}${production ? "" : " (pass --production to target production)"}`,
+  );
 
 const prisma = new PrismaClient();
 const rows = await prisma.$queryRawUnsafe(
