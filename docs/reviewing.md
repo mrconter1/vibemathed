@@ -35,6 +35,42 @@ or a dead link does not.
 - Opens: keep it open. The rest of the checklist is read against it, not
   against the form.
 
+### "I could not find it" is not "it does not exist"
+
+Write what you looked for and where you looked. Never write that something
+does not exist, and never let its supposed absence be the reason a submission
+is held.
+
+This rule is here because the same mistake was made twice in one day, on
+4 September 2026, and both times it went out to a submitter in writing.
+
+- A percolation claim was held partly on the sentence "the work has been
+  withdrawn from the repository it was published in". It had never been in
+  that repository: the commit came from a pull request titled "wip: scaffold"
+  that was closed unmerged, and the default branch had never carried it. The
+  true version of that sentence was a better reason, and it was available.
+- A prime-gaps claim was held partly on "the paper it formalises exists
+  nowhere I can find - not on arXiv, not on the OpenAI CDN, not in the repo".
+  It was on that CDN, at the sibling URL of a PDF the site had verified and
+  published a few hours earlier the same morning. Two errors compounded: the
+  search used the title the repository's metadata gives rather than the
+  paper's own, and nobody listed the directory already being downloaded from.
+
+The practical form of the rule:
+
+- Before asserting absence, try the obvious neighbours: the sibling filenames
+  in a directory you already have, the paper's own title as well as the one
+  the metadata gives, the author's homepage, the repository's other branches
+  and closed pull requests.
+- If a submission stands or falls on absence, do not decide it. Ask the
+  submitter for the link. They usually have it.
+- Prefer a reason you can state positively. "The Lean development is
+  conditional on three axioms" needs no search to stand up; "the paper does
+  not exist" needs an exhaustive one.
+- When a hold turns out to rest on a wrong premise, reverse it and say which
+  sentence was wrong. The correction is cheap and it is the whole of the
+  site's credibility with the people who submit.
+
 ## 2. The scope test
 
 One sentence, from the methodology: *a precisely stated open question whose
