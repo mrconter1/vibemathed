@@ -9,6 +9,7 @@
 
 import {
   chartScale,
+  offScale,
   steps,
   yAxis,
   yPos,
@@ -35,11 +36,17 @@ export function FrontierSparkline({
   // either; the strip's value cell already shows the expression.
   if (!numeric) return null;
   const stepped = steps(rows, direction);
-  const val = (r: FrontierRowView) =>
-    numeric ? (r.valueNumeric ?? NaN) : (r.rank ?? NaN);
-  // Rows without a value on this scale (the qualitative early steps of a
-  // frontier that was quantified later) simply do not appear at thumbnail size.
-  const pts = stepped.filter((s) => Number.isFinite(val(s.row)));
+  const val = (r: FrontierRowView) => r.valueNumeric ?? NaN;
+  // Same exclusions as the full chart: rows without a value (the qualitative
+  // early steps) and rows a hundred times off the rest of the data. The
+  // thumbnail has no room to say what it left out; the chart page does.
+  const { excluded } = offScale(
+    stepped.map((s) => val(s.row)),
+    direction,
+  );
+  const pts = stepped.filter(
+    (s) => Number.isFinite(val(s.row)) && !excluded.includes(val(s.row)),
+  );
   if (pts.length === 0) return null;
 
   const xs = pts.map((s) => yearOf(s.row.date));

@@ -23,6 +23,7 @@ import {
   chartScale,
   competes,
   fmtTick,
+  offScale,
   sortRows,
   steps,
   yAxis,
@@ -31,7 +32,7 @@ import {
   type FrontierDirection,
 } from "@/lib/frontiers";
 import type { FrontierRowView } from "@/lib/data";
-import { deTeX, texToHtml } from "@/components/TeX";
+import { TeX, deTeX, texToHtml } from "@/components/TeX";
 import { VERIFICATION } from "@/lib/display";
 import {
   FrontierChartPoints,
@@ -130,22 +131,27 @@ export function FrontierChart({
   // the history in the only honest form, the expressions themselves.
   if (!numeric) return null;
 
+  const val = (r: FrontierRowView) => r.valueNumeric ?? NaN;
+  // Rows so far off the rest of the data that the axis must not reach them
+  // (lib/frontiers offScale). They are not drawn; they are named under the
+  // plot instead.
+  const { excluded } = offScale(sorted.map(val), direction);
+  const onChart = (r: FrontierRowView) => !excluded.includes(val(r));
+  const shown = sorted.filter(onChart);
+  const left = sorted.filter((r) => !onChart(r));
+
   // x: fractional year, padded a little either side so end dots are not clipped.
-  const years = sorted.map((r) => yearOf(r.date));
+  const years = shown.map((r) => yearOf(r.date));
   const x0 = Math.floor(Math.min(...years)) - 1;
   const x1 = Math.ceil(Math.max(...years)) + 1;
   const sx = (y: number) =>
     PAD.l + ((y - x0) / (x1 - x0)) * (W - PAD.l - PAD.r);
 
-  // y: value (numeric) or rank (ordinal). Higher-is-better draws up; for a
-  // "min" frontier the axis is inverted so an improvement still goes UP - the
-  // reader's eye should not have to learn a new convention per frontier.
-  const val = (r: FrontierRowView) =>
-    numeric ? (r.valueNumeric ?? NaN) : (r.rank ?? NaN);
-  // Extent, linear/log and ticks all come from one place (lib/frontiers), so
-  // the sparkline projects identically. Rank axes have no ticks and are
-  // linear in rank.
-  const axis = yAxis(sorted.map(val), proportion);
+  // y: higher-is-better draws up; for a "min" frontier the axis is inverted so
+  // an improvement still goes UP - the reader's eye should not have to learn a
+  // new convention per frontier. Extent, linear/log and ticks all come from
+  // one place (lib/frontiers), so the sparkline projects identically.
+  const axis = yAxis(shown.map(val), proportion);
   // Where a row with no value on this axis is drawn: the worst end, which is
   // the bottom for a "max" frontier and the top for a "min" one. For a
   // proportion that is literally true - Selberg's "positive proportion" is
@@ -159,7 +165,7 @@ export function FrontierChart({
   // Only steps with a value on this axis; a qualitative early step has no
   // height for the line to be at, and a NaN in a path datum blanks the line.
   const stepRows = stepped
-    .filter((s) => s.isStep && Number.isFinite(val(s.row)))
+    .filter((s) => s.isStep && Number.isFinite(val(s.row)) && onChart(s.row))
     .map((s) => s.row);
   let d = "";
   stepRows.forEach((r, i) => {
@@ -179,7 +185,7 @@ export function FrontierChart({
   const decadeStart = Math.ceil(x0 / 10) * 10;
   const xticks: number[] = [];
   for (let y = decadeStart; y <= x1; y += 10) xticks.push(y);
-  const yticks = numeric ? axis.ticks : [];
+  const yticks = axis.ticks;
 
   // Geometry is computed once and consumed twice: by the SVG circles below, and
   // by the hover overlay, which needs the same coordinates as percentages. Two
@@ -193,10 +199,12 @@ export function FrontierChart({
     // floor. Anything else without a value (a rank-only candidate on a numeric
     // frontier, say) has nowhere to go and is left out.
     .filter(
-      ({ row, v }) => Number.isFinite(v) || (numeric && competes(row.status)),
+      ({ row, v }) =>
+        onChart(row) && (Number.isFinite(v) || competes(row.status)),
     )
     .map(({ row, isStep, v }) => {
       const cx = sx(yearOf(row.date));
+      // No value at all (a qualitative early step): drawn on the floor.
       const offScale = !Number.isFinite(v);
       const cy = sy(offScale ? floor : v);
       const live = competes(row.status);
@@ -234,99 +242,117 @@ export function FrontierChart({
   );
 
   return (
-    <div className="relative">
-      <svg
-        viewBox={`0 0 ${W} ${H}`}
-        className="h-auto w-full"
-        role="img"
-        aria-label={`Frontier history, ${sorted.length} points from ${sorted[0].date.slice(0, 4)} to ${sorted[sorted.length - 1].date.slice(0, 4)}`}
-      >
-        {/* gridlines + x ticks */}
-        {xticks.map((y) => (
-          <g key={y}>
-            <line
-              x1={sx(y)}
-              x2={sx(y)}
-              y1={PAD.t}
-              y2={H - PAD.b}
-              stroke="var(--hairline)"
-              strokeWidth={1}
-            />
-            <text
-              x={sx(y)}
-              y={H - PAD.b + 16}
-              textAnchor="middle"
-              fontSize={11}
-              fill="var(--ink-muted)"
-            >
-              {y}
-            </text>
-          </g>
-        ))}
-        {/* y ticks */}
-        {yticks.map((v, i) => (
-          <g key={i}>
-            <line
-              x1={PAD.l}
-              x2={W - PAD.r}
-              y1={sy(v)}
-              y2={sy(v)}
-              stroke="var(--hairline)"
-              strokeWidth={1}
-              strokeDasharray="2 4"
-            />
+    <>
+      <div className="relative">
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          className="h-auto w-full"
+          role="img"
+          aria-label={`Frontier history, ${shown.length} points from ${shown[0].date.slice(0, 4)} to ${shown[shown.length - 1].date.slice(0, 4)}`}
+        >
+          {/* gridlines + x ticks */}
+          {xticks.map((y) => (
+            <g key={y}>
+              <line
+                x1={sx(y)}
+                x2={sx(y)}
+                y1={PAD.t}
+                y2={H - PAD.b}
+                stroke="var(--hairline)"
+                strokeWidth={1}
+              />
+              <text
+                x={sx(y)}
+                y={H - PAD.b + 16}
+                textAnchor="middle"
+                fontSize={11}
+                fill="var(--ink-muted)"
+              >
+                {y}
+              </text>
+            </g>
+          ))}
+          {/* y ticks */}
+          {yticks.map((v, i) => (
+            <g key={i}>
+              <line
+                x1={PAD.l}
+                x2={W - PAD.r}
+                y1={sy(v)}
+                y2={sy(v)}
+                stroke="var(--hairline)"
+                strokeWidth={1}
+                strokeDasharray="2 4"
+              />
+              <text
+                x={PAD.l - 8}
+                y={sy(v) + 4}
+                textAnchor="end"
+                fontSize={11}
+                fill="var(--ink-muted)"
+              >
+                {fmtTick(v, axis, proportion)}
+              </text>
+            </g>
+          ))}
+          {!numeric && (
             <text
               x={PAD.l - 8}
-              y={sy(v) + 4}
+              y={PAD.t + 10}
               textAnchor="end"
-              fontSize={11}
+              fontSize={10}
               fill="var(--ink-muted)"
             >
-              {fmtTick(v, axis, proportion)}
+              better ↑
             </text>
-          </g>
-        ))}
-        {!numeric && (
-          <text
-            x={PAD.l - 8}
-            y={PAD.t + 10}
-            textAnchor="end"
-            fontSize={10}
-            fill="var(--ink-muted)"
-          >
-            better ↑
-          </text>
-        )}
+          )}
 
-        {/* frontier */}
-        {d && (
-          <path
-            d={d}
-            fill="none"
-            stroke="var(--ink)"
-            strokeWidth={1.75}
-            strokeLinejoin="miter"
-          />
-        )}
-
-        {/* points. The <title> is the no-JS tooltip and stays whatever the
-          overlay does. */}
-        {drawn.map(({ row, cx, cy, ai, fill, stroke, r, label }) => (
-          <g key={row.id}>
-            <circle
-              cx={cx}
-              cy={cy}
-              r={r}
-              fill={fill}
-              stroke={stroke}
-              strokeWidth={ai ? 1.5 : 1}
+          {/* frontier */}
+          {d && (
+            <path
+              d={d}
+              fill="none"
+              stroke="var(--ink)"
+              strokeWidth={1.75}
+              strokeLinejoin="miter"
             />
-            <title>{label}</title>
-          </g>
-        ))}
-      </svg>
+          )}
 
-      <FrontierChartPoints points={points} />
-    </div>
+          {/* points. The <title> is the no-JS tooltip and stays whatever the
+          overlay does. */}
+          {drawn.map(({ row, cx, cy, ai, fill, stroke, r, label }) => (
+            <g key={row.id}>
+              <circle
+                cx={cx}
+                cy={cy}
+                r={r}
+                fill={fill}
+                stroke={stroke}
+                strokeWidth={ai ? 1.5 : 1}
+              />
+              <title>{label}</title>
+            </g>
+          ))}
+        </svg>
+
+        <FrontierChartPoints points={points} />
+      </div>
+      {left.length > 0 && (
+        <p className="mt-2 text-[11px] text-[var(--ink-muted)]">
+          Not on the chart:{" "}
+          {left.map((r, i) => (
+            <span key={r.id}>
+              {i > 0 && ", "}
+              {r.attribution}&apos;s <TeX>{r.valueTex}</TeX> (
+              {r.date.slice(0, 4)})
+            </span>
+          ))}
+          . {left.length === 1 ? "It is" : "They are"} more than a hundred times
+          off the scale of everything else, and an axis that reached{" "}
+          {left.length === 1 ? "it" : "them"} would flatten the rest of the
+          history into a few pixels. The table below has every step.
+        </p>
+      )}
+    </>
   );
 }

@@ -154,10 +154,11 @@ export function chartScale(rows: FrontierRowLike[]): FrontierScale {
 ///
 /// Three regimes:
 ///   - a proportion is pinned to 0..1 (see chartScale);
-///   - data spanning two or more orders of magnitude is logarithmic. The
-///     bounded-gaps frontier runs from Zhang's 70,000,000 to 212; on a linear
-///     axis everything after 2013 is one flat line a pixel above the floor,
-///     which is the opposite of what the chart is for;
+///   - data spanning an order of magnitude or more is logarithmic. The
+///     bounded-gaps frontier runs from Polymath8a's 4,680 to 212; on a linear
+///     axis everything after 2014 is one flat line at the top, which is the
+///     opposite of what the chart is for. (Zhang's 70,000,000 is not on the
+///     axis at all - see offScale);
 ///   - everything else is linear, fitted to the data with a small margin, and
 ///     ticked at round numbers.
 ///
@@ -171,6 +172,44 @@ export interface YAxis {
   ticks: number[];
 }
 
+/// Values the axis should not be made to reach. Sorted values are split
+/// wherever two neighbours are a hundred times or more apart, and only the
+/// largest group stays on the axis; on a tie, the group holding the current
+/// best, because the recent history is what the reader came for.
+///
+/// Bounded gaps is the case this exists for. Zhang's 70,000,000 (2013) sits
+/// four orders of magnitude above Polymath8a's 4,680 of two months later, and
+/// with it on the axis - even a logarithmic one - the twelve years from 246 to
+/// 186 are a few pixels. Starting the axis at 4,680 shows that history; the
+/// chart then has to SAY that Zhang is not on it, which it does under the
+/// plot, by name and value. A reader is told, never left to notice.
+///
+/// Anything at or below zero disables the rule: the split is measured in
+/// ratios and a ratio with a non-positive value means nothing.
+export function offScale(
+  values: number[],
+  direction: FrontierDirection,
+): { kept: number[]; excluded: number[] } {
+  const vals = values.filter((v) => Number.isFinite(v));
+  if (vals.length < 2 || vals.some((v) => v <= 0))
+    return { kept: vals, excluded: [] };
+  const sorted = [...vals].sort((a, b) => a - b);
+  const groups: number[][] = [[sorted[0]]];
+  for (let i = 1; i < sorted.length; i++) {
+    if (sorted[i] / sorted[i - 1] >= 100) groups.push([]);
+    groups[groups.length - 1].push(sorted[i]);
+  }
+  if (groups.length === 1) return { kept: vals, excluded: [] };
+  const best = direction === "min" ? sorted[0] : sorted[sorted.length - 1];
+  const keep = groups.reduce((a, b) =>
+    b.length > a.length || (b.length === a.length && b.includes(best)) ? b : a,
+  );
+  return {
+    kept: vals.filter((v) => keep.includes(v)),
+    excluded: vals.filter((v) => !keep.includes(v)),
+  };
+}
+
 export function yAxis(values: number[], proportion: boolean): YAxis {
   const vals = values.filter((v) => Number.isFinite(v));
   if (vals.length === 0) return { lo: 0, hi: 1, log: false, ticks: [] };
@@ -181,16 +220,25 @@ export function yAxis(values: number[], proportion: boolean): YAxis {
   const max = Math.max(...vals);
   const MARGIN = 0.08;
 
-  if (min > 0 && max / min >= 100) {
+  // Logarithmic from one order of magnitude up. Bounded gaps without Zhang runs
+  // 4,680 to 186, a factor of 25; linear, everything since 2014 is the top 2%
+  // of the plot, five pixels for the frontier's whole recent history.
+  if (min > 0 && max / min >= 10) {
     const decades = Math.log10(max / min);
     const lo = min / 10 ** (decades * MARGIN);
     const hi = max * 10 ** (decades * MARGIN);
-    // Powers of ten inside the DATA, not the margin: a tick at 100M above a
-    // maximum of 70M labels empty space.
-    const ticks: number[] = [];
-    for (let e = Math.ceil(Math.log10(min)); 10 ** e <= max; e++)
-      ticks.push(10 ** e);
-    return { lo, hi, log: true, ticks };
+    // Ticks inside the DATA, not the margin: a tick at 100M above a maximum
+    // of 70M labels empty space. 1-2-5 per decade while that stays legible,
+    // powers of ten alone once it would not.
+    const fine: number[] = [];
+    for (let e = Math.floor(Math.log10(min)); 10 ** e <= max; e++) {
+      for (const m of [1, 2, 5]) {
+        const t = m * 10 ** e;
+        if (t >= min && t <= max) fine.push(t);
+      }
+    }
+    const coarse = fine.filter((t) => Number.isInteger(Math.log10(t)));
+    return { lo, hi, log: true, ticks: fine.length <= 6 ? fine : coarse };
   }
 
   let lo = min;

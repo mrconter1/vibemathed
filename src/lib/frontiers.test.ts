@@ -4,6 +4,7 @@ import {
   chartScale,
   fmtTick,
   niceTicks,
+  offScale,
   padDate,
   yAxis,
   yPos,
@@ -165,24 +166,55 @@ describe("chartScale", () => {
     ]);
   });
 
-  it("goes logarithmic across orders of magnitude, with power-of-ten ticks", () => {
-    // Bounded gaps: Zhang's 70,000,000 down to 212. Linear, everything after
-    // 2013 is one flat pixel.
-    const axis = yAxis([70000000, 4680, 600, 246, 236, 212, 186], false);
+  it("leaves a value a hundred times off the rest of the data off the axis", () => {
+    // Bounded gaps: Zhang's 70,000,000 is four decades above Polymath8a's
+    // 4,680. Everything else is within a factor of 25.
+    const gaps = [70000000, 4680, 600, 246, 240, 236, 212, 186];
+    const { kept, excluded } = offScale(gaps, "min");
+    expect(excluded).toEqual([70000000]);
+    expect(kept).toHaveLength(7);
+    // Nothing else on the site is split: ranks, exponents, kissing numbers.
+    expect(offScale([12, 15, 19, 21, 24, 28, 29, 31], "max").excluded).toEqual(
+      [],
+    );
+    expect(offScale([11692, 11948], "max").excluded).toEqual([]);
+    // A tie between groups keeps the one holding the current best.
+    expect(offScale([1, 1000], "min").kept).toEqual([1]);
+    expect(offScale([1, 1000], "max").kept).toEqual([1000]);
+    // A non-positive value disables the rule rather than dividing by it.
+    expect(offScale([0, 500], "max").excluded).toEqual([]);
+  });
+
+  it("goes logarithmic from one order of magnitude, with 1-2-5 ticks while legible", () => {
+    const axis = yAxis([4680, 600, 246, 240, 236, 212, 186], false);
     expect(axis.log).toBe(true);
     expect(axis.lo).toBeLessThan(186);
-    expect(axis.hi).toBeGreaterThan(70000000);
+    expect(axis.hi).toBeGreaterThan(4680);
     expect(axis.ticks.map((t) => fmtTick(t, axis, false))).toEqual([
+      "200",
+      "500",
+      "1k",
+      "2k",
+    ]);
+    // Lower is better on this frontier, so 186 draws at the top and 4,680 at
+    // the bottom, and the 246 -> 186 history is spread over the top tenth
+    // rather than a pixel.
+    expect(yPos(axis, 186, "min")).toBeGreaterThan(0.9);
+    expect(yPos(axis, 4680, "min")).toBeLessThan(0.1);
+    expect(yPos(axis, 186, "min") - yPos(axis, 246, "min")).toBeGreaterThan(
+      0.07,
+    );
+    // Many decades fall back to powers of ten alone.
+    const wide = yAxis([100, 1e8], false);
+    expect(wide.ticks.map((t) => fmtTick(t, wide, false))).toEqual([
+      "100",
       "1k",
       "10k",
       "100k",
       "1M",
       "10M",
+      "100M",
     ]);
-    // Lower is better on this frontier, so 212 draws near the top and Zhang
-    // near the bottom.
-    expect(yPos(axis, 212, "min")).toBeGreaterThan(0.85);
-    expect(yPos(axis, 70000000, "min")).toBeLessThan(0.15);
   });
 
   it("uses whole-number ticks for a whole-number frontier", () => {
