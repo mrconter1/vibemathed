@@ -120,7 +120,10 @@ export const RESOLUTION_OPTIONS = [
   { value: "retracted", label: "Retracted" },
 ];
 
-export const FIELD_GROUP_OPTIONS = FIELD_GROUPS.map((g) => ({ value: g, label: g }));
+export const FIELD_GROUP_OPTIONS = FIELD_GROUPS.map((g) => ({
+  value: g,
+  label: g,
+}));
 
 /// Degree of AI involvement, strongest first. Deliberately NOT required:
 /// entries predating the axis are unclassified (null), and forcing a value on
@@ -224,10 +227,21 @@ export const EDITABLE_FIELDS: FieldSpec[] = [
     // Spelled out after two abstracts were pasted here in one night. The
     // field is the question, not the answer: what was proved belongs under
     // "What was actually shown", and the abstract belongs in the source.
-    help: "The problem as it was posed, in plain language. Not the paper's abstract, and not what was proved - that goes under \"What was actually shown\". Math works: $inline$ or $$display$$.",
+    help: 'The problem as it was posed, in plain language. Not the paper\'s abstract, and not what was proved - that goes under "What was actually shown". Math works: $inline$ or $$display$$.',
   },
-  { key: "posedBy", label: "Posed by", kind: "text", maxLength: 200 },
-  { key: "yearPosed", label: "Year posed", kind: "number", help: "Four-digit year, or blank if unknown." },
+  {
+    key: "posedBy",
+    label: "Posed by",
+    kind: "text",
+    maxLength: 200,
+    help: 'Who first asked the question, and where if it is known: "Erdős (1957)", "Fitzpatrick and Nowakowski, Problem 43".',
+  },
+  {
+    key: "yearPosed",
+    label: "Year posed",
+    kind: "number",
+    help: "Four-digit year, or blank if unknown.",
+  },
   {
     key: "solveDate",
     label: "Solve date",
@@ -235,7 +249,13 @@ export const EDITABLE_FIELDS: FieldSpec[] = [
     required: true,
     help: "YYYY, YYYY-MM or YYYY-MM-DD. For a range, the completion date.",
   },
-  { key: "model", label: "Model", kind: "text", required: true, maxLength: 120 },
+  {
+    key: "model",
+    label: "Model",
+    kind: "text",
+    required: true,
+    maxLength: 120,
+  },
   { key: "modelMaker", label: "Vendor", kind: "text", maxLength: 120 },
   {
     key: "humanCollaborators",
@@ -312,12 +332,38 @@ export const EDITABLE_FIELDS: FieldSpec[] = [
     maxLength: 400,
     help: "Shown in a hover bubble, so plain text only - write π/2, not $\\pi/2$. Math renders in the statement and the prose notes, not here.",
   },
-  { key: "citations", label: "Citations", kind: "number", help: "Looked-up count, or blank." },
+  {
+    key: "citations",
+    label: "Citations",
+    kind: "number",
+    help: "Looked-up count, or blank.",
+  },
   { key: "citationsPaper", label: "Cited paper", kind: "text", maxLength: 300 },
-  { key: "citationsSource", label: "Citation source", kind: "text", maxLength: 120 },
+  {
+    key: "citationsSource",
+    label: "Citation source",
+    kind: "text",
+    maxLength: 120,
+  },
   { key: "citationsUrl", label: "Citation URL", kind: "url" },
-  { key: "sourceUrl", label: "Source URL", kind: "url", required: true },
-  { key: "sourceName", label: "Source name", kind: "text", required: true, maxLength: 200 },
+  {
+    key: "sourceUrl",
+    label: "Source URL",
+    kind: "url",
+    required: true,
+    // The most common misreading on the submit form: people take this for
+    // where the PROBLEM was posed. It is the result. Asked on Discord on
+    // 5 September 2026, so the field now says so.
+    help: "Where the RESULT lives: the paper, repository or announcement that proves or disproves it. Not where the problem was posed - that goes under Posed by.",
+  },
+  {
+    key: "sourceName",
+    label: "Source name",
+    kind: "text",
+    required: true,
+    maxLength: 200,
+    help: 'What the source URL is, in a few words: "arXiv preprint", "GitHub repository with Lean proof", "OpenAI announcement".',
+  },
   {
     key: "links",
     label: "More links",
@@ -382,7 +428,9 @@ export const PROTECTED_FIELDS_NOTE =
 /// The `Pick` also makes TypeScript prove every EditableKey really exists on
 /// MathProblem - a typo in the field list fails to compile rather than silently
 /// producing a blank input.
-export function toEditableValues(source: Pick<MathProblem, EditableKey>): EditableValues {
+export function toEditableValues(
+  source: Pick<MathProblem, EditableKey>,
+): EditableValues {
   const out = {} as EditableValues;
   for (const spec of [...EDITABLE_FIELDS, ...CURATOR_FIELDS]) {
     if (spec.kind === "links") {
@@ -431,16 +479,18 @@ export function decodeLinks(raw: string): LinkRef[] {
   try {
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed
-      .filter((l) => l && typeof l === "object")
-      // The kind rides along. Without it the editor's own round trip through
-      // the form value dropped what the picker had just set, so a link could
-      // only ever be saved as whatever the URL happened to imply.
-      .map((l) => ({
-        label: String(l.label ?? ""),
-        url: String(l.url ?? ""),
-        kind: isLinkKind(l.kind) ? l.kind : "other",
-      }));
+    return (
+      parsed
+        .filter((l) => l && typeof l === "object")
+        // The kind rides along. Without it the editor's own round trip through
+        // the form value dropped what the picker had just set, so a link could
+        // only ever be saved as whatever the URL happened to imply.
+        .map((l) => ({
+          label: String(l.label ?? ""),
+          url: String(l.url ?? ""),
+          kind: isLinkKind(l.kind) ? l.kind : "other",
+        }))
+    );
   } catch {
     return [];
   }
@@ -470,7 +520,10 @@ export function parseLinks(
     const label = row.label.trim();
     const url = row.url.trim();
     if (!label || label.length > 120) {
-      return { ok: false, error: "Every link needs a label of at most 120 characters." };
+      return {
+        ok: false,
+        error: "Every link needs a label of at most 120 characters.",
+      };
     }
     if (!isHttpUrl(url)) {
       return {
@@ -492,7 +545,11 @@ export function parseLinks(
     // An unrecognised or missing kind is not an error: the picker offers a
     // fixed list, so anything else came from an older draft or a hand-built
     // payload, and "other" is the honest reading of it.
-    value.push({ label, url, kind: isLinkKind(row.kind) ? row.kind : inferLinkKind(url, label) });
+    value.push({
+      label,
+      url,
+      kind: isLinkKind(row.kind) ? row.kind : inferLinkKind(url, label),
+    });
   }
   return { ok: true, value };
 }
@@ -523,7 +580,11 @@ export function isHttpUrl(v: string): boolean {
 /// as `arxiv.org/abs/2608.06538` and `arxiv.org/pdf/2608.06538v2`, with and
 /// without a trailing slash, and with a tracking query on the end.
 function documentKey(url: string): string {
-  let s = url.trim().toLowerCase().replace(/[#?].*$/, "").replace(/\/+$/, "");
+  let s = url
+    .trim()
+    .toLowerCase()
+    .replace(/[#?].*$/, "")
+    .replace(/\/+$/, "");
   s = s.replace(/^https?:\/\//, "").replace(/^www\./, "");
   const arxiv = s.match(/arxiv\.org\/(?:abs|pdf)\/(\d{4}\.\d{4,5})/);
   if (arxiv) return `arxiv:${arxiv[1]}`;
