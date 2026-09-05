@@ -18,7 +18,12 @@ const LINKS = [
   // Frontiers are a different shape from entries (a quantity with a history,
   // not a result), so they get their own section rather than a filter chip.
   { href: "/frontiers", label: "Frontiers" },
-  { href: "/users", label: "Members" },
+  // Members is deliberately not here. The directory exists for people already
+  // on the site and is reached from the footer, from beside Latest activity
+  // and from the stat band - the places where wanting to know who else is
+  // here actually occurs to someone. A header slot would give a page most
+  // readers never need the same weight as the record itself. It was in the
+  // header for one day (PR #18) and came out again on 5 September 2026.
   { href: "/stats", label: "Stats" },
   { href: "/methodology", label: "Methodology" },
   { href: "/about", label: "About" },
@@ -28,10 +33,6 @@ function isActive(href: string, path: string): boolean {
   if (href === "/") {
     // Entry pages belong to the Entries section.
     return path === "/" || path.startsWith("/problem");
-  }
-  if (href === "/users") {
-    // Individual profiles belong to the Members section.
-    return path === "/users" || path.startsWith("/user/");
   }
   return path === href || path.startsWith(`${href}/`);
 }
