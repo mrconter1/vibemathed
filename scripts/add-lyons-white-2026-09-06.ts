@@ -83,10 +83,28 @@ const LINKS = [
   },
 ];
 
+/// The CockroachDB host has been dropping connections intermittently today
+/// (six failures in a row from one shell while a dry run succeeded from
+/// another), so the first contact is retried rather than left to the operator.
+async function connectWithRetry(): Promise<string> {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= 6; attempt++) {
+    try {
+      const [{ db }] = await prisma.$queryRawUnsafe<{ db: string }[]>(
+        "SELECT current_database() AS db",
+      );
+      return db;
+    } catch (e) {
+      lastError = e;
+      console.log(`connection attempt ${attempt} failed; retrying in 5s`);
+      await new Promise((r) => setTimeout(r, 5000));
+    }
+  }
+  throw lastError;
+}
+
 async function main() {
-  const [{ db }] = await prisma.$queryRawUnsafe<{ db: string }[]>(
-    "SELECT current_database() AS db",
-  );
+  const db = await connectWithRetry();
   console.log(
     `database: ${db}${db === "vibemathed" ? "  (PRODUCTION)" : ""}\n`,
   );
