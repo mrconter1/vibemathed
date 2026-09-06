@@ -43,10 +43,10 @@ commits.
 `production` is what vibemathed.com serves. Code reaches it by a deliberate
 promotion from `main`, never by momentum. You will not normally touch it.
 
-Do not target `staging`. It is being retired; anything opened against it
-should be retargeted to `main`.
-[`docs/branch-flow.md`](docs/branch-flow.md) explains the reasoning and lists
-the migration steps still outstanding.
+There is no longer a `staging` branch: the staging environment hangs off
+`main`, so merging to `main` is what puts a change in front of people.
+[`docs/branch-flow.md`](docs/branch-flow.md) explains the reasoning and records
+how the flow was migrated.
 
 ## Checks
 
@@ -89,20 +89,21 @@ a one-line fix.
 ## Branching and pull requests
 
 ```
-your-branch  --PR-->  staging  --PR-->  main
-                        |                 |
-                   staging site      vibemathed.com
+your-branch  --PR-->  main  --PR-->  production
+                       |                 |
+                 staging site      vibemathed.com
 ```
 
 - Branch from `main`.
-- Open your pull request against **`staging`**, not `main`. Staging has its own
-  database and its own OAuth apps, so you can sign in and click through your
-  change against real-looking data without touching production. See
-  [`docs/staging.md`](docs/staging.md) for how it is wired and how to refresh it.
-- Once it has been exercised on staging, it is promoted to `main` in a separate
-  pull request. `main` deploys to production on merge.
-- `main` is protected: it needs a green CI run and one approving review, and
-  cannot be pushed to directly.
+- Open your pull request against **`main`**. Merging it deploys to the staging
+  environment, which has its own database and its own OAuth apps, so you can
+  sign in and click through your change against real-looking data without
+  touching production. See [`docs/staging.md`](docs/staging.md) for how that
+  environment is wired.
+- Reaching vibemathed.com is a separate, deliberate step: a pull request from
+  `main` to `production`, merged when someone decides to release.
+- Both branches are protected: each needs a green CI run and one approving
+  review, and neither can be pushed to directly.
 
 Keep pull requests focused. An infrastructure fix and a feature belong in
 separate ones, and reviewing is much faster when a diff does one thing.
@@ -116,6 +117,7 @@ Every pull request runs [`.github/workflows/ci.yml`](.github/workflows/ci.yml):
 | Lint | `npm run lint` |
 | Types | `npm run typecheck` |
 | Prisma schema is valid | `npx prisma validate` |
+| Tests | `npm test` |
 | Formatting of `problems.json` | parsed and re-serialised |
 
 CI deliberately does **not** run `npm run build`. The build prerenders the

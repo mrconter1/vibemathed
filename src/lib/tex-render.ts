@@ -1,5 +1,11 @@
 import { linkifyEscaped } from "@/lib/linkify";
-import { TEX_TOKENS, isDisplayMath, isInlineMath, unescapeDollars } from "@/lib/tex-tokens";
+import {
+  TEX_TOKENS,
+  isDisplayMath,
+  isInlineMath,
+  mathBody,
+  unescapeDollars,
+} from "@/lib/tex-tokens";
 
 export type MathRenderer = (tex: string, display: boolean) => string;
 
@@ -21,8 +27,8 @@ export function renderTexToHtml(
   const parts = children.split(TEX_TOKENS);
   return parts
     .map((part, i) => {
-      if (isDisplayMath(part)) return renderMath(part.slice(2, -2), true);
-      if (isInlineMath(part)) return renderMath(part.slice(1, -1), false);
+      if (isDisplayMath(part)) return renderMath(mathBody(part), true);
+      if (isInlineMath(part)) return renderMath(mathBody(part), false);
 
       // Display math is already a block, so discard a newline touching it
       // rather than rendering a duplicate gap.

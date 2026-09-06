@@ -21,15 +21,45 @@
 // backslash immediately before real math still mis-parses, because the
 // lookbehind cannot tell an escaped backslash from an escaping one. That costs a
 // regex several times this size to fix and has never occurred in the catalog.
+//
+// LaTeX's OTHER delimiters, `\(…\)` and `\[…\]`, are accepted too, since
+// September 2026. They are what someone who writes papers types, KaTeX's own
+// auto-render accepts them by default, and a submitter used them: the
+// 19-dimensional kissing entry published with its whole statement as literal
+// backslashes on screen, because nothing matched and the text fell through to
+// be escaped as prose. The site takes submissions from anyone, so this was
+// going to recur.
+//
+// These two use a lazy any-character run to the first closing delimiter
+// rather than the escape-aware body the dollar forms use. `(?:\\.|[^$\\])+`
+// would let `\)` be eaten as an escape pair and run the segment on to the
+// LAST `\)` in the field. Inside real math nobody writes `\)` for anything
+// but closing, so first-match is the right reading.
 export const TEX_TOKENS =
-  /((?<!\\)\$\$(?:\\.|[^$\\])+\$\$|(?<!\\)\$(?:\\.|[^$\\])+\$)/g;
+  /((?<!\\)\$\$(?:\\.|[^$\\])+\$\$|(?<!\\)\$(?:\\.|[^$\\])+\$|\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\))/g;
 
 export function isDisplayMath(part: string): boolean {
-  return part.startsWith("$$") && part.endsWith("$$") && part.length > 4;
+  return (
+    (part.startsWith("$$") && part.endsWith("$$") && part.length > 4) ||
+    (part.startsWith("\\[") && part.endsWith("\\]") && part.length > 4)
+  );
 }
 
 export function isInlineMath(part: string): boolean {
-  return !isDisplayMath(part) && part.startsWith("$") && part.endsWith("$") && part.length > 2;
+  if (isDisplayMath(part)) return false;
+  return (
+    (part.startsWith("$") && part.endsWith("$") && part.length > 2) ||
+    (part.startsWith("\\(") && part.endsWith("\\)") && part.length > 4)
+  );
+}
+
+/// The TeX inside a math segment, with whichever delimiters it arrived in
+/// removed. Shared because the two renderers used to slice by hand, and a
+/// hand-written `slice(1, -1)` is wrong the moment a two-character delimiter
+/// exists.
+export function mathBody(part: string): string {
+  if (part.startsWith("$") && !part.startsWith("$$")) return part.slice(1, -1);
+  return part.slice(2, -2);
 }
 
 /// Turns an author's `\$` into a literal dollar.

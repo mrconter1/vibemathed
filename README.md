@@ -1,4 +1,4 @@
-# VibeMathed
+# <img src="src/app/icon.svg" width="24" height="24" alt=""> VibeMathed
 
 **[vibemathed.com](https://vibemathed.com)** is a community of mathematicians
 and enthusiasts tracking, curating and cataloguing the mathematical problems
@@ -12,6 +12,10 @@ labeled as such rather than left out or overstated. The
 [methodology](https://vibemathed.com/methodology) documents what qualifies and
 how every label is assigned.
 
+689 published entries across twelve areas of mathematics, 480 of them fully
+resolved, and eight frontiers, as of 6 September 2026.
+[The stats page](https://vibemathed.com/stats) carries the live figures.
+
 ## What an entry carries
 
 - **Result** (proved / disproved) and **status** (resolved, partial, variant,
@@ -23,8 +27,41 @@ how every label is assigned.
   hypothesis = 100), assigned with a
   [published prompt](public/significance-prompt.md)
 - Community machinery: submissions with review, field-level edits with a
-  public changelog, discussion threads, votes, and member profiles - all under
-  pseudonyms only (real names, emails and avatars are never shown)
+  public changelog, discussion threads, votes, flagging, and member profiles -
+  all under pseudonyms only (real names, emails and avatars are never shown)
+
+## Frontiers
+
+Not every AI result resolves a question. Some move a number: the exponent of
+matrix multiplication, the proportion of zeta zeros proved to lie on the
+critical line, the bound on gaps between consecutive primes. A **frontier** is
+one such quantity with a direction and a dated staircase of every best known
+value, human and AI alike, so a reader can see whether a model actually moved a
+number people had been pushing for decades.
+[vibemathed.com/frontiers](https://vibemathed.com/frontiers).
+
+Frontiers are curated rather than submitted. The current best is derived from
+the rows rather than stored, so it cannot go stale when a row is added,
+retracted or re-dated.
+
+## How a submission becomes an entry
+
+Anyone signed in can submit. A curator reads the source - the paper, the
+repository, the Lean development - and either publishes the entry with its
+tiers filled in, or holds it with a written reason that lands in the
+submitter's inbox. While it waits, the queue is public at
+[vibemathed.com/queue](https://vibemathed.com/queue): titles and ages only,
+under a banner saying that nothing there is part of the record yet.
+
+When a claim ships a Lean development, the site can rebuild it instead of
+trusting a badge.
+[`.github/workflows/verify-lean.yml`](.github/workflows/verify-lean.yml) checks
+out someone else's repository at a pinned ref, installs the toolchain that
+repository names, builds every module and prints the axioms its theorems
+really use. That is what the Site-confirmed tier means here. It checks a proof
+against the statement its author wrote; whether that statement says what the
+informal problem says is a human's job, and the
+[reviewing checklist](docs/reviewing.md) says so.
 
 ## Data
 
@@ -41,9 +78,9 @@ not in git.
 
 ## Stack
 
-Next.js (App Router, v16) + TypeScript + Tailwind, CockroachDB (serverless,
-Postgres-compatible) via Prisma, Auth.js (`next-auth` v5) with Google as the
-only provider. Deployed on Vercel.
+Next.js (App Router, v16) + TypeScript + Tailwind v4, CockroachDB (serverless,
+Postgres-compatible) via Prisma, Auth.js (`next-auth` v5) with Google and
+GitHub as sign-in providers, Vitest for the unit tests. Deployed on Vercel.
 
 Cache Components (`cacheComponents: true`) is enabled, so Partial Prerendering
 is the default: each page ships a prerendered static shell, and the parts that
@@ -86,6 +123,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `npm run dev`       | Dev server                                     |
 | `npm run typecheck` | `tsc --noEmit`                                 |
 | `npm run lint`      | ESLint                                         |
+| `npm test`          | Vitest, once                                   |
 | `npm run db:push`   | Sync schema to `DATABASE_URL` (no migrations)  |
 | `npm run db:seed`   | Seed entries from `problems.json`              |
 | `npm run db:export` | Snapshot the database back to `problems.json`  |
@@ -101,11 +139,14 @@ through the site rather than through git, because the catalog lives in a
 database: see [vibemathed.com/contributing](https://vibemathed.com/contributing).
 
 For code, see [CONTRIBUTING.md](CONTRIBUTING.md). **Pull requests go to
-`main`**, which is where everything lands first; `production` is what
-vibemathed.com serves, and reaching it is a deliberate promotion. Both require
-a green CI run and one approval. [`docs/branch-flow.md`](docs/branch-flow.md)
-explains why, and lists the two migration steps still outstanding - until they
-are done, `main` is still the branch that deploys to production.
+`main`**, which is where everything lands first and which deploys to the
+staging environment. `production` is the branch vibemathed.com serves, and it
+moves only by a deliberate promotion: a pull request from `main`, merged when
+someone decides to release. Both branches require a green CI run and one
+approving review; CI runs Prisma schema validation, ESLint, `tsc`, the Vitest
+suite and a parse of the seed baseline.
+[`docs/branch-flow.md`](docs/branch-flow.md) explains why the flow is shaped
+this way and records how it was migrated.
 
 ## License
 
