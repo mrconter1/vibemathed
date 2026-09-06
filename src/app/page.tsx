@@ -8,7 +8,11 @@ import {
   getUserCount,
   getVerifiedCount,
 } from "@/lib/data";
-import { SETTINGS_COOKIE, readSettingsCookie, sortValue } from "@/lib/list-settings";
+import {
+  SETTINGS_COOKIE,
+  readSettingsCookie,
+  sortValue,
+} from "@/lib/list-settings";
 import type { CardEntry } from "@/lib/problems";
 import { SITE_URL } from "@/lib/site";
 import { Highlights } from "@/components/Highlights";
@@ -30,7 +34,10 @@ export const metadata: Metadata = {
 /// cards follow the shell by a server render rather than a round trip.
 async function EntryList() {
   // Cached, so asking again here costs nothing beyond the cache read.
-  const [problems, store] = await Promise.all([getPublishedProblems(), cookies()]);
+  const [problems, store] = await Promise.all([
+    getPublishedProblems(),
+    cookies(),
+  ]);
   const initial = readSettingsCookie(store.get(SETTINGS_COOKIE)?.value);
 
   // Statement math is rendered to HTML here, on the server, so the client
@@ -85,6 +92,7 @@ async function EntryList() {
     commentCount: p.commentCount,
     submittedBy: p.submittedBy,
     addedAt: p.addedAt,
+    changedAt: p.changedAt,
     sourceUrl: p.sourceUrl,
     sourceName: p.sourceName,
     links: p.links ?? [],
@@ -187,7 +195,12 @@ export default async function Home() {
         className="grid grid-cols-2 gap-2.5 lg:grid-cols-6"
         aria-label="Overview"
       >
-        <StatBand problems={problems} users={users} pending={pending} verified={verified} />
+        <StatBand
+          problems={problems}
+          users={users}
+          pending={pending}
+          verified={verified}
+        />
         <RecentActivity activity={activity} />
         {/* Five rows, matching the activity feed: the highlight cards then
             fill the column height the feed forces with real content instead

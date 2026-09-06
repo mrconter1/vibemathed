@@ -68,18 +68,18 @@ import { InfoTip, StarNote } from "@/components/Tooltip";
 import { VoteButtons } from "@/components/VoteButtons";
 import { TeX, deTeX } from "@/components/TeX";
 
-
 // The clock for period cutoffs, fixed at module load: render purity wants a
 // stable now, and a cutoff drifting by the age of the tab is nothing against
 // 7/30-day windows.
 const LOADED_AT = Date.now();
 
-
 /// Compact page list: first, last, current and neighbours, with gaps elsewhere.
 function pageWindow(current: number, total: number): (number | "gap")[] {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
   const wanted = new Set([1, total, current, current - 1, current + 1]);
-  const nums = [...wanted].filter((p) => p >= 1 && p <= total).sort((a, b) => a - b);
+  const nums = [...wanted]
+    .filter((p) => p >= 1 && p <= total)
+    .sort((a, b) => a - b);
   const out: (number | "gap")[] = [];
   let prev = 0;
   for (const p of nums) {
@@ -112,7 +112,13 @@ function Chevron({ dir }: { dir: "left" | "right" }) {
 /// whitespace-nowrap: values like a six-model credit line are wider than a
 /// phone-sized card, so a fact must be able to wrap internally rather than
 /// overflow the card.
-function Fact({ label, children }: { label: string; children: React.ReactNode }) {
+function Fact({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <span>
       <span className="text-[var(--ink-muted)]">{label} </span>
@@ -131,18 +137,38 @@ function formatAddedDate(iso: string): string {
 }
 
 const MONTHS_SHORT = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 
-function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string | null }) {
+function ProblemCard({
+  p,
+  statementHtml,
+}: {
+  p: CardEntry;
+  statementHtml: string | null;
+}) {
   const st = SOLVE_TYPE[p.solveType];
   // The primary source counts as a link. For 265 of the entries it IS the
   // paper, so leaving it out would have shown a paper icon only on the
   // minority that happen to carry a second copy as an extra link. It has no
   // stored kind of its own, so it is classified from its URL and name.
   const linkIcons = topLinkKinds([
-    { url: p.sourceUrl, label: p.sourceName, kind: inferLinkKind(p.sourceUrl, p.sourceName) },
+    {
+      url: p.sourceUrl,
+      label: p.sourceName,
+      kind: inferLinkKind(p.sourceUrl, p.sourceName),
+    },
     ...p.links,
   ]);
   // The trust badge: verification when it says something; the publication
@@ -235,7 +261,11 @@ function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string
 
         {/* Votes, kept out of the flowing text so they line up down the list */}
         <div className="relative z-10 shrink-0 pt-0.5">
-          <VoteButtons slug={p.slug} upvotes={p.upvotes} downvotes={p.downvotes} />
+          <VoteButtons
+            slug={p.slug}
+            upvotes={p.upvotes}
+            downvotes={p.downvotes}
+          />
         </div>
       </div>
 
@@ -253,7 +283,9 @@ function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string
           // Clamped: at the 200-character cap this is five lines on a phone,
           // which on a card buries the identity line under a caveat. The entry
           // page carries it in full.
-          <p className="mt-0.5 line-clamp-2 text-xs text-[var(--ink-muted)]">({p.resultNote})</p>
+          <p className="mt-0.5 line-clamp-2 text-xs text-[var(--ink-muted)]">
+            ({p.resultNote})
+          </p>
         )}
         {/* Identity line */}
         <p className="mt-1 font-mono text-[11px] text-[var(--ink-muted)]">
@@ -276,27 +308,33 @@ function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string
             the flex default let that whole fact sit visibly lower than its
             neighbours ("Open 11y*" hung below "Posed by" and "Model"). */}
         <div className="mt-2.5 flex flex-wrap items-baseline gap-x-3 gap-y-1 font-mono text-[11px]">
-            <Fact label="Posed by">
-              {p.posedBy ?? DASH}
-              {p.yearPosed !== null && `, ${p.yearPosed}`}
-            </Fact>
-            <span aria-hidden className="text-[var(--hairline)]">·</span>
-            <Fact label="Open">
-              {age !== null ? `${age}y` : DASH}
-              {p.ageNote && <StarNote text={p.ageNote} />}
-            </Fact>
-            <span aria-hidden className="text-[var(--hairline)]">·</span>
-            <Fact label="Model">
-              {p.model}
-              {p.modelMaker && ` (${p.modelMaker})`}
-            </Fact>
-            <span aria-hidden className="text-[var(--hairline)]">·</span>
-            <Fact label="Solved">{p.solveDate}</Fact>
-          </div>
+          <Fact label="Posed by">
+            {p.posedBy ?? DASH}
+            {p.yearPosed !== null && `, ${p.yearPosed}`}
+          </Fact>
+          <span aria-hidden className="text-[var(--hairline)]">
+            ·
+          </span>
+          <Fact label="Open">
+            {age !== null ? `${age}y` : DASH}
+            {p.ageNote && <StarNote text={p.ageNote} />}
+          </Fact>
+          <span aria-hidden className="text-[var(--hairline)]">
+            ·
+          </span>
+          <Fact label="Model">
+            {p.model}
+            {p.modelMaker && ` (${p.modelMaker})`}
+          </Fact>
+          <span aria-hidden className="text-[var(--hairline)]">
+            ·
+          </span>
+          <Fact label="Solved">{p.solveDate}</Fact>
+        </div>
 
-          {/* Verification + notability + discussion */}
-          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px]">
-            {/* Reserved width so Significance starts at the same x down the
+        {/* Verification + notability + discussion */}
+        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px]">
+          {/* Reserved width so Significance starts at the same x down the
                 list instead of stepping in and out with the badge text.
                 Measured rather than guessed: the widest badge in common use is
                 "Site-confirmed" at 93px, so 6rem reserves 3px of slack. The
@@ -308,101 +346,103 @@ function ProblemCard({ p, statementHtml }: { p: CardEntry; statementHtml: string
                 measured at 360px, nothing wraps to a second line, so the only
                 thing the breakpoint achieved was leaving every screen under
                 640px ragged. */}
+          <span
+            className="relative z-10 inline-flex items-center gap-1.5 min-w-[6rem]"
+            style={{ color: v.color }}
+            title={p.verificationNote ?? undefined}
+          >
+            <StatusIcon kind={v.icon} color={v.color} />
+            {v.label}
+          </span>
+
+          {/* A documented problem with the claim itself - rare, loud. */}
+          {p.claimIssueNote && (
             <span
-              className="relative z-10 inline-flex items-center gap-1.5 min-w-[6rem]"
-              style={{ color: v.color }}
-              title={p.verificationNote ?? undefined}
+              className="relative z-10 inline-flex items-center gap-1.5 text-[var(--status-critical)]"
+              title={p.claimIssueNote}
             >
-              <StatusIcon kind={v.icon} color={v.color} />
-              {v.label}
+              <StatusIcon kind="alert" color="var(--status-critical)" />
+              Claim issue
             </span>
+          )}
 
-            {/* A documented problem with the claim itself - rare, loud. */}
-            {p.claimIssueNote && (
-              <span
-                className="relative z-10 inline-flex items-center gap-1.5 text-[var(--status-critical)]"
-                title={p.claimIssueNote}
-              >
-                <StatusIcon kind="alert" color="var(--status-critical)" />
-                Claim issue
-              </span>
-            )}
-
-            {/* AI-estimated problem weight; the Wikipedia count moved to the
+          {/* AI-estimated problem weight; the Wikipedia count moved to the
                 entry page as a supporting fact (it was almost always 0 here). */}
-            {p.significance !== null && p.significance !== undefined && (
-              // inline-flex, not a plain span. Its neighbours in this row -
-              // the verification badge and the comment link - are inline-flex
-              // boxes because they carry icons, and a plain inline span sits
-              // 1.83px lower than they do under `items-center`, which centres
-              // boxes rather than text. Measured: matching the box type takes
-              // the skew to exactly 0. It is not a font-metric problem;
-              // forcing both spans to the same font family changes nothing.
-              <span className="relative z-10 inline-flex items-center font-mono text-[var(--ink-muted)]">
-                {/* The metric explanation belongs to the label+value only; the
+          {p.significance !== null && p.significance !== undefined && (
+            // inline-flex, not a plain span. Its neighbours in this row -
+            // the verification badge and the comment link - are inline-flex
+            // boxes because they carry icons, and a plain inline span sits
+            // 1.83px lower than they do under `items-center`, which centres
+            // boxes rather than text. Measured: matching the box type takes
+            // the skew to exactly 0. It is not a font-metric problem;
+            // forcing both spans to the same font family changes nothing.
+            <span className="relative z-10 inline-flex items-center font-mono text-[var(--ink-muted)]">
+              {/* The metric explanation belongs to the label+value only; the
                     star carries the per-entry justification. Nesting the star
                     under the same title showed BOTH bubbles when hovering it. */}
-                <span title={SIGNIFICANCE_HELP}>
-                  Significance{" "}
-                  <span className="text-[var(--ink-secondary)]">{p.significance}</span>
+              <span title={SIGNIFICANCE_HELP}>
+                Significance{" "}
+                <span className="text-[var(--ink-secondary)]">
+                  {p.significance}
                 </span>
-                {p.significanceNote && <StarNote text={p.significanceNote} />}
               </span>
-            )}
+              {p.significanceNote && <StarNote text={p.significanceNote} />}
+            </span>
+          )}
 
-            {/* Straight to the artifact. The question a reader most often has
+          {/* Straight to the artifact. The question a reader most often has
                 about an entry on this page is "is there a paper" or "is there
                 a Lean proof", and answering it used to mean opening the entry
                 and reading a list of free-text labels. These are the entry's
                 own links, typed, so the icon is a promise about what is on the
                 other end. z-10 lifts them above the card's click overlay. */}
-            {linkIcons.length > 0 && (
-              <span className="relative z-10 inline-flex items-center gap-1.5">
-                {linkIcons.map(({ spec, link }) => (
-                  <a
-                    key={spec.value}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={`${spec.label}: ${spec.help}`}
-                    aria-label={spec.label}
-                    className="text-[var(--ink-muted)] transition-colors hover:text-[var(--accent-blue)]"
-                  >
-                    <Icon name={spec.icon as IconName} size={14} />
-                  </a>
-                ))}
-              </span>
-            )}
+          {linkIcons.length > 0 && (
+            <span className="relative z-10 inline-flex items-center gap-1.5">
+              {linkIcons.map(({ spec, link }) => (
+                <a
+                  key={spec.value}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={`${spec.label}: ${spec.help}`}
+                  aria-label={spec.label}
+                  className="text-[var(--ink-muted)] transition-colors hover:text-[var(--accent-blue)]"
+                >
+                  <Icon name={spec.icon as IconName} size={14} />
+                </a>
+              ))}
+            </span>
+          )}
 
-            {/* Credit where an entry came from a reader - contributors should
+          {/* Credit where an entry came from a reader - contributors should
                 see their name on the front page, not only on the entry page.
                 Links to their profile; z-10 lifts it above the card overlay. */}
-            {p.submittedBy && (
-              // The space is a non-breaking one inside the text, not a `{" "}`
-              // between the label and the link. Flexbox drops a whitespace-only
-              // text node sitting between two flex items, so the words ran
-              // together the moment this span became inline-flex; a trailing
-              // ordinary space would be trimmed at the end of its own flex item
-              // too. `gap-1` would work but at 4px reads tighter than the
-              // natural space in `Fact` label/value pairs on the row above.
-              // The Significance span is unaffected only because its space
-              // lives inside a nested inline span.
-              <span className="relative z-10 inline-flex items-center font-mono text-[var(--ink-muted)]">
-                Submitted by&nbsp;
-                <Link
-                  href={`/user/${encodeURIComponent(p.submittedBy)}`}
-                  className="text-[var(--ink-secondary)] hover:text-[var(--accent-blue)] hover:underline"
-                >
-                  {p.submittedBy}
-                </Link>
-                {/* Only alongside a submitter, never on its own. `addedAt` is
+          {p.submittedBy && (
+            // The space is a non-breaking one inside the text, not a `{" "}`
+            // between the label and the link. Flexbox drops a whitespace-only
+            // text node sitting between two flex items, so the words ran
+            // together the moment this span became inline-flex; a trailing
+            // ordinary space would be trimmed at the end of its own flex item
+            // too. `gap-1` would work but at 4px reads tighter than the
+            // natural space in `Fact` label/value pairs on the row above.
+            // The Significance span is unaffected only because its space
+            // lives inside a nested inline span.
+            <span className="relative z-10 inline-flex items-center font-mono text-[var(--ink-muted)]">
+              Submitted by&nbsp;
+              <Link
+                href={`/user/${encodeURIComponent(p.submittedBy)}`}
+                className="text-[var(--ink-secondary)] hover:text-[var(--accent-blue)] hover:underline"
+              >
+                {p.submittedBy}
+              </Link>
+              {/* Only alongside a submitter, never on its own. `addedAt` is
                     row creation, and the curated baseline was seeded within
                     the same few seconds, so on those entries it records when
                     the database was filled rather than anything about the
                     entry. Beside a pseudonym it means what it looks like. */}
-                &nbsp;on&nbsp;{formatAddedDate(p.addedAt)}
-              </span>
-            )}
+              &nbsp;on&nbsp;{formatAddedDate(p.addedAt)}
+            </span>
+          )}
 
           {p.commentCount > 0 && (
             <Link
@@ -436,10 +476,16 @@ export function ProblemCards({
   const [fieldFilter, setFieldFilter] = useState(initial.fieldFilter);
   const [resultFilter, setResultFilter] = useState(initial.resultFilter);
   const [statusFilter, setStatusFilter] = useState(initial.statusFilter);
-  const [contributionFilter, setContributionFilter] = useState(initial.contributionFilter);
+  const [contributionFilter, setContributionFilter] = useState(
+    initial.contributionFilter,
+  );
   const [modelFilter, setModelFilter] = useState(initial.modelFilter);
-  const [verificationFilter, setVerificationFilter] = useState(initial.verificationFilter);
-  const [publicationFilter, setPublicationFilter] = useState(initial.publicationFilter);
+  const [verificationFilter, setVerificationFilter] = useState(
+    initial.verificationFilter,
+  );
+  const [publicationFilter, setPublicationFilter] = useState(
+    initial.publicationFilter,
+  );
   const [methodFilter, setMethodFilter] = useState(initial.methodFilter);
   const [sourceFilter, setSourceFilter] = useState(initial.sourceFilter);
   const [sortKey, setSortKey] = useState<SortKey>(initial.sortKey);
@@ -456,7 +502,8 @@ export function ProblemCards({
   const groups = useMemo(() => {
     const counts = new Map<FieldGroup, number>();
     for (const p of problems) {
-      if (p.fieldGroup) counts.set(p.fieldGroup, (counts.get(p.fieldGroup) ?? 0) + 1);
+      if (p.fieldGroup)
+        counts.set(p.fieldGroup, (counts.get(p.fieldGroup) ?? 0) + 1);
     }
     return FIELD_GROUPS.filter((g) => counts.has(g))
       .map((g) => ({ group: g, count: counts.get(g)! }))
@@ -475,7 +522,9 @@ export function ProblemCards({
   // appears as soon as a SINGLE classified entry exists: with most of the
   // catalog unclassified (null), filtering on one tier is not a no-op.
   const contributions = useMemo(() => {
-    const present = new Set(problems.map((p) => p.aiContribution).filter(Boolean));
+    const present = new Set(
+      problems.map((p) => p.aiContribution).filter(Boolean),
+    );
     return AI_CONTRIBUTIONS.filter((c) => present.has(c));
   }, [problems]);
 
@@ -596,9 +645,9 @@ export function ProblemCards({
     // all rather than one asserting the defaults, and going back to them
     // removes it again - so the common visitor keeps a bare request and the
     // server keeps serving them the same default order it always did.
-    const isDefault = (Object.keys(DEFAULT_SETTINGS) as (keyof ListSettings)[]).every(
-      (k) => s[k] === DEFAULT_SETTINGS[k],
-    );
+    const isDefault = (
+      Object.keys(DEFAULT_SETTINGS) as (keyof ListSettings)[]
+    ).every((k) => s[k] === DEFAULT_SETTINGS[k]);
     try {
       document.cookie = isDefault
         ? `${SETTINGS_COOKIE}=; path=/; max-age=0; samesite=lax`
@@ -632,17 +681,42 @@ export function ProblemCards({
     // identically, so it is put back purely so the address bar stays legible.
     // Safe to do blindly: no option value contains a comma of its own.
     const qs = q.toString().replace(/%2C/g, ",");
-    window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
-  }, [restored, fieldFilter, resultFilter, statusFilter, contributionFilter, modelFilter, verificationFilter, publicationFilter, methodFilter, sourceFilter, sortKey, sortDir, period, perPage]);
+    window.history.replaceState(
+      null,
+      "",
+      qs ? `?${qs}` : window.location.pathname,
+    );
+  }, [
+    restored,
+    fieldFilter,
+    resultFilter,
+    statusFilter,
+    contributionFilter,
+    modelFilter,
+    verificationFilter,
+    publicationFilter,
+    methodFilter,
+    sourceFilter,
+    sortKey,
+    sortDir,
+    period,
+    perPage,
+  ]);
 
   // Statements beyond the first default-sort page ship without their rendered
   // HTML; one background fetch fills the map after hydration (see CardEntry).
-  const [lateStatements, setLateStatements] = useState<Record<string, string> | null>(null);
+  const [lateStatements, setLateStatements] = useState<Record<
+    string,
+    string
+  > | null>(null);
   useEffect(() => {
-    if (!problems.some((p) => p.hasStatement && p.statementHtml === null)) return;
+    if (!problems.some((p) => p.hasStatement && p.statementHtml === null))
+      return;
     let alive = true;
     fetch("/api/statements")
-      .then((r) => (r.ok ? (r.json() as Promise<Record<string, string>>) : null))
+      .then((r) =>
+        r.ok ? (r.json() as Promise<Record<string, string>>) : null,
+      )
       .then((map) => {
         if (alive && map) setLateStatements(map);
       })
@@ -659,7 +733,9 @@ export function ProblemCards({
   // the panel never lists an empty category.
   const verifications = useMemo(() => {
     const present = new Set(problems.map((p) => p.verification));
-    return (Object.keys(VERIFICATION) as VerificationStatus[]).filter((v) => present.has(v));
+    return (Object.keys(VERIFICATION) as VerificationStatus[]).filter((v) =>
+      present.has(v),
+    );
   }, [problems]);
 
   // The facet groups the Filters panel offers. Same visibility rules the old
@@ -679,7 +755,10 @@ export function ProblemCards({
           {
             key: "status",
             label: "Status",
-            options: resolutions.map((r) => ({ value: r, label: RESOLUTION[r].label })),
+            options: resolutions.map((r) => ({
+              value: r,
+              label: RESOLUTION[r].label,
+            })),
           },
         ]
       : []),
@@ -707,7 +786,10 @@ export function ProblemCards({
     {
       key: "verification",
       label: "Verification",
-      options: verifications.map((v) => ({ value: v, label: VERIFICATION[v].label })),
+      options: verifications.map((v) => ({
+        value: v,
+        label: VERIFICATION[v].label,
+      })),
     },
     {
       key: "publication",
@@ -774,7 +856,9 @@ export function ProblemCards({
     // in sortValue instead, ranking the WHOLE list by that period's activity.
     const dateFiltering = period !== "all" && !TIME_SENSITIVE.includes(sortKey);
     const cutoff = dateFiltering
-      ? new Date(LOADED_AT - PERIOD_DAYS[period as Exclude<Period, "all">] * 86400000)
+      ? new Date(
+          LOADED_AT - PERIOD_DAYS[period as Exclude<Period, "all">] * 86400000,
+        )
           .toISOString()
           .slice(0, 10)
       : "";
@@ -782,16 +866,21 @@ export function ProblemCards({
     // facet is the one filter that cannot compare values directly, and
     // scanning MODEL_FAMILIES per entry per keystroke is work with no payoff.
     const chosenModels = parseSelection(modelFilter);
-    const modelTests = MODEL_FAMILIES.filter((f) => chosenModels.includes(f.key)).map(
-      (f) => f.test,
-    );
+    const modelTests = MODEL_FAMILIES.filter((f) =>
+      chosenModels.includes(f.key),
+    ).map((f) => f.test);
     return problems.filter((p) => {
       if (dateFiltering) {
         // "Added" scopes by when the entry entered the catalog; every other
         // sort scopes by when the problem was solved. Imprecise solve dates
         // ("2026-07") compare lexically and sit out of week-sized windows,
         // which is the honest reading of a date that vague.
-        const stamp = sortKey === "added" ? p.addedAt.slice(0, 10) : p.solveDate;
+        const stamp =
+          sortKey === "added"
+            ? p.addedAt.slice(0, 10)
+            : sortKey === "changed"
+              ? p.changedAt.slice(0, 10)
+              : p.solveDate;
         if (stamp < cutoff) return false;
       }
       // Options within a facet are alternatives, facets AND with each other -
@@ -804,20 +893,23 @@ export function ProblemCards({
       // The one facet matched by pattern rather than by value: an entry names
       // its systems in free text, and a multi-system entry belongs to every
       // family named on it.
-      if (modelTests.length > 0 && !modelTests.some((t) => t.test(p.model))) return false;
+      if (modelTests.length > 0 && !modelTests.some((t) => t.test(p.model)))
+        return false;
       if (!selectionMatches(verificationFilter, p.verification)) return false;
       if (!selectionMatches(publicationFilter, p.publication)) return false;
       if (!selectionMatches(methodFilter, p.resolutionMethod)) return false;
       // Derived from the URL rather than stored, so it cannot drift from
       // the source it describes. Cheap: one URL parse per entry per pass.
-      if (!selectionMatches(sourceFilter, sourceHostKey(p.sourceUrl))) return false;
+      if (!selectionMatches(sourceFilter, sourceHostKey(p.sourceUrl)))
+        return false;
       if (!q) return true;
       // A pasted link or a bare arXiv id is an identity, not a word: compare
       // it against what the entry's links actually point at, so
       // arxiv.org/pdf/2608.13637v2 finds an entry filed under /abs/ and a
       // Zenodo DOI finds one filed under the record URL. Returns early
       // because a match here is exact and needs no text scoring.
-      if (queryId && entrySourceIds(p.sourceUrl, p.links).includes(queryId)) return true;
+      if (queryId && entrySourceIds(p.sourceUrl, p.links).includes(queryId))
+        return true;
       const haystack = [
         // Both forms: a name carrying math is displayed rendered, so someone
         // searching types what they see ("Lp(L1)"), not the source ("$L_p(L_1)$").
@@ -835,7 +927,21 @@ export function ProblemCards({
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [problems, query, period, sortKey, fieldFilter, resultFilter, statusFilter, contributionFilter, modelFilter, verificationFilter, publicationFilter, methodFilter, sourceFilter]);
+  }, [
+    problems,
+    query,
+    period,
+    sortKey,
+    fieldFilter,
+    resultFilter,
+    statusFilter,
+    contributionFilter,
+    modelFilter,
+    verificationFilter,
+    publicationFilter,
+    methodFilter,
+    sourceFilter,
+  ]);
 
   const sorted = useMemo(() => {
     const arr = [...filtered];
@@ -934,20 +1040,34 @@ export function ProblemCards({
           Algebra plus Analysis shows both - and "All fields" is how you get
           back to none. */}
       <div className="mb-2.5 flex flex-wrap items-center gap-1.5">
-        <button type="button" onClick={() => { touch(); setFieldFilter("all"); }} className={chip(chosenFields.length === 0)}>
+        <button
+          type="button"
+          onClick={() => {
+            touch();
+            setFieldFilter("all");
+          }}
+          className={chip(chosenFields.length === 0)}
+        >
           All fields
-          <span className="font-mono text-[11px] text-[var(--ink-muted)]">{problems.length}</span>
+          <span className="font-mono text-[11px] text-[var(--ink-muted)]">
+            {problems.length}
+          </span>
         </button>
         {groups.map(({ group, count }) => (
           <button
             key={group}
             type="button"
             aria-pressed={chosenFields.includes(group)}
-            onClick={() => { touch(); setFieldFilter(toggleSelection(fieldFilter, group)); }}
+            onClick={() => {
+              touch();
+              setFieldFilter(toggleSelection(fieldFilter, group));
+            }}
             className={chip(chosenFields.includes(group))}
           >
             {group}
-            <span className="font-mono text-[11px] text-[var(--ink-muted)]">{count}</span>
+            <span className="font-mono text-[11px] text-[var(--ink-muted)]">
+              {count}
+            </span>
           </button>
         ))}
       </div>
@@ -967,7 +1087,11 @@ export function ProblemCards({
             className="h-9 w-full rounded border border-[var(--hairline)] bg-[var(--paper-raised)] pl-8 pr-3 text-sm text-[var(--ink)] transition-colors placeholder:text-[var(--ink-muted)] hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
           />
         </span>
-        <FilterPanel facets={facets} values={filterValues} onChange={setFilter} />
+        <FilterPanel
+          facets={facets}
+          values={filterValues}
+          onChange={setFilter}
+        />
       </div>
 
       {/* Active facets stay visible as removable chips while the panel is
@@ -985,7 +1109,9 @@ export function ProblemCards({
                 <button
                   key={`${f.key}:${v}`}
                   type="button"
-                  onClick={() => setFilter(f.key, toggleSelection(filterValues[f.key], v))}
+                  onClick={() =>
+                    setFilter(f.key, toggleSelection(filterValues[f.key], v))
+                  }
                   aria-label={`Remove filter: ${label}`}
                   className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-[var(--accent-blue)] bg-[color-mix(in_srgb,var(--accent-blue)_10%,transparent)] px-2.5 py-1 text-xs font-medium text-[var(--accent-blue)]"
                 >
@@ -1034,7 +1160,10 @@ export function ProblemCards({
             the doubled border) and read as a unit rather than as two
             unrelated dropdowns. */}
         <div className="inline-flex shrink-0 items-center gap-2">
-          <label htmlFor="sort" className="shrink-0 text-xs text-[var(--ink-muted)]">
+          <label
+            htmlFor="sort"
+            className="shrink-0 text-xs text-[var(--ink-muted)]"
+          >
             Sort by
           </label>
           <span className="inline-flex">
@@ -1057,7 +1186,10 @@ export function ProblemCards({
             </select>
             <button
               type="button"
-              onClick={() => { touch(); setSortDir((d) => (d === "asc" ? "desc" : "asc")); }}
+              onClick={() => {
+                touch();
+                setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+              }}
               // Announces the state AND what pressing does; "Sort ascending"
               // alone was ambiguous about which of the two it meant.
               aria-label={`Sorted ${sortDir === "asc" ? "ascending" : "descending"}. Switch to ${
@@ -1066,7 +1198,10 @@ export function ProblemCards({
               title={sortDir === "asc" ? "Ascending" : "Descending"}
               className="-ml-px inline-flex h-9 min-w-9 shrink-0 items-center justify-center gap-1.5 rounded-r border border-[var(--hairline)] bg-[var(--paper-raised)] px-2 text-xs text-[var(--ink-secondary)] transition-colors hover:border-[var(--ink-muted)] hover:text-[var(--ink)] focus:relative focus:z-10 focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
             >
-              <Icon name="arrowDown" className={sortDir === "asc" ? "rotate-180" : ""} />
+              <Icon
+                name="arrowDown"
+                className={sortDir === "asc" ? "rotate-180" : ""}
+              />
               {/* The word is the icon's gloss, not its replacement: it costs
                   ~90px, which a phone cannot spare and a desktop never
                   notices. The title and aria-label carry it on mobile. */}
@@ -1091,13 +1226,19 @@ export function ProblemCards({
             pills would wrap onto its own row on phones, and the dropdown
             leaves room to add windows later without spending width. */}
         <div className="inline-flex shrink-0 items-center gap-2">
-          <label htmlFor="period" className="shrink-0 text-xs text-[var(--ink-muted)]">
+          <label
+            htmlFor="period"
+            className="shrink-0 text-xs text-[var(--ink-muted)]"
+          >
             Period
           </label>
           <select
             id="period"
             value={period}
-            onChange={(e) => { touch(); setPeriod(e.target.value as Period); }}
+            onChange={(e) => {
+              touch();
+              setPeriod(e.target.value as Period);
+            }}
             className={selectClass}
           >
             {PERIODS.map((p) => (
@@ -1121,8 +1262,10 @@ export function ProblemCards({
           ) : (
             <>
               showing{" "}
-              <span className="font-medium text-[var(--ink-secondary)]">{sorted.length}</span> of{" "}
-              {problems.length} entries
+              <span className="font-medium text-[var(--ink-secondary)]">
+                {sorted.length}
+              </span>{" "}
+              of {problems.length} entries
             </>
           )}
         </span>
@@ -1139,7 +1282,9 @@ export function ProblemCards({
             <ProblemCard
               key={p.slug}
               p={p}
-              statementHtml={p.statementHtml ?? lateStatements?.[p.slug] ?? null}
+              statementHtml={
+                p.statementHtml ?? lateStatements?.[p.slug] ?? null
+              }
             />
           ))}
         </div>
@@ -1157,7 +1302,10 @@ export function ProblemCards({
         </button>
         {pageWindow(current, totalPages).map((p, i) =>
           p === "gap" ? (
-            <span key={`gap-${i}`} className="px-1 text-sm text-[var(--ink-muted)]">
+            <span
+              key={`gap-${i}`}
+              className="px-1 text-sm text-[var(--ink-muted)]"
+            >
               …
             </span>
           ) : (
@@ -1186,7 +1334,10 @@ export function ProblemCards({
 
         <select
           value={perPage}
-          onChange={(e) => { touch(); setPerPage(Number(e.target.value)); }}
+          onChange={(e) => {
+            touch();
+            setPerPage(Number(e.target.value));
+          }}
           aria-label="Entries per page"
           className={`${selectClass} ml-auto`}
         >
