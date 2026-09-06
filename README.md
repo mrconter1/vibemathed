@@ -1,4 +1,4 @@
-# VibeMathed
+# <img src="src/app/icon.svg" width="30" height="30" align="middle" alt=""> VibeMathed
 
 **[vibemathed.com](https://vibemathed.com)** is a community of mathematicians
 and enthusiasts tracking, curating and cataloguing the mathematical problems
