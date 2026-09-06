@@ -48,9 +48,12 @@ export function ReviewBadge() {
 
   if (!loaded || !isAdmin || pendingReviews <= 0) return null;
 
-  const waited = oldestPendingAt && now !== null ? relativeTime(oldestPendingAt, now) : null;
+  const waited =
+    oldestPendingAt && now !== null ? relativeTime(oldestPendingAt, now) : null;
   const label = `${pendingReviews} to review`;
-  const detail = waited ? `Oldest submitted ${waited}` : "Submissions awaiting review";
+  const detail = waited
+    ? `Oldest submitted ${waited}`
+    : "Submissions awaiting review";
 
   return (
     <Link
@@ -67,7 +70,13 @@ export function ReviewBadge() {
         "focus-visible:outline-[var(--accent-blue)]"
       }
     >
-      {label}
+      {/* On a phone the pill shows the count alone. Spelled out, "13 to
+          review" made the curator's control cluster wider than the space
+          beside the wordmark, so the whole cluster wrapped under it and the
+          header ran to four rows. The words come back from `sm`; the
+          aria-label and tooltip always carry them. */}
+      {pendingReviews}
+      <span className="hidden sm:inline">&nbsp;to review</span>
     </Link>
   );
 }
