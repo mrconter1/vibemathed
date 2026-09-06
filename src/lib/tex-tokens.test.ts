@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { TEX_TOKENS, isDisplayMath, isInlineMath, unescapeDollars } from "@/lib/tex-tokens";
+import {
+  TEX_TOKENS,
+  isDisplayMath,
+  isInlineMath,
+  mathBody,
+  unescapeDollars,
+} from "@/lib/tex-tokens";
 import { deTeX, texToHtml } from "@/components/TeX";
 
 // The tokenizer is shared by the entry renderer, the comment renderer and the
@@ -21,6 +27,60 @@ describe("TEX_TOKENS", () => {
     const parts = split("Then $$\\sum_{k\\ge1} a_k$$ converges.");
     expect(parts.filter(isDisplayMath)).toEqual(["$$\\sum_{k\\ge1} a_k$$"]);
     expect(parts.filter(isInlineMath)).toEqual([]);
+  });
+
+  // LaTeX's other delimiters, added September 2026. The 19-dimensional
+  // kissing entry published with its whole statement as literal backslashes
+  // because nothing here matched them.
+  it("splits LaTeX's paren delimiters out of prose", () => {
+    const parts = split("Let \\(D\\subseteq\\mathbb F_2^{19}\\) be the code.");
+    expect(parts.filter(isInlineMath)).toEqual([
+      "\\(D\\subseteq\\mathbb F_2^{19}\\)",
+    ]);
+    expect(parts.filter(isDisplayMath)).toEqual([]);
+  });
+
+  it("splits LaTeX's bracket delimiters as display math", () => {
+    const parts = split("Then \\[\\sum_{k\\ge1} a_k\\] converges.");
+    expect(parts.filter(isDisplayMath)).toEqual(["\\[\\sum_{k\\ge1} a_k\\]"]);
+    expect(parts.filter(isInlineMath)).toEqual([]);
+  });
+
+  it("stops each paren segment at its OWN closing delimiter", () => {
+    // The trap: an escape-aware body would eat "\)" as an escape pair and run
+    // the first segment on to the last one in the field.
+    const parts = split("both \\(a\\) and \\(b\\) hold");
+    expect(parts.filter(isInlineMath)).toEqual(["\\(a\\)", "\\(b\\)"]);
+    expect(parts.filter((p) => !isInlineMath(p) && p)).toEqual([
+      "both ",
+      " and ",
+      " hold",
+    ]);
+  });
+
+  it("mathBody strips whichever delimiters were used", () => {
+    expect(mathBody("$x^2$")).toBe("x^2");
+    expect(mathBody("$$x^2$$")).toBe("x^2");
+    expect(mathBody("\\(x^2\\)")).toBe("x^2");
+    expect(mathBody("\\[x^2\\]")).toBe("x^2");
+  });
+
+  it("renders the paren forms as math rather than as prose", () => {
+    const html = texToHtml("Let \\(A\\subseteq D\\) be admissible.");
+    // Exactly one formula, and the delimiters are gone from the prose. The raw
+    // TeX still appears inside KaTeX's own MathML annotation, which is why
+    // this counts spans instead of grepping for the command.
+    expect(html.match(/class="katex"/g)?.length ?? 0).toBe(1);
+    expect(html).toContain("Let ");
+    expect(html).toContain(" be admissible.");
+    expect(html).not.toContain("katex-error");
+  });
+
+  it("deTeX drops the paren delimiters", () => {
+    // Spacing is the author's: "A\subseteq D" has no space before the command,
+    // and deTeX substitutes rather than reflows, exactly as for the $ forms.
+    expect(deTeX("Let \\(A\\subseteq D\\) hold")).toBe("Let A⊆ D hold");
+    expect(deTeX("Then \\[x + y\\] follows")).toBe("Then x + y follows");
   });
 
   it("does not treat an escaped dollar as a delimiter", () => {
@@ -78,7 +138,9 @@ describe("deTeX", () => {
   });
 
   it("keeps an escaped dollar as a literal dollar", () => {
-    expect(deTeX("a \\$10,000 prize for $n^2$")).toBe("a $10,000 prize for n^2");
+    expect(deTeX("a \\$10,000 prize for $n^2$")).toBe(
+      "a $10,000 prize for n^2",
+    );
   });
 
   it("flattens newlines for a meta tag", () => {

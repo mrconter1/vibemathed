@@ -13,7 +13,13 @@
 
 import katex from "katex";
 import { linkifyEscaped } from "@/lib/linkify";
-import { TEX_TOKENS, isDisplayMath, isInlineMath, unescapeDollars } from "@/lib/tex-tokens";
+import {
+  TEX_TOKENS,
+  isDisplayMath,
+  isInlineMath,
+  mathBody,
+  unescapeDollars,
+} from "@/lib/tex-tokens";
 
 function escapeHtml(s: string): string {
   return s
@@ -24,7 +30,10 @@ function escapeHtml(s: string): string {
 }
 
 function renderMath(tex: string, display: boolean): string {
-  return katex.renderToString(tex, { throwOnError: false, displayMode: display });
+  return katex.renderToString(tex, {
+    throwOnError: false,
+    displayMode: display,
+  });
 }
 
 /// Plain text in, safe HTML out. Blank lines separate paragraphs; single
@@ -36,8 +45,8 @@ export function renderCommentHtml(text: string): string {
       const parts = paragraph.split(TEX_TOKENS);
       const inner = parts
         .map((part) => {
-          if (isDisplayMath(part)) return renderMath(part.slice(2, -2), true);
-          if (isInlineMath(part)) return renderMath(part.slice(1, -1), false);
+          if (isDisplayMath(part)) return renderMath(mathBody(part), true);
+          if (isInlineMath(part)) return renderMath(mathBody(part), false);
           const linked = linkifyEscaped(escapeHtml(part));
           return unescapeDollars(linked).replace(/\n/g, "<br />");
         })
@@ -52,8 +61,18 @@ export function renderCommentHtml(text: string): string {
 export function formatCommentDate(d: Date): string {
   const day = String(d.getUTCDate()).padStart(2, "0");
   const months = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
   return `${day} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 }

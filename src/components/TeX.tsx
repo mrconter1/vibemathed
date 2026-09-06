@@ -124,6 +124,12 @@ export function deTeX(s: string): string {
   // not pair with a real delimiter and swallow the sentence between them. A meta
   // description gets this wrong silently, which is how it went unnoticed.
   let out = s.replace(/(?<!\\)\$\$?((?:\\.|[^$\\])+)\$\$?/g, "$1");
+  // The other pair of delimiters the tokenizer accepts, `\(…\)` and `\[…\]`.
+  // Without this a meta description carries the backslashes into the search
+  // result, and the catch-all below deletes only commands made of letters, so
+  // they would survive it.
+  out = out.replace(/\\\[[\s\S]*?\\\]/g, (m) => m.slice(2, -2));
+  out = out.replace(/\\\([\s\S]*?\\\)/g, (m) => m.slice(2, -2));
   for (const [re, rep] of REPLACEMENTS) out = out.replace(re, rep);
   out = unescapeDollars(out);
   return (
