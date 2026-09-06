@@ -152,8 +152,8 @@ export function emptySubmission(): SubmissionValues {
   return out;
 }
 
-/// Submission throttle: up to SUBMISSIONS_PER_WINDOW entries per person per
-/// rolling 24 hours. Admins are exempt. Generous enough for a productive
+/// Submission throttle: 10 entries for unverified users, 25 for verified users
+/// per rolling 24 hours. Admins are exempt. Generous enough for a productive
 /// contributor with several results (it happens), still a cap on spam - and
 /// note that curator-entered rows credited to an account count against its
 /// quota too, since the check is by submitter id.
@@ -162,12 +162,12 @@ export function emptySubmission(): SubmissionValues {
 export { MESSAGE_MAX as REVIEW_MESSAGE_MAX } from "@/lib/messages";
 
 export const SUBMISSION_WINDOW_MS = 24 * 60 * 60 * 1000;
-/// Raised 3 -> 5 -> 10. Three was set when the queue was the bottleneck; the
-/// people actually hitting it turned out to be the regulars sending several
-/// good entries in a sitting, which is the traffic this site wants, not the
-/// flooding the throttle exists to stop. Ten because the most prolific
-/// submitter reached five in a day with a 4% rejection rate.
 export const SUBMISSIONS_PER_WINDOW = 10;
+export const VERIFIED_SUBMISSIONS_PER_WINDOW = 25;
+
+export function submissionLimit(verified: boolean): number {
+  return verified ? VERIFIED_SUBMISSIONS_PER_WINDOW : SUBMISSIONS_PER_WINDOW;
+}
 
 /// URL-safe id derived from the entry name. Uniqueness is enforced by the
 /// caller against the database.

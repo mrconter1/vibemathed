@@ -29,6 +29,7 @@ import { MODEL_FAMILIES, SOLVE_TYPE, VERIFICATION } from "@/lib/display";
 export type SortKey =
   | "solveDate"
   | "added"
+  | "changed"
   | "score"
   | "discussion"
   | "name"
@@ -46,6 +47,7 @@ export const SORTS: { key: SortKey; label: string }[] = [
   { key: "added", label: "Date added" },
   { key: "solveDate", label: "Date solved" },
   { key: "cost", label: "Disclosed cost" },
+  { key: "changed", label: "Last changed" },
   { key: "name", label: "Name" },
   { key: "significance", label: "Significance" },
   { key: "score", label: "Votes" },
@@ -81,6 +83,7 @@ export const TIME_SENSITIVE: SortKey[] = ["score", "discussion"];
 export const NUMERIC_KEYS: SortKey[] = [
   "solveDate",
   "added",
+  "changed",
   "age",
   "significance",
   "score",
@@ -117,10 +120,15 @@ export function joinSelection(values: string[]): Selection {
 /// Adds an option to a facet, or removes it if it is already chosen. This is
 /// the only way the UI changes a facet, so clicking an active pill still
 /// clears it exactly as it did when facets held one value.
-export function toggleSelection(value: Selection | undefined, option: string): Selection {
+export function toggleSelection(
+  value: Selection | undefined,
+  option: string,
+): Selection {
   const chosen = parseSelection(value);
   return joinSelection(
-    chosen.includes(option) ? chosen.filter((v) => v !== option) : [...chosen, option],
+    chosen.includes(option)
+      ? chosen.filter((v) => v !== option)
+      : [...chosen, option],
   );
 }
 
@@ -185,30 +193,43 @@ export const SETTINGS_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 /// hand-edited URL cannot make one condition count twice in the badge.
 const sanitize = (value: unknown, allowed: readonly string[]): Selection => {
   if (typeof value !== "string") return "all";
-  return joinSelection([...new Set(parseSelection(value))].filter((v) => allowed.includes(v)));
+  return joinSelection(
+    [...new Set(parseSelection(value))].filter((v) => allowed.includes(v)),
+  );
 };
 
 /// Validates whatever was stored into settings the UI can actually render.
 /// Anything unrecognised falls back to its default, key by key, so one stale
 /// filter cannot discard the rest of a remembered view.
 export function normalizeListSettings(raw: unknown): ListSettings {
-  const s = (typeof raw === "object" && raw !== null ? raw : {}) as Record<string, unknown>;
+  const s = (typeof raw === "object" && raw !== null ? raw : {}) as Record<
+    string,
+    unknown
+  >;
   const out = { ...DEFAULT_SETTINGS };
 
   out.fieldFilter = sanitize(s.fieldFilter, FIELD_GROUPS);
   out.resultFilter = sanitize(s.resultFilter, Object.keys(SOLVE_TYPE));
   out.statusFilter = sanitize(s.statusFilter, RESOLUTION_STATUSES);
   out.contributionFilter = sanitize(s.contributionFilter, AI_CONTRIBUTIONS);
-  out.modelFilter = sanitize(s.modelFilter, MODEL_FAMILIES.map((f) => f.key));
-  out.verificationFilter = sanitize(s.verificationFilter, Object.keys(VERIFICATION));
+  out.modelFilter = sanitize(
+    s.modelFilter,
+    MODEL_FAMILIES.map((f) => f.key),
+  );
+  out.verificationFilter = sanitize(
+    s.verificationFilter,
+    Object.keys(VERIFICATION),
+  );
   out.publicationFilter = sanitize(s.publicationFilter, PUBLICATION_STATUSES);
   out.methodFilter = sanitize(s.methodFilter, RESOLUTION_METHODS);
   out.sourceFilter = sanitize(s.sourceFilter, SOURCE_HOST_KEYS);
 
-  if (SORTS.some((x) => x.key === s.sortKey)) out.sortKey = s.sortKey as SortKey;
+  if (SORTS.some((x) => x.key === s.sortKey))
+    out.sortKey = s.sortKey as SortKey;
   if (s.sortDir === "asc" || s.sortDir === "desc") out.sortDir = s.sortDir;
   if (PERIODS.some((x) => x.key === s.period)) out.period = s.period as Period;
-  if (typeof s.perPage === "number" && PAGE_SIZES.includes(s.perPage)) out.perPage = s.perPage;
+  if (typeof s.perPage === "number" && PAGE_SIZES.includes(s.perPage))
+    out.perPage = s.perPage;
 
   return out;
 }
@@ -253,13 +274,22 @@ export function solveDateSortKey(solveDate: string): string {
 /// The value a card sorts on. Shared so the server can order the list the
 /// same way the client will, which is what lets the page inline statement
 /// math for the entries that will actually be on screen.
-export function sortValue(p: CardEntry, key: SortKey, period: Period): string | number {
+export function sortValue(
+  p: CardEntry,
+  key: SortKey,
+  period: Period,
+): string | number {
   switch (key) {
     case "solveDate":
       return solveDateSortKey(p.solveDate);
     case "added":
       // ISO timestamps sort correctly as strings.
       return p.addedAt;
+    case "changed":
+      // Most recently touched first: an edit, a review decision, a vote. The
+      // stamp is the row's own updatedAt, so a comment (its own table) does
+      // not count as a change to the entry - "Comments" is the sort for that.
+      return p.changedAt;
     case "score":
       // "Top voted" ranks on NET score, not raw upvotes - otherwise a
       // 50-up/49-down brawl outranks a clean 20-up/0-down entry.
