@@ -12,7 +12,7 @@ import { isHttpUrl, isValidSolveDate, parseLinks } from "@/lib/editable";
 import {
   SUBMISSION_FIELDS,
   SUBMISSION_WINDOW_MS,
-  SUBMISSIONS_PER_WINDOW,
+  submissionLimit,
   slugify,
   type SubmissionValues,
 } from "@/lib/submission";
@@ -38,14 +38,19 @@ export async function submitProblem(values: SubmissionValues): Promise<SubmitRes
   // A few submissions per person per day, so a burst cannot flood the queue.
   // Admins bypass it.
   if (!admin) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { verified: true },
+    });
+    const limit = submissionLimit(user?.verified ?? false);
     const since = new Date(Date.now() - SUBMISSION_WINDOW_MS);
     const recent = await prisma.problem.count({
       where: { submittedById: userId, createdAt: { gte: since } },
     });
-    if (recent >= SUBMISSIONS_PER_WINDOW) {
+    if (recent >= limit) {
       return {
         ok: false,
-        error: `You can submit up to ${SUBMISSIONS_PER_WINDOW} entries per rolling 24 hours. Try again later.`,
+        error: `You can submit up to ${limit} entries per rolling 24 hours. Try again later.`,
       };
     }
   }
@@ -176,12 +181,19 @@ export async function submitProblem(values: SubmissionValues): Promise<SubmitRes
   } as unknown as Prisma.ProblemUncheckedCreateInput;
 
   try {
-    const created = await prisma.problem.create({
-      data: createInput,
-      select: { id: true },
-    });
-    await prisma.problemActivity.create({
-      data: { problemId: created.id, userId, userName, type: "submitted" },
+    // Keep the entry and its audit event atomic: a failed event must not
+    // leave a saved entry behind while telling the submitter to retry.
+    await prisma.$transaction(async (tx) => {
+      const created = await tx.problem.create({
+        data: createInput,
+        select: { id: true },
+      });
+      await tx.problemActivity.create({
+        data: { problemId: created.id, userId, userName, type: "submitted" },
+        // No activity fields are needed. Avoid returning unrelated columns
+        // that may not yet exist in databases awaiting the frontier schema.
+        select: { id: true },
+      });
     });
   } catch (error) {
     console.error("submitProblem failed", error);
