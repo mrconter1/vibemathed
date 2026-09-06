@@ -5,6 +5,7 @@ import { ChartCard } from "@/components/ChartCard";
 import type { ChartProblem } from "@/lib/problems";
 import { ContributionGrowthChart } from "@/components/ContributionGrowthChart";
 import { CumulativeChart } from "@/components/CumulativeChart";
+import { ErdosShareChart } from "@/components/ErdosShareChart";
 import { FieldsChart } from "@/components/FieldsChart";
 import { MethodGrowthChart } from "@/components/MethodGrowthChart";
 import { Icon, type IconName } from "@/components/Icons";
@@ -37,11 +38,12 @@ export default async function StatsPage() {
   // serialized into the page payload. Handing them the raw catalog shipped
   // every statement, note and trend counter to the browser to draw a few
   // hundred dots - most of this page's weight, and most of its load time.
-  // The projection IS the payload: fourteen fields, nothing prose-sized.
+  // The projection IS the payload: fifteen fields, nothing prose-sized.
   const slim: ChartProblem[] = problems.map((p) => ({
     slug: p.slug,
     name: p.name,
     shortName: p.shortName,
+    problemNumber: p.problemNumber,
     field: p.field,
     fieldGroup: p.fieldGroup,
     solveDate: p.solveDate,
@@ -184,7 +186,9 @@ export default async function StatsPage() {
               </p>
             )}
             {t.sub && !t.change && (
-              <p className="mt-0.5 text-[11px] text-[var(--ink-muted)]">{t.sub}</p>
+              <p className="mt-0.5 text-[11px] text-[var(--ink-muted)]">
+                {t.sub}
+              </p>
             )}
           </div>
         ))}
@@ -202,11 +206,17 @@ export default async function StatsPage() {
         <ChartCard id="by-vendor" label="solves per vendor">
           <ModelsChart problems={resolved} today={today} />
         </ChartCard>
-        <ChartCard id="by-contribution-tier" label="growth per AI-contribution tier">
+        <ChartCard
+          id="by-contribution-tier"
+          label="growth per AI-contribution tier"
+        >
           <ContributionGrowthChart problems={resolved} today={today} />
         </ChartCard>
         {/* The "is AI doing theory yet?" chart. */}
-        <ChartCard id="by-resolution-method" label="growth per resolution method">
+        <ChartCard
+          id="by-resolution-method"
+          label="growth per resolution method"
+        >
           <MethodGrowthChart problems={resolved} today={today} />
         </ChartCard>
         {/* Area growth beside the record's total - both count EVERY tracked
@@ -217,6 +227,12 @@ export default async function StatsPage() {
         </ChartCard>
         <ChartCard id="over-time" label="problems over time">
           <CumulativeChart problems={slim} today={today} />
+        </ChartCard>
+        {/* The one chart with an external denominator: how much of Erdős's
+            collection AI has closed. Resolved only, distinct by problem
+            number - see the component header. */}
+        <ChartCard id="erdos-share" label="share of Erdős problems solved">
+          <ErdosShareChart problems={resolved} today={today} />
         </ChartCard>
         <ChartCard id="proved-vs-disproved" label="proved vs. disproved">
           <SolveRatioChart problems={resolved} />

@@ -407,12 +407,26 @@ export function assertProblem(value: unknown, index: number): MathProblem {
     }
   };
 
-  ["slug", "name", "shortName", "solveDate", "model", "sourceUrl", "sourceName"].forEach(
-    requireString,
-  );
-  ["field", "statement", "posedBy", "modelMaker", "aiRole", "verificationNote", "citationsPaper", "citationsSource", "citationsUrl"].forEach(
-    requireNullableString,
-  );
+  [
+    "slug",
+    "name",
+    "shortName",
+    "solveDate",
+    "model",
+    "sourceUrl",
+    "sourceName",
+  ].forEach(requireString);
+  [
+    "field",
+    "statement",
+    "posedBy",
+    "modelMaker",
+    "aiRole",
+    "verificationNote",
+    "citationsPaper",
+    "citationsSource",
+    "citationsUrl",
+  ].forEach(requireNullableString);
   ["problemNumber", "yearPosed", "citations"].forEach(requireNullableNumber);
   requireNumber("renownLangs");
   for (const key of [
@@ -423,19 +437,25 @@ export function assertProblem(value: unknown, index: number): MathProblem {
     "significanceNote",
   ]) {
     if (p[key] !== undefined && p[key] !== null && typeof p[key] !== "string") {
-      throw new Error(`${where}: "${key}" must be a string or null when present`);
+      throw new Error(
+        `${where}: "${key}" must be a string or null when present`,
+      );
     }
   }
   if (p.significance !== undefined && p.significance !== null) {
     const s = p.significance;
     if (typeof s !== "number" || !Number.isInteger(s) || s < 0 || s > 100) {
-      throw new Error(`${where}: "significance" must be an integer 0-100 when present`);
+      throw new Error(
+        `${where}: "significance" must be an integer 0-100 when present`,
+      );
     }
   }
   requireStringArray("humanCollaborators");
 
   if (!SOLVE_TYPES.includes(p.solveType as SolveType)) {
-    throw new Error(`${where}: "solveType" must be one of ${SOLVE_TYPES.join(", ")}`);
+    throw new Error(
+      `${where}: "solveType" must be one of ${SOLVE_TYPES.join(", ")}`,
+    );
   }
   if (!RESOLUTION_STATUSES.includes(p.resolution as ResolutionStatus)) {
     throw new Error(
@@ -454,7 +474,9 @@ export function assertProblem(value: unknown, index: number): MathProblem {
   }
   // The curated baseline always classifies; only community rows may lack it.
   if (!FIELD_GROUPS.includes(p.fieldGroup as FieldGroup)) {
-    throw new Error(`${where}: "fieldGroup" must be one of ${FIELD_GROUPS.join(", ")}`);
+    throw new Error(
+      `${where}: "fieldGroup" must be one of ${FIELD_GROUPS.join(", ")}`,
+    );
   }
   if (p.links !== undefined) {
     const ok =
@@ -467,7 +489,9 @@ export function assertProblem(value: unknown, index: number): MathProblem {
           typeof (l as LinkRef).url === "string",
       );
     if (!ok) {
-      throw new Error(`${where}: "links" must be an array of { label, url } when present`);
+      throw new Error(
+        `${where}: "links" must be an array of { label, url } when present`,
+      );
     }
   }
   if (p.relations !== undefined) {
@@ -482,7 +506,9 @@ export function assertProblem(value: unknown, index: number): MathProblem {
           typeof (r as { note: unknown }).note === "string",
       );
     if (!ok) {
-      throw new Error(`${where}: "relations" must be an array of { to, kind, note } when present`);
+      throw new Error(
+        `${where}: "relations" must be an array of { to, kind, note } when present`,
+      );
     }
   }
   if (!VERIFICATION_STATUSES.includes(p.verification as VerificationStatus)) {
@@ -523,6 +549,7 @@ export type ChartProblem = Pick<
   | "slug"
   | "name"
   | "shortName"
+  | "problemNumber"
   | "field"
   | "fieldGroup"
   | "solveDate"
@@ -537,7 +564,9 @@ export type ChartProblem = Pick<
   | "significance"
 >;
 
-export function ageAtSolve(problem: Pick<MathProblem, "yearPosed" | "solveDate">): number | null {
+export function ageAtSolve(
+  problem: Pick<MathProblem, "yearPosed" | "solveDate">,
+): number | null {
   if (problem.yearPosed === null) return null;
   const solveYear = parseInt(problem.solveDate.slice(0, 4), 10);
   if (Number.isNaN(solveYear)) return null;
