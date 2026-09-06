@@ -8,7 +8,7 @@ import {
   SUBMISSION_DRAFT_KEY,
   SUBMISSION_FIELDS,
   SUBMISSION_GROUPS,
-  SUBMISSIONS_PER_WINDOW,
+  submissionLimit,
   emptySubmission,
   type SubmissionValues,
 } from "@/lib/submission";
@@ -18,7 +18,7 @@ import { EntryFields } from "@/components/EntryFields";
 import { useViewer } from "@/components/ViewerProvider";
 
 export function SubmitForm() {
-  const { signedIn, loaded, isAdmin } = useViewer();
+  const { signedIn, loaded, isAdmin, verified } = useViewer();
   const [values, setValues] = useState<SubmissionValues>(emptySubmission);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -161,7 +161,7 @@ export function SubmitForm() {
               "three" for a while after the limit became five, which is the
               kind of small lie that costs a submission. */}
           {!isAdmin &&
-            ` You can submit up to ${SUBMISSIONS_PER_WINDOW} entries per day.`}{" "}
+            ` You can submit up to ${submissionLimit(verified)} entries per rolling 24 hours.`}{" "}
           Full
           criteria in the{" "}
           <Link
