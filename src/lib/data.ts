@@ -16,7 +16,12 @@
 import type { Prisma } from "@prisma/client";
 import { cacheLife, cacheTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { activityTag, commentsTag, subjectWhere, type Subject } from "@/lib/subject";
+import {
+  activityTag,
+  commentsTag,
+  subjectWhere,
+  type Subject,
+} from "@/lib/subject";
 import type { ProfileLinks } from "@/lib/profile-links";
 import {
   CHANGELOG_TYPES,
@@ -89,6 +94,7 @@ export const PROBLEM_SELECT = {
   sourceUrl: true,
   sourceName: true,
   createdAt: true,
+  updatedAt: true,
   links: {
     select: { label: true, url: true, kind: true },
     orderBy: { position: "asc" },
@@ -153,7 +159,11 @@ export function toProblem(r: ProblemRow): ProblemWithVotes {
     sourceUrl: r.sourceUrl,
     sourceName: r.sourceName,
     links: r.links.map((l) => ({ label: l.label, url: l.url, kind: l.kind })),
-    relations: r.relationsFrom.map((x) => ({ to: x.to.slug, kind: x.kind, note: x.note })),
+    relations: r.relationsFrom.map((x) => ({
+      to: x.to.slug,
+      kind: x.kind,
+      note: x.note,
+    })),
     upvotes: r.upvotes,
     downvotes: r.downvotes,
     score: r.upvotes - r.downvotes,
@@ -161,6 +171,7 @@ export function toProblem(r: ProblemRow): ProblemWithVotes {
     // Null for the curated baseline; a pseudonym for community submissions.
     submittedBy: r.submittedBy?.pseudonym ?? null,
     addedAt: r.createdAt.toISOString(),
+    changedAt: r.updatedAt.toISOString(),
   };
 }
 
@@ -201,7 +212,8 @@ async function countsSince(since: Date): Promise<WindowCounts> {
   const commentCounts = new Map<string, number>();
   for (const row of comments) {
     // Record comments group under a null problemId; entry counts skip them.
-    if (row.problemId !== null) commentCounts.set(row.problemId, row._count._all);
+    if (row.problemId !== null)
+      commentCounts.set(row.problemId, row._count._all);
   }
 
   return { score, comments: commentCounts };
@@ -230,19 +242,28 @@ export async function getToday(): Promise<string> {
   return new Date().toISOString().slice(0, 10);
 }
 
-export async function getEntryFlow(): Promise<{ week: number; prevWeek: number }> {
+export async function getEntryFlow(): Promise<{
+  week: number;
+  prevWeek: number;
+}> {
   "use cache";
   cacheTag("problems");
   cacheLife("hours");
   const now = Date.now();
   const [week, prevWeek] = await Promise.all([
     prisma.problem.count({
-      where: { status: "published", createdAt: { gte: new Date(now - 7 * DAY_MS) } },
+      where: {
+        status: "published",
+        createdAt: { gte: new Date(now - 7 * DAY_MS) },
+      },
     }),
     prisma.problem.count({
       where: {
         status: "published",
-        createdAt: { gte: new Date(now - 14 * DAY_MS), lt: new Date(now - 7 * DAY_MS) },
+        createdAt: {
+          gte: new Date(now - 14 * DAY_MS),
+          lt: new Date(now - 7 * DAY_MS),
+        },
       },
     }),
   ]);
@@ -340,7 +361,13 @@ export async function getRelations(slug: string): Promise<RelationView[]> {
 
   const rows = await prisma.problemRelation.findMany({
     where: { OR: [{ from: { slug } }, { to: { slug } }] },
-    select: { kind: true, note: true, position: true, from: { select: TARGET }, to: { select: TARGET } },
+    select: {
+      kind: true,
+      note: true,
+      position: true,
+      from: { select: TARGET },
+      to: { select: TARGET },
+    },
     orderBy: [{ position: "asc" }, { createdAt: "asc" }],
   });
 
@@ -428,7 +455,14 @@ export async function getProvenance(slug: string): Promise<ProvenanceView[]> {
 
   const rows = await prisma.fieldProvenance.findMany({
     where: { problem: { slug } },
-    select: { field: true, model: true, source: true, userName: true, userId: true, createdAt: true },
+    select: {
+      field: true,
+      model: true,
+      source: true,
+      userName: true,
+      userId: true,
+      createdAt: true,
+    },
   });
   return rows.map((r) => ({
     field: r.field,
@@ -531,7 +565,10 @@ export async function getRecentActivity(
               field: a.field,
               oldValue: a.oldValue,
               newValue: a.newValue,
-              createdAt: relativeFallback(a.createdAt, formatCommentDate(a.createdAt)),
+              createdAt: relativeFallback(
+                a.createdAt,
+                formatCommentDate(a.createdAt),
+              ),
               createdAtIso: a.createdAt.toISOString(),
               problemName: a.problem.name,
               problemSlug: a.problem.slug,
@@ -673,26 +710,28 @@ export async function getMemberDirectory(): Promise<DirectoryMember[]> {
     },
   });
 
-  return users
-    .map((u) => ({
-      pseudonym: u.pseudonym as string,
-      role: u.role,
-      verified: u.verified,
-      contributions:
-        u._count.submittedProblems + u._count.comments + u._count.activities,
-      entries: u._count.submittedProblems,
-      comments: u._count.comments,
-      edits: u._count.activities,
-      joined: formatCommentDate(u.createdAt),
-    }))
-    // Most active first, then alphabetical so the long tail of members with
-    // identical counts has a stable, findable order rather than whatever the
-    // database returned.
-    .sort(
-      (a, b) =>
-        b.contributions - a.contributions ||
-        a.pseudonym.localeCompare(b.pseudonym),
-    );
+  return (
+    users
+      .map((u) => ({
+        pseudonym: u.pseudonym as string,
+        role: u.role,
+        verified: u.verified,
+        contributions:
+          u._count.submittedProblems + u._count.comments + u._count.activities,
+        entries: u._count.submittedProblems,
+        comments: u._count.comments,
+        edits: u._count.activities,
+        joined: formatCommentDate(u.createdAt),
+      }))
+      // Most active first, then alphabetical so the long tail of members with
+      // identical counts has a stable, findable order rather than whatever the
+      // database returned.
+      .sort(
+        (a, b) =>
+          b.contributions - a.contributions ||
+          a.pseudonym.localeCompare(b.pseudonym),
+      )
+  );
 }
 
 /// Public profile by CURRENT pseudonym, or null when no such member exists.
@@ -751,15 +790,15 @@ export async function getUserProfile(
       // not publish something is not to read it.
       user.showComments
         ? prisma.comment.findMany({
-        where: { userId: user.id, ...publishedOnly },
-        orderBy: { createdAt: "desc" },
-        take: 50,
-        select: {
-          id: true,
-          body: true,
-          createdAt: true,
-          problem: { select: { name: true, slug: true } },
-        },
+            where: { userId: user.id, ...publishedOnly },
+            orderBy: { createdAt: "desc" },
+            take: 50,
+            select: {
+              id: true,
+              body: true,
+              createdAt: true,
+              problem: { select: { name: true, slug: true } },
+            },
           })
         : Promise.resolve([]),
       // Counted either way: it feeds `contributions`, which is one blended
@@ -910,12 +949,20 @@ export async function getTeam(): Promise<TeamMember[]> {
       showGoogleName: true,
     },
   });
-  const order: Record<string, number> = { admin: 0, moderator: 1, developer: 2 };
+  const order: Record<string, number> = {
+    admin: 0,
+    moderator: 1,
+    developer: 2,
+  };
   return rows
-    .filter((r): r is typeof r & { pseudonym: string; staffRole: string } => !!r.pseudonym && !!r.staffRole)
+    .filter(
+      (r): r is typeof r & { pseudonym: string; staffRole: string } =>
+        !!r.pseudonym && !!r.staffRole,
+    )
     .map((r) => ({
       pseudonym: r.pseudonym,
-      displayName: r.showGoogleName && r.name?.trim() ? r.name.trim() : r.pseudonym,
+      displayName:
+        r.showGoogleName && r.name?.trim() ? r.name.trim() : r.pseudonym,
       staffRole: r.staffRole,
       verified: r.verified,
       bio: r.bio,
@@ -1008,7 +1055,10 @@ export async function getPendingQueue(): Promise<QueueEntry[]> {
     name: r.name,
     field: r.field,
     fieldGroup: r.fieldGroup,
-    submittedBy: resolveSnapshot(r.submittedBy?.pseudonym ?? null, r.submittedBy !== null),
+    submittedBy: resolveSnapshot(
+      r.submittedBy?.pseudonym ?? null,
+      r.submittedBy !== null,
+    ),
     submittedAtIso: r.createdAt.toISOString(),
     submittedAt: relativeFallback(r.createdAt, formatCommentDate(r.createdAt)),
   }));
@@ -1100,7 +1150,9 @@ const FRONTIER_ROW_SELECT = {
   },
 } satisfies Prisma.FrontierRowSelect;
 
-type FrontierRowRaw = Prisma.FrontierRowGetPayload<{ select: typeof FRONTIER_ROW_SELECT }>;
+type FrontierRowRaw = Prisma.FrontierRowGetPayload<{
+  select: typeof FRONTIER_ROW_SELECT;
+}>;
 
 function toFrontierRow(r: FrontierRowRaw): FrontierRowView {
   // An entry that has been unpublished since the row was made must not leak
@@ -1162,7 +1214,9 @@ export async function getFrontiers(): Promise<FrontierSummary[]> {
   }));
 }
 
-export async function getFrontierBySlug(slug: string): Promise<FrontierView | null> {
+export async function getFrontierBySlug(
+  slug: string,
+): Promise<FrontierView | null> {
   "use cache";
   cacheTag("frontiers", `frontier-${slug}`);
   cacheLife("hours");
@@ -1203,8 +1257,16 @@ export async function getFrontierBySlug(slug: string): Promise<FrontierView | nu
 
 /// The records an entry is a row on, for the one-line pointer on its page.
 /// Almost every entry has none, so this must stay cheap: one indexed lookup.
-export async function getFrontiersForProblem(slug: string): Promise<
-  { slug: string; shortName: string; direction: "min" | "max"; rows: FrontierRowView[]; rowId: string }[]
+export async function getFrontiersForProblem(
+  slug: string,
+): Promise<
+  {
+    slug: string;
+    shortName: string;
+    direction: "min" | "max";
+    rows: FrontierRowView[];
+    rowId: string;
+  }[]
 > {
   "use cache";
   cacheTag("frontiers", `problem-${slug}`);
@@ -1215,7 +1277,12 @@ export async function getFrontiersForProblem(slug: string): Promise<
     select: {
       id: true,
       frontier: {
-        select: { slug: true, shortName: true, direction: true, rows: { select: FRONTIER_ROW_SELECT } },
+        select: {
+          slug: true,
+          shortName: true,
+          direction: true,
+          rows: { select: FRONTIER_ROW_SELECT },
+        },
       },
     },
   });
