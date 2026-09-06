@@ -552,6 +552,7 @@ export type ChartProblem = Pick<
   | "slug"
   | "name"
   | "shortName"
+  | "problemNumber"
   | "field"
   | "fieldGroup"
   | "solveDate"
