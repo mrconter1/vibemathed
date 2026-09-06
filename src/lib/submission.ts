@@ -11,11 +11,18 @@
 // with strict attribution rules, so it stays a curator measurement - new
 // entries start at 0 until it is looked up.
 
-import { EDITABLE_FIELDS, type EditableKey, type FieldSpec } from "@/lib/editable";
+import {
+  EDITABLE_FIELDS,
+  type EditableKey,
+  type FieldSpec,
+} from "@/lib/editable";
 
-export type SubmissionKey = EditableKey | "solveType" | "problemNumber" | "submitterNote";
+export type SubmissionKey =
+  EditableKey | "solveType" | "problemNumber" | "submitterNote";
 
-export type SubmissionFieldSpec = Omit<FieldSpec, "key"> & { key: SubmissionKey };
+export type SubmissionFieldSpec = Omit<FieldSpec, "key"> & {
+  key: SubmissionKey;
+};
 
 const SOLVE_TYPE_FIELD: SubmissionFieldSpec = {
   key: "solveType",
@@ -96,12 +103,28 @@ export const SUBMISSION_GROUPS: SubmissionGroup[] = [
   {
     title: "The result",
     help: "What was solved, and where it is written down. Only you can supply this.",
-    keys: ["name", "shortName", "statement", "solveType", "sourceUrl", "sourceName", "solveDate"],
+    keys: [
+      "name",
+      "shortName",
+      "statement",
+      "solveType",
+      "sourceUrl",
+      "sourceName",
+      "solveDate",
+    ],
   },
   {
     title: "The AI's part",
     help: "Which model, what it actually contributed, and how checked the mathematics is.",
-    keys: ["model", "modelMaker", "aiRole", "aiContribution", "verification", "verificationNote", "publication"],
+    keys: [
+      "model",
+      "modelMaker",
+      "aiRole",
+      "aiContribution",
+      "verification",
+      "verificationNote",
+      "publication",
+    ],
   },
   {
     title: "Context",
@@ -123,7 +146,17 @@ export const SUBMISSION_GROUPS: SubmissionGroup[] = [
     title: "Rarely needed",
     help: "Skip unless one genuinely applies. Most entries leave every one of these blank.",
     collapsed: true,
-    keys: ["problemNumber", "ageNote", "claimIssueNote", "solveCostUsd", "solveCostNote", "citations", "citationsPaper", "citationsSource", "citationsUrl"],
+    keys: [
+      "problemNumber",
+      "ageNote",
+      "claimIssueNote",
+      "solveCostUsd",
+      "solveCostNote",
+      "citations",
+      "citationsPaper",
+      "citationsSource",
+      "citationsUrl",
+    ],
   },
 ];
 
@@ -162,7 +195,12 @@ export function emptySubmission(): SubmissionValues {
 export { MESSAGE_MAX as REVIEW_MESSAGE_MAX } from "@/lib/messages";
 
 export const SUBMISSION_WINDOW_MS = 24 * 60 * 60 * 1000;
-export const SUBMISSIONS_PER_WINDOW = 10;
+/// 25 for everyone since 6 September 2026, at the curator's call. The
+/// verified/unverified split of #33 lasted a day: the queue has a review step
+/// and a per-account count, which is throttle enough, and the members who hit
+/// ten were sending a paper's worth of results in one sitting. The function
+/// below is kept so the two tiers can diverge again without touching callers.
+export const SUBMISSIONS_PER_WINDOW = 25;
 export const VERIFIED_SUBMISSIONS_PER_WINDOW = 25;
 
 export function submissionLimit(verified: boolean): number {
