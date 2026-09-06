@@ -1,7 +1,7 @@
 import { DISCORD_INVITE, X_PROFILE } from "@/lib/community";
 
 const communityLink =
-  "inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md " +
+  "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md sm:h-7 sm:w-7 " +
   "transition-opacity hover:opacity-70 focus:outline-none focus-visible:outline-2 " +
   "focus-visible:outline-offset-1 focus-visible:outline-[var(--accent-blue)]";
 
@@ -31,7 +31,11 @@ const communityLink =
 /// dark) are explained beside `.x-mark-hollow` in globals.css.
 export function CommunityLinks() {
   return (
-    <span role="group" aria-label="Community" className="ml-1 flex shrink-0 items-center gap-0.5">
+    <span
+      role="group"
+      aria-label="Community"
+      className="ml-auto flex shrink-0 items-center gap-0.5 lg:ml-1"
+    >
       <a
         href={DISCORD_INVITE}
         target="_blank"
@@ -40,7 +44,12 @@ export function CommunityLinks() {
         aria-label="Join the community on Discord (opens in a new tab)"
         className={`${communityLink} text-[var(--brand-discord)]`}
       >
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+        <svg
+          className="h-[18px] w-[18px] sm:h-[22px] sm:w-[22px]"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden
+        >
           <path d="M19.27 5.33A16.6 16.6 0 0 0 15.16 4c-.18.32-.39.75-.53 1.09a15.4 15.4 0 0 0-4.26 0C10.23 4.75 10.02 4.32 9.83 4a16.6 16.6 0 0 0-4.11 1.33C3.1 9.26 2.39 13.08 2.74 16.85a16.7 16.7 0 0 0 5.06 2.57c.41-.56.77-1.15 1.08-1.77-.59-.22-1.16-.5-1.69-.82.14-.1.28-.21.41-.32a11.9 11.9 0 0 0 10.2 0c.14.11.27.22.41.32-.54.32-1.11.6-1.7.82.31.62.67 1.21 1.08 1.77a16.6 16.6 0 0 0 5.06-2.57c.42-4.37-.72-8.16-2.38-11.52ZM9.16 14.55c-.99 0-1.8-.9-1.8-2.01 0-1.11.79-2.01 1.8-2.01 1.01 0 1.82.9 1.8 2.01 0 1.11-.8 2.01-1.8 2.01Zm5.68 0c-.99 0-1.8-.9-1.8-2.01 0-1.11.79-2.01 1.8-2.01 1.01 0 1.82.9 1.8 2.01 0 1.11-.79 2.01-1.8 2.01Z" />
         </svg>
       </a>
@@ -52,7 +61,11 @@ export function CommunityLinks() {
         aria-label="Follow VibeMathed updates on X (opens in a new tab)"
         className={`${communityLink} text-[var(--brand-x)]`}
       >
-        <svg width="23" height="23" viewBox="0 0 24 24" aria-hidden>
+        <svg
+          className="h-[19px] w-[19px] sm:h-[23px] sm:w-[23px]"
+          viewBox="0 0 24 24"
+          aria-hidden
+        >
           <mask id="x-mark-knockout">
             <rect width="24" height="24" rx="5" fill="white" />
             <path
