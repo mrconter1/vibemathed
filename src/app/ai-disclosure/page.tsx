@@ -32,9 +32,11 @@ const CARDS: { title: string; body: React.ReactNode; wide?: boolean }[] = [
       <>
         In reviewing submissions: reading the source, checking that a disclosure
         is in the paper and not only in the form, scanning for duplicates,
-        drafting the verification, result and AI-role notes a curator then
-        edits and signs. In scoring significance, where the whole ladder is
-        AI-assigned against a{" "}
+        and drafting the verification, result and AI-role notes a curator then
+        edits and signs. The v3 review instructions require a prior-art search
+        and comparison of what is actually new before significance and
+        novelty-dependent conclusions. Existing reviews are not retroactively
+        checked by that instruction. Significance is AI-assigned against a{" "}
         <a href="/significance-prompt.md" target="_blank" rel="noopener noreferrer" className={linkClass}>
           published prompt
         </a>

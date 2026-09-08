@@ -71,6 +71,37 @@ The practical form of the rule:
   sentence was wrong. The correction is cheap and it is the whole of the
   site's credibility with the people who submit.
 
+## 1a. Literature and prior art before the verdict
+
+Before assigning significance or finalizing the contribution summary, novelty
+language, attribution, resolution scope or recommendation, the reviewing AI must
+complete the literature comparison in [the v3 scoring prompt](../public/significance-prompt.md).
+Supply that prompt in the AI's actual review input and provide external search
+and source-reading tools. A paper's bibliography, model recall, earlier AI rating
+or successful Lean build does not satisfy the check.
+
+Pin the claim/version; search beyond the submitted references using alternate
+terminology, mechanisms and matched assumptions/parameters; inspect the closest
+primary theorem and construction passages. For each main claim record the old
+result, known ingredients and residual new contribution, with source URLs and
+exact anchors. Test whether standard results already imply the claim, and state
+that reduction when it matters. Explain what a synthesis newly enables instead
+of rewarding an unfamiliar combination or dismissing all combinations as trivial.
+Record actual searches, inspection depth and remaining gaps in curator notes or
+the review script's header. Search failure is not a priority certificate.
+
+If a material comparison cannot be resolved, mark the novelty check incomplete,
+withhold the score and leave a new submission pending with the concrete missing
+check in curator notes. Do not approve with a guess, assign zero for uncertainty,
+or reject on an unproved assertion of absence. A bounded search with the
+load-bearing comparisons resolved can support a scoped judgment; it need not
+prove global priority. Verification can proceed separately. For an existing
+entry, preserve the historical assessment while recording an incomplete v3
+reassessment; do not silently overwrite it or call it newly reviewed.
+
+The following scope and label checks use this comparison. Revisit it before
+approval if a later verification check changes what was actually proved.
+
 ## 2. The scope test
 
 One sentence, from the methodology: *a precisely stated open question whose
@@ -202,19 +233,27 @@ because the changelog then shows a published entry being corrected.
 
 ## 8. Curator-only fields
 
-**Significance and its note are required.** Every published entry has them;
-the form cannot set them, so every approval needs them filled by hand.
+**Significance and its note are required for approval**, after step 1a's
+literature gate. The form cannot set them; the curator records the AI assessment.
+Use [the v3 prompt](../public/significance-prompt.md): score the actual incremental
+contribution over the closest known literature, on the site's 0-100 scale. A
+partial result earns credit for its advance, not the fame of the full problem.
+Correctness and formalization value remain separate. Routine recombination with
+little new insight merits modest significance even when the whole theorem sounds
+profound; a nontrivial synthesis can earn more when the missing bridge and its
+consequences are demonstrated.
 
-Score the problem as it stood *before* it was solved, against the anchored
-ladder on the methodology page (Riemann 100, Collatz ~80, Jacobian ~65, a
-conjecture famous within one community ~30, a typical Erdős problem 10,
-machine-generated conjectures 5). Then place it comparatively: find two or
-three published entries of similar standing and say in the note whether this
-one sits above or below them, and why. Ties are deliberate. A Graffiti or
-Written-on-the-Wall conjecture is 5 with the standing note *"Machine-generated
-(Graffiti); real but unfamous by construction."*
+Compare against relevant v3-assessed entries when available; historical v2
+problem-standing scores are not automatic contribution anchors. Do not assign a
+blanket 5 to machine-generated conjectures without a comparison. Keep confidence
+and search limitations separate from the score.
 
-The note is plain text, no math, at most 600 characters.
+The public note is plain text, no math, at most 600 characters. Begin it with
+`v3:` and name the closest prior work and the specific addition, with a compact
+comparative reason. Keep the fuller claim/source crosswalk in the review record.
+Existing scores are unchanged until explicitly reassessed; this policy update
+is not a catalog rescore. Preserve previous scores/reasons in the changelog and
+update all affected contribution, attribution and recommendation text together.
 
 ## 9. Decide, and write the message
 
@@ -242,8 +281,9 @@ immediately.
 
 Automated conjecture programs (Graffiti, Written on the Wall, TxGraffiti) are
 now refuted in bulk by agents; one repository claims 197. Each one qualifies
-and each one scores 5. The policy, decided 2 September 2026 and written into
-the methodology:
+and historically each scored 5. Under v3, assess the actual contribution after
+the literature check; do not use the historical default as a substitute. The
+inclusion policy, decided 2 September 2026 and written into the methodology:
 
 - **One entry per conjecture**, as the Erdős imports are. The dataset stays
   one row per problem, and a later submission of the same conjecture is
@@ -270,3 +310,10 @@ A review done by script, because it needed field edits, keeps its reasoning
 in the script's header under `scripts/`. `scripts/review-2026-09-01.ts` is
 the model: what was verified, how, and why each label is what it is. The
 message to the submitter should say the same things more briefly.
+
+For v3 reviews also retain the prompt version, manuscript/repository revision,
+review date, model actually used, literature queries and inspected source
+anchors, old/new comparison, residual contribution, limitations and confidence.
+The short public significance note summarizes the baseline and addition; it
+must not leave the number supported only by private notes. Do not edit old
+review scripts to imply that checks absent from their records were performed.

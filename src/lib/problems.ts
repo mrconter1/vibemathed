@@ -220,9 +220,9 @@ export interface MathProblem {
    */
   renownNote?: string | null;
   /**
-   * AI-estimated significance of the problem BEFORE the solve, an integer
-   * 0-100 against the anchored ladder documented in the methodology (Riemann
-   * hypothesis = 100). A curator measurement like renownLangs - assigned at
+   * AI-estimated significance, 0-100. Notes prefixed v3: assess the contribution
+   * beyond known literature; older scores retain their problem-standing basis
+   * until explicitly reassessed. A curator measurement - assigned at
    * review with the published prompt, never self-reported. Null = not yet
    * assessed; renders as a dash, never as a default score.
    */

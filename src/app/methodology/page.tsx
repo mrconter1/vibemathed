@@ -253,8 +253,9 @@ export default function MethodologyPage() {
           <strong className="text-[var(--ink)]">Sweeps of machine-generated
           conjectures</strong> - Graffiti, Written on the Wall, TxGraffiti - are
           now refuted by agents by the hundred. Each one is a stated open
-          question with a checkable answer, so each one qualifies, and each one
-          scores 5. They enter the record one entry per conjecture, as the Erdős
+          question with a checkable answer, so each one qualifies. Historically
+          each scored 5; new reviews assess the actual contribution after a
+          prior-art check. They enter the record one entry per conjecture, as the Erdős
           problems do, so the dataset stays one row per problem and a later
           submission of the same conjecture is caught as a duplicate. Three
           conditions: every entry is Site-confirmed or better, its certificate
@@ -438,36 +439,42 @@ export default function MethodologyPage() {
 
       <Section title="Significance">
         <p>
-          Every entry carries an <strong className="text-[var(--ink)]">AI-estimated
-          significance score</strong>: how much mathematics cared about the problem{" "}
-          {/* Explicit, like the {" "} on the line above. A literal space
-              between a closing tag and a text node that then wraps is eaten by
-              JSX, which is how this rendered as "beforeit was solved". */}
-          <em>before</em>{" "}
-          it was solved, as an integer from 0 to 100. It is
-          calibrated against an anchored ladder - the Riemann hypothesis is 100,
-          Collatz sits near 80, the Jacobian conjecture near 65, a conjecture
-          famous within one research community around 30, a typical numbered
-          Erdős problem around 10, and machine-generated conjectures around 5 -
-          and, since v2 of the scoring prompt (August 2026), each score is
-          placed comparatively against a fixed spine of catalog entries whose
-          scores are frozen by editorial decree. A single problem judged in
-          isolation is only honest to a band of about five points; one-point
-          resolution comes from answering &quot;above or below <em>that</em>{" "}
-          one?&quot; against named neighbours. Ties are deliberate: problems of
-          genuinely similar standing share a score rather than being forced
-          into spurious distinct integers. The whole catalog was rescored
-          under v2 on 6 August 2026.
+          The <strong className="text-[var(--ink)]">AI-estimated significance
+          score</strong> runs from 0 to 100. Under v3 of the review prompt
+          (September 2026), it measures the substantive mathematical contribution
+          added beyond known literature. The reviewing AI must first search for
+          prior art, inspect the closest primary results and compare their
+          assumptions and conclusions with the submitted claim. The review then
+          explains what remains new before assigning a number or finalizing its
+          contribution summary and recommendation.
         </p>
         <p>
-          The score is a curator measurement, never self-reported: it is
-          assigned at review time by an AI model applying a fixed rubric, with
-          a one-line justification stored on the entry, and the whole catalog
-          gets a pairwise consistency sweep. The score describes the problem as
-          it stood before its resolution, so attention triggered by the
-          solution itself can never inflate it. Scores are editorial estimates,
-          stable to within a band - challenge one in the entry&apos;s
-          discussion thread. The verbatim scoring prompt is public:{" "}
+          A partial result is scored for the advance it actually makes. It does
+          not inherit the importance of solving its famous parent problem.
+          Routine recombination with little added insight receives modest credit;
+          a synthesis can receive substantial credit when it overcomes an
+          identified obstacle or enables a consequential new result. Correctness,
+          formal verification, proof length, AI identity and publicity do not
+          supply novelty credit. Formalization value is described separately.
+        </p>
+        <p>
+          The scale compares contributions: 1–9 for modest additions, 10–24 for
+          narrower nontrivial progress, 25–49 for substantial specialist advances,
+          50–79 for major advances, and 80–100 for exceptional advances with
+          evidenced wider consequences. A full resolution of the Riemann
+          hypothesis remains the 100 reference. Relevant entries reviewed under
+          v3 provide closer comparisons; ties and limited precision are honest.
+          Confidence and verification status remain separate from the score.
+        </p>
+        <p>
+          Scores are assigned during curator review, never self-reported. New
+          assessment notes begin with &quot;v3:&quot; and identify the closest
+          prior work and the specific addition. If a material literature
+          comparison cannot be completed, the reviewer withholds the score and
+          records the missing check; zero is not a substitute for unknown. A
+          bounded search supports a scoped assessment, not a guarantee of global
+          priority. Challenge a comparison or score in the entry&apos;s
+          discussion thread. The complete prompt is public:{" "}
           <a
             href="/significance-prompt.md"
             target="_blank"
@@ -475,25 +482,17 @@ export default function MethodologyPage() {
             className="text-[var(--accent-blue)] hover:underline"
           >
             significance-prompt.md
-          </a>
-          , versioned in the repository; any wholesale rescore is documented
-          there.
+          </a>.
         </p>
         <p>
-          One cluster gets a further, evidence-based pass rather than resting
-          on comparative judgment alone: the numbered Erdős problems, which
-          made up two large ties at the bottom of the scale. Erdős priced the
-          problems he cared most about himself, in dollars, and
-          erdosproblems.com records how much literature and discussion each
-          one has attracted - both are real per-problem signals, not
-          guesses. On 6 August 2026 every numbered entry was checked against
-          both: a documented prize or an unusually dense reference trail
-          moved a problem up within its band. This is promotion-only - a
-          thin page is evidence of nothing, not of insignificance - and the
-          large tie that remains after this check is stamped as examined
-          (each such entry&apos;s note says so explicitly) rather than left
-          as an unexamined default. A shared score should mean &quot;checked
-          and found comparable,&quot; never &quot;never looked.&quot;
+          Existing scores have not been automatically reassessed. Notes without
+          the v3 marker retain their historical basis: the problem&apos;s
+          standing before its resolution. The catalog was rescored under v2 on
+          6 August 2026 against fixed problem-standing anchors, with a further
+          prize/reference check of numbered Erdős problems that day. Those
+          scores are not automatically comparable to v3 contribution scores.
+          Reassessments preserve previous values and reasons in the changelog;
+          any future wholesale rescore will be documented with its date and model.
         </p>
       </Section>
 
@@ -504,9 +503,9 @@ export default function MethodologyPage() {
           solution itself can never inflate a problem&apos;s fame after the
           fact. It now lives as a supporting fact on entry pages - most genuine
           AI solves score zero, which is itself a finding - while the headline
-          metric on cards is the significance score, which the Wikipedia count
-          keeps honest: a high score beside &quot;no dedicated article&quot; is
-          a visible tension anyone can challenge.
+          metric on cards is significance. Notability describes prior attention;
+          v3 significance describes the contribution beyond known work. A new
+          specialist advance need not already have a Wikipedia article.
         </p>
       </Section>
 
