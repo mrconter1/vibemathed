@@ -458,13 +458,15 @@ export default function MethodologyPage() {
           supply novelty credit. Formalization value is described separately.
         </p>
         <p>
-          The scale compares contributions: 1–9 for modest additions, 10–24 for
-          narrower nontrivial progress, 25–49 for substantial specialist advances,
-          50–79 for major advances, and 80–100 for exceptional advances with
-          evidenced wider consequences. A full resolution of the Riemann
-          hypothesis remains the 100 reference. Relevant entries reviewed under
-          v3 provide closer comparisons; ties and limited precision are honest.
-          Confidence and verification status remain separate from the score.
+          The existing anchored ladder and fixed catalog spine are unchanged:
+          the Riemann hypothesis is 100, Collatz sits near 80, the Jacobian
+          conjecture near 65, a conjecture famous within one research community
+          around 30, a typical numbered Erdős problem around 10, and
+          machine-generated conjectures around 5. The reviewer places the
+          contribution beyond known work against those same references. All
+          numeric bands and named anchor scores remain fixed; one-point
+          comparisons, ties and the lower-score rule are retained. Confidence
+          and verification status remain separate from the score.
         </p>
         <p>
           Scores are assigned during curator review, never self-reported. New
@@ -489,8 +491,9 @@ export default function MethodologyPage() {
           the v3 marker retain their historical basis: the problem&apos;s
           standing before its resolution. The catalog was rescored under v2 on
           6 August 2026 against fixed problem-standing anchors, with a further
-          prize/reference check of numbered Erdős problems that day. Those
-          scores are not automatically comparable to v3 contribution scores.
+          prize/reference check of numbered Erdős problems that day. The
+          calibration remains the same; old entries have not automatically
+          undergone the new literature check or contribution-focused assessment.
           Reassessments preserve previous values and reasons in the changelog;
           any future wholesale rescore will be documented with its date and model.
         </p>

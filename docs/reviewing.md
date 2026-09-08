@@ -243,8 +243,9 @@ little new insight merits modest significance even when the whole theorem sounds
 profound; a nontrivial synthesis can earn more when the missing bridge and its
 consequences are demonstrated.
 
-Compare against relevant v3-assessed entries when available; historical v2
-problem-standing scores are not automatic contribution anchors. Do not assign a
+Use the existing anchored ladder and fixed catalog spine, with all numeric
+bands and anchor scores unchanged. Compare what the result adds against those
+references; do not require newly assessed v3 neighbours or recalibrate the scale. Do not assign a
 blanket 5 to machine-generated conjectures without a comparison. Keep confidence
 and search limitations separate from the score.
 

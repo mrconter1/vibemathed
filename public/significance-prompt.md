@@ -9,8 +9,9 @@ v3 (2026-09-08) requires a literature/prior-art comparison before significance
 and other novelty-dependent review conclusions. It changes the score from the
 prior standing of the named problem to the substantive contribution actually
 added beyond known literature. Partial results no longer inherit the score of
-the whole problem. It retains the 0-100 scale, comparative calibration and
-separate verification labels.
+the whole problem. It retains the existing 0-100 scale, every ladder band and named anchor score,
+one-point comparative calibration, tie/lower-score rules and separate verification
+labels. Only the object being assessed and the required prior-art process change.
 
 This instruction change does not rescore the catalog. Existing scores remain
 historical assessments until explicitly reassessed. Begin each new v3
@@ -21,9 +22,8 @@ occurred just because the prompt changed.
 
 History: v2 (2026-08-06, recorded reviewer Claude Fable 5) replaced v1's
 steps-of-5 absolute scoring with one-point comparisons against a fixed spine;
-the catalog was rescored then. Its frozen problem-standing scores are historical
-context, not automatically valid anchors for v3 contribution scores. Git history
-preserves the previous prompt.
+the catalog was rescored then. The same ladder and fixed anchor spine remain the calibration for v3.
+Git history preserves the previous prompt.
 
 ---
 
@@ -99,26 +99,63 @@ previously missing. Proof length, elegance, AI identity, publicity and Lean code
 volume do not add novelty credit. Report formalization/reproducibility value
 separately; it does not turn known mathematics into a new mathematical result.
 
-Use a 0-100 scale with these contribution anchors, not as an automatic formula:
+Apply the existing scale below to the residual new contribution established by
+the literature comparison. The ladder descriptions and named anchor scores are
+unchanged calibration references. Compare the significance of what was added
+with those references; do not transfer a parent problem's fame to a small
+fragment or count known ingredients as new credit.
 
-- 80-100: exceptional advances with specifically evidenced field-wide or wider
-  consequences; a full resolution of the Riemann hypothesis remains the 100
-  reference. A partial result about such a problem does not inherit this band.
-- 50-79: major advances over the strongest relevant literature, with substantial
-  new insight or consequential new scope demonstrated by the comparison.
-- 25-49: substantial specialist advances, with an identified nontrivial obstacle
-  overcome and meaningful consequences beyond the known inputs.
-- 10-24: clear but narrower nontrivial progress on a specialist question.
-- 1-9: modest additions, routine extensions/recombinations or small finite cases.
-  A machine-generated question is not assigned 5 without checking what is new.
-- 0: reserved; never use it to mean unknown or an incomplete novelty check.
+Calibrate against this anchored ladder:
 
-Then compare with two or three relevant entries assessed under v3, naming their
-scores, residual contributions and why this result sits above, below or beside
-them. Do not treat old problem-fame scores as contribution anchors. If there are
-not yet suitable v3 neighbours, say so and use the qualitative bands with limited
-precision; do not invent comparisons. Ties are appropriate. When evidence does
-not distinguish nearby scores, use the lower one and avoid spurious precision.
+- 100 - Riemann hypothesis. The reference point: a millennium problem with a
+  thousand conditional theorems.
+- 85-90 - Goldbach, twin primes, Navier-Stokes regularity: household names
+  beyond mathematics.
+- ~80 - Collatz: enormous fame, structurally isolated.
+- 65-70 - Jacobian conjecture: on Smale's list, notorious across a major
+  field for most of a century.
+- 50-60 - conjectures with textbooks and subfields organized around them
+  (cycle double cover, KLS).
+- 30-40 - field-famous workhorses: known and cited across one research
+  community for decades, invisible outside it (Feige's conjecture, the
+  Kannan-Tetali-Vempala swap-chain conjecture).
+- 15-25 - established named problems within a specialty; questions with a
+  real literature but a small audience.
+- 10 - a typical numbered Erdős problem or an open question from a
+  specialist paper: real, documented, unfamous.
+- 5 - machine-generated conjectures (Graffiti, TxGraffiti, Written on the
+  Wall) and recent one-paper questions.
+- 0 - reserved; do not use it to mean "unknown".
+
+Then PLACE that contribution against the same fixed catalog anchor spine:
+
+- 65 - Jacobian conjecture (`jacobian-conjecture`)
+- 55 - Cycle double cover conjecture (`cycle-double-cover-conjecture`)
+- 45 - Connes rigidity conjecture (`connes-rigidity-conjecture`)
+- 40 - Erdős's planar unit distance conjecture (`erdos-planar-unit-distance`)
+- 35 - Feige's conjecture (`feiges-conjecture`)
+- 30 - Kannan-Tetali-Vempala conjecture (`kannan-tetali-vempala-conjecture`)
+- 25 - The Banks-Martin conjecture (`banks-martin-primitive-sets`)
+- 20 - Babai-Frankl's Oddtown question (`babai-frankl-oddtown-composite`)
+- 15 - Erdős Problem #1196, primitive sets (`erdos-1196-primitive-sets`)
+- 10 - Erdős Problem #1217, a typical numbered Erdős problem (`erdos-1217`)
+- 5 - Graffiti's residue problem (`graffiti-residue-common-divisor`)
+
+Procedure: find the nearest anchor, then compare the contribution with that
+anchor and with the anchors roughly ten points below and above it. Explain why
+what was actually added sits above or below those references, using the prior-art
+comparison. The integer you output is the answer to those comparisons. Do not
+require newly reviewed v3 entries or replace the fixed spine with new bands.
+
+Calibration rules retained:
+
+1. Output an integer from 0 to 100, plus a one-sentence justification. A score
+   off the 5-grid must be supported by comparisons with named neighbours.
+2. Ties are correct. Contributions of genuinely similar significance should
+   share a score; do not manufacture spurious precision.
+3. When torn between two values, take the LOWER one.
+4. Anchor scores are fixed. If a comparison convinces you an anchor itself is
+   wrong, that is a separate editorial decision, never a rescore in passing.
 
 A high score requires a concrete account of the advance over the closest prior
 results and its consequences. Familiarity, fame and decades open can explain the
