@@ -136,14 +136,11 @@ model Problem {
   /// THIS problem. 0 means "no dedicated article", not "unknown".
   renownLangs Int     @default(0)
   renownNote  String? @db.String(300)
-  /// AI-estimated significance of the PROBLEM as it stood before the solve,
-  /// an integer 0-100 against the anchored ladder in the methodology
-  /// (Riemann hypothesis = 100) and, since prompt v2, placed comparatively
-  /// against a fixed spine of catalog anchors - one-point resolution is
-  /// earned by comparison, not claimed in isolation. Curator measurement
-  /// like renownLangs, never self-reported; null = not yet assessed. Scored
-  /// with the published prompt in public/significance-prompt.md (served at
-  /// /significance-prompt.md).
+  /// AI-estimated significance, 0-100. Notes prefixed v3: assess the actual
+  /// contribution beyond known literature after a prior-art check; historical
+  /// unmarked scores retain the older problem-standing basis until reassessed.
+  /// Curator measurement, never self-reported; null = not yet assessed.
+  /// Scored with public/significance-prompt.md (served at the same URL path).
   significance     Int?
   /// One-line justification for the score, shown on the entry page.
   significanceNote String? @db.String(600)
@@ -744,8 +741,9 @@ model Frontier {
   direction String @db.String(3)
   field     String? @db.String(80)
   fieldGroup String?
-  /// Same 0-100 ladder as Problem.significance, and where that number really
-  /// belongs: the importance of the question, not of any one step on it.
+  /// Importance of the overall frontier question on the historical 0-100
+  /// problem-standing scale. Separate from v3 Problem.significance, which
+  /// measures the contribution of an individual result beyond prior work.
   significance     Int?
   significanceNote String? @db.String(600)
   /// How the historical rows were sourced and how far back they go.

@@ -23,8 +23,8 @@ resolved, and eight frontiers, as of 6 September 2026.
 - A **verification ladder** from Lean-kernel-checked down to contested
 - An **AI contribution** tier: did the model discover the mathematics,
   co-develop named steps, or assist a human-led proof
-- A **significance** score, 0-100 against an anchored ladder (Riemann
-  hypothesis = 100), assigned with a
+- A **significance** score, 0-100: v3 reviews assess the contribution beyond
+  prior literature; older scores retain their historical basis. Assigned with a
   [published prompt](public/significance-prompt.md)
 - Community machinery: submissions with review, field-level edits with a
   public changelog, discussion threads, votes, flagging, and member profiles -

@@ -198,7 +198,8 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
       </div>
 
       <p className="mt-1 text-xs text-[var(--ink-muted)]">
-        AI-estimated problem weight before the solve, 0-100 (Riemann = 100).
+        AI-estimated significance, 0-100. Notes marked v3 assess the added
+        contribution; unmarked scores retain their historical basis.
         Hollow points are claimed solutions still under review. Click a point
         to open it.
       </p>
