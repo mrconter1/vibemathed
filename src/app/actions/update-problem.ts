@@ -3,98 +3,20 @@
 import { updateTag } from "next/cache";
 import { auth } from "@/auth";
 import { canReview } from "@/lib/curators";
-import { canonical, charLength } from "@/lib/char-length";
 import { prisma } from "@/lib/prisma";
 import {
   EDITABLE_FIELDS,
   CURATOR_FIELDS,
-  isHttpUrl,
-  isValidSolveDate,
-  parseLinks,
   sameDocument,
   type EditableValues,
-  type FieldSpec,
 } from "@/lib/editable";
-import { parseRelations, relationKind, type RelationRef } from "@/lib/relation-kinds";
+import { canonical } from "@/lib/char-length";
+import { relationKind, type RelationRef } from "@/lib/relation-kinds";
+import { parseField, type Parsed } from "@/lib/field-validation";
 import type { LinkRef } from "@/lib/problems";
 
 export type UpdateResult =
-  | { ok: true; changed: number }
-  | { ok: false; error: string };
-
-/// The database value a form string maps to.
-type Parsed = string | number | string[] | LinkRef[] | RelationRef[] | null;
-
-function parseField(
-  spec: FieldSpec,
-  raw: string,
-  ownSlug: string,
-): { ok: true; value: Parsed } | { ok: false; error: string } {
-  // NFC as well as trim, so the value that gets counted below is the value
-  // that gets stored. Without it a decomposed paste is measured one way and
-  // written another, and two spellings of one visible name sit in the
-  // catalog as different strings.
-  const v = canonical(raw.trim());
-
-  if (v === "") {
-    if (spec.required) return { ok: false, error: `${spec.label} cannot be empty.` };
-    const emptyArray = spec.kind === "list" || spec.kind === "links" || spec.kind === "relations";
-    return { ok: true, value: emptyArray ? [] : null };
-  }
-
-  // charLength, not v.length: see src/lib/char-length.ts. Counting UTF-16
-  // units refused notes the author had correctly counted as under the cap,
-  // because blackboard bold and friends cost two units each.
-  if (spec.maxLength && charLength(v) > spec.maxLength) {
-    return {
-      ok: false,
-      error: `${spec.label} is too long: ${charLength(v)} characters, max ${spec.maxLength}.`,
-    };
-  }
-
-  if (spec.plainText && v.includes("$")) {
-    return {
-      ok: false,
-      error: `${spec.label} is plain text: write math in ASCII (L^p, n=5) rather than $...$, which renders as raw LaTeX in tabs, feeds and search.`,
-    };
-  }
-
-  switch (spec.kind) {
-    case "choice": {
-      const allowed = (spec.options ?? []).map((o) => o.value);
-      if (!allowed.includes(v)) {
-        return { ok: false, error: `${spec.label} is not a valid option.` };
-      }
-      return { ok: true, value: v };
-    }
-    case "number": {
-      if (!/^\d+$/.test(v)) return { ok: false, error: `${spec.label} must be a whole number.` };
-      const n = Number(v);
-      if (spec.key === "yearPosed" && (n < 1000 || n > 3000)) {
-        return { ok: false, error: "Year posed must be a four-digit year." };
-      }
-      return { ok: true, value: n };
-    }
-    case "url":
-      if (!isHttpUrl(v)) return { ok: false, error: `${spec.label} must start with http:// or https://.` };
-      return { ok: true, value: v };
-    case "list":
-      return {
-        ok: true,
-        value: v.split(",").map((s) => s.trim()).filter(Boolean),
-      };
-    case "links":
-      return parseLinks(v);
-    case "relations":
-      return parseRelations(v, ownSlug);
-    case "text":
-    case "textarea":
-      if (spec.key === "solveDate" && !isValidSolveDate(v)) {
-        return { ok: false, error: "Solve date must be YYYY, YYYY-MM or YYYY-MM-DD." };
-      }
-      return { ok: true, value: v };
-  }
-}
+  { ok: true; changed: number } | { ok: false; error: string };
 
 /// Renders a stored value as the string shown in the changelog diff.
 function display(value: unknown): string | null {
@@ -173,9 +95,17 @@ export async function updateProblem(
       citationsUrl: true,
       sourceUrl: true,
       sourceName: true,
-      links: { select: { label: true, url: true, kind: true }, orderBy: { position: "asc" } },
+      links: {
+        select: { label: true, url: true, kind: true },
+        orderBy: { position: "asc" },
+      },
       relationsFrom: {
-        select: { toId: true, kind: true, note: true, to: { select: { slug: true } } },
+        select: {
+          toId: true,
+          kind: true,
+          note: true,
+          to: { select: { slug: true } },
+        },
         orderBy: { position: "asc" },
       },
     },
@@ -193,7 +123,11 @@ export async function updateProblem(
   }));
 
   const data: Record<string, Parsed> = {};
-  const changes: { field: string; oldValue: string | null; newValue: string | null }[] = [];
+  const changes: {
+    field: string;
+    oldValue: string | null;
+    newValue: string | null;
+  }[] = [];
   // Links and relations live in their own tables, so they are collected
   // separately and rewritten wholesale rather than assigned onto the row.
   let nextLinks: LinkRef[] | null = null;
@@ -207,13 +141,29 @@ export async function updateProblem(
     const raw = values[spec.key];
     if (raw === undefined) continue;
 
-    const parsed = parseField(spec, raw, slug);
-    if (!parsed.ok) return { ok: false, error: parsed.error };
-
     const before =
       spec.kind === "relations"
         ? display(currentRelations)
         : display(current[spec.key as keyof typeof current]);
+
+    // Untouched fields are skipped BEFORE they are validated, not after.
+    //
+    // The other order made an entry unsavable whenever any one of its stored
+    // values would fail today's rules: the form posts every field, so an
+    // editor fixing a typo in the title got "Extra links: that link is
+    // already the entry's primary source" about a link they had never
+    // opened, and no edit to that entry could ever succeed. Twelve published
+    // entries were in that state on 10 September 2026.
+    //
+    // Comparing the submitted string against the stored one first means a
+    // field nobody changed cannot block the save, while any attempt to
+    // CHANGE a bad value still has to make it valid - which is the rule the
+    // limits are actually there for.
+    if (canonical(raw.trim()) === (before ?? "")) continue;
+
+    const parsed = parseField(spec, raw, slug);
+    if (!parsed.ok) return { ok: false, error: parsed.error };
+
     const after = display(parsed.value);
     if (before === after) continue;
 
@@ -237,8 +187,11 @@ export async function updateProblem(
   // whether they now collide. Enforced only when the edit touched one of the
   // two, so an unrelated change to an entry is never blocked by it.
   if (nextLinks !== null || data.sourceUrl !== undefined) {
-    const primaryUrl = (data.sourceUrl as string | undefined) ?? current.sourceUrl;
-    const clash = (nextLinks ?? current.links).find((l) => sameDocument(l.url, primaryUrl));
+    const primaryUrl =
+      (data.sourceUrl as string | undefined) ?? current.sourceUrl;
+    const clash = (nextLinks ?? current.links).find((l) =>
+      sameDocument(l.url, primaryUrl),
+    );
     if (clash) {
       return {
         ok: false,
@@ -252,17 +205,25 @@ export async function updateProblem(
   // Relations need the database to finish validating: the target must be a
   // real published entry, and the same edge must not already exist drawn from
   // the other side. Resolved here into the ids the write needs.
-  let relationRows: { toId: string; kind: string; note: string; position: number }[] | null = null;
+  let relationRows:
+    { toId: string; kind: string; note: string; position: number }[] | null =
+    null;
   const affectedSlugs: string[] = [];
   if (nextRelations !== null) {
     const targets = await prisma.problem.findMany({
-      where: { slug: { in: nextRelations.map((r) => r.to) }, status: "published" },
+      where: {
+        slug: { in: nextRelations.map((r) => r.to) },
+        status: "published",
+      },
       select: { id: true, slug: true },
     });
     const bySlug = new Map(targets.map((t) => [t.slug, t.id]));
     for (const r of nextRelations) {
       if (!bySlug.has(r.to)) {
-        return { ok: false, error: `No published entry with the slug "${r.to}".` };
+        return {
+          ok: false,
+          error: `No published entry with the slug "${r.to}".`,
+        };
       }
     }
     // A symmetric edge drawn from the other entry is the SAME relation, and a
@@ -277,7 +238,10 @@ export async function updateProblem(
       },
       select: { kind: true, from: { select: { slug: true, name: true } } },
     });
-    if (reverse && nextRelations.some((r) => r.kind === reverse.kind && bySlug.get(r.to))) {
+    if (
+      reverse &&
+      nextRelations.some((r) => r.kind === reverse.kind && bySlug.get(r.to))
+    ) {
       const collides = nextRelations.find(
         (r) => r.kind === reverse.kind && r.to === reverse.from.slug,
       );
@@ -301,7 +265,10 @@ export async function updateProblem(
     // must drop: the new targets, and any old targets an edge was removed
     // from.
     affectedSlugs.push(
-      ...new Set([...nextRelations.map((r) => r.to), ...currentRelations.map((r) => r.to)]),
+      ...new Set([
+        ...nextRelations.map((r) => r.to),
+        ...currentRelations.map((r) => r.to),
+      ]),
     );
   }
 
@@ -311,7 +278,10 @@ export async function updateProblem(
   // have to come with their justification. Requiring the note to change in
   // the same edit means the changelog always records WHY it moved.
   const movedTier = changes.some(
-    (c) => c.field === "Verification" || c.field === "Status" || c.field === "Publication",
+    (c) =>
+      c.field === "Verification" ||
+      c.field === "Status" ||
+      c.field === "Publication",
   );
   const explained = changes.some((c) => c.field === "Verification note");
   if (movedTier && !explained) {
@@ -362,7 +332,10 @@ export async function updateProblem(
     ]);
   } catch (error) {
     console.error("updateProblem failed", error);
-    return { ok: false, error: "Could not save your changes. Please try again." };
+    return {
+      ok: false,
+      error: "Could not save your changes. Please try again.",
+    };
   }
 
   updateTag("problems");
