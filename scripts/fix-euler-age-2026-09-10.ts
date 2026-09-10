@@ -60,12 +60,29 @@ const SPECS = [...EDITABLE_FIELDS, ...CURATOR_FIELDS];
 
 const SLUG = "euler-blowup-smooth-forcing";
 
+// ageNote is deliberately NOT touched, and the first draft of this script got
+// that wrong. It planned to write the dating rationale there, the way the
+// Navier-Stokes fix did - but Navier-Stokes had no ageNote to lose, and this
+// entry does: a curator-written note on the release ("Released 8 September
+// 2026, earlier than the authors intended... Buckmaster calls the Euler
+// writeup 'AI slop', apologises for its state, and attributes the early
+// release to outside pressure"). The dry run printed it, which is the whole
+// reason dry runs print the before value. Writing over it would have destroyed
+// the only record of that on the entry.
+//
+// posedBy carries the dating on its own, and it is the more prominent field:
+// it renders on the card and on the entry page, where ageNote renders on
+// neither - ageNote is only the asterisk on "Open Ny" in the card list
+// (ProblemCards.tsx). The full argument lives in this file's header and in the
+// Elgindi link added below.
+//
+// Worth a separate decision by the curator: that existing ageNote explains the
+// SOLVE date, so it is currently the footnote on the wrong number. Moving it
+// is a rewrite of curator prose, not a correction, so it is not done here.
 const EDITS = {
   yearPosed: 1925,
   posedBy:
     "Leon Lichtenstein (1925) and Nikolai Gunther (1927), whose local existence left global regularity open; Elgindi states the smooth-force form as his Question 1.1",
-  ageNote:
-    "Dated from Lichtenstein's 1925 local existence theorem, which opened the local-yes, global-unknown gap, rather than from the 2000 Clay statement, which excludes Euler from its prize list. Elgindi's 2021 Annals paper states exactly this question, smooth force included, as its Question 1.1, and dates the well-posedness theory to Lichtenstein 1925 and Gunther 1927.",
 };
 
 // The entry asserts a posing it cannot cite: its only problem record is
@@ -137,9 +154,11 @@ async function main() {
   console.log(`\nposedBy before: ${before.posedBy}`);
   console.log(`posedBy after : ${EDITS.posedBy}`);
   console.log(`                (${charLength(canonical(EDITS.posedBy))}/200)`);
-  console.log(`\nageNote before: ${before.ageNote ?? "(null)"}`);
-  console.log(`ageNote after : ${EDITS.ageNote}`);
-  console.log(`                (${charLength(canonical(EDITS.ageNote))}/400)`);
+  console.log(`\nageNote  : NOT TOUCHED, and it is not about the age. It reads:`);
+  console.log(`             ${before.ageNote ?? "(null)"}`);
+  console.log(`           That is the release story, and it is the footnote on`);
+  console.log(`           "Open Ny". Moving it is the curator's call, not this`);
+  console.log(`           script's.`);
 
   console.log(`\nexisting links (${links.length}), source = ${before.sourceUrl}`);
   for (const l of links) console.log(`  [${l.kind}] ${l.label}\n      ${l.url}`);
