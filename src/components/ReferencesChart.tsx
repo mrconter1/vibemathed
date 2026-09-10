@@ -6,6 +6,7 @@ import { ageAtSolve, type ChartProblem } from "@/lib/problems";
 import { useChartSettings } from "@/lib/chart-settings";
 import { TierToggle } from "@/components/TimeControls";
 import { TeX, deTeX } from "@/components/TeX";
+import { labelWidth, placeLabels } from "@/lib/scatter-labels";
 
 // This chart plots SIGNIFICANCE (the AI-estimated problem weight) against how
 // long the problem stood open. The dense band at 10 is the point: almost every
@@ -39,6 +40,16 @@ const MARGIN = { top: 34, right: 24, bottom: 44, left: 56 };
 const PLOT_W = VIEW_W - MARGIN.left - MARGIN.right;
 const PLOT_H = VIEW_H - MARGIN.top - MARGIN.bottom;
 
+/// Labels near either edge anchor inward so they stay inside the viewBox -
+/// the svg has overflow visible, and a centred label on an edge point would
+/// poke out of the card (and on phones, widen the page). Shared with the
+/// label packer, which has to measure the box the renderer actually draws.
+function labelAnchorAt(cx: number): "start" | "middle" | "end" {
+  if (cx > VIEW_W - 100) return "end";
+  if (cx < MARGIN.left + 100) return "start";
+  return "middle";
+}
+
 function niceMax(value: number, step: number) {
   return Math.max(step, Math.ceil(value / step) * step);
 }
@@ -55,7 +66,12 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
   // Legend chips toggle point groups (proved / disproved / under review),
   // persisted across reloads. Axes stay fixed so toggling declutters without
   // reflowing the plot.
-  const { tier, setTier, hidden, toggleSeries: toggleGroup } = useChartSettings("scatter");
+  const {
+    tier,
+    setTier,
+    hidden,
+    toggleSeries: toggleGroup,
+  } = useChartSettings("scatter");
 
   // Resolved entries plot as filled dots; CANDIDATE entries (a full solution
   // claimed and vetted, community review pending) plot as hollow rings so a
@@ -73,8 +89,12 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
   const plottable = enriched.filter(
     (
       d,
-    ): d is { problem: ChartProblem; age: number; significance: number; claimed: boolean } =>
-      d.age !== null && d.significance !== null,
+    ): d is {
+      problem: ChartProblem;
+      age: number;
+      significance: number;
+      claimed: boolean;
+    } => d.age !== null && d.significance !== null,
   );
   const pending = enriched.length - plottable.length;
   // Dropped before `enriched` even exists: partials and variants improve a
@@ -86,7 +106,10 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
 
   const xMax = niceMax(Math.max(1, ...plottable.map((d) => d.age)), 20);
   const yStep = 10;
-  const yMax = niceMax(Math.max(1, ...plottable.map((d) => d.significance)), yStep);
+  const yMax = niceMax(
+    Math.max(1, ...plottable.map((d) => d.significance)),
+    yStep,
+  );
 
   const xTicks = ticks(xMax, 20);
   const yTicks = ticks(yMax, yStep);
@@ -95,9 +118,9 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
   const y = (sig: number) => MARGIN.top + PLOT_H - (sig / yMax) * PLOT_H;
 
   // Legend reflects only series actually drawn as points.
-  const seriesPresent = Array.from(new Set(plottable.map((d) => d.problem.solveType))).filter(
-    (t) => t in SOLVE_TYPE_COLOR,
-  );
+  const seriesPresent = Array.from(
+    new Set(plottable.map((d) => d.problem.solveType)),
+  ).filter((t) => t in SOLVE_TYPE_COLOR);
 
   // The tier filter hides POINTS but never touches the axes above, which are
   // still scaled from the full plottable set. Deliberate, and the same reason
@@ -115,37 +138,42 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
   // Draw the dense low band first so the labeled strikes sit on top of it.
   const drawOrder = [...shown].sort((a, b) => a.significance - b.significance);
 
-  // Label de-collision: several labeled points share a score band (four sit
-  // at 35), so neighbouring labels would overprint. Greedy level stacking:
-  // walk labeled points left to right and lift a label one 14px row for each
-  // already-placed label it would collide with (close in x AND in y).
-  const labelYBySlug = new Map<string, number>();
-  {
-    const placed: { cx: number; w: number; labelY: number }[] = [];
-    const labeled = plottable
+  // Label de-collision. See src/lib/scatter-labels.ts for the packing and why
+  // it drops rather than overprints. Three things matter at this call site:
+  //
+  // Placement runs over `shown`, not `plottable`, so the legend and tier
+  // filters actually declutter the plot. Laying out hidden points reserved
+  // space nothing occupied and pushed visible labels off their own dots.
+  //
+  // Order is by significance, highest first, so when the crowded middle band
+  // runs out of room the name that survives is the one a reader came for.
+  //
+  // The anchor has to match what the renderer draws below, or the collision
+  // test measures a box the label does not occupy.
+  const labelYBySlug = placeLabels(
+    shown
       .filter((d) => d.significance >= LABEL_THRESHOLD)
-      .sort((a, b) => x(a.age) - x(b.age));
-    for (const d of labeled) {
-      const cx = x(d.age);
-      // Estimated rendered width at fontSize 14 - the collision test must use
-      // the actual text lengths, or long neighbours still overprint. Measured
-      // on the deTeX'd form, which is what the label actually draws: a
-      // math-bearing short name is shorter rendered than its $...$ source.
-      const w = deTeX(d.problem.shortName).length * 6.4 + 8;
-      let labelY = y(d.significance) - 12;
-      // Lift one line at a time until no placed label overlaps horizontally
-      // at this height.
-      for (let guard = 0; guard < 6; guard++) {
-        const hit = placed.some(
-          (p) => Math.abs(p.cx - cx) < (p.w + w) / 2 && Math.abs(p.labelY - labelY) < 13,
-        );
-        if (!hit) break;
-        labelY -= 13;
-      }
-      placed.push({ cx, w, labelY });
-      labelYBySlug.set(d.problem.slug, labelY);
-    }
-  }
+      .sort((a, b) => b.significance - a.significance)
+      .map((d) => {
+        const cx = x(d.age);
+        return {
+          key: d.problem.slug,
+          cx,
+          cy: y(d.significance),
+          width: labelWidth(deTeX(d.problem.shortName)),
+          anchor: labelAnchorAt(cx),
+        };
+      }),
+    {
+      minY: MARGIN.top,
+      maxY: MARGIN.top + PLOT_H,
+      minX: MARGIN.left,
+      maxX: VIEW_W - MARGIN.right,
+      // Every drawn dot is an obstacle. Clearing only other labels left text
+      // written straight through the scatter.
+      points: shown.map((d) => ({ x: x(d.age), y: y(d.significance) })),
+    },
+  );
 
   return (
     <div>
@@ -199,11 +227,14 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
 
       <p className="mt-1 text-xs text-[var(--ink-muted)]">
         AI-estimated problem weight before the solve, 0-100 (Riemann = 100).
-        Hollow points are claimed solutions still under review. Click a point
-        to open it.
+        Hollow points are claimed solutions still under review. Click a point to
+        open it.
       </p>
 
-      <div className="relative mt-3" style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}` }}>
+      <div
+        className="relative mt-3"
+        style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}` }}
+      >
         <svg
           viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
           className="h-full w-full overflow-visible"
@@ -249,7 +280,11 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
               y={VIEW_H - MARGIN.bottom + 20}
               textAnchor="middle"
               className="font-mono"
-              style={{ fontSize: 12, fill: "var(--ink-muted)", fontVariantNumeric: "tabular-nums" }}
+              style={{
+                fontSize: 12,
+                fill: "var(--ink-muted)",
+                fontVariantNumeric: "tabular-nums",
+              }}
             >
               {t}
             </text>
@@ -272,7 +307,11 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
               dominantBaseline="middle"
               textAnchor="end"
               className="font-mono"
-              style={{ fontSize: 12, fill: "var(--ink-muted)", fontVariantNumeric: "tabular-nums" }}
+              style={{
+                fontSize: 12,
+                fill: "var(--ink-muted)",
+                fontVariantNumeric: "tabular-nums",
+              }}
             >
               {t}
             </text>
@@ -298,8 +337,11 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
             // viewBox - the svg has overflow visible, and a centred label on
             // an edge point would poke out of the card (and on phones, widen
             // the page).
-            const labelAnchor =
-              cx > VIEW_W - 100 ? "end" : cx < MARGIN.left + 100 ? "start" : "middle";
+            // Undefined when the packer found no clear slot: the label is
+            // dropped, not stacked on top of a neighbour. When it is defined
+            // it carries its own x and anchor, because a label may be placed
+            // beside its dot rather than over it.
+            const label = labelYBySlug.get(problem.slug);
             return (
               <g
                 key={problem.slug}
@@ -312,7 +354,8 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
                 onBlur={() => setActiveSlug(null)}
                 onClick={() => router.push(`/problem/${problem.slug}`)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") router.push(`/problem/${problem.slug}`);
+                  if (e.key === "Enter")
+                    router.push(`/problem/${problem.slug}`);
                 }}
                 style={{ cursor: "pointer", outline: "none" }}
               >
@@ -339,11 +382,11 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
                     strokeWidth={isOutlier ? 2 : 1}
                   />
                 )}
-                {isOutlier && (
+                {isOutlier && label && (
                   <text
-                    x={cx}
-                    y={labelYBySlug.get(problem.slug) ?? cy - 12}
-                    textAnchor={labelAnchor}
+                    x={label.x}
+                    y={label.y}
+                    textAnchor={label.anchor}
                     // No halo. It used to paint a 3.5px paper-coloured stroke
                     // behind the glyphs so labels stayed legible over
                     // gridlines, which worked until Chrome's auto-dark got
@@ -375,9 +418,13 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
               transform: "translate(-50%, calc(-100% - 16px))",
             }}
           >
-            <p className="font-serif text-sm text-[var(--ink)]"><TeX>{active.problem.name}</TeX></p>
+            <p className="font-serif text-sm text-[var(--ink)]">
+              <TeX>{active.problem.name}</TeX>
+            </p>
             <p className="mt-1 text-[var(--ink-secondary)]">
-              {active.problem.field ?? SOLVE_TYPE_LABEL[active.problem.solveType] ?? active.problem.solveType}
+              {active.problem.field ??
+                SOLVE_TYPE_LABEL[active.problem.solveType] ??
+                active.problem.solveType}
             </p>
             <dl className="mt-2 grid grid-cols-2 gap-x-2 gap-y-1 font-mono text-[var(--ink-secondary)]">
               <dt className="text-[var(--ink-muted)]">Age</dt>
