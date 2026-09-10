@@ -3,7 +3,11 @@
 // The form validates every field it posts, including ones the editor never
 // touched, so a single bad stored value made an entry permanently
 // uneditable: you opened it to fix a typo and got an error about a link you
-// had not opened. Twelve entries were in that state.
+// had not opened. Two entries were in that state outright (a duplicated
+// link, which parseLinks rejects whatever else you change), and eleven more
+// carried a link repeating their primary source, which blocks any edit to
+// the links and is refused on submission. All thirteen violations are fixed
+// here.
 //
 // Two things fix it and both are needed. The code fix, in
 // src/app/actions/update-problem.ts, skips untouched fields before
@@ -23,13 +27,16 @@
 // distinct URLs in the admin UI.
 //
 // The check itself comes from src/lib/field-validation.ts - the same module
-// the form uses - rather than being reimplemented here. That is the point of
-// the exercise: a script that writes entry data runs the form's rules first.
+// the form uses - rather than being reimplemented here, and the writes go
+// through scripts/lib/guarded-prisma.ts, which runs that check again on the
+// merged result before touching the database. That is the point of the
+// exercise: a script that writes entry data runs the form's rules first, and
+// cannot skip them by forgetting.
 //
 // Dry run by default. Pass --apply to write. Production writes are the
 // curator's to run.
 
-import { PrismaClient } from "@prisma/client";
+import { guardedPrisma } from "./lib/guarded-prisma";
 import { checkStoredEntry } from "../src/lib/field-validation";
 import {
   EDITABLE_FIELDS,
@@ -37,7 +44,7 @@ import {
   sameDocument,
 } from "../src/lib/editable";
 
-const prisma = new PrismaClient();
+const prisma = guardedPrisma();
 const APPLY = process.argv.includes("--apply");
 const SPECS = [...EDITABLE_FIELDS, ...CURATOR_FIELDS];
 
@@ -205,18 +212,19 @@ async function main() {
   }
 
   for (const p of plan) {
-    for (const r of p.relabel) {
-      await prisma.$executeRawUnsafe(
-        `UPDATE "ProblemLink" SET label = $1, url = $2 WHERE id = $3`,
-        r.label,
-        r.url,
-        r.id,
-      );
-    }
+    // Delete first. The guarded client validates the merged link set on
+    // every update, so relabelling the kept link while its duplicate still
+    // exists would be refused - correctly.
     await prisma.$executeRawUnsafe(
       `DELETE FROM "ProblemLink" WHERE id = ANY($1::uuid[])`,
       p.drop.map((d) => d.id),
     );
+    for (const r of p.relabel) {
+      await prisma.problemLink.update({
+        where: { id: r.id },
+        data: { label: r.label, url: r.url },
+      });
+    }
     console.log(
       `fixed: ${p.slug} (-${p.drop.length}${p.relabel.length ? `, ${p.relabel.length} improved` : ""})`,
     );

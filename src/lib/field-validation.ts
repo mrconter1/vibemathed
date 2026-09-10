@@ -3,11 +3,13 @@
 // It used to live inside the update action, which meant the only way to run
 // it was to be a signed-in human clicking Save. Curator scripts write
 // straight to the database and so ran none of it, and the catalog collected
-// rows the form would refuse: on 10 September 2026, twelve published entries
-// held link sets that the save path rejects, so any edit to one of them
-// failed with an error about a link the editor had never touched. Eleven of
-// those were a link repeating the entry's own primary source; one was created
-// by a review script the day before.
+// rows the form would refuse. Measured on 10 September 2026 by running this
+// very parser over every stored value: two published entries held a
+// duplicated link, which parseLinks rejects unconditionally, so NO edit to
+// either could save; eleven more held a link repeating the entry's primary
+// source, which the form rejects on submission and whenever the links are
+// edited. One of the two hard cases had been created by a review script the
+// day before.
 //
 // So it lives here, importable by the server actions AND by scripts. A script
 // that writes entry data is expected to call `checkStoredEntry` in its dry run
@@ -27,12 +29,7 @@ import type { LinkRef } from "@/lib/problems";
 
 /// The database value a form string maps to.
 export type Parsed =
-  | string
-  | number
-  | string[]
-  | LinkRef[]
-  | RelationRef[]
-  | null;
+  string | number | string[] | LinkRef[] | RelationRef[] | null;
 
 export function parseField(
   spec: FieldSpec,

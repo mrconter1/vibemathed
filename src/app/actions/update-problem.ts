@@ -152,8 +152,9 @@ export async function updateProblem(
     // values would fail today's rules: the form posts every field, so an
     // editor fixing a typo in the title got "Extra links: that link is
     // already the entry's primary source" about a link they had never
-    // opened, and no edit to that entry could ever succeed. Twelve published
-    // entries were in that state on 10 September 2026.
+    // opened, and no edit to that entry could ever succeed. Two published
+    // entries were in that state on 10 September 2026, and eleven more were
+    // one link-edit away from it.
     //
     // Comparing the submitted string against the stored one first means a
     // field nobody changed cannot block the save, while any attempt to
