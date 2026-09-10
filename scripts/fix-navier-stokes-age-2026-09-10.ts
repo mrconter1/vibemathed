@@ -128,8 +128,13 @@ async function main() {
     data: EDITS,
     select: { id: true },
   });
-  console.log("\nAPPLIED. The entry page is right immediately; the stats page");
-  console.log("and any cached list lag by up to an hour, or until a deploy.");
+  // Not "the entry page is right immediately". That is only true for a NEW
+  // entry, whose page has nothing cached yet. This is an edit, and the entry
+  // page is behind cacheLife("hours") with cacheTag (src/lib/data.ts) that a
+  // direct database write never revalidates.
+  console.log("\nAPPLIED. Every public surface lags by up to an hour: this is a");
+  console.log("write straight to the database, so nothing revalidates a tag.");
+  console.log("A deploy clears it, and so does saving the entry once in the UI.");
 }
 
 main().finally(() => prisma.$disconnect());
