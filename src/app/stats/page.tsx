@@ -11,6 +11,7 @@ import { MethodGrowthChart } from "@/components/MethodGrowthChart";
 import { Icon, type IconName } from "@/components/Icons";
 import { ModelsChart } from "@/components/ModelsChart";
 import { OpenSourceChart } from "@/components/OpenSourceChart";
+import { PeakChart } from "@/components/PeakChart";
 import { ReferencesChart } from "@/components/ReferencesChart";
 import { SolveRatioChart } from "@/components/SolveRatioChart";
 import { InfoTip } from "@/components/Tooltip";
@@ -202,6 +203,13 @@ export default async function StatsPage() {
             candidate (hollow) and excludes partial/variant/retracted. */}
         <ChartCard id="significance-vs-age" label="significance vs. age">
           <ReferencesChart problems={slim} />
+        </ChartCard>
+        {/* Sits beside the scatter deliberately: both are about weight
+            rather than volume, and this one is the scatter's story rolled
+            forward in time. `slim`, not `resolved`, because a candidate
+            claim under review is still the month's biggest event. */}
+        <ChartCard id="peak-per-month" label="most significant per month">
+          <PeakChart problems={slim} today={today} />
         </ChartCard>
         <ChartCard id="by-vendor" label="solves per vendor">
           <ModelsChart problems={resolved} today={today} />
