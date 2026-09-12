@@ -68,6 +68,7 @@ import { guardedPrisma } from "./lib/guarded-prisma";
 
 const prisma = guardedPrisma();
 const APPLY = process.argv.includes("--apply");
+const LINT = process.argv.includes("--lint");
 
 const SLUG = "de-bruijn-newman-constant";
 
@@ -163,7 +164,7 @@ const ROWS: Row[] = [
     sourceUrl:
       "https://github.com/judegomila/dbn-lambda-01787854-candidate-audit",
     status: "candidate",
-    note: "Polymath15's Theorem 1.2 at exact parameters X = 6000000185827, t0 = 129/800, y0^2 = 87677/2500000, with fail-closed Arb interval certificates and a sealed manifest. Unconditional in form: no RH beyond the finite Platt-Trudgian height. Not peer reviewed; the repository's referee report is an adversarial AI panel that calls itself no substitute for human review and leaves three items needing human sign-off.",
+    note: "Polymath15's Theorem 1.2 at exact parameters X = 6000000185827, t0 = 129/800, y0^2 = 87677/2500000, with fail-closed Arb interval certificates and a sealed manifest. Unconditional in form: no RH beyond the finite Platt-Trudgian height. Not peer reviewed; its referee report is an adversarial AI panel that calls itself no substitute for human review and leaves three items needing sign-off.",
   },
 ];
 
@@ -190,6 +191,36 @@ const R_LIMITS: Record<string, number> = {
   note: 400,
 };
 
+/// Every column-width check, with no database. Runs FIRST, and under --lint
+/// runs alone: the first production dry run of this script spent a connection
+/// and a retry only to report one note at 409/400, which is a round trip the
+/// curator should never have to make for an answer that needs no database.
+function checkLengths(): number {
+  let over = 0;
+  console.log("field lengths:");
+  for (const [k, lim] of Object.entries(F_LIMITS)) {
+    const v = (FRONTIER as Record<string, unknown>)[k];
+    if (typeof v !== "string") continue;
+    const n = [...v.normalize("NFC")].length;
+    const bad = n > lim;
+    if (bad) over++;
+    console.log(`  frontier.${k.padEnd(17)} ${n}/${lim}${bad ? "  OVER" : ""}`);
+  }
+  for (const r of ROWS) {
+    for (const [k, lim] of Object.entries(R_LIMITS)) {
+      const v = (r as unknown as Record<string, unknown>)[k];
+      if (typeof v !== "string") continue;
+      const n = [...v.normalize("NFC")].length;
+      if (n > lim) {
+        over++;
+        console.log(`  row ${r.date} ${k}: ${n}/${lim}  OVER`);
+      }
+    }
+  }
+  console.log(over ? `${over} field(s) OVER` : "all field lengths ok");
+  return over;
+}
+
 async function connectWithRetry(): Promise<string> {
   let lastError: unknown;
   for (let attempt = 1; attempt <= 8; attempt++) {
@@ -208,6 +239,13 @@ async function connectWithRetry(): Promise<string> {
 }
 
 async function main() {
+  const over = checkLengths();
+  if (LINT) {
+    process.exitCode = over ? 1 : 0;
+    return;
+  }
+  if (over) throw new Error(`${over} field(s) too long - nothing written`);
+
   const db = await connectWithRetry();
   console.log(`database: ${db}${db === "vibemathed" ? "  (PRODUCTION)" : ""}\n`);
 
@@ -258,28 +296,6 @@ async function main() {
         `  WARNING: ${byDate[i].date} (${byDate[i].valueNumeric}) is worse than ${byDate[i - 1].date} (${byDate[i - 1].valueNumeric})`,
       );
   }
-
-  let over = 0;
-  console.log("\nfield lengths:");
-  for (const [k, lim] of Object.entries(F_LIMITS)) {
-    const v = (FRONTIER as Record<string, unknown>)[k];
-    if (typeof v !== "string") continue;
-    const bad = v.length > lim;
-    if (bad) over++;
-    console.log(`  frontier.${k.padEnd(17)} ${v.length}/${lim}${bad ? "  OVER" : ""}`);
-  }
-  for (const r of ROWS) {
-    for (const [k, lim] of Object.entries(R_LIMITS)) {
-      const v = (r as unknown as Record<string, unknown>)[k];
-      if (typeof v !== "string") continue;
-      if (v.length > lim) {
-        over++;
-        console.log(`  row ${r.date} ${k}: ${v.length}/${lim}  OVER`);
-      }
-    }
-  }
-  console.log(over ? `\n${over} field(s) OVER - nothing written` : "\nall field lengths ok");
-  if (over) throw new Error("field too long");
 
   if (!APPLY) {
     console.log("\nDRY RUN - pass --apply to write");
