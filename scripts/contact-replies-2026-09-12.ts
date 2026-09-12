@@ -53,7 +53,13 @@ const LINT = process.argv.includes("--lint");
 
 /// The sender has an account: reply in-app and mark the row handled.
 /// `ids` is every SiteMessage this one reply answers.
-type Reply = { ids: string[]; who: string; pseudonym: string; body: string };
+///
+/// The recipient is resolved through the SiteMessage's own `userId`, never
+/// through a pseudonym: `userName` on the row is a snapshot taken when the
+/// message was sent, and the first production run of this script died on
+/// "no account for theabbie" because that snapshot no longer matches any
+/// pseudonym. The foreign key does not rot.
+type Reply = { ids: string[]; who: string; body: string };
 
 /// Anonymous with a reply address: mark handled, print a draft to send.
 type Email = { id: string; who: string; to: string; subject: string; body: string };
@@ -65,7 +71,6 @@ const REPLIES: Reply[] = [
   {
     ids: ["afefa2e4"],
     who: "GoldenMongoose827",
-    pseudonym: "GoldenMongoose827",
     body: `Thank you for this, and sorry it sat unanswered for so long.
 
 Not quite the right field, but no harm done. The citation URL belongs with the citation count: it records where that number was read, so it wants a Google Scholar or Semantic Scholar page rather than an encyclopedia article. Wikipedia presence is tracked separately, in its own field that counts how many language editions carry an article dedicated to the problem - it is used as a rough renown check and as an honesty check against the significance score, and it is a curator measurement rather than something a submitter fills in.
@@ -75,7 +80,6 @@ So the right move for a problem with a Wikipedia article is to say so, and a cur
   {
     ids: ["2a3e657e"],
     who: "HiddenHawk615",
-    pseudonym: "HiddenHawk615",
     body: `Good question, and not intentional in the way you might think. Sorry for the long delay.
 
 Several results from that report are already in the catalog - the ones where the report's own text shows a model settling a stated question. What keeps most OEIS-style conjecture work out is the inclusion test rather than significance: an entry needs a precisely stated open question that someone posed, whose answer is now a proved or disproved theorem. A machine-generated conjecture about a sequence, confirmed or extended, usually has nobody on the other side of it who asked. The significance axis then handles how much anyone cared; it is not a gate.
@@ -85,7 +89,6 @@ The partial Erdős results are a different case and you may well be right that s
   {
     ids: ["490d981a"],
     who: "theabbie",
-    pseudonym: "theabbie",
     body: `Thank you, and apologies for the delay - this sat far longer than it should have.
 
 Verification here is set by hand, and what it asserts is narrow: that the account is the person it says it is. The evidence that settles it is a two-way link. A page you control that points at your VibeMathed profile or at an entry you submitted is the strongest kind, because it can be checked from both ends by anyone. An institutional email address, or a GitHub or arXiv profile carrying the same identity, also works.
@@ -97,7 +100,6 @@ Nothing about this is a judgement on the account. It is only that the badge clai
   {
     ids: ["d2b0d656"],
     who: "shemshallah",
-    pseudonym: "shemshallah",
     body: `Yes. Sorry for the slow answer.
 
 Verified profiles exist and are set by hand. Send something that ties this account to a public identity and it gets checked: a page you control that links back to your profile here or to an entry you submitted, an institutional email address, or a GitHub or arXiv profile under the same name. A two-way link is the strongest, because anyone can check it from either end.
@@ -107,7 +109,6 @@ The badge asserts only identity. It is separate from the self-declared role on y
   {
     ids: ["be31aac9"],
     who: "Roy van Rijn",
-    pseudonym: "Roy van Rijn",
     body: `Thank you for the links, and sorry for the delay in coming back to you.
 
 One thing would close this immediately: a mention of this account on a page you control. A line on royvanrijn.com or in your GitHub profile README pointing at your VibeMathed profile makes the link checkable from both ends, which is what the badge is supposed to stand on. The three links you sent establish that Roy van Rijn exists and is who he says he is - what they cannot show from the outside is that this account is you, since the addresses on those pages are not public.
@@ -117,7 +118,6 @@ If that is more trouble than it is worth, writing from an address that is public
   {
     ids: ["4ead9963"],
     who: "sjbevins",
-    pseudonym: "sjbevins",
     body: `Thank you, and sorry for the slow reply - this one has been sitting since 1 September.
 
 Your profile is already verified, and carries the moderator role as well, so nothing is outstanding on that side.
@@ -127,7 +127,6 @@ On the paper: it is a good fit, and a second AI-driven manuscript is very welcom
   {
     ids: ["59ddce0e", "b447d934"],
     who: "Saul Schleimer",
-    pseudonym: "Saul Schleimer",
     body: `Two answers, and apologies that they took eleven days.
 
 On verification: already done - your profile carries the badge. And you are right that Wikipedia is not the test. This site does count Wikipedia language editions, but for PROBLEMS, as a rough measure of how widely known a question was before it was solved. It has nothing to do with people, and it would be a poor measure of a mathematician even if it were meant as one.
@@ -139,7 +138,6 @@ If you ever want to argue with a verification tier or a significance score, that
   {
     ids: ["012e113e"],
     who: "Matthew Protti",
-    pseudonym: "Matthew Protti",
     body: `Both questions answered, and sorry for the delay - this crossed with the frontier work.
 
 The C11 frontier is live: vibemathed.com/frontier/shannon-capacity-c11. Six steps, from the published odd-cycles record through the BPZ updated certificate as the baseline, then your R3, R5, R6 and R10, with R10 as the headline at 5.295526013632343 in dimension 213. The two pending C11 submissions are one entry, linked from the frontier rather than duplicated. Your report on the comparison wording was applied on 12 September: both places now read "by exact integer comparisons, using cross-powers when dimensions differ", which is the honest description given the staircase mixes dimensions 207 and 213.
@@ -151,7 +149,6 @@ Send the release link and I will attach it to the frontier as methods.`,
   {
     ids: ["e3e6154a"],
     who: "BraveEgret318 (Ryan Simonelli)",
-    pseudonym: "BraveEgret318",
     body: `Done - your profile is verified, and thank you for making it easy to check.
 
 The evidence that settled it is the two-way link: your page at ryansimonelli.com/autonomous-philosophy.html links to the signed-depth-relevance-of-subdl entry, and that entry was submitted by this account. That can be checked from both ends by anyone, which is exactly what the badge is supposed to rest on. The verification note on your profile records that.
@@ -264,14 +261,18 @@ const NOTES: Note[] = [
 /// requests hinge on an account email this script cannot compare to a
 /// LinkedIn or personal page; the dry run prints those emails so the curator
 /// can make the call directly.
-const VERIFY: { pseudonym: string; note: string }[] = [
+const VERIFY: { id: string; who: string; note: string }[] = [
   {
-    pseudonym: "BraveEgret318",
+    id: "e3e6154a",
+    who: "BraveEgret318 (Ryan Simonelli)",
     note: "Ryan Simonelli. Two-way link checked 12 September 2026: ryansimonelli.com/autonomous-philosophy.html links to vibemathed.com/problem/signed-depth-relevance-of-subdl, and that entry was submitted by this account.",
   },
 ];
 
-const PENDING_VERIFY = ["theabbie", "Roy van Rijn"];
+const PENDING_VERIFY: { id: string; who: string }[] = [
+  { id: "490d981a", who: "theabbie" },
+  { id: "be31aac9", who: "Roy van Rijn" },
+];
 
 function lint(): number {
   let bad = 0;
@@ -318,14 +319,30 @@ async function connectWithRetry(): Promise<string> {
 }
 
 /// Resolve an 8-character id prefix to the one open SiteMessage it names.
-async function resolve(prefix: string): Promise<{ id: string; topic: string }> {
-  const rows = await prisma.$queryRawUnsafe<{ id: string; topic: string }[]>(
-    `SELECT id, topic FROM "SiteMessage" WHERE id::text LIKE $1 || '%' AND status = 'open'`,
+async function resolve(
+  prefix: string,
+): Promise<{ id: string; topic: string; userId: string | null }> {
+  const rows = await prisma.$queryRawUnsafe<
+    { id: string; topic: string; userId: string | null }[]
+  >(
+    `SELECT id, topic, "userId" FROM "SiteMessage" WHERE id::text LIKE $1 || '%' AND status = 'open'`,
     prefix,
   );
   if (rows.length !== 1)
     throw new Error(`${prefix}: matched ${rows.length} open messages, expected 1`);
   return rows[0];
+}
+
+/// The account behind a SiteMessage, by its foreign key.
+async function userFor(prefix: string) {
+  const row = await resolve(prefix);
+  if (!row.userId) throw new Error(`${prefix} has no userId`);
+  const u = await prisma.user.findUnique({
+    where: { id: row.userId },
+    select: { id: true, email: true, pseudonym: true, verified: true },
+  });
+  if (!u) throw new Error(`${prefix}: userId ${row.userId} has no account`);
+  return u;
 }
 
 async function main() {
@@ -348,14 +365,26 @@ async function main() {
   // Every id must resolve to exactly one OPEN row, and every recipient must
   // exist, before anything is written.
   const ids = new Map<string, string>();
+  const recipient = new Map<string, string>();
   for (const r of REPLIES) {
-    const u = await prisma.user.findFirst({
-      where: { pseudonym: r.pseudonym },
-      select: { id: true, email: true, verified: true },
+    let uid: string | null = null;
+    for (const p of r.ids) {
+      const row = await resolve(p);
+      ids.set(p, row.id);
+      if (!row.userId) throw new Error(`${p} (${r.who}) has no userId - cannot reply in-app`);
+      if (uid && uid !== row.userId)
+        throw new Error(`${r.who}: ids ${r.ids.join(",")} belong to different accounts`);
+      uid = row.userId;
+    }
+    const u = await prisma.user.findUnique({
+      where: { id: uid! },
+      select: { id: true, email: true, pseudonym: true, verified: true },
     });
-    if (!u) throw new Error(`no account for ${r.pseudonym}`);
-    for (const p of r.ids) ids.set(p, (await resolve(p)).id);
-    console.log(`REPLY  ${r.pseudonym.padEnd(20)} ${r.ids.join(",")}  -> ${u.email ?? "(no email)"}${u.verified ? "  [verified]" : ""}`);
+    if (!u) throw new Error(`${r.who}: userId ${uid} has no account`);
+    recipient.set(r.who, u.id);
+    console.log(
+      `REPLY  ${(u.pseudonym ?? r.who).padEnd(20)} ${r.ids.join(",")}  -> ${u.email ?? "(no email)"}${u.verified ? "  [verified]" : ""}`,
+    );
   }
   for (const e of EMAILS) ids.set(e.id, (await resolve(e.id)).id);
   for (const nt of NOTES) ids.set(nt.id, (await resolve(nt.id)).id);
@@ -363,19 +392,16 @@ async function main() {
 
   console.log("\nverification:");
   for (const v of VERIFY) {
-    const u = await prisma.user.findFirst({
-      where: { pseudonym: v.pseudonym },
-      select: { id: true, email: true, verified: true },
-    });
-    if (!u) throw new Error(`no account: ${v.pseudonym}`);
-    console.log(`  SET ${v.pseudonym.padEnd(18)} verified ${u.verified} -> true   email ${u.email ?? "-"}`);
+    const u = await userFor(v.id);
+    console.log(
+      `  SET ${(u.pseudonym ?? v.who).padEnd(18)} verified ${u.verified} -> true   email ${u.email ?? "-"}`,
+    );
   }
   for (const p of PENDING_VERIFY) {
-    const u = await prisma.user.findFirst({
-      where: { pseudonym: p },
-      select: { email: true, verified: true },
-    });
-    console.log(`  (not set) ${p.padEnd(16)} verified ${u?.verified}   account email: ${u?.email ?? "-"}`);
+    const u = await userFor(p.id);
+    console.log(
+      `  (not set) ${(u.pseudonym ?? p.who).padEnd(16)} verified ${u.verified}   account email: ${u.email ?? "-"}`,
+    );
   }
   console.log("  ^ compare those two against the identity each person claimed;");
   console.log("    this script does not set them.");
@@ -394,14 +420,11 @@ async function main() {
   if (!curator) throw new Error("curator not found on this database");
 
   for (const r of REPLIES) {
-    const u = await prisma.user.findFirst({
-      where: { pseudonym: r.pseudonym },
-      select: { id: true },
-    });
-    if (!u) throw new Error(`no account for ${r.pseudonym}`);
+    const uid = recipient.get(r.who);
+    if (!uid) throw new Error(`no recipient resolved for ${r.who}`);
     await prisma.directMessage.create({
       data: {
-        userId: u.id,
+        userId: uid,
         senderId: curator.id,
         senderName: curator.pseudonym,
         kind: "note",
@@ -414,7 +437,7 @@ async function main() {
         data: { status: "handled", handledAt: new Date() },
       });
     }
-    console.log(`replied: ${r.pseudonym} (${r.ids.join(",")})`);
+    console.log(`replied: ${r.who} (${r.ids.join(",")})`);
   }
 
   for (const e of EMAILS) {
@@ -434,16 +457,12 @@ async function main() {
   }
 
   for (const v of VERIFY) {
-    const u = await prisma.user.findFirst({
-      where: { pseudonym: v.pseudonym },
-      select: { id: true },
-    });
-    if (!u) throw new Error(`no account: ${v.pseudonym}`);
+    const u = await userFor(v.id);
     await prisma.user.update({
       where: { id: u.id },
       data: { verified: true, verifiedNote: v.note },
     });
-    console.log(`verified: ${v.pseudonym}`);
+    console.log(`verified: ${u.pseudonym ?? v.who}`);
   }
 
   console.log("\nAPPLIED. The contact queue should now be empty.");
