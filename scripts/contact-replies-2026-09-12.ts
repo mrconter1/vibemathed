@@ -391,8 +391,10 @@ async function main() {
   console.log(`\nall ${ids.size} ids resolve to open rows`);
 
   console.log("\nverification:");
+  const toVerify = new Map<string, { id: string; note: string }>();
   for (const v of VERIFY) {
     const u = await userFor(v.id);
+    toVerify.set(u.pseudonym ?? v.who, { id: u.id, note: v.note });
     console.log(
       `  SET ${(u.pseudonym ?? v.who).padEnd(18)} verified ${u.verified} -> true   email ${u.email ?? "-"}`,
     );
@@ -456,13 +458,17 @@ async function main() {
     console.log(`handled (unreachable): ${nt.id} ${nt.who}`);
   }
 
-  for (const v of VERIFY) {
-    const u = await userFor(v.id);
+  // Resolved BEFORE the loop above marked these rows handled. userFor() only
+  // matches OPEN rows, so re-resolving here finds nothing: the first
+  // production run sent all nine replies, handled all eighteen rows, and then
+  // died on "e3e6154a: matched 0 open messages". A write ordered after the
+  // write that invalidates its own lookup.
+  for (const [who, u] of toVerify) {
     await prisma.user.update({
       where: { id: u.id },
-      data: { verified: true, verifiedNote: v.note },
+      data: { verified: true, verifiedNote: u.note },
     });
-    console.log(`verified: ${u.pseudonym ?? v.who}`);
+    console.log(`verified: ${who}`);
   }
 
   console.log("\nAPPLIED. The contact queue should now be empty.");
