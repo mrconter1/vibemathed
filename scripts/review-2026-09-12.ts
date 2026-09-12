@@ -325,6 +325,27 @@ const DECISIONS: Decision[] = [
   },
 ];
 
+/// The serverless cluster refuses the first connection after idling; every
+/// older script retries and the first production run of this one did not.
+async function connectWithRetry(prisma: {
+  $queryRawUnsafe: <T>(q: string) => Promise<T>;
+}): Promise<string> {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= 8; attempt++) {
+    try {
+      const [{ db }] = await prisma.$queryRawUnsafe<{ db: string }[]>(
+        "SELECT current_database() AS db",
+      );
+      return db;
+    } catch (e) {
+      lastError = e;
+      console.log(`connection attempt ${attempt} failed; retrying in 5s`);
+      await new Promise((r) => setTimeout(r, 5000));
+    }
+  }
+  throw lastError;
+}
+
 function lint(): number {
   let bad = 0;
   const limit = new Map<string, number>();
@@ -373,9 +394,7 @@ async function main() {
 
   const prisma = guardedPrisma();
   try {
-    const [{ db }] = await prisma.$queryRawUnsafe<{ db: string }[]>(
-      "SELECT current_database() AS db",
-    );
+    const db = await connectWithRetry(prisma);
     console.log(`database: ${db}${db === "vibemathed" ? "  (PRODUCTION)" : ""}\n`);
 
     const curator = await prisma.user.findFirst({

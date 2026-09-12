@@ -50,10 +50,25 @@ const HISTORY_MAX = 600;
 const REPLY =
   "Done, both places: the 10 August 2026 row note and the closing provenance paragraph now read \"by exact integer comparisons, using cross-powers when dimensions differ\". Your reasoning is right - the staircase mixes dimensions 207 and 213, and the honest description of how N_a^(1/d_a) is compared with N_b^(1/d_b) is the exact integer comparison N_a^d_b against N_b^d_a - and the earlier wording was wrong for exactly the rows that matter. No bound or attribution was changed. The frontier page can take up to an hour to show it, or until the next deploy. Thanks for reporting it precisely enough that the fix was a single phrase.";
 
+async function connectWithRetry(): Promise<string> {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= 8; attempt++) {
+    try {
+      const [{ db }] = await prisma.$queryRawUnsafe<{ db: string }[]>(
+        "SELECT current_database() AS db",
+      );
+      return db;
+    } catch (e) {
+      lastError = e;
+      console.log(`connection attempt ${attempt} failed; retrying in 5s`);
+      await new Promise((r) => setTimeout(r, 5000));
+    }
+  }
+  throw lastError;
+}
+
 async function main() {
-  const [{ db }] = await prisma.$queryRawUnsafe<{ db: string }[]>(
-    "SELECT current_database() AS db",
-  );
+  const db = await connectWithRetry();
   console.log(`database: ${db}${db === "vibemathed" ? "  (PRODUCTION)" : ""}\n`);
 
   const frontier = await prisma.frontier.findUnique({
