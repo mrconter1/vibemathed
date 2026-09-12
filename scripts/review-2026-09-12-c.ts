@@ -276,7 +276,10 @@ const VERIFY: { email: string; who: string; note: string }[] = [
   {
     email: "abhishek7gg7@gmail.com",
     who: "theabbie / SilentBison701",
-    note: "Abhishek Choudhary (theabbie). Checked 12 September 2026 through the GitHub API: github.com/theabbie publishes the email abhishek7gg7@gmail.com, which is this account's email, and a bio linking to vibemathed.com/user/theabbie. The account has since been renamed, so that profile URL no longer resolves.",
+    // The pseudonym was SilentBison701 this morning and is theabbie again by
+    // evening, so the note says nothing about renaming: the account email is
+    // what the evidence actually rests on, and that does not move.
+    note: "Abhishek Choudhary (theabbie). Checked 12 September 2026 through the GitHub API: github.com/theabbie publishes the email abhishek7gg7@gmail.com, which is exactly this account's email, and a bio linking to vibemathed.com/user/theabbie. Both ends of that link were checked.",
   },
 ];
 
