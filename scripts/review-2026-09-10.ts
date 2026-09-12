@@ -120,6 +120,10 @@ import { MESSAGE_MAX } from "../src/lib/messages";
 
 const prisma = guardedPrisma();
 const APPLY = process.argv.includes("--apply");
+// --lint: message lengths only, no database. Added after the production dry
+// run refused both messages as over the cap, which a local check would have
+// caught before the curator ran anything.
+const LINT = process.argv.includes("--lint");
 const SPECS = [...EDITABLE_FIELDS, ...CURATOR_FIELDS];
 const LINK_LABEL_MAX = 120;
 
@@ -186,15 +190,15 @@ const DECISIONS: Decision[] = [
       },
     ],
     message: [
-      "Approved and published, and thank you for building it so it could actually be checked.",
+      "Approved and published. Thank you for building it so it could be checked.",
       "",
-      "What I verified rather than took on trust: Challenge.lean imports only Mathlib, writes the constant out in full and states normality with no project-defined predicate to hide behind; the statement takes no extra hypothesis that could carry an unproven input; Solution.lean bridges to the development; Audit.lean pins the axiom lists with #guard_msgs so a changed list is a build error rather than a note; and the GitHub Actions run of 9 September built the whole pipeline from the pinned toolchain and mathlib commit and passed. That last point does real work - it puts the kernel check on a machine other than yours, which most Lean submissions here cannot show. I did not rebuild it locally.",
+      "What I verified rather than took on trust: Challenge.lean imports only Mathlib, writes the constant out in full and states normality with no project-defined predicate to hide behind and no extra hypothesis that could carry an unproven input; Solution.lean bridges to the development; Audit.lean pins the axiom lists with #guard_msgs so a changed list is a build error; and the GitHub Actions run of 9 September built the pipeline from the pinned toolchain and mathlib commit and passed, which puts the kernel check on a machine other than yours. I did not rebuild it locally.",
       "",
-      "One correction, and it is to your note rather than to the paper. You wrote that the real point is normality for a natural constant, a number not constructed with the purpose of being normal. The paper is more careful: it says the one-prime values already belong to an established normal family, names Stoneham 1973 and Bailey-Crandall 2002 as the exact precedent, and states it has not located an earlier published conjecture about this value. So the entry records the result as the mixed-prime extension of that programme. That is not a small thing - every index 2^a 3^c contributing at once is the hard part - but it is a different claim from the one your note makes, and the paper does not make it.",
+      "One correction, and it is to your note rather than to the paper. You wrote that the real point is normality for a natural constant, a number not constructed with the purpose of being normal. The paper is more careful: it says the one-prime values already belong to an established normal family, names Stoneham 1973 and Bailey-Crandall 2002 as the exact precedent, and states it has not located an earlier published conjecture about this value. So the entry records the result as the mixed-prime extension of that programme. That is not a small thing - every index 2^a 3^c contributing at once is the hard part - but it is a different claim from the one your note makes.",
       "",
-      "Significance is 15. That axis measures how much mathematics cared about the question before it was answered, and nobody had posed this one, so it sits below the site's reciprocal-Fermat nonnormality entry at 18 and the Erdos-Borwein 2-density entry at 25, both about constants with a literature behind them.",
+      "Significance is 15. That axis measures how much mathematics cared before the answer, and nobody had posed this question, so it sits below the reciprocal-Fermat nonnormality entry at 18 and the Erdos-Borwein 2-density entry at 25, both constants with a literature behind them.",
       "",
-      "Two housekeeping notes. The source URL is pinned to commit 0696181 rather than to main, because the repository is the whole evidentiary basis here and a branch can move. And your AI-role claim is recorded as your account: the repository credits describe an AI-assisted project without separating model from human, and the paper has no byline, so the entry says that in as many words rather than asserting autonomy the public record does not show.",
+      "Two housekeeping notes. The source URL is pinned to commit 0696181 rather than to main, since the repository is the whole evidentiary basis and a branch can move. And your AI-role claim is recorded as your account: the repository credits describe an AI-assisted project without separating model from human, and the paper has no byline, so the entry says that rather than asserting autonomy the public record does not show.",
     ].join("\n"),
   },
   {
@@ -214,7 +218,7 @@ const DECISIONS: Decision[] = [
       "",
       "You asked directly whether the site's independent-verification requirement applies here. It does. The methodology's extraordinary-claims rule says a claim that would be a major result by any expert's standard is not published at Unreviewed, and not published as a Candidate either, because a listing here puts the site's name beside a claim it has not read. A complete topological classification of the Gromov-Hausdorff space is such a claim, and it arrived as an 87-page version 1 that was one day old. Nobody has read it yet, here or anywhere.",
       "",
-      "The rule is about the size of the claim, not about the author or the submitter. Ishiki is established in exactly this area, the KAKENHI support and the earlier work the paper builds on are real, and the AI disclosure is exemplary: it names Codex on GPT-6, says what the model was used for, and states that the author verified every argument and takes full responsibility. Your submission was accurate about all of it, including the part where author checking alone does not meet the bar. The same rule has already held back a disproof of the Yau-Tian-Donaldson conjecture and a positive-curvature claim, both by established authors.",
+      "The rule is about the size of the claim, not about the author or the submitter. Ishiki is established in exactly this area, the KAKENHI support and the earlier work the paper builds on are real, and the AI disclosure is exemplary: it names Codex on GPT-6, says what the model was used for, and states that the author verified every argument and takes full responsibility. Your submission was accurate about all of it, including that author checking alone does not meet the bar. The same rule has already held a Yau-Tian-Donaldson disproof and a positive-curvature claim, both by established authors.",
       "",
       "The way back, any one of these:",
       "- a named expert with no stake in the work says publicly that they have checked the argument;",
@@ -223,7 +227,7 @@ const DECISIONS: Decision[] = [
       "",
       "Send it again on any of those and it goes in at the tier it has earned. Your text is kept on the row, so nothing has to be written twice.",
       "",
-      "Two things worth saying about the submission itself. Flagging that Antonyan (2020) records the questions rather than being an independently established earliest date was exactly right, and I would have had to write that caveat myself otherwise. And separating the main classification theorem from the absolute-retract theorem and the intermediate constructions is the correct division; if this comes back, that is the shape the entry will take.",
+      "Two things worth saying about the submission itself. Flagging that Antonyan (2020) records the questions rather than being an independently established earliest date was exactly right. And separating the main classification theorem from the absolute-retract theorem and the intermediate constructions is the correct division; if this comes back, that is the shape the entry will take.",
     ].join("\n"),
   },
 ];
@@ -246,6 +250,16 @@ async function connectWithRetry(): Promise<string> {
 }
 
 async function main() {
+  if (LINT) {
+    let over = 0;
+    for (const d of DECISIONS) {
+      const n = d.message.length;
+      console.log(`${d.slug.slice(0, 50).padEnd(50)} message ${n}/${MESSAGE_MAX}${n > MESSAGE_MAX ? "  OVER" : ""}`);
+      if (n > MESSAGE_MAX) over++;
+    }
+    process.exitCode = over ? 1 : 0;
+    return;
+  }
   const db = await connectWithRetry();
   console.log(`database: ${db}${db === "vibemathed" ? "  (PRODUCTION)" : ""}\n`);
 
