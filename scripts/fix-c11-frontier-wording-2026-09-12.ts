@@ -103,7 +103,12 @@ async function main() {
     {
       what: "frontier.historyNote",
       before: frontier.historyNote,
-      after: (frontier.historyNote ?? "").replace(OLD, NEW),
+      // The wording fix alone lands at 608/600, which the dry run refused.
+      // "the repository README" -> "the README" recovers 15 characters and
+      // loses nothing: the sentence already says it is a repository table.
+      after: (frontier.historyNote ?? "")
+        .replace(OLD, NEW)
+        .replace("in the repository README at v0.5.0", "in the README at v0.5.0"),
       max: HISTORY_MAX,
     },
   ];
