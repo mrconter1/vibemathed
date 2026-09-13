@@ -71,10 +71,17 @@ const EDITS = {
   yearPosed: 1982,
   posedBy:
     "Harry Kesten, Percolation Theory for Mathematicians (1982), which is where Duminil-Copin's survey traces it; restated as Conjecture 1 of his 2018 ICM survey",
+  // PLAIN TEXT, with Unicode rather than TeX. Both of these render through
+  // StarNote, which does not run KaTeX, and ageNote's own help text says so:
+  // "Shown in a hover bubble, so plain text only - write pi/2, not $\pi/2$."
+  // The note being replaced already used "d ≥ 2" for that reason. A first
+  // draft here wrote $d\ge2$ and would have put literal dollar signs and
+  // backslashes on the entry page; the dry run printing before and after side
+  // by side is what showed it.
   ageNote:
-    "Dated from Kesten's 1982 book, where Duminil-Copin's survey traces the conjecture. Kesten settled $d=2$ in 1980 using Harris's 1960 proof that $\\theta(1/2)=0$ on $\\mathbb Z^2$; the other dimensions are the problem. Cost, as the repository discloses it: about a week of wall time in August 2026 on cloud CPU machines for Lean elaboration plus API inference, spend not tracked.",
+    "Dated from Kesten's 1982 book, where Duminil-Copin's survey traces the conjecture. Kesten settled d = 2 in 1980 using Harris's 1960 proof that θ(1/2) = 0 on Z², so the other dimensions are the problem. Cost, as the repository discloses it: about a week of wall time in August 2026 on cloud CPU machines for Lean elaboration plus API inference, spend not tracked.",
   significanceNote:
-    "Conjecture 1 of Duminil-Copin's 2018 ICM survey \"Sixty years of percolation\", which traces it to Kesten's 1982 book. Settled for $d=2$ by Kesten in 1980 with Harris's 1960 planar estimate, and in high dimensions by lace expansion since Hara-Slade 1990 ($d\\ge19$), pushed to $d\\ge11$ by Fitzner and van der Hofstad in 2015; dimensions 3 to 10 held out, reached by neither planar duality nor the lace expansion. Resolved for every $d\\ge2$ with no extra hypothesis. Just below the Collatz band: a central problem of probability settled completely, held back only because no human has read the argument.",
+    "Conjecture 1 of Duminil-Copin's 2018 ICM survey \"Sixty years of percolation\", which traces it to Kesten's 1982 book. Settled for d = 2 by Kesten in 1980 with Harris's 1960 planar estimate, and in high dimensions by lace expansion since Hara-Slade 1990 (d ≥ 19), pushed to d ≥ 11 by Fitzner and van der Hofstad in 2015; dimensions 3 to 10 held out, reached by neither planar duality nor the lace expansion. Resolved for every d ≥ 2 with no extra hypothesis. Just below the Collatz band: a central problem of probability settled completely, held back only because no human has read the argument.",
 };
 
 async function connectWithRetry(): Promise<string> {
