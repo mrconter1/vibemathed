@@ -204,6 +204,16 @@ export default async function StatsPage() {
         <ChartCard id="significance-vs-age" label="significance vs. age">
           <ReferencesChart problems={slim} />
         </ChartCard>
+        {/* The same plot with the floor raised to 40. The full chart's point
+            is the dense band at 10 - almost every AI-resolved problem is real
+            but unfamous - and that band is also what makes the top of it hard
+            to read. This one drops the band and keeps the strikes, so the
+            thirty-odd results anyone would call major are legible and every
+            one of them is named. 40 is where the scatter already stops
+            labelling, so the two charts agree about what "major" means. */}
+        <ChartCard id="major-results" label="the major results">
+          <ReferencesChart problems={slim} minSignificance={40} />
+        </ChartCard>
         {/* Sits beside the scatter deliberately: both are about weight
             rather than volume, and this one is the scatter's story rolled
             forward in time. `slim`, not `resolved`, because a candidate
