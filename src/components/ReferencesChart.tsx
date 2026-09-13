@@ -54,13 +54,23 @@ function niceMax(value: number, step: number) {
   return Math.max(step, Math.ceil(value / step) * step);
 }
 
-function ticks(max: number, step: number) {
+function ticks(max: number, step: number, min = 0) {
   const out: number[] = [];
-  for (let v = 0; v <= max; v += step) out.push(v);
+  for (let v = min; v <= max; v += step) out.push(v);
   return out;
 }
 
-export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
+/// `minSignificance` turns this into the zoomed companion chart: the same
+/// plot with the dense band below the cut removed, the y axis starting at the
+/// cut so the survivors use the full height, and every remaining point
+/// labelled (they are all above LABEL_THRESHOLD by construction).
+export function ReferencesChart({
+  problems,
+  minSignificance = 0,
+}: {
+  problems: ChartProblem[];
+  minSignificance?: number;
+}) {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const router = useRouter();
   // Legend chips toggle point groups (proved / disproved / under review),
@@ -94,9 +104,24 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
       age: number;
       significance: number;
       claimed: boolean;
-    } => d.age !== null && d.significance !== null,
+    } =>
+      d.age !== null &&
+      d.significance !== null &&
+      d.significance >= minSignificance,
   );
   const pending = enriched.length - plottable.length;
+  // Zoomed chart only: entries that clear the cut but have no posed year, so
+  // they cannot be placed on an age axis at all. Worth naming rather than
+  // silently dropping - at a cut of 40 this hides the percolation entry at 78
+  // and the critical-line entry at 68, two of the largest results here.
+  const aboveCutNoAge = minSignificance
+    ? enriched.filter(
+        (d) =>
+          d.significance !== null &&
+          d.significance >= minSignificance &&
+          d.age === null,
+      ).length
+    : 0;
   // Dropped before `enriched` even exists: partials and variants improve a
   // bound or answer a nearby question, so "age at resolution" is not defined
   // for them. Counted so the footnote can say so instead of implying they
@@ -110,12 +135,19 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
     Math.max(1, ...plottable.map((d) => d.significance)),
     yStep,
   );
+  // Zoomed chart: start the axis at the cut, rounded DOWN to a tick, so the
+  // lowest points sit on the floor rather than a third of the way up.
+  const yMin = minSignificance
+    ? Math.floor(minSignificance / yStep) * yStep
+    : 0;
+  const ySpan = Math.max(yStep, yMax - yMin);
 
   const xTicks = ticks(xMax, 20);
-  const yTicks = ticks(yMax, yStep);
+  const yTicks = ticks(yMax, yStep, yMin);
 
   const x = (age: number) => MARGIN.left + (age / xMax) * PLOT_W;
-  const y = (sig: number) => MARGIN.top + PLOT_H - (sig / yMax) * PLOT_H;
+  const y = (sig: number) =>
+    MARGIN.top + PLOT_H - ((sig - yMin) / ySpan) * PLOT_H;
 
   // Legend reflects only series actually drawn as points.
   const seriesPresent = Array.from(
@@ -239,7 +271,11 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
           viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
           className="h-full w-full overflow-visible"
           role="img"
-          aria-label="Scatter chart of AI-estimated significance against how many years each problem was open before resolution. Most points form a band at 10; a few labeled points rise above."
+          aria-label={
+            minSignificance
+              ? `Scatter chart of the ${plottable.length} entries scoring ${minSignificance} or above for AI-estimated significance, against how many years each problem was open before resolution. Every point is labelled.`
+              : "Scatter chart of AI-estimated significance against how many years each problem was open before resolution. Most points form a band at 10; a few labeled points rise above."
+          }
         >
           {/* gridlines */}
           {yTicks.map((t) => (
@@ -448,13 +484,21 @@ export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
           partials' exclusion to missing data and made the count look wrong.
           A reader reported exactly that about the zeta-zeros entry, which is
           out for the first reason, not the second. */}
-      {(excluded > 0 || pending > 0) && (
+      {minSignificance ? (
         <p className="mt-2 text-xs text-[var(--ink-muted)]">
-          {excluded > 0 &&
-            `${excluded} entries are partial results or variants, which have no age at resolution. `}
-          {pending > 0 &&
-            `${pending} of the remaining ${enriched.length} lack a posed year or a score.`}
+          {`Only entries scoring ${minSignificance} or above, where the full chart's band at 10 is dense enough to hide them. `}
+          {aboveCutNoAge > 0 &&
+            `${aboveCutNoAge} more clear the cut but carry no posed year, so they have no age to plot against.`}
         </p>
+      ) : (
+        (excluded > 0 || pending > 0) && (
+          <p className="mt-2 text-xs text-[var(--ink-muted)]">
+            {excluded > 0 &&
+              `${excluded} entries are partial results or variants, which have no age at resolution. `}
+            {pending > 0 &&
+              `${pending} of the remaining ${enriched.length} lack a posed year or a score.`}
+          </p>
+        )
       )}
 
       {tier !== "all" && (
