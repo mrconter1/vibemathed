@@ -22,6 +22,20 @@ function lastMoved(r: FrontierSummary): string | null {
   return live.map((x) => x.date).sort((a, b) => (padDate(a) < padDate(b) ? 1 : -1))[0];
 }
 
+// The newest row of any kind except a retraction - which is a different
+// question from lastMoved. A candidate never moves the line, so it is right
+// that "last moved" ignores it; but a candidate landing is the most recent
+// thing that HAPPENED on that frontier, and the list is ordered by what
+// happened. Before this the de Bruijn-Newman and union-closed frontiers, both
+// with 2026 candidates as their newest rows, sat at the bottom of the list
+// under frontiers nobody had touched since 2023, because their last
+// published row was years old.
+function lastActivity(r: FrontierSummary): string | null {
+  const rows = r.rows.filter((x) => x.status !== "retracted");
+  if (!rows.length) return null;
+  return rows.map((x) => x.date).sort((a, b) => (padDate(a) < padDate(b) ? 1 : -1))[0];
+}
+
 function fmtDate(d: string): string {
   if (d.length === 4) return d;
   const dt = new Date(padDate(d).slice(0, 10));
@@ -60,9 +74,10 @@ export default async function RecordsPage() {
     .sort((a, b) => (padDate(a.row.date) < padDate(b.row.date) ? 1 : -1))
     .slice(0, 8);
 
+  // Newest activity first, candidates included; see lastActivity.
   const sorted = [...frontiers].sort((a, b) => {
-    const da = lastMoved(a) ?? "";
-    const db = lastMoved(b) ?? "";
+    const da = lastActivity(a) ?? "";
+    const db = lastActivity(b) ?? "";
     return padDate(da) < padDate(db) ? 1 : -1;
   });
 

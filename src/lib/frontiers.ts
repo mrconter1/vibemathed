@@ -269,18 +269,16 @@ export function niceTicks(lo: number, hi: number, n: number): number[] {
 }
 
 /// Where a value sits on the axis, 0 at the bottom of the plot and 1 at the
-/// top, with "up" always meaning better: a "min" frontier is drawn inverted so
-/// an improvement rises on every chart alike.
-export function yPos(
-  axis: YAxis,
-  v: number,
-  direction: FrontierDirection,
-): number {
-  const t = axis.log
+/// top, larger values higher. The axis is never inverted: on a "min" frontier
+/// the line FALLS as the bound improves, which is what a bound coming down
+/// looks like. (Until 15 September 2026 a min frontier was drawn upside down
+/// so that "up" always meant better; the tick labels then ran the wrong way
+/// and readers, reasonably, took the climbing line for a bug.)
+export function yPos(axis: YAxis, v: number): number {
+  return axis.log
     ? (Math.log10(v) - Math.log10(axis.lo)) /
       (Math.log10(axis.hi) - Math.log10(axis.lo))
     : (v - axis.lo) / (axis.hi - axis.lo);
-  return direction === "max" ? t : 1 - t;
 }
 
 /// Nudge overlapping dots apart horizontally, in paint order, so every row is
