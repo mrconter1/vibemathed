@@ -60,6 +60,10 @@ interface Decision {
   reason: string;
   message: string;
   edits?: Record<string, unknown>;
+  /// Curator shorthand, stored in the ReviewNote table (a relation on
+  /// Problem, not a column - the first run of this script learned that from
+  /// Prisma's validator, before anything was written).
+  reviewNote?: string;
 }
 
 const DECISIONS: Decision[] = [
@@ -83,9 +87,9 @@ const DECISIONS: Decision[] = [
       humanCollaborators: ["Kamil Braun"],
       sourceName:
         "kbr-/math-research: whitepaper at commit dfc69c6, Lean claim BitPHPSuperpolynomial.lean at 54f0937",
-      reviewNote:
-        "Held 15 Sep 2026 under the extraordinary-claims rule. The claim is the open benchmark of its area, named as open by every 2024-2026 paper on Res(+). Audited at 54f0937: the final theorem, the proof system (initial / semantic weaken / resolve on a parity literal / any sound binary rule, DAG, no regularity or depth - a superset of dag-like Res(+)) and the CNF (standard bit-PHP over all pairs and labels) all match the claim; no sorry, no axiom, no native_decide in 81 files; chessboard homology proved. NOT checked: that it compiles. The repository has no Lean CI, and the independent container rebuild started here ran out of disk before the Mathlib cache finished. Route back: a GitHub Actions Lean build green on a fresh runner, then re-publish as Candidate at lean-checked the same day with the fields above. Alternatively a named specialist (Itsykson, Efremenko, Garlik, Chattopadhyay, Dvorak) confirming the argument. A timing decision, not a doubt about the row.",
     },
+    reviewNote:
+      "Held 15 Sep 2026 under the extraordinary-claims rule. The claim is the open benchmark of its area, named as open by every 2024-2026 paper on Res(+). Audited at 54f0937: the final theorem, the proof system (initial / semantic weaken / resolve on a parity literal / any sound binary rule, DAG, no regularity or depth - a superset of dag-like Res(+)) and the CNF (standard bit-PHP over all pairs and labels) all match the claim; no sorry, no axiom, no native_decide in 81 files; chessboard homology proved. NOT checked: that it compiles. The repository has no Lean CI, and the independent container rebuild started here ran out of disk before the Mathlib cache finished. Route back: a GitHub Actions Lean build green on a fresh runner, then re-publish as Candidate at lean-checked the same day with the fields above. Alternatively a named specialist (Itsykson, Efremenko, Garlik, Chattopadhyay, Dvorak) confirming the argument. A timing decision, not a doubt about the row.",
     message: [
       "Held, not declined. Nothing on your row is wrong; one thing is missing, and it is cheap.",
       "",
@@ -137,6 +141,7 @@ function lint(): number {
         if (over) bad++;
       } else console.log(`  ${k.padEnd(17)}: ${JSON.stringify(v)}`);
     }
+    if (d.reviewNote) console.log(`  reviewNote        : ${charLength(canonical(d.reviewNote))} (curator table, no cap)`);
     const v = checkStoredEntry({ specs: SPECS, fields: d.edits ?? {} });
     for (const x of v) console.log(`  RULE: ${x.field}: ${x.problem}`);
     bad += v.length;
@@ -218,6 +223,12 @@ async function main() {
       await prisma.problemActivity.create({
         data: { problemId: cur.id, userId: curator.id, userName: curator.pseudonym, type: "rejected" },
       });
+      if (d.reviewNote) {
+        await prisma.reviewNote.create({
+          data: { problemId: cur.id, userId: curator.id, userName: curator.pseudonym, body: d.reviewNote },
+        });
+        console.log(`review note: ${d.slug}`);
+      }
     }
     console.log("\nAPPLIED. Held rows are not public; nothing to wait for on the site.");
   } finally {
