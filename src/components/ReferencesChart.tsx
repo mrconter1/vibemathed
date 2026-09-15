@@ -60,18 +60,18 @@ function ticks(max: number, step: number, min = 0) {
   return out;
 }
 
-/// `minSignificance` turns this into the zoomed companion chart: the same
-/// plot with the dense band below the cut removed, the y axis starting at the
-/// cut so the survivors use the full height, and every remaining point
-/// labelled (they are all above LABEL_THRESHOLD by construction).
-export function ReferencesChart({
-  problems,
-  minSignificance = 0,
-}: {
-  problems: ChartProblem[];
-  minSignificance?: number;
-}) {
+// The "major only" cut. Above it the chart drops the dense band and starts
+// the y axis at the cut, so the survivors use the full height and every one
+// is named. On by default: the band at 10 is the record's honest shape, but
+// it is also what makes the top of the chart unreadable, and the top is what
+// a first-time reader came for. One chart with a switch, not two charts -
+// two copies of the same plot side by side read as two different datasets.
+const MAJOR_CUT = 50;
+
+export function ReferencesChart({ problems }: { problems: ChartProblem[] }) {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
+  const [majorOnly, setMajorOnly] = useState(true);
+  const minSignificance = majorOnly ? MAJOR_CUT : 0;
   const router = useRouter();
   // Legend chips toggle point groups (proved / disproved / under review),
   // persisted across reloads. Axes stay fixed so toggling declutters without
@@ -110,10 +110,10 @@ export function ReferencesChart({
       d.significance >= minSignificance,
   );
   const pending = enriched.length - plottable.length;
-  // Zoomed chart only: entries that clear the cut but have no posed year, so
+  // Major view only: entries that clear the cut but have no posed year, so
   // they cannot be placed on an age axis at all. Worth naming rather than
-  // silently dropping - at a cut of 40 this hides the percolation entry at 78
-  // and the critical-line entry at 68, two of the largest results here.
+  // silently dropping - this is how the percolation entry at 78 went missing
+  // until it was dated.
   const aboveCutNoAge = minSignificance
     ? enriched.filter(
         (d) =>
@@ -135,7 +135,7 @@ export function ReferencesChart({
     Math.max(1, ...plottable.map((d) => d.significance)),
     yStep,
   );
-  // Zoomed chart: start the axis at the cut, rounded DOWN to a tick, so the
+  // Major view: start the axis at the cut, rounded DOWN to a tick, so the
   // lowest points sit on the floor rather than a third of the way up.
   const yMin = minSignificance
     ? Math.floor(minSignificance / yStep) * yStep
@@ -486,7 +486,7 @@ export function ReferencesChart({
           out for the first reason, not the second. */}
       {minSignificance ? (
         <p className="mt-2 text-xs text-[var(--ink-muted)]">
-          {`Only entries scoring ${minSignificance} or above, where the full chart's band at 10 is dense enough to hide them. `}
+          {`Only entries scoring ${minSignificance} or above; the full record has a dense band at 10 that hides them. `}
           {aboveCutNoAge > 0 &&
             `${aboveCutNoAge} more clear the cut but carry no posed year, so they have no age to plot against.`}
         </p>
@@ -509,7 +509,44 @@ export function ReferencesChart({
 
       <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
         <TierToggle value={tier} onChange={setTier} />
+        <div
+          role="group"
+          aria-label="Significance floor"
+          className="inline-flex overflow-hidden rounded border border-[var(--hairline)] bg-[var(--paper)]"
+        >
+          {FLOOR_OPTIONS.map((o, i) => (
+            <button
+              key={o.label}
+              type="button"
+              onClick={() => setMajorOnly(o.on)}
+              aria-pressed={majorOnly === o.on}
+              title={o.title}
+              className={`px-2.5 py-1 text-xs transition-colors ${
+                i > 0 ? "border-l border-[var(--hairline)]" : ""
+              } ${
+                majorOnly === o.on
+                  ? "bg-[color-mix(in_srgb,var(--accent-blue)_12%,transparent)] font-medium text-[var(--accent-blue)]"
+                  : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
+              }`}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
 }
+
+const FLOOR_OPTIONS = [
+  {
+    on: true,
+    label: `${MAJOR_CUT}+`,
+    title: `Only entries scoring ${MAJOR_CUT} or above, every one named`,
+  },
+  {
+    on: false,
+    label: "All",
+    title: "Every resolved and candidate entry with a score and a posed year",
+  },
+] as const;
