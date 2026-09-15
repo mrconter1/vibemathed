@@ -185,22 +185,20 @@ export default async function RecordPage({
         <section className="mt-6 rounded-lg border border-[var(--hairline)] bg-[var(--paper-raised)] p-3 sm:p-4">
           <FrontierChart rows={r.rows} direction={r.direction} />
           <p className="mt-2 text-[11px] text-[var(--ink-muted)]">
-            The line is the frontier over time.{" "}
-            {/* Only on "min" frontiers, and only because the axis really is
-                upside down there: yPos in lib/frontiers returns 1 - t, so
-                larger values sit at the bottom. Every frontier draws progress
-                upward on purpose, so a reader never has to learn which kind
-                this one is - but a reader who reads the tick labels instead of
-                the shape is entitled to be told, and until now was not. */}
-            {r.direction === "min" &&
-              "Lower is better here, so the axis is inverted and the larger values sit at the bottom: an improvement still climbs. Every frontier on this site draws progress upward, whichever way its numbers run. "}
+            The line is the frontier over time
+            {r.direction === "min"
+              ? ", falling as the bound comes down: lower is better here. "
+              : ", climbing as the bound goes up: higher is better here. "}
             Filled dots are steps that moved it; muted dots are results that did
             not. Orange dots are catalog entries, results with AI in the loop.
             Hollow dots are candidates under review and never move the line.
-            Grey dots along the bottom edge are results from before the quantity
-            had a number, placed there because they have no value on this axis.
-            Dots that would overlap are nudged sideways a few pixels. Hover a
-            dot for its value and attribution.
+            {/* The valueless rows sit at the worst end of the axis, and on a
+                min frontier the worst end is the top. */}
+            Grey dots along the {r.direction === "min" ? "top" : "bottom"} edge
+            are results from before the quantity had a number, placed at the
+            worst end because they have no value on this axis. Dots that would
+            overlap are nudged sideways a few pixels. Hover a dot for its value
+            and attribution.
           </p>
         </section>
       ) : (

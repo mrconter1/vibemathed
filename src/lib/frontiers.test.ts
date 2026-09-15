@@ -197,14 +197,13 @@ describe("chartScale", () => {
       "1k",
       "2k",
     ]);
-    // Lower is better on this frontier, so 186 draws at the top and 4,680 at
-    // the bottom, and the 246 -> 186 history is spread over the top tenth
-    // rather than a pixel.
-    expect(yPos(axis, 186, "min")).toBeGreaterThan(0.9);
-    expect(yPos(axis, 4680, "min")).toBeLessThan(0.1);
-    expect(yPos(axis, 186, "min") - yPos(axis, 246, "min")).toBeGreaterThan(
-      0.07,
-    );
+    // The axis is never inverted: 186 draws near the bottom and 4,680 near
+    // the top, so on this lower-is-better frontier the line falls as the
+    // bound improves, and the 246 -> 186 history is spread over the bottom
+    // tenth rather than a pixel.
+    expect(yPos(axis, 186)).toBeLessThan(0.1);
+    expect(yPos(axis, 4680)).toBeGreaterThan(0.9);
+    expect(yPos(axis, 246) - yPos(axis, 186)).toBeGreaterThan(0.07);
     // Many decades fall back to powers of ten alone.
     const wide = yAxis([100, 1e8], false);
     expect(wide.ticks.map((t) => fmtTick(t, wide, false))).toEqual([
@@ -266,8 +265,8 @@ describe("chartScale", () => {
     expect(axis.lo).toBeGreaterThan(9);
     expect(axis.hi).toBeGreaterThan(31);
     expect(axis.hi).toBeLessThan(34);
-    expect(yPos(axis, 31, "max")).toBeGreaterThan(0.9);
-    expect(yPos(axis, 12, "max")).toBeLessThan(0.1);
+    expect(yPos(axis, 31)).toBeGreaterThan(0.9);
+    expect(yPos(axis, 12)).toBeLessThan(0.1);
   });
 
   it("dodge nudges overlapping dots apart and leaves the rest alone", () => {

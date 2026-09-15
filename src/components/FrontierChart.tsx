@@ -149,19 +149,19 @@ export function FrontierChart({
   const sx = (y: number) =>
     PAD.l + ((y - x0) / (x1 - x0)) * (W - PAD.l - PAD.r);
 
-  // y: higher-is-better draws up; for a "min" frontier the axis is inverted so
-  // an improvement still goes UP - the reader's eye should not have to learn a
-  // new convention per frontier. Extent, linear/log and ticks all come from
-  // one place (lib/frontiers), so the sparkline projects identically.
+  // y: larger values higher, on every frontier. A "max" frontier climbs as it
+  // improves and a "min" frontier falls, and the tick labels read the normal
+  // way on both. Extent, linear/log and ticks all come from one place
+  // (lib/frontiers), so the sparkline projects identically.
   const axis = yAxis(shown.map(val), proportion);
   // Where a row with no value on this axis is drawn: the worst end, which is
-  // the bottom for a "max" frontier and the top for a "min" one. For a
-  // proportion that is literally true - Selberg's "positive proportion" is
-  // κ > 0 - and for anything else it is the only honest place, since any other
-  // height would claim a value the source did not give.
+  // the bottom edge for a "max" frontier and the TOP edge for a "min" one,
+  // since that is where the large values sit. For a proportion that is
+  // literally true - Selberg's "positive proportion" is κ > 0 - and for
+  // anything else it is the only honest place, since any other height would
+  // claim a value the source did not give. The caption says which edge.
   const floor = direction === "max" ? axis.lo : axis.hi;
-  const sy = (v: number) =>
-    PAD.t + (1 - yPos(axis, v, direction)) * (H - PAD.t - PAD.b);
+  const sy = (v: number) => PAD.t + (1 - yPos(axis, v)) * (H - PAD.t - PAD.b);
 
   // Axis ticks: decades on x; four ticks on y for numeric frontiers.
   const decadeStart = Math.ceil(x0 / 10) * 10;

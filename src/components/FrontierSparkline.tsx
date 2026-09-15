@@ -62,7 +62,7 @@ export function FrontierSparkline({
     false,
   );
   const sx = (y: number) => P + ((y - x0) / (x1 - x0 || 1)) * (W - 2 * P);
-  const sy = (v: number) => P + (1 - yPos(axis, v, direction)) * (H - 2 * P);
+  const sy = (v: number) => P + (1 - yPos(axis, v)) * (H - 2 * P);
 
   const stepRows = pts.filter((s) => s.isStep).map((s) => s.row);
   let d = "";
