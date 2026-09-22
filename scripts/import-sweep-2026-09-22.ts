@@ -446,8 +446,8 @@ const ENTRIES: Entry[] = [
       field: "Extremal set theory",
       statement:
         "A family $F$ of subsets of $[n]$ is 3AP-intersecting if any two members meet in a set containing a non-trivial three-term arithmetic progression. Simonovits and Sós conjectured that the largest such family has size $2^{n-3}$, attained by fixing a progression. Before this work nothing better than the trivial bound $\\tfrac12 2^n$ was known. What is the maximum size?",
-      posedBy: "Miklós Simonovits and Vera T. Sós, by personal communication as recorded in the literature",
-      yearPosed: 2026,
+      posedBy: "Miklós Simonovits and Vera T. Sós, by personal communication to Chung, Graham, Frankl and Shearer, who recorded it in their 1986 paper",
+      yearPosed: 1986,
       solveType: "proved",
       resolution: "partial",
       resolutionMethod: "argument",
@@ -460,10 +460,10 @@ const ENTRIES: Entry[] = [
       aiContribution: "ai-co-developed",
       verification: "unreviewed",
       verificationNote:
-        "Checked here on 22 September 2026 against arXiv:2609.18870: the abstract calls this the first non-trivial progress towards the Simonovits-Sós conjecture and states the bound $(\\tfrac12 - c)2^n$ for an absolute $c>0$, generalised to $H$-intersecting families for any 3-graph $H$ of bounded codegree, with a clique showing the codegree hypothesis cannot be dropped. The conjecture is attributed in the introduction to Simonovits and Sós by personal communication. Entered as Partial on the paper's own framing. The mathematics was not checked here; six days old, no referee.",
+        "Checked here on 22 September 2026 against arXiv:2609.18870: the abstract calls this the first non-trivial progress towards the Simonovits-Sós conjecture and states the bound $(\\tfrac12 - c)2^n$ for an absolute $c>0$, generalised to $H$-intersecting families for any 3-graph $H$ of bounded codegree, with a clique showing the codegree hypothesis cannot be dropped. The introduction attributes the conjecture to Simonovits and Sós by personal communication to the authors of reference [1], which is Chung, Graham, Frankl and Shearer, J. Combin. Theory Ser. A 43 (1986), so it dates to 1986 or earlier. Entered as Partial on the paper's own framing. The mathematics was not checked here; six days old, no referee.",
       significance: 25,
       significanceNote:
-        "A conjecture of two of extremal combinatorics' senior figures, with a long-standing conjecture of Alon in the same family, and the first time anyone has beaten the trivial bound. Scored for the problem: level with the periodicity conjecture at 25. The step is partial - the conjectured $2^{n-3}$ is untouched - which the resolution field records rather than the score.",
+        "A forty-year-old conjecture of two of extremal combinatorics' senior figures, recorded in Chung, Graham, Frankl and Shearer's 1986 paper, with a long-standing conjecture of Alon in the same family, and the first time anyone has beaten the trivial bound. Scored for the problem: level with the periodicity conjecture at 25. The step is partial - the conjectured $2^{n-3}$ is untouched - which the resolution field records rather than the score.",
       publication: "preprint",
       sourceUrl: "https://arxiv.org/abs/2609.18870",
       sourceName: "A non-trivial bound for 3AP-intersecting families, arXiv:2609.18870 (16 September 2026)",
