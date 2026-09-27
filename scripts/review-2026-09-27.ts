@@ -475,7 +475,7 @@ const DECISIONS: Decision[] = [
     ].join("\n"),
   },
   {
-    slug: "formal-verification-of-phase-mediated-attractor-dynamics-pmad-in-lean-",
+    slug: "formal-verification-of-phase-mediated-attractor-dynamics-pmad-in-lean-4",
     action: "decline",
     reason: "no-open-question",
     reviewNote:
