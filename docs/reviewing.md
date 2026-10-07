@@ -39,7 +39,7 @@ or a dead link does not.
 
 Write what you looked for and where you looked. Never write that something
 does not exist, and never let its supposed absence be the reason a submission
-is held.
+is declined.
 
 This rule is here because the same mistake was made twice in one day, on
 4 September 2026, and both times it went out to a submitter in writing.
@@ -123,27 +123,48 @@ entry.
 Before checking the tier, ask what the result would mean if true. A famous
 conjecture, a problem with decades of failed attempts, an object the field
 expected not to exist. If a working mathematician in the area would call it a
-landmark, it is held.
+landmark, it is a **landmark claim**, and three rules apply.
 
-**Held means not published**, at any tier and at any resolution status,
-Candidate included. It waits for a named expert with no stake in it or a
-formal proof. The size of the claim decides, not who made it: the rule is the
-same for a preprint by known authors and for an anonymous agent.
+**It is listed, as a Candidate, if someone accountable stands behind it.**
+That means named authors, an AI lab publishing under its own name, or a formal
+proof whose axioms you have printed and whose headline statement you have read.
+Landmark claims used to be held until an independent expert or a formal proof
+existed. That rule was retired on 7 October 2026, the day after OpenAI released
+722 manuscripts: a catalog that leaves out the most important claims of the
+year is not a record. The quality bar moved from *whether* to list to *how* it
+is labelled.
 
-Mechanically there is no "hold" status, so: reject with reason **Something
-else**, and write a message that says the claim is held under the
-extraordinary-claims rule, what would lift the hold, and that resubmission is
-welcome when it exists. Be warm about it. The submitter usually knows.
+**An unidentified account with a landmark claim and no formal proof is still
+turned away.** Reject with reason **Something else**: say the claim is
+landmark-tier, that the site lists such claims once named authors, a lab or a
+checkable formal proof stand behind them, and that resubmission is welcome when
+one does. Be warm about it. The submitter usually knows. Two such claims in
+two days in September 2026, both from unidentified agents, are why this part
+of the old rule survives.
 
-Two in two days in September 2026, both at Unreviewed, both from unidentified
-agents, is what produced the rule.
+**The labels carry the weight.**
+
+- Resolution is **Candidate** until a named mathematician with no stake
+  confirms it in public, or the site has audited a formal statement of it.
+  Never Resolved on the authors' word, however distinguished.
+- The verification tier is only what has been checked. A Lean proof whose
+  statement the prover wrote is **Lean-checked**. **Lean-verified** needs the
+  statement anchored: an independent formalisation (Formal Conjectures, a
+  tracker) or this site's own line-by-line audit of the statement against the
+  problem as posed, plus a rebuild or Comparator run done here.
+- The verification note **opens** with the sentence "No independent
+  mathematician has checked this yet." until that stops being true, then says
+  who did.
+- If the claim is disputed in public, it becomes **Contested** the same day,
+  with the dispute linked.
 
 **Volume is a signal.** When one author's AI-written output is large and
 spans unrelated fields in a short window, weigh what one person can actually
 have checked in that time. The author's own statement of having verified the
 work already carries no weight on the ladder; in this situation, check
 statement fidelity harder, prefer a finite certificate you can re-run over a
-long argument you cannot, and hold anything landmark-tier without exception.
+long argument you cannot, and list a landmark-tier claim only if a formal
+proof you have looked at stands behind it.
 This is not a judgement of the person. It is arithmetic about days and pages,
 and the same arithmetic would apply to anyone. The first entry withdrawn
 under this reading was a disproof of the Yau-Tian-Donaldson conjecture,
@@ -174,7 +195,7 @@ say why in one sentence.
 - **Partial**: a new bound, a resolved special case. Most bound improvements
   land here.
 - **Candidate**: a full solution is claimed and publicly checkable, but
-  authoritative review is pending. Not for extraordinary claims (step 4).
+  authoritative review is pending. Every landmark claim sits here until step 4's conditions are met.
 - **Variant**: a nearby or reinterpreted question was answered, not the one
   posed.
 
@@ -263,6 +284,46 @@ the methodology:
 Volume is handled by the significance score, which is a sort and a filter.
 If the home list's default view ever needs to hide the 5s, that is a product
 decision to take separately, not a reason to leave qualifying results out.
+
+## Bulk releases by AI labs
+
+When a lab publishes results by the hundred (OpenAI's `openai/math`, October
+2026: 722 manuscripts in 372 families), the import is a curator job done in
+batches, never wholesale and never by submission form.
+
+- **Batches of 25, highest significance first.** Pre-rank every family by
+  provisional significance, then work down. The first batches get the most
+  care, because they are what readers come for.
+- **One entry per posed problem.** A family of companion papers answering one
+  question is one entry; the companions are links. A paper that settles two
+  named problems is two entries.
+- **The scope test does not bend.** The lab chose its results by its own idea
+  of significance. A result enters only if it answers a question someone else
+  had stated before. Impressive results that answer nobody's question stay out,
+  exactly as for any submitter.
+- **Read every source.** The paper's introduction gives who posed the problem
+  and when; take posedBy and yearPosed from its references, never from memory.
+- **Labels.** Model: what the lab says (for OpenAI's release, "Unreleased
+  internal OpenAI model"); vendor the lab; no human collaborators unless the
+  paper names one; AI-discovered unless the lab says a human did part of it.
+  Solve date is the manuscript's date. Tiers as in step 4: formalised with a
+  Comparator configuration is Lean-checked, unformalised is Unreviewed, and the
+  landmark rules apply in full.
+- **Significance** is scored on the problem's standing before it fell, as
+  always, and not discounted because the release contains hundreds of others.
+- **Name the release and its version** on every entry, so the release can be
+  filtered as a whole and every entry can be re-checked when the lab revises
+  a paper. Re-sync against the lab's repository after each update: corrected
+  papers get the correction, withdrawn ones become Contested.
+- **Stronger than an existing entry:** the old entry stays, because it is a
+  true result with its own history; link both ways and say in the old one's
+  result note what superseded it.
+- **Contradicts an existing entry:** flag both, change neither, and read the
+  two before anything else happens.
+- **Audit the top of the list ourselves.** For the formalised landmarks, read
+  the headline Lean statement against the problem as posed, rebuild or run the
+  Comparator here, and move them to Lean-verified one by one. That work is the
+  thing the site adds that the lab's own release cannot.
 
 ## Where the reasoning goes
 
