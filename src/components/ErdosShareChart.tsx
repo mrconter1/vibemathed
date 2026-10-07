@@ -11,7 +11,9 @@ import {
   timeWindow,
 } from "@/lib/time-buckets";
 import {
+  ClaimsNote,
   PartialWeekNote,
+  StatusToggle,
   TimeAxis,
   TimeRangeToggle,
 } from "@/components/TimeControls";
@@ -28,7 +30,9 @@ import { useChartSettings } from "@/lib/chart-settings";
 // AI proof and a later independent one, say) count once, and the site's own
 // candidates, partials and variants do not count at all. A "solved" share
 // that counted claims under review would be the number this site exists to
-// not publish.
+// not publish. So candidate claims, when shown, get their own dashed line
+// above the solved one and their own number in the caption; they never move
+// the solid line or the headline percentage.
 //
 // Same fixed viewBox and hover machinery as CumulativeChart.
 
@@ -46,6 +50,9 @@ interface PlotData {
   range: string[];
   /// Distinct problems solved by the end of each bucket (cumulative).
   solved: number[];
+  /// Distinct problems with a resolved OR candidate entry, when claims are
+  /// shown; drawn dashed above the solved line.
+  claimed: number[] | null;
   yMaxPct: number;
   interactive: boolean;
 }
@@ -55,7 +62,7 @@ const pct = (n: number) => (n / ERDOS_TOTAL) * 100;
 function Plot({ data }: { data: PlotData }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hover, setHover] = useState<number | null>(null);
-  const { range, solved, yMaxPct, interactive } = data;
+  const { range, solved, claimed, yMaxPct, interactive } = data;
   const plotW = VIEW_W - MARGIN.left - MARGIN.right;
   const x = (i: number) =>
     MARGIN.left +
@@ -118,6 +125,18 @@ function Plot({ data }: { data: PlotData }) {
           fill="var(--accent-orange)"
           fillOpacity={0.12}
         />
+        {claimed && (
+          <polyline
+            points={claimed.map((n, i) => `${x(i)},${yScale(pct(n))}`).join(" ")}
+            fill="none"
+            stroke="var(--accent-orange)"
+            strokeWidth={2}
+            strokeDasharray="5 4"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+            opacity={0.8}
+          />
+        )}
         <polyline
           points={linePts}
           fill="none"
@@ -181,6 +200,11 @@ function Plot({ data }: { data: PlotData }) {
             {solved[active]} of {ERDOS_TOTAL} · {pct(solved[active]).toFixed(1)}
             %
           </span>
+          {claimed && claimed[active] > solved[active] && (
+            <span className="ml-2 font-mono tabular-nums text-[var(--ink-muted)]">
+              +{claimed[active] - solved[active]} claimed
+            </span>
+          )}
         </div>
       )}
     </div>
@@ -191,12 +215,13 @@ export function ErdosShareChart({
   problems,
   today,
 }: {
-  /// Fully resolved entries only; the caller filters.
+  /// Resolved entries and candidate claims; the chart keeps them apart.
   problems: ChartProblem[];
   today: string;
 }) {
   const [isDesktop, setIsDesktop] = useState(false);
-  const { range: timeRange, setRange } = useChartSettings("erdos-share");
+  const { range: timeRange, setRange, status, setStatus } = useChartSettings("erdos-share");
+  const showClaims = status === "claims";
 
   useEffect(() => {
     const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
@@ -206,17 +231,22 @@ export function ErdosShareChart({
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  // One date per problem NUMBER: the earliest resolved entry's solve date.
+  // One date per problem NUMBER: the earliest resolved entry's solve date,
+  // and separately the earliest resolved-or-candidate one.
   const firstSolve = new Map<number, string>();
+  const firstClaim = new Map<number, string>();
   for (const p of problems) {
     if (p.problemNumber === null) continue;
-    const prev = firstSolve.get(p.problemNumber);
-    if (prev === undefined || p.solveDate < prev)
-      firstSolve.set(p.problemNumber, p.solveDate);
+    const targets = p.resolution === "resolved" ? [firstSolve, firstClaim] : [firstClaim];
+    for (const m of targets) {
+      const prev = m.get(p.problemNumber);
+      if (prev === undefined || p.solveDate < prev) m.set(p.problemNumber, p.solveDate);
+    }
   }
   const allKeys = [...firstSolve.values()]
     .map((d) => bucketKey(d, CHART_GRAN))
     .sort();
+  const claimKeys = [...firstClaim.values()].map((d) => bucketKey(d, CHART_GRAN)).sort();
   if (allKeys.length === 0) return null;
 
   // Unlike the tracked-problems curve, this one is NOT re-baselined to the
@@ -224,20 +254,25 @@ export function ErdosShareChart({
   // total, so a narrow window shows the recent part of the same line.
   const { buckets: range } = timeWindow(allKeys[0], today, timeRange);
   const solved = range.map((mk) => allKeys.filter((k) => k <= mk).length);
+  const claimed = showClaims ? range.map((mk) => claimKeys.filter((k) => k <= mk).length) : null;
   const total = firstSolve.size;
+  const claimsOnly = firstClaim.size - firstSolve.size;
   const topPct = pct(solved[solved.length - 1]);
+  // The axis fits the dashed line too, when it is drawn; the caption's
+  // percentage stays the solved one.
+  const scaleTop = pct((claimed ?? solved)[solved.length - 1]);
   // A round ceiling a little above the line: 1, 2, 5, 10, 20 percent steps.
   const step =
-    topPct <= 1
+    scaleTop <= 1
       ? 0.25
-      : topPct <= 2.5
+      : scaleTop <= 2.5
         ? 0.5
-        : topPct <= 5
+        : scaleTop <= 5
           ? 1
-          : topPct <= 12
+          : scaleTop <= 12
             ? 2
             : 5;
-  const yMaxPct = Math.max(step, Math.ceil((topPct * 1.1) / step) * step);
+  const yMaxPct = Math.max(step, Math.ceil((scaleTop * 1.1) / step) * step);
 
   return (
     <div className="flex h-full flex-col">
@@ -250,12 +285,14 @@ export function ErdosShareChart({
         %, {rangeCaption(timeRange)}. Distinct problems, by number; candidates
         and partial results not counted. Denominator read {ERDOS_TOTAL_READ}.
       </p>
+      <ClaimsNote status={status} claims={claimsOnly} />
       <div className="mt-3 flex flex-1 flex-col justify-center">
-        <Plot data={{ range, solved, yMaxPct, interactive: isDesktop }} />
+        <Plot data={{ range, solved, claimed, yMaxPct, interactive: isDesktop }} />
       </div>
       <PartialWeekNote show={lastBucketPartial(today)} />
       <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
         <TimeRangeToggle value={timeRange} onChange={setRange} />
+        <StatusToggle value={status} onChange={setStatus} />
       </div>
     </div>
   );

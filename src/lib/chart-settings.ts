@@ -16,6 +16,17 @@ export type TierFilter = AiContribution | "all";
 
 const TIERS: TierFilter[] = ["all", ...AI_CONTRIBUTIONS];
 
+/// Whether a solve chart also draws the claims under review: "resolved" counts
+/// fully resolved entries only, "claims" adds a dashed line (or, on a pie, a
+/// stated share) for candidate solutions nobody independent has checked yet.
+/// Claims on by default since the OpenAI math release (October 2026) put
+/// several hundred candidates in the record at once: hiding them all made the
+/// solve charts describe a record that no longer exists. They stay a separate
+/// mark, never merged into the resolved line.
+export type StatusScope = "resolved" | "claims";
+
+const STATUSES: StatusScope[] = ["resolved", "claims"];
+
 export function useChartSettings(id: string): {
   range: TimeRange;
   setRange: (r: TimeRange) => void;
@@ -23,6 +34,8 @@ export function useChartSettings(id: string): {
   setTier: (t: TierFilter) => void;
   hidden: ReadonlySet<string>;
   toggleSeries: (key: string) => void;
+  status: StatusScope;
+  setStatus: (s: StatusScope) => void;
 } {
   const key = `vibemathed:chart:${id}`;
   // All time by default: the record's whole shape is the honest first view,
@@ -30,6 +43,7 @@ export function useChartSettings(id: string): {
   const [range, setRange] = useState<TimeRange>("all");
   const [tier, setTier] = useState<TierFilter>("all");
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
+  const [status, setStatus] = useState<StatusScope>("claims");
 
   /* eslint-disable react-hooks/set-state-in-effect -- syncing state in from
      localStorage after hydration is the sanctioned use; reading it during the
@@ -41,6 +55,7 @@ export function useChartSettings(id: string): {
         range?: unknown;
         tier?: unknown;
         hidden?: unknown;
+        status?: unknown;
       } | null;
       if (s) {
         // A stored `gran` from the old Day/Week/Month control is simply not a
@@ -48,6 +63,7 @@ export function useChartSettings(id: string): {
         // migration needed, and no crash from a value that means nothing now.
         if (RANGES.includes(s.range as TimeRange)) setRange(s.range as TimeRange);
         if (TIERS.includes(s.tier as TierFilter)) setTier(s.tier as TierFilter);
+        if (STATUSES.includes(s.status as StatusScope)) setStatus(s.status as StatusScope);
         if (Array.isArray(s.hidden)) {
           setHidden(new Set(s.hidden.filter((x): x is string => typeof x === "string")));
         }
@@ -62,11 +78,11 @@ export function useChartSettings(id: string): {
   useEffect(() => {
     if (!restored) return;
     try {
-      localStorage.setItem(key, JSON.stringify({ range, tier, hidden: [...hidden] }));
+      localStorage.setItem(key, JSON.stringify({ range, tier, hidden: [...hidden], status }));
     } catch {
       // Storage full or blocked - the chart still works, it just won't persist.
     }
-  }, [restored, key, range, tier, hidden]);
+  }, [restored, key, range, tier, hidden, status]);
 
   const toggleSeries = (k: string) =>
     setHidden((prev) => {
@@ -76,5 +92,5 @@ export function useChartSettings(id: string): {
       return next;
     });
 
-  return { range, setRange, tier, setTier, hidden, toggleSeries };
+  return { range, setRange, tier, setTier, hidden, toggleSeries, status, setStatus };
 }
