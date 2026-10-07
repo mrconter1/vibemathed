@@ -32,10 +32,10 @@ import { charLength, canonical } from "../../src/lib/char-length";
 import { COLLECTION_KEYS } from "../../src/lib/collections";
 
 const args = process.argv.slice(2);
-const N = Number(args.find((a) => /^\d+$/.test(a)));
+const N = args.find((a) => /^\d+[a-z]?$/.test(a));
 const APPLY = args.includes("--apply");
 const LINT = args.includes("--lint");
-if (!Number.isInteger(N)) throw new Error("usage: import-batch.ts <batch number> [--apply|--lint]");
+if (!N) throw new Error("usage: import-batch.ts <batch, e.g. 2 or 1b> [--apply|--lint]");
 
 const ADMIN_EMAIL = "rasmus.lindahl1996@gmail.com";
 const SPECS = [...EDITABLE_FIELDS, ...CURATOR_FIELDS];
@@ -58,7 +58,7 @@ interface CatalogAction {
   link?: Link;
 }
 interface Batch {
-  batch: number;
+  batch: number | string;
   collection: string;
   collectionVersion: string;
   entries: Entry[];
@@ -94,7 +94,7 @@ function lint(): number {
         console.log(`${e.slug}.${k}: ${charLength(canonical(v))}/${lim} OVER`);
         bad++;
       }
-      if (/—/.test(v)) {
+      if (/\u2014/.test(v)) {
         console.log(`${e.slug}.${k}: em dash`);
         bad++;
       }
@@ -107,7 +107,11 @@ function lint(): number {
       console.log(`${e.slug}: resolution resolved is not allowed for this release`);
       bad++;
     }
-    if (!["lean-checked", "unreviewed"].includes(String(f.verification))) {
+    if (f.verification === "contested" && typeof f.claimIssueNote !== "string") {
+      console.log(`${e.slug}: a contested entry must carry a claimIssueNote saying what is disputed`);
+      bad++;
+    }
+    if (!["lean-checked", "unreviewed", "contested"].includes(String(f.verification))) {
       console.log(`${e.slug}: verification ${f.verification} not allowed at import`);
       bad++;
     }
@@ -138,7 +142,7 @@ function lint(): number {
       console.log(`supersedes ${c.slug}: needs append and newSlug`);
       bad++;
     }
-    if (c.append && /—/.test(c.append)) {
+    if (c.append && /\u2014/.test(c.append)) {
       console.log(`supersedes ${c.slug}: em dash`);
       bad++;
     }
