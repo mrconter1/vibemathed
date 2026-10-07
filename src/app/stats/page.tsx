@@ -59,11 +59,19 @@ export default async function StatsPage() {
     significance: p.significance,
   }));
 
-  // Most charts describe SOLVES, so they only see fully resolved entries - a
-  // candidate under review, a partial advance or a retracted claim is tracked
-  // but has not resolved anything. The tiles and the hero curve describe the
-  // whole record.
+  // Most charts describe SOLVES. Until October they saw only fully resolved
+  // entries; then the OpenAI math release put about four hundred candidate
+  // claims in the record in one go, and the solve charts went on describing a
+  // record that no longer existed. So they now receive resolved entries AND
+  // candidates, and keep them apart themselves: solid is resolved, a dashed
+  // line (or a stated share, on a pie) adds the claims, behind a
+  // "[Resolved | + Claims]" switch. Partial advances and retracted claims
+  // still stay out - neither is a solve of the posed problem. The tiles and
+  // the hero curve describe the whole record.
   const resolved = slim.filter((p) => p.resolution === "resolved");
+  const solves = slim.filter(
+    (p) => p.resolution === "resolved" || p.resolution === "candidate",
+  );
 
   // The record's own growth: entries added in the last seven days against
   // the seven before. The clock read lives inside getEntryFlow's cache scope,
@@ -216,20 +224,20 @@ export default async function StatsPage() {
           <PeakChart problems={slim} today={today} />
         </ChartCard>
         <ChartCard id="by-vendor" label="solves per vendor">
-          <ModelsChart problems={resolved} today={today} />
+          <ModelsChart problems={solves} today={today} />
         </ChartCard>
         <ChartCard
           id="by-contribution-tier"
           label="growth per AI-contribution tier"
         >
-          <ContributionGrowthChart problems={resolved} today={today} />
+          <ContributionGrowthChart problems={solves} today={today} />
         </ChartCard>
         {/* The "is AI doing theory yet?" chart. */}
         <ChartCard
           id="by-resolution-method"
           label="growth per resolution method"
         >
-          <MethodGrowthChart problems={resolved} today={today} />
+          <MethodGrowthChart problems={solves} today={today} />
         </ChartCard>
         {/* Area growth beside the record's total - both count EVERY tracked
             entry, unlike the solve charts, so the pair reads as "which parts
@@ -241,16 +249,17 @@ export default async function StatsPage() {
           <CumulativeChart problems={slim} today={today} />
         </ChartCard>
         {/* The one chart with an external denominator: how much of Erdős's
-            collection AI has closed. Resolved only, distinct by problem
-            number - see the component header. */}
+            collection AI has closed. Distinct by problem number; claims get
+            their own dashed line, never the solved share - see the
+            component header. */}
         <ChartCard id="erdos-share" label="share of Erdős problems solved">
-          <ErdosShareChart problems={resolved} today={today} />
+          <ErdosShareChart problems={solves} today={today} />
         </ChartCard>
         <ChartCard id="proved-vs-disproved" label="proved vs. disproved">
-          <SolveRatioChart problems={resolved} />
+          <SolveRatioChart problems={solves} />
         </ChartCard>
         <ChartCard id="closed-vs-open-source" label="closed vs. open source">
-          <OpenSourceChart problems={resolved} />
+          <OpenSourceChart problems={solves} />
         </ChartCard>
       </section>
     </main>
