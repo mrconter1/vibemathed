@@ -35,6 +35,7 @@ import {
   type SortKey,
 } from "@/lib/list-settings";
 import { SOURCE_HOSTS, sourceHostKey } from "@/lib/source-hosts";
+import { COLLECTIONS, NO_COLLECTION } from "@/lib/collections";
 import Link from "next/link";
 import {
   ageAtSolve,
@@ -488,6 +489,7 @@ export function ProblemCards({
   );
   const [methodFilter, setMethodFilter] = useState(initial.methodFilter);
   const [sourceFilter, setSourceFilter] = useState(initial.sourceFilter);
+  const [collectionFilter, setCollectionFilter] = useState(initial.collectionFilter);
   const [sortKey, setSortKey] = useState<SortKey>(initial.sortKey);
   const [sortDir, setSortDir] = useState<SortDir>(initial.sortDir);
   const [period, setPeriod] = useState<Period>(initial.period);
@@ -575,6 +577,7 @@ export function ProblemCards({
       ["publication", "publicationFilter"],
       ["method", "methodFilter"],
       ["source", "sourceFilter"],
+      ["collection", "collectionFilter"],
       ["sort", "sortKey"],
       ["dir", "sortDir"],
       ["period", "period"],
@@ -601,6 +604,7 @@ export function ProblemCards({
     setPublicationFilter(next.publicationFilter);
     setMethodFilter(next.methodFilter);
     setSourceFilter(next.sourceFilter);
+    setCollectionFilter(next.collectionFilter);
     setSortKey(next.sortKey);
     setSortDir(next.sortDir);
     setPeriod(next.period);
@@ -624,6 +628,7 @@ export function ProblemCards({
       publicationFilter,
       methodFilter,
       sourceFilter,
+      collectionFilter,
       sortKey,
       sortDir,
       period,
@@ -671,6 +676,7 @@ export function ProblemCards({
     if (publicationFilter !== "all") q.set("publication", publicationFilter);
     if (methodFilter !== "all") q.set("method", methodFilter);
     if (sourceFilter !== "all") q.set("source", sourceFilter);
+    if (collectionFilter !== "all") q.set("collection", collectionFilter);
     if (sortKey !== "solveDate") q.set("sort", sortKey);
     if (sortDir !== "desc") q.set("dir", sortDir);
     if (period !== "all") q.set("period", period);
@@ -697,6 +703,7 @@ export function ProblemCards({
     publicationFilter,
     methodFilter,
     sourceFilter,
+    collectionFilter,
     sortKey,
     sortDir,
     period,
@@ -807,6 +814,22 @@ export function ProblemCards({
         problems.some((p) => sourceHostKey(p.sourceUrl) === h.key),
       ).map((h) => ({ value: h.key, label: h.label })),
     },
+    ...(problems.some((p) => p.collection)
+      ? [
+          {
+            // A bulk release read as one event: the release alone, or the
+            // catalog without it.
+            key: "collection",
+            label: "Collection",
+            options: [
+              ...COLLECTIONS.filter((c) =>
+                problems.some((p) => p.collection === c.key),
+              ).map((c) => ({ value: c.key, label: c.label })),
+              { value: NO_COLLECTION, label: "Not from a release" },
+            ],
+          },
+        ]
+      : []),
     ...(problems.some((p) => p.resolutionMethod)
       ? [
           {
@@ -829,6 +852,7 @@ export function ProblemCards({
     publication: publicationFilter,
     method: methodFilter,
     source: sourceFilter,
+    collection: collectionFilter,
   };
 
   // Takes the whole new value rather than one option: the panel and the chip
@@ -843,6 +867,7 @@ export function ProblemCards({
     else if (key === "publication") setPublicationFilter(value);
     else if (key === "method") setMethodFilter(value);
     else if (key === "source") setSourceFilter(value);
+    else if (key === "collection") setCollectionFilter(value);
   }
 
   const filtered = useMemo(() => {
@@ -902,6 +927,8 @@ export function ProblemCards({
       // the source it describes. Cheap: one URL parse per entry per pass.
       if (!selectionMatches(sourceFilter, sourceHostKey(p.sourceUrl)))
         return false;
+      if (!selectionMatches(collectionFilter, p.collection ?? NO_COLLECTION))
+        return false;
       if (!q) return true;
       // A pasted link or a bare arXiv id is an identity, not a word: compare
       // it against what the entry's links actually point at, so
@@ -941,6 +968,7 @@ export function ProblemCards({
     publicationFilter,
     methodFilter,
     sourceFilter,
+    collectionFilter,
   ]);
 
   const sorted = useMemo(() => {
@@ -977,6 +1005,7 @@ export function ProblemCards({
     publicationFilter,
     methodFilter,
     sourceFilter,
+    collectionFilter,
     perPage,
     sortKey,
     sortDir,
@@ -1021,7 +1050,8 @@ export function ProblemCards({
     verificationFilter !== "all" ||
     publicationFilter !== "all" ||
     methodFilter !== "all" ||
-    sourceFilter !== "all";
+    sourceFilter !== "all" ||
+    collectionFilter !== "all";
 
   // `grow justify-center sm:grow-0`: on a phone the wrapped chip rows
   // stretch to fill the full width instead of leaving a ragged right edge;

@@ -93,6 +93,8 @@ export const PROBLEM_SELECT = {
   ageNote: true,
   sourceUrl: true,
   sourceName: true,
+  collection: true,
+  collectionVersion: true,
   createdAt: true,
   updatedAt: true,
   links: {
@@ -158,6 +160,8 @@ export function toProblem(r: ProblemRow): ProblemWithVotes {
     ageNote: r.ageNote,
     sourceUrl: r.sourceUrl,
     sourceName: r.sourceName,
+    collection: r.collection,
+    collectionVersion: r.collectionVersion,
     links: r.links.map((l) => ({ label: l.label, url: l.url, kind: l.kind })),
     relations: r.relationsFrom.map((x) => ({
       to: x.to.slug,
