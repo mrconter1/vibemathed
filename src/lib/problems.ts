@@ -252,6 +252,13 @@ export interface MathProblem {
   sourceUrl: string;
   sourceName: string;
   /**
+   * The bulk release this entry was imported from (a key in
+   * src/lib/collections.ts) and the release version that was read. Absent on
+   * everything not imported from one.
+   */
+  collection?: string | null;
+  collectionVersion?: string | null;
+  /**
    * Additional links beyond the primary source. Optional in the JSON
    * baseline; the database always stores an array (empty by default).
    */
@@ -366,6 +373,8 @@ export interface CardEntry {
   /** Where the entry's primary source points, so a card can offer it directly. */
   sourceUrl: string;
   sourceName: string;
+  /** Bulk-release key (src/lib/collections.ts), for the Collection filter. */
+  collection: string | null;
   /** Typed extra links, for the card's icon row. */
   links: LinkRef[];
 }

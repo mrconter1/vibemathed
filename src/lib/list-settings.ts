@@ -23,6 +23,7 @@ import {
   type Period,
 } from "@/lib/problems";
 import { SOURCE_HOST_KEYS } from "@/lib/source-hosts";
+import { COLLECTION_KEYS, NO_COLLECTION } from "@/lib/collections";
 import { ageAtSolve, type CardEntry } from "@/lib/problems";
 import { MODEL_FAMILIES, SOLVE_TYPE, VERIFICATION } from "@/lib/display";
 
@@ -157,6 +158,8 @@ export interface ListSettings {
   /// Where the primary source lives (arXiv, erdosproblems, a repository,
   /// elsewhere); see src/lib/source-hosts.ts.
   sourceFilter: Selection;
+  /// Which bulk release, if any (src/lib/collections.ts).
+  collectionFilter: Selection;
   sortKey: SortKey;
   sortDir: SortDir;
   period: Period;
@@ -173,6 +176,7 @@ export const DEFAULT_SETTINGS: ListSettings = {
   publicationFilter: "all",
   methodFilter: "all",
   sourceFilter: "all",
+  collectionFilter: "all",
   sortKey: "solveDate",
   sortDir: "desc",
   period: "all",
@@ -223,6 +227,7 @@ export function normalizeListSettings(raw: unknown): ListSettings {
   out.publicationFilter = sanitize(s.publicationFilter, PUBLICATION_STATUSES);
   out.methodFilter = sanitize(s.methodFilter, RESOLUTION_METHODS);
   out.sourceFilter = sanitize(s.sourceFilter, SOURCE_HOST_KEYS);
+  out.collectionFilter = sanitize(s.collectionFilter, [...COLLECTION_KEYS, NO_COLLECTION]);
 
   if (SORTS.some((x) => x.key === s.sortKey))
     out.sortKey = s.sortKey as SortKey;

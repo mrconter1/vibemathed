@@ -95,6 +95,7 @@ async function EntryList() {
     changedAt: p.changedAt,
     sourceUrl: p.sourceUrl,
     sourceName: p.sourceName,
+    collection: p.collection ?? null,
     links: p.links ?? [],
   }));
 

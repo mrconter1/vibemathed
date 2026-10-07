@@ -158,6 +158,11 @@ model Problem {
   ageNote     String? @db.String(400)
   sourceUrl  String
   sourceName String @db.String(200)
+  /// The bulk release this entry was imported from, a key in
+  /// src/lib/collections.ts, and the release version that was read (a commit
+  /// for a repository). Set by curator import scripts only.
+  collection        String? @db.String(80)
+  collectionVersion String? @db.String(64)
   /// Free text from the submitter to the reviewer, fixed at submission like
   /// `solveType` and `problemNumber` - not one of EDITABLE_FIELDS, so nobody
   /// edits it afterwards and it never appears on the published entry.
@@ -209,6 +214,7 @@ model Problem {
   /// The list read's exact shape: published rows ordered by solve date.
   @@index([status, solveDate])
   @@index([submittedById])
+  @@index([collection])
 }
 
 /// Additional sources beyond an entry's primary one - Lean repositories,
