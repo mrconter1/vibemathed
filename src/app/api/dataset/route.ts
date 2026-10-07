@@ -50,6 +50,9 @@ export async function GET() {
     solveCostNote: p.solveCostNote ?? null,
     sourceUrl: p.sourceUrl,
     sourceName: p.sourceName,
+    // The bulk release the entry was imported from (key) and the version read.
+    collection: p.collection ?? null,
+    collectionVersion: p.collectionVersion ?? null,
     links: p.links ?? [],
     // Outgoing typed edges to other entries, by slug. One direction only:
     // a relation is a single directed row, so mirroring it here would make

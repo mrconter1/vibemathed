@@ -69,8 +69,9 @@ const CARDS: { title: string; body: React.ReactNode; wide?: boolean }[] = [
         </Link>{" "}
         says so on every entry: Unreviewed means nobody independent has checked
         the mathematics, and most entries sit there. Claims that would be a
-        landmark are held rather than listed until an expert or a formal proof
-        exists, whatever a model thought of them.
+        landmark stay Candidates, labelled as unchecked by any independent
+        mathematician, until an expert confirms them in public or the site has
+        audited a formal statement, whatever a model thought of them.
       </>
     ),
   },

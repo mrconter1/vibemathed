@@ -224,19 +224,31 @@ export default function MethodologyPage() {
           the worked example.
         </p>
         <p>
-          <strong className="text-[var(--ink)]">Extraordinary claims are held, not
-          listed.</strong> A claim that would be a major result by any expert&apos;s
-          standard - a famous conjecture, a problem with decades of failed
-          attempts, an object the field expected not to exist - is not published
-          at Unreviewed, and not published as a Candidate either, because a
-          listing here puts the site&apos;s name beside a claim it has not read.
-          It waits until a named expert with no stake in it has checked the
-          argument or a formal proof exists, and the submitter is told so in as
-          many words, with the way back. The test is the size of the claim, not
-          the credentials behind it: the rule is the same for a preprint by
-          known authors and for an anonymous agent. This record is not where a
-          landmark result is announced; it is where the announcement is
-          recorded once it has stood up.
+          <strong className="text-[var(--ink)]">Extraordinary claims are listed,
+          and labelled as exactly what they are.</strong> A claim that would be a
+          major result by any expert&apos;s standard - a famous conjecture, a
+          problem with decades of failed attempts, an object the field expected
+          not to exist - is listed as a Candidate once it passes the scope test
+          and someone accountable stands behind it in public: named authors, an
+          AI lab under its own name, or a formal proof whose axioms and statement
+          the site has looked at. An unidentified account with a landmark claim
+          and no formal proof is still turned away, with the way back. Until
+          October 2026 such claims were held
+          back until an independent expert or a formal proof stood behind them.
+          That stopped working once AI labs began releasing results by the
+          hundred: a record that leaves out the most important claims of the
+          year is not a record. What replaces the hold is labelling, and it is
+          strict. A landmark claim is a Candidate, never Resolved, until a
+          named mathematician with no stake in it has confirmed it in public or
+          the site has audited a formal statement of it. Its verification level
+          is only what has actually been checked - a Lean proof whose statement
+          the prover wrote is Lean-checked, not Lean-verified - and its
+          verification note opens by saying plainly that no independent
+          mathematician has checked it yet. The test is the size of the claim,
+          not the credentials behind it: the same rule applies to a preprint by
+          known authors, an AI lab&apos;s release and an anonymous agent. When a
+          landmark claim is disputed it becomes Contested the same day, with the
+          dispute on record.
         </p>
       </Section>
 
@@ -265,6 +277,24 @@ export default function MethodologyPage() {
           sweep can be read as a whole. Volume is handled by the significance
           score, which is a sort and a filter, not by leaving qualifying results
           out.
+        </p>
+        <p>
+          <strong className="text-[var(--ink)]">Bulk releases by AI labs</strong>,
+          such as OpenAI&apos;s collection of 722 manuscripts in October 2026,
+          are imported by a curator in batches, highest significance first, and
+          never wholesale. The unit is still the problem, not the manuscript: a
+          group of companion papers answering one question is one entry, with
+          the companions linked from it, and a paper settling two named problems
+          is two entries. Every result passes the same scope test as any other -
+          a stated open question, posed by someone else before the work - so a
+          release&apos;s own sense of what is significant does not decide what
+          enters. Each entry names the release and the version of it that was
+          read, and when the lab corrects or withdraws a paper the entry follows.
+          Where a release proves something stronger than an entry already here,
+          the older entry stays, because it is still a true result with its own
+          history, and both are linked. Where a release contradicts an entry
+          here, both are flagged and left unchanged until someone has read the
+          two.
         </p>
       </Section>
 

@@ -111,7 +111,7 @@ export const TERMS: TermsSection[] = [
   {
     heading: "7. Moderation, and what it is not",
     paragraphs: [
-      "Curators may accept, decline, edit, reclassify, annotate, merge, restrict, unpublish or remove material, and may suspend accounts. Landmark claims are held rather than listed until an expert or a formal proof exists; that rule is in the methodology.",
+      "Curators may accept, decline, edit, reclassify, annotate, merge, restrict, unpublish or remove material, and may suspend accounts. Landmark claims are listed only as Candidates, labelled as not independently checked, until an expert confirms them or a formal statement is audited; that rule is in the methodology.",
       "Accepting a contribution is not agreement with it. Removing or restricting one is not an admission that it was unlawful, false or infringing - sometimes it is just how a dispute is handled while it is looked at.",
       "There is no promise to check everything. Submissions are reviewed, and entries are corrected when someone points out a problem, but nothing here undertakes to detect every error, infringement or unlawful item before it appears. That does not affect what the law requires once a specific notice arrives.",
     ],

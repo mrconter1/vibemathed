@@ -16,6 +16,7 @@ import {
 import { formatCommentDate } from "@/lib/comment-render";
 import { toEditableValues } from "@/lib/editable";
 import { groupLinksByKind, inferLinkKind } from "@/lib/link-kinds";
+import { collectionSpec } from "@/lib/collections";
 import { FrontierMembership } from "@/components/FrontierMembership";
 import { problemSubject } from "@/lib/subject";
 import { SITE_URL } from "@/lib/site";
@@ -147,6 +148,7 @@ export default async function ProblemPage({
     },
   ];
 
+  const collection = collectionSpec(p.collection);
   const facts: [string, string][] = [
     // The qualifier does NOT go in the cell. A grid cell is half the viewport
     // on mobile, so even a note at the 200-character field cap runs to eight
@@ -184,6 +186,17 @@ export default async function ProblemPage({
       "Publication",
       p.publication ? (PUBLICATION[p.publication]?.label ?? p.publication) : DASH,
     ],
+    // Only for entries imported from a bulk release: which one, and the
+    // version that was read, so a later revision by the lab can be checked
+    // against what this entry says.
+    ...(collection
+      ? ([
+          [
+            "Collection",
+            `${collection.label}${p.collectionVersion ? `, version ${p.collectionVersion.slice(0, 7)}` : ""}`,
+          ],
+        ] as [string, string][])
+      : []),
     // The AI-estimated problem weight (see methodology); dash until assessed.
     ["Significance", p.significance !== null && p.significance !== undefined ? `${p.significance} / 100` : DASH],
     // Disclosed compute spend. Almost always a dash: it is recorded only

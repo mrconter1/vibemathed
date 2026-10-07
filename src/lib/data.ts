@@ -93,6 +93,8 @@ export const PROBLEM_SELECT = {
   ageNote: true,
   sourceUrl: true,
   sourceName: true,
+  collection: true,
+  collectionVersion: true,
   createdAt: true,
   updatedAt: true,
   links: {
@@ -158,6 +160,8 @@ export function toProblem(r: ProblemRow): ProblemWithVotes {
     ageNote: r.ageNote,
     sourceUrl: r.sourceUrl,
     sourceName: r.sourceName,
+    collection: r.collection,
+    collectionVersion: r.collectionVersion,
     links: r.links.map((l) => ({ label: l.label, url: l.url, kind: l.kind })),
     relations: r.relationsFrom.map((x) => ({
       to: x.to.slug,
@@ -908,6 +912,49 @@ export async function getStatementHtmlMap(): Promise<Record<string, string>> {
     select: { slug: true, statement: true },
   });
   return Object.fromEntries(rows.map((r) => [r.slug, texToHtml(r.statement!)]));
+}
+
+/// The long prose of every published entry, for full-text search: statement,
+/// result note, AI role, verification and significance notes, age note,
+/// claim issue and link labels, joined as raw text (the search fold flattens
+/// math markup itself). Fetched by the list only once someone searches, so
+/// the home page's weight does not grow with it.
+export async function getSearchProseMap(): Promise<Record<string, string>> {
+  "use cache";
+  cacheTag("problems");
+  cacheLife("days");
+
+  const rows = await prisma.problem.findMany({
+    where: { status: "published" },
+    select: {
+      slug: true,
+      statement: true,
+      resultNote: true,
+      aiRole: true,
+      verificationNote: true,
+      significanceNote: true,
+      ageNote: true,
+      claimIssueNote: true,
+      links: { select: { label: true } },
+    },
+  });
+  return Object.fromEntries(
+    rows.map((r) => [
+      r.slug,
+      [
+        r.statement,
+        r.resultNote,
+        r.aiRole,
+        r.verificationNote,
+        r.significanceNote,
+        r.ageNote,
+        r.claimIssueNote,
+        ...r.links.map((l) => l.label),
+      ]
+        .filter(Boolean)
+        .join(" "),
+    ]),
+  );
 }
 
 /// Total registered accounts, for the community tile on the home page.
