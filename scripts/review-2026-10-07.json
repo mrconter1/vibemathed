@@ -1,0 +1,96 @@
+[
+ {
+  "slug": "at-least-five-colours-for-the-regular-fourteen-gon-minkowski-plane",
+  "action": "approve",
+  "reason": "edited",
+  "edits": {
+   "statement": "Let $C$ be a centrally symmetric convex curve and let $\\chi(\\mathbb R^2,C)$ be the least number of colours needed to colour the plane so that no two points at $C$-norm distance one share a colour. Exoo, Fisher and Ismailescu proved $\\chi(\\mathbb R^2,C)\\ge5$ for the regular octagon, decagon and dodecagon and asked (Problem 5.1) whether $\\chi(\\mathbb R^2,C)\\ge5$ for every regular $2n$-gon with $n\\ge4$. This entry is the case $n=7$: with $P_{14}=\\operatorname{conv}\\{z\\in\\mathbb C:z^{14}=1\\}$ as the unit ball, is $\\chi(\\mathbb R^2,P_{14})\\ge5$?",
+   "posedBy": "Geoffrey Exoo, David Fisher and Dan Ismailescu, The chromatic number of the Minkowski plane: the regular polygon case, Problem 5.1 (arXiv:2108.12861, 2021)",
+   "resolution": "partial",
+   "verification": "lean-checked",
+   "verificationNote": "Checked by this site on 7 October 2026, not rebuilt here. No independent mathematician has checked this yet. The headline theorem at_least_five_colours (formal/Final.lean) was read: any colouring of the plane by n colours that separates every pair at distance one has n at least 5. Plane is the complex numbers as a real vector space with the gauge of the convex hull of the 14th roots of unity as norm, and its distance is that norm of the difference, so the formal statement matches the posed question. The project has no sorry, admit, axiom declarations or native_decide; its SAT importer adds its LRAT steps through addDecl, so the kernel checks them. The public Actions run 37468510724 (commit e0f5e2a, success, on the author's own self-hosted Azure runner) prints propext, Classical.choice and Quot.sound for the final theorem and the graph lemma; the formal sources have not changed since that commit. A separate check written here from the graph file: all 13,755 edges have 14-gon norm 1 to within 1e-15 in floating point, and a fresh four-colouring encoding solved by CaDiCaL is unsatisfiable (157 s). Gehér's upper bound six is cited, not formalised.",
+   "resultNote": "We prove $\\chi(\\mathbb R^2,P_{14})\\ge5$ using a graph with 1,540 vertices and 13,755 unit edges. Every edge difference is a rotated point on a side of the unit polygon with an exact algebraic parameter in $[0,1]$. A kernel-checked LRAT refutation of the graph's four-colouring CNF rules out every four-colouring, and restricting a colouring of the plane to these points gives the contradiction. The whole geometric and logical chain is in Lean. With Gehér's upper bound, $5\\le\\chi(\\mathbb R^2,P_{14})\\le6$; whether five colours suffice remains open, as does Problem 5.1 for other $n$.",
+   "significance": 8,
+   "significanceNote": "One case (n = 7) of Problem 5.1 of Exoo, Fisher and Ismailescu (2021), a stated question in the Minkowski-plane variant of Hadwiger-Nelson; the general 2n-gon question stays open. A small specialist audience. Below the unit-distance independence-ratio question (20) and the Pinwheel Kernel Conjecture (12), above Arnosti's greedy-matching conjecture (7), far below the Euclidean five-colour step (55)."
+  },
+  "reviewNote": "EFI Problem 5.1 read (arXiv 2108.12861 Sec 5): all regular 2n-gons n>=4; this is n=7 -> Partial. Final.lean/Plane/Polygon read, grep clean, addDecl importer, CI 37468510724 (self-hosted) axioms clean. Own float norm check + CaDiCaL UNSAT on own CNF. No prior 14-gon bound found (Geher 2023, web).",
+  "message": "Published as Partial, Lean-checked, significance 8. Thank you for a very carefully separated package; the scope notes made this quick to check.\n\nProblem 5.1 was read in arXiv 2108.12861 (Section 5): it asks whether chi(R^2,C) >= 5 for every regular 2n-gon with n >= 4. Your result settles n = 7, so the resolution is Partial rather than Candidate: the fourteen-gon case is fully proved, the general question is not. The statement now quotes the problem as posed and names the case, and the result note says the other n remain open. The mathematics did not change.\n\nWhat was checked here on 7 October: the headline theorem at_least_five_colours and the Plane and Polygon definitions were read against the problem, the sources were grepped for sorry, axioms and native_decide, the LRAT importer was confirmed to add steps through the kernel, and the public Actions log for e0f5e2a was read (only propext, Classical.choice, Quot.sound). Independently, a short script recomputed every edge's 14-gon norm from your graph file and a fresh four-colouring encoding was refuted by CaDiCaL in about two and a half minutes. All agreed.\n\nThe Actions run used your own self-hosted runner, so it is not yet a build the site has done itself; a rebuild here would move it to Site-confirmed, and a reply from Exoo, Fisher, Ismailescu or Gehér would move it further. If I have any detail wrong, tell me and it changes.",
+  "links": []
+ },
+ {
+  "slug": "bras-amoros-genus-monotonicity-conjecture",
+  "action": "approve",
+  "reason": "edited",
+  "edits": {
+   "posedBy": "Maria Bras-Amoros (Semigroup Forum 76, 2008) as a weak form of her Fibonacci-like conjecture; stated as Conjecture 2 in Nathan Kaplan, Counting numerical semigroups, Amer. Math. Monthly 124 (2017)",
+   "publication": "announcement",
+   "sourceName": "GitHub",
+   "verificationNote": "No independent mathematician has checked this yet. Checked by this site on 7 October 2026: the statement matches Conjecture 2 of Kaplan's survey (arXiv 1707.02551), which also says the weak form was open and that Zhai's asymptotics leave only finitely many genera to settle. From a fresh clone at commit b1b6fb8, all five shipped checkers passed: capacity recurrences through degree 1500, the omitted-pivot multiplier below 0.221715, the guarded mass assembly, the analytic join (comparison fails at genus 836, holds from 837), and all 836 finite rows with nonnegative slack (smallest 1, at genera 1 and 2). A separate enumeration written here of all numerical semigroups through genus 23 reproduced the known counts and confirmed that each certified slack is at most the true difference $n_{g+1}-n_g$ for $g\\le 22$. These are arithmetic checks only. The coefficient arrays were not regenerated from the C++ sources, and the combinatorial and analytic arguments that connect them to the theorem (about 2,000 lines of the manuscript) were not read. No Lean formalisation.",
+   "significance": 28,
+   "significanceNote": "The central open problem in counting numerical semigroups since Bras-Amoros's 2008 conjectures, singled out in Kaplan's 2017 Monthly survey; known for large genus by Zhai, so the remaining question was effective. Famous within one community. Above Daykin-Frankl and the equidistant-lines entry at 25 and well above Fel's syzygy conjecture at 10; below the four-uniform Erdos matching conjecture at 40."
+  },
+  "reviewNote": "Kaplan Conj 2 read (arXiv 1707.02551), matches. Fresh LF clone b1b6fb8: 5/5 checkers PASS (836 rows, join 836/837). Own n_g enum to g=23 = OEIS, slack <= true diff g<=22. Analytic proof unread, arrays not regenerated. Landmark? judged not; volume signal applies (author's 6th entry).",
+  "message": "Published as Candidate, Unreviewed, significance 28. Thank you for a careful, well-documented package.\n\nThe statement was compared against Conjecture 2 in Kaplan's survey (arXiv 1707.02551) and matches it; the result note already says, correctly, that the Fibonacci inequality and fixed-multiplicity monotonicity are not proved.\n\nChecked here on 7 October: from a fresh clone, all five of your checkers pass, including the 836-row finite comparison and the 836/837 analytic join. A separate enumeration written here through genus 23 reproduced the known values of n_g and confirmed that every certified slack is below the true difference n_{g+1}-n_g for g up to 22. One practical note: on Windows, a default git clone converts line endings and check_finite.py then refuses the cap4 file on its SHA-256; a .gitattributes marking data/*.json as binary (or -text) would avoid that for other reviewers.\n\nEdits: publication is now Announcement (the site reserves Preprint for arXiv and similar servers; it changes when the paper is posted there), sourceName is GitHub, and posedBy now cites both Bras-Amoros 2008 and Kaplan's Conjecture 2, as your manuscript does. The mathematics is unchanged.\n\nCandidate rather than Resolved because the checks here are arithmetic: the arguments connecting the arrays to the theorem were not read, and nobody independent has reviewed them yet. A public reading by a specialist in the area (Bras-Amoros, Kaplan, Zhu or Bacher, for example) or an arXiv posting that draws one is what would move it.",
+  "links": [
+   {
+    "label": "Kaplan, Counting numerical semigroups (survey, Conjecture 2)",
+    "url": "https://arxiv.org/abs/1707.02551",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "zak-s-modified-integer-round-down-conjecture",
+  "action": "approve",
+  "reason": "downgraded",
+  "edits": {
+   "name": "Zak's modified integer round-down conjecture for the skiving stock problem",
+   "fieldGroup": "Algorithms & optimization",
+   "field": "Skiving stock and bin covering; pattern LP integrality gap",
+   "statement": "In the one-dimensional skiving stock problem (bin covering), items of given sizes are grouped into as many disjoint groups as possible, each group reaching a threshold $L$; items may be left unused. The pattern linear programming relaxation gives an upper bound $LP_{\\mathrm{SSP}}$ on the optimum $OPT_{\\mathrm{SSP}}$. The integer round-down property $OPT_{\\mathrm{SSP}}=\\lfloor LP_{\\mathrm{SSP}}\\rfloor$ fails, but the largest known gap $LP_{\\mathrm{SSP}}-OPT_{\\mathrm{SSP}}$ was about $1.18$. The modified integer round-down property (MIRDP) conjectures that every instance satisfies $LP_{\\mathrm{SSP}}-OPT_{\\mathrm{SSP}}<2$. Is that true?",
+   "posedBy": "E. J. Zak (2003), as cited by the manuscript; stated as an open conjecture by Martinovic and Scheithauer (Discrete Optimization 2016; Pesquisa Operacional 2019)",
+   "yearPosed": 2003,
+   "ageNote": "The manuscript attributes MIRDP to Zak, Int. Trans. Oper. Res. 10 (2003). Martinovic and Scheithauer (2019) state that the SSP is conjectured to possess the MIRDP and give the largest known gap as 325/276. Zak's 2003 paper was not opened here (paywalled).",
+   "solveDate": "2026-10-07",
+   "model": "Anthropic Fable 5.1 and OpenAI GPT-5.6 Sol Pro",
+   "humanCollaborators": [
+    "Eric Winnington"
+   ],
+   "aiContribution": "ai-co-developed",
+   "publication": "announcement",
+   "sourceName": "GitHub (ewinnington/math)",
+   "resolution": "candidate",
+   "verification": "unreviewed",
+   "aiRole": "The manuscript's abstract and the repository README say the proof was generated by a combination of Anthropic Fable 5.1 and OpenAI GPT-5.6 Sol Pro; its closing note says ChatGPT assisted with drafting, literature organization and analysis of the proofs. The idea is a transfer: complement OpenAI's bin-packing instances (24 September 2026, which disprove the round-up analogue) by $b_i=2-a_i$ with threshold $9$. On $5B$ items with sizes above $1/6$, feasible five-item packing and covering sets coincide, LP saturation carries the LP value $B$ across, and a covering deficit $d$ converts to a packing excess of at most $\\lceil 3d/2\\rceil$. Result: for every $c\\ge0$ an instance with $LP_{\\mathrm{SSP}}=B$ and $OPT_{\\mathrm{SSP}}\\le B-c-1$, also for the proper relaxation, and NP-hardness of every fixed additive approximation.",
+   "resultNote": "Theorem 1: for every integer $c\\ge0$ there is a rational instance with $5B$ items, sizes in $(53/270,11/54)$ for threshold $1$, $LP_{\\mathrm{SSP}}=LP_{\\mathrm{SSP,prop}}=B$ and $OPT_{\\mathrm{SSP}}\\le B-c-1$; $c=1$ refutes MIRDP with no rounding ambiguity. Theorem 2 and Corollary 3: fixed additive approximation is NP-hard. The result is conditional on OpenAI's bin-packing theorem (itself a Candidate here). Not shown: any growth rate of the gap in terms of instance size.",
+   "verificationNote": "No independent mathematician has checked this yet. Checked here on 7 October 2026: the manuscript's TeX source was read in full. The transfer itself (Proposition 9, Theorems 6 and 7, Corollary 11 and the proof of Theorem 1) was checked by hand and is elementary: four items below $7/30$ always pack and six complemented items always cover, so a covering deficit $d$ gives a packing excess at most $\\lceil 3d/2\\rceil$; even without the $7/30$ bound, singletons give $24d$, so the conclusion follows from the exported Lean statement of OpenAI's theorem alone. A brute-force computation written here on 60 random 10-item instances (sizes near $1/5$, matching deficiency $0$ to $2$) confirmed the exact formulas $OPT_{\\mathrm{BP}}-B=\\lceil h/4\\rceil$ and $B-OPT_{\\mathrm{SSP}}=\\lceil h/6\\rceil$ in every case. The result depends on OpenAI's unbounded configuration-gap theorem, which is Lean-checked but not independently verified; the transfer is not formalised and nothing was rebuilt here.",
+   "significance": 14,
+   "significanceNote": "A conjecture known within the cutting-and-packing community, open since about 2003 with a published line of partial bounds (divisible case, fixed number of sizes). The covering twin of the Modified Integer Round-Up Conjecture, well below that entry at 32 and below the bin-packing additive question at 45, and obtained by a short transfer from their solution. Just below the Robert trace-cone and Pebody entries at 15.",
+   "modelMaker": "Anthropic / OpenAI"
+  },
+  "reviewNote": "Not a duplicate: OpenAI fam 118 PDF has no skiving/covering. Derivative transfer (b=2-a, L=9) of OpenAI MIRUP gap; hand-checked + 60-instance brute force of exact formulas. Resolved->Candidate. Zak 2003 not opened.",
+  "message": "Thank you, Eric. Published as Candidate, Unreviewed, significance 14.\n\nFirst, the overlap question: OpenAI's family 118 manuscript (bin packing, commit adc7f12) was read and does not treat skiving stock or bin covering at all, and the catalog had no MIRDP entry. Your paper is therefore not a duplicate. It is a derivative result, a new transfer applied to OpenAI's construction, and the entry says so and links the source theorem.\n\nWhat was checked here on 7 October: the TeX source in full. The transfer is short and was checked by hand: the five-item layer is common to both systems, LP saturation carries the value B across, and the pooling argument gives the ceiling of 3d/2 (and 24d without the 7/30 bound, so the conclusion only needs the exported Lean statement). A brute-force check on 60 random 10-item instances agreed with your exact matching-deficiency formulas every time.\n\nWhy Candidate and not Resolved: the site lists Resolved only when an independent expert has confirmed the result in public or the site has audited a formal statement. Neither exists yet, and the result inherits its dependence on OpenAI's theorem, which is itself a Candidate here. A public confirmation from Martinovic or Scheithauer, or a Lean formalisation of the transfer on top of OpenAI's main_results, would move it.\n\nEdits, none to the mathematics: the statement now gives the background and the largest known gap; the field group matches the round-up entry; publication is announcement (a PDF in a repository); the solve date is the manuscript's 7 October rather than 8 October; the model field names both models as your README does; you are listed as the human author, and the AI contribution is AI co-developed, because the README says the proof was generated by the two models while the paper's closing note describes assistance with drafting and analysis. If either reading is wrong, tell us and it changes. The verification note now says what was run here.",
+  "links": [
+   {
+    "label": "OpenAI, Additive hardness and unbounded configuration gaps in bin packing (source theorem)",
+    "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/Additive-hardness-and-unbounded-configuration-gaps-in-bin-packing-September-24-2026/Additive-hardness-and-unbounded-configuration-gaps-in-bin-packing-September-24-2026.pdf",
+    "kind": "paper"
+   },
+   {
+    "label": "Martinovic and Scheithauer, New theoretical investigations on the gap of the skiving stock problem (2019)",
+    "url": "https://www.scielo.br/j/pope/a/gbJztFmGWqVRp89qXS3ncpD/?lang=en",
+    "kind": "problem-record"
+   },
+   {
+    "label": "Manuscript TeX source",
+    "url": "https://github.com/ewinnington/math/tree/main/MIRDP",
+    "kind": "code"
+   },
+   {
+    "label": "The modified integer round-up conjecture, whose counterexample this adapts (OpenAI math release)",
+    "url": "https://vibemathed.com/problem/modified-integer-round-up-conjecture",
+    "kind": "other"
+   }
+  ]
+ }
+]
