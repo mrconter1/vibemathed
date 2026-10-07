@@ -28,6 +28,7 @@ import {
   normalizeListSettings,
   parseSelection,
   selectionMatches,
+  solveDateSortKey,
   sortValue,
   toggleSelection,
   type ListSettings,
@@ -36,6 +37,16 @@ import {
 } from "@/lib/list-settings";
 import { SOURCE_HOSTS, sourceHostKey } from "@/lib/source-hosts";
 import { COLLECTIONS, NO_COLLECTION } from "@/lib/collections";
+import { toSearchDoc } from "@/lib/search-docs";
+
+/// Native tooltip on the search box: the whole query language in a few lines.
+const SEARCH_HELP = [
+  "Searches every field, ignoring case and accents.",
+  'words: all must match  ·  "exact phrase"  ·  -exclude  ·  a OR b',
+  "fields: name: field: posed: model: people: status: tier: result: source: release: text: number:",
+  "numbers: sig:>50  year:<1950  open:>=30  sig:40..60  ·  dates: solved:2026-09",
+].join("\n");
+import { matches, parseQuery, relevance, type SearchDoc } from "@/lib/search-query";
 import Link from "next/link";
 import {
   ageAtSolve,
@@ -67,7 +78,7 @@ import { Icon, type IconName } from "@/components/Icons";
 import { StatusIcon } from "@/components/StatusIcon";
 import { InfoTip, StarNote } from "@/components/Tooltip";
 import { VoteButtons } from "@/components/VoteButtons";
-import { TeX, deTeX } from "@/components/TeX";
+import { TeX } from "@/components/TeX";
 
 // The clock for period cutoffs, fixed at module load: render purity wants a
 // stable now, and a cutoff drifting by the age of the tab is nothing against
@@ -736,6 +747,37 @@ export function ProblemCards({
     };
   }, [problems]);
 
+  // Full-text search covers the long prose (statements, notes, AI role) too,
+  // but that text is fetched only once somebody actually searches, so the
+  // home page does not carry it. Until it arrives a search still covers
+  // everything the cards hold.
+  const [searchProse, setSearchProse] = useState<Record<string, string> | null>(null);
+  const wantsProse = query.trim() !== "";
+  useEffect(() => {
+    if (!wantsProse || searchProse) return;
+    let alive = true;
+    fetch("/api/search-index")
+      .then((r) => (r.ok ? (r.json() as Promise<Record<string, string>>) : null))
+      .then((map) => {
+        if (alive && map) setSearchProse(map);
+      })
+      .catch(() => {
+        // Card-field search keeps working without the prose.
+      });
+    return () => {
+      alive = false;
+    };
+  }, [wantsProse, searchProse]);
+
+  // One normalised document per entry, rebuilt only when the entries or the
+  // prose change, never per keystroke.
+  const searchDocs = useMemo(() => {
+    const m = new Map<string, SearchDoc>();
+    for (const p of problems) m.set(p.slug, toSearchDoc(p, searchProse?.[p.slug]));
+    return m;
+  }, [problems, searchProse]);
+  const parsedQuery = useMemo(() => parseQuery(query), [query]);
+
   // Only offer verification statuses that actually occur, in ladder order, so
   // the panel never lists an empty category.
   const verifications = useMemo(() => {
@@ -937,26 +979,17 @@ export function ProblemCards({
       // because a match here is exact and needs no text scoring.
       if (queryId && entrySourceIds(p.sourceUrl, p.links).includes(queryId))
         return true;
-      const haystack = [
-        // Both forms: a name carrying math is displayed rendered, so someone
-        // searching types what they see ("Lp(L1)"), not the source ("$L_p(L_1)$").
-        p.name,
-        deTeX(p.name),
-        p.field,
-        p.fieldGroup,
-        p.posedBy,
-        p.model,
-        p.submittedBy,
-        ...p.humanCollaborators,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-      return haystack.includes(q);
+      // The search language (src/lib/search-query.ts): words, "phrases",
+      // -exclusions, OR, field:value and sig:>50-style comparisons, over every
+      // field the entry has, case- and accent-insensitive.
+      const doc = searchDocs.get(p.slug);
+      return doc ? matches(doc, parsedQuery) : false;
     });
   }, [
     problems,
     query,
+    parsedQuery,
+    searchDocs,
     period,
     sortKey,
     fieldFilter,
@@ -971,8 +1004,23 @@ export function ProblemCards({
     collectionFilter,
   ]);
 
+  // While a search with words is active and the reader has not picked a sort
+  // of their own, the best matches come first: a name hit before a passing
+  // mention in a note. Ties keep the chosen order.
+  const byRelevance = parsedQuery.words.length > 0 && sortKey === "solveDate";
   const sorted = useMemo(() => {
     const arr = [...filtered];
+    if (byRelevance) {
+      const score = new Map(
+        arr.map((p) => [p.slug, relevance(searchDocs.get(p.slug)!, parsedQuery)]),
+      );
+      arr.sort(
+        (a, b) =>
+          score.get(b.slug)! - score.get(a.slug)! ||
+          solveDateSortKey(b.solveDate).localeCompare(solveDateSortKey(a.solveDate)),
+      );
+      return arr;
+    }
     arr.sort((a, b) => {
       const va = sortValue(a, sortKey, period);
       const vb = sortValue(b, sortKey, period);
@@ -988,7 +1036,7 @@ export function ProblemCards({
       return sortDir === "asc" ? cmp : -cmp;
     });
     return arr;
-  }, [filtered, sortKey, sortDir, period]);
+  }, [filtered, sortKey, sortDir, period, byRelevance, searchDocs, parsedQuery]);
 
   // Reset to the first page whenever the result set, ordering or page size
   // changes. Adjusted during render rather than in an effect (which would cause
@@ -1113,7 +1161,8 @@ export function ProblemCards({
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search name, field, model, people…"
+            placeholder="Search everything: words, &quot;phrases&quot;, posed:erdos, sig:>50…"
+            title={SEARCH_HELP}
             className="h-9 w-full rounded border border-[var(--hairline)] bg-[var(--paper-raised)] pl-8 pr-3 text-sm text-[var(--ink)] transition-colors placeholder:text-[var(--ink-muted)] hover:border-[var(--ink-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-blue)]"
           />
         </span>
