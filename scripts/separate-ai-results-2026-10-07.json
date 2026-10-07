@@ -1,0 +1,278 @@
+{
+ "entries": [
+  {
+   "slug": "graham-spherical-ramsey-conjecture",
+   "fields": {
+    "name": "Graham's spherical conjecture: every finite spherical set is Ramsey",
+    "shortName": "Graham's spherical Ramsey conjecture",
+    "fieldGroup": "Combinatorics",
+    "field": "Euclidean Ramsey theory",
+    "statement": "A finite set $P$ in Euclidean space is Ramsey if for every number of colours $k$ there is a dimension $n$ such that every $k$-colouring of $\\mathbb R^n$ contains a monochromatic congruent copy of $P$. Erdős, Graham, Montgomery, Rothschild, Spencer and Straus (1973) proved that every Ramsey set is spherical, that is, lies on some sphere. The converse became the central conjecture of the area, usually attributed to Graham: is every finite spherical set Ramsey? In particular, is every finite set of points on a circle Ramsey?",
+    "posedBy": "Erdős, Graham, Montgomery, Rothschild, Spencer and Straus, Euclidean Ramsey theorems I, J. Combin. Theory Ser. A 14 (1973); later stated as a conjecture by Graham",
+    "yearPosed": 1973,
+    "ageNote": "Palvolgyi's paper attributes the conjecture to the 1973 paper of Erdos, Graham, Montgomery, Rothschild, Spencer and Straus. The OpenAI release's classification manuscript dates Graham's form of it to 1994.",
+    "solveType": "disproved",
+    "resolution": "candidate",
+    "resolutionMethod": "construction",
+    "solveDate": "2026-09-20",
+    "model": "ChatGPT (version not stated)",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+     "Dömötör Pálvölgyi"
+    ],
+    "aiContribution": "ai-discovered",
+    "aiRole": "From the paper's AI disclosure: \"This manuscript was written entirely by ChatGPT. I (Dömötör Pálvölgyi) contributed nothing to the proofs or ideas, I only gave suggestions about the presentation.\" The author's closing note says the construction was found by ChatGPT, that he had tried similar field-automorphism constructions himself without success, and that the appendix contains further results by ChatGPT he has not verified. The model version is not stated.",
+    "verification": "unreviewed",
+    "verificationNote": "No independent mathematician has checked this yet. Read here on 7 October 2026 from the arXiv source: Theorem 1 states that for any transcendental $r>2$ the seven points $(0,0)$ and $(j,\\pm\\sqrt{j(2r-j)})$, $j\\in\\{1,3,4\\}$, lie on the circle $(x-r)^2+y^2=r^2$ and are not Ramsey, which contradicts the conjecture as posed. The proof is one page: a field derivation $D$ with $D(r)=1$, weights $2,-2,2,-1$ whose zeroth, first, second and mixed moments vanish, and a weighted energy identity $\\sum\\lambda_p\\|D(p')\\|^2=-24/R$ invariant under congruence, closed by Rado's theorem. The moment conditions and the energy identity were recomputed by hand here and hold. The appeal to Rado and the existence of $D$ (which needs a transcendence basis) were read, not re-derived. The author states he contributed nothing to the proof; the appendix is marked unverified by him. No formal proof.",
+    "resultNote": "Claims a seven-point cyclic set, for any transcendental radius parameter $r>2$ (for example $r=\\pi$), that is not Ramsey: a finite colouring of $\\mathbb R^n$ with no monochromatic congruent copy, in every dimension. Since the set lies on a circle, this disproves the conjecture that every spherical set is Ramsey. The colouring is non-constructive, built from a non-measurable derivation of $\\mathbb R$. The unverified appendix adds that almost every seven-point circular set is non-Ramsey and that the method cannot work below seven points. The OpenAI release's classification manuscript (23 September 2026) cites this paper as the disproof, adds a twelve-point spherical example by the same derivation-moment method, and proves every set of at most five circle points Ramsey; six circle points remain open between the two.",
+    "significance": 40,
+    "significanceNote": "The leading conjecture of Euclidean Ramsey theory for five decades, posed by Erdos, Graham and coauthors in the paper that founded the area, and well known across combinatorics though not far outside it. Level with the Burr-Erdos hypercube Ramsey conjecture (40) and Hopkins' chromatic splitting conjecture (40), below the classification problem for Euclidean Ramsey sets (45), which it is one half of, and above the Leader-Russell-Walters conjecture (28).",
+    "publication": "preprint",
+    "sourceUrl": "https://arxiv.org/abs/2609.23327",
+    "sourceName": "arXiv:2609.23327, Pálvölgyi (20 September 2026)",
+    "renownLangs": 0,
+    "relations": [
+     {
+      "to": "euclidean-ramsey-sets-classification",
+      "kind": "related",
+      "note": "The OpenAI release's classification manuscript (23 September 2026) cites this paper as the disproof of Graham's conjecture, gives a twelve-point spherical example by the same method, and proves every set of at most five circle points Ramsey."
+     }
+    ]
+   },
+   "links": [
+    {
+     "label": "Erdos, Graham, Montgomery, Rothschild, Spencer and Straus, Euclidean Ramsey theorems I (1973)",
+     "url": "https://doi.org/10.1016/0097-3165(73)90011-3",
+     "kind": "problem-record"
+    },
+    {
+     "label": "OpenAI release: classification of finite Euclidean Ramsey configurations (23 Sept 2026), cites this paper",
+     "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/A-classification-of-finite-Euclidean-Ramsey-configurations-September-23-2026/paper.pdf",
+     "kind": "paper"
+    },
+    {
+     "label": "Lean: OAI/Combinatorics/SphericalRamsey/Main.lean (twelve-point non-Ramsey example, OpenAI release)",
+     "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/lean/OAI/Combinatorics/SphericalRamsey/Main.lean",
+     "kind": "lean-proof"
+    }
+   ]
+  },
+  {
+   "slug": "critical-site-percolation-z-d",
+   "fields": {
+    "name": "Absence of critical Bernoulli site percolation on $\\mathbb Z^d$ for $d \\ge 3$",
+    "shortName": "Critical site percolation: θ(p_c) = 0",
+    "fieldGroup": "Probability & statistics",
+    "field": "Percolation theory; mathematical statistical mechanics",
+    "statement": "For nearest-neighbour Bernoulli site percolation on $\\mathbb Z^d$, each vertex is open independently with probability $p$. Let $\\theta(p)$ be the probability that the open cluster of the origin is infinite and $p_c$ the critical parameter. Is $\\theta(p_c)=0$ for every $d \\ge 3$? This is the site form of the classical question of no percolation at criticality; Benjamini and Schramm stated it for site percolation on every quasi-transitive graph with $p_c<1$. The planar case was settled classically, and high dimensions by Heydenreich and Matzke's site lace expansion (2020), with no explicit dimension bound.",
+    "posedBy": "Itai Benjamini and Oded Schramm, Percolation beyond Z^d, many questions and a few answers (1996), Conjecture 4, stated for site percolation",
+    "yearPosed": 1996,
+    "ageNote": "Dated from Benjamini and Schramm's site-percolation statement. The Z^d question itself is older and is usually stated for bond percolation, traced to Kesten (1982); the catalog's bond entry carries that history.",
+    "solveType": "proved",
+    "resolution": "candidate",
+    "resolutionMethod": "argument",
+    "solveDate": "2026-09-05",
+    "model": "ChatGPT 5.6 (per the exposition page; the author's other documents also name Claude and GLM models)",
+    "modelMaker": "OpenAI; Anthropic; Zhipu AI",
+    "humanCollaborators": [
+     "Ahmed Bou-Rabee",
+     "Justin Leder"
+    ],
+    "aiContribution": "ai-discovered",
+    "aiRole": "The public exposition (Bou-Rabee's site, last updated 5 September 2026) says: \"Mathematics generated by ChatGPT 5.6, prompted by Ahmed Bou-Rabee, with exposition and formalization support by Claude Opus 5 and GLM 5.3.\" The companion manuscript on the Kozma-Nitzan inequalities says its arguments, exposition and Lean formalization \"were produced entirely by ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee\", and the repository NOTICE says the KN, hypergraph and site development was \"produced with ChatGPT and Claude, prompted by Ahmed Bou-Rabee\". The repository's formalization.yaml names Bou-Rabee and Justin Leder as authors (Leder as responsible maintainer) and lists Claude Opus 5.5, Sonnet 5, Opus 5 and DeepSeek v4.1 Flash as the Lean agents, closely supervised by Bou-Rabee. The model lists differ between documents; all agree the mathematics came from the models.",
+    "verification": "lean-checked",
+    "verificationNote": "No independent mathematician has checked this yet. Checked here on 7 October 2026 at commit 6a76bc3f of nitromannitol/percolation-after-anthropic: the Mathlib-only comparator challenge PercolationAudit/SiteCriticality/Challenge.lean was read. It builds nearest-neighbour Z^d as SimpleGraph.hasse on Fin d to Z (as in the audited bond entry), the product Bernoulli law on vertex sets, open clusters through open vertices, theta as the law of an infinite cluster at the origin and p_c as the infimum of percolating parameters with 1 adjoined, and states thetaSite d (p_c) = 0 for every d with 3 <= d and no other hypothesis. That is the headline claim. The repository's CI shows the Comparator audit workflow succeeding on that commit; formalization.yaml reports no sorry and only propext, Classical.choice and Quot.sound. Not rebuilt here. The proof depends on Anthropic's bond library pinned at 795efb8, audited for the bond entry. The site extension has no written proof outside the exposition and the Lean development.",
+    "resultNote": "Claims $\\theta(p_c)=0$ for nearest-neighbour Bernoulli site percolation on $\\mathbb Z^d$ for every $d\\ge3$ (theorem KNAll.Site.site_no_percolation_at_critical), by proving the Kozma-Nitzan gluing inequality for independent hyperedges, representing site percolation by incidence hyperedges, and running the lattice exploration of the bond proof. The intermediate dimensions were open. The planar case is classical and outside the formal statement. The same repository proves Kozma-Nitzan Conjectures 1 to 4 and 6, answers Questions 5, 7 and 9, and refutes one reading of Question 8. OpenAI's release (24 September 2026) later gave critical site nonpercolation on $\\mathbb Z^3$ only, crediting this work; its quasi-transitive theorem is bond only, so the site form of Benjamini-Schramm Conjecture 4 beyond $\\mathbb Z^d$ stays open.",
+    "significance": 72,
+    "significanceNote": "The site twin of the classical no-percolation-at-criticality problem on Z^d, open in exactly the same dimensions (3 up to the unspecified lace-expansion threshold) and the model in which Benjamini and Schramm stated their conjecture. Below the bond Z^d entry at 78, the more canonical statement whose proof this one extends, and the Benjamini-Schramm bond entry at 79; level with the Landau-Siegel zero entry at 72; above the p_c < p_u entry at 66.",
+    "publication": "announcement",
+    "sourceUrl": "https://nitromannitol.github.io/site-percolation-7d3f2/",
+    "sourceName": "Bou-Rabee, Percolation at criticality (public exposition and Lean repository, 5 September 2026)",
+    "renownLangs": 0
+   },
+   "links": [
+    {
+     "label": "Lean repository: percolation-after-anthropic (Bou-Rabee and Leder)",
+     "url": "https://github.com/nitromannitol/percolation-after-anthropic",
+     "kind": "lean-proof"
+    },
+    {
+     "label": "Comparator challenge: the headline statement in plain Mathlib",
+     "url": "https://github.com/nitromannitol/percolation-after-anthropic/blob/6a76bc3f/PercolationAudit/SiteCriticality/Challenge.lean",
+     "kind": "lean-statement"
+    },
+    {
+     "label": "Kozma-Nitzan connection inequalities, companion manuscript (5 September 2026)",
+     "url": "https://github.com/nitromannitol/percolation-after-anthropic/blob/6a76bc3f/docs/kn-results.pdf",
+     "kind": "paper"
+    },
+    {
+     "label": "Kozma and Nitzan, A reduction of the theta(p_c)=0 problem to a conjectured inequality (arXiv:2401.12397)",
+     "url": "https://arxiv.org/abs/2401.12397",
+     "kind": "paper"
+    },
+    {
+     "label": "Bond percolation on Z^d, the result this extends",
+     "url": "https://vibemathed.com/problem/absence-of-critical-bernoulli-bond-percolation-on-z-d-in-every-dimension-d-2",
+     "kind": "other"
+    },
+    {
+     "label": "OpenAI release: critical bond and site percolation on the cubic lattice (later, Z^3 only)",
+     "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/Critical-bond-and-site-percolation-on-the-cubic-lattice-September-24-2026/paper.pdf",
+     "kind": "paper"
+    },
+    {
+     "label": "Quanta Magazine coverage",
+     "url": "https://www.quantamagazine.org/updates/transformation/",
+     "kind": "discussion"
+    }
+   ]
+  },
+  {
+   "slug": "block-sensitivity-spectral-sensitivity-squared",
+   "fields": {
+    "name": "Is block sensitivity at most quadratic in spectral sensitivity? (Aaronson, Ben-David, Kothari, Rao and Tal)",
+    "shortName": "Block sensitivity vs spectral sensitivity squared",
+    "fieldGroup": "Theoretical computer science",
+    "field": "Boolean function complexity; sensitivity",
+    "statement": "For a total Boolean function $f:\\{0,1\\}^n\\to\\{0,1\\}$, the spectral sensitivity $\\lambda(f)$ is the largest eigenvalue of the adjacency matrix of its sensitivity graph (the hypercube edges across which $f$ changes value), and the block sensitivity $\\mathrm{bs}(f)$ is the largest number of disjoint blocks of bits each of whose flip changes $f$ at some input. Huang's proof gives $\\deg(f)\\le\\lambda(f)^2$, and with Nisan-Szegedy $\\mathrm{bs}(f)=O(\\lambda(f)^4)$. Aaronson, Ben-David, Kothari, Rao and Tal asked: is $\\mathrm{bs}(f)=O(\\lambda(f)^2)$?",
+    "posedBy": "Scott Aaronson, Shalev Ben-David, Robin Kothari, Shravas Rao and Avishay Tal, Degree vs. approximate degree and quantum implications of Huang's sensitivity theorem (STOC 2021), Section 7",
+    "yearPosed": 2020,
+    "ageNote": "Dated from the arXiv version (2010.12629, October 2020) of the STOC 2021 paper, whose open-questions section asks \"perhaps bs(f) = O(lambda(f)^2) or even RC(f) = O(lambda(f)^2)?\"",
+    "solveType": "disproved",
+    "resolution": "candidate",
+    "resolutionMethod": "construction",
+    "solveDate": "2026-08-01",
+    "model": "GPT-5.6-Sol (ideas); Claude Opus 5 with Harmonic's Aristotle (Lean)",
+    "modelMaker": "OpenAI; Anthropic; Harmonic",
+    "humanCollaborators": [
+     "Alexander Meiburg"
+    ],
+    "aiContribution": "ai-co-developed",
+    "aiRole": "The paper's Note on AI Usage: \"Several key ideas of the proof, in particular that 'gated tournaments' would be a good candidate for large bs relative to lambda, were suggested by GPT-5.6-Sol. The initial proposed construction was on 269 variables. All text in this paper was produced without generative AI tooling, and the author is responsible for the exposition, minimizing and optimizing size and parameters, and verifying the faithfulness of the Lean formalization.\" The paper says the formalization was carried out using Aristotle; the repository's formalization.yaml records a Claude Code session on Claude Opus 5 with about a dozen goal-level human turns, plus Harmonic's prover for leaf lemmas.",
+    "verification": "lean-checked",
+    "verificationNote": "Checked here on 7 October 2026: Theorem 6.1 and Corollary 6.2 of arXiv:2608.00851 were read against the question as printed in Section 7 of Aaronson, Ben-David, Kothari, Rao and Tal. In Timeroot/BS_Lam, BSLambda/Main.lean was read: exists_bs_gt_lam_rpow states a total Boolean function on ZMod 14011 x Fin 144 inputs with $\\lambda(f)^{2.12}<\\mathrm{bs}(f)$ (the comparator challenge printed in the paper's Appendix B), and exists_ratio_blowup states $(14011/U)^m\\lambda(F_m)^2\\le\\mathrm{bs}(F_m)$ for the $m$-fold self-compositions, with $14011/U>1$, which is the unbounded-ratio disproof. The definitions of bs, the sensitivity-graph adjacency matrix and its top eigenvalue match the paper. The repository reports no sorry and only propext, Classical.choice and Quot.sound, and proves the multiplicativity of $\\lambda$ under composition rather than importing it. Not rebuilt here; no CI run is published.",
+    "resultNote": "Theorem 6.1: a total Boolean function on 2,017,584 variables with $\\mathrm{bs}(f)\\ge14011$ and $\\lambda(f)\\le89.0162$, so $\\mathrm{bs}(f)\\ge\\lambda(f)^{2.127}$; composition gives a family with $\\lambda\\to\\infty$ and $\\mathrm{bs}=\\Omega(\\lambda^{2.127})$, so no quadratic bound holds. The function is a union of subcubes indexed by a doubly regular tournament with gates fixed by the Lovász local lemma. An exponent near 2.20 on 1,255 variables is numerical evidence only. The true exponent, between 2.127 and 4, stays open. Since $\\lambda(f)\\le s(f)$, OpenAI's later disproof of $\\mathrm{bs}=O(s^2)$ (25 September 2026), which adapts this gated-tournament construction, implies this result.",
+    "significance": 22,
+    "significanceNote": "A sharp open question from the 2021 paper that followed Huang's proof of the Sensitivity Conjecture, known to query-complexity specialists. Below the Nisan-Szegedy quadratic question at 35, older and better known, whose later disproof implies this one; above the Gopalan-Servedio entry at 14; level with the weak-disorder Ising entry at 22 in standing within its own community.",
+    "publication": "preprint",
+    "sourceUrl": "https://arxiv.org/abs/2608.00851",
+    "sourceName": "arXiv:2608.00851, Meiburg (1 August 2026)",
+    "renownLangs": 0
+   },
+   "links": [
+    {
+     "label": "Lean formalization: Timeroot/BS_Lam",
+     "url": "https://github.com/Timeroot/BS_Lam",
+     "kind": "lean-proof"
+    },
+    {
+     "label": "Headline Lean statements (BSLambda/Main.lean)",
+     "url": "https://github.com/Timeroot/BS_Lam/blob/7bd39a8d/BSLambda/Main.lean",
+     "kind": "lean-statement"
+    },
+    {
+     "label": "Aaronson, Ben-David, Kothari, Rao, Tal, Degree vs. approximate degree (arXiv:2010.12629), Section 7",
+     "url": "https://arxiv.org/abs/2010.12629",
+     "kind": "problem-record"
+    },
+    {
+     "label": "Stronger later result: block sensitivity is not quadratic in sensitivity (OpenAI release)",
+     "url": "https://vibemathed.com/problem/block-sensitivity-quadratic-in-sensitivity",
+     "kind": "other"
+    }
+   ]
+  }
+ ],
+ "actions": [
+  {
+   "slug": "euclidean-ramsey-sets-classification",
+   "link": {
+    "label": "Palvolgyi, A cyclic non-Ramsey heptagon (arXiv:2609.23327), the disproof of Graham's conjecture cited here",
+    "url": "https://arxiv.org/abs/2609.23327",
+    "kind": "paper"
+   }
+  },
+  {
+   "slug": "euclidean-ramsey-sets-classification",
+   "field": "resultNote",
+   "append": "Graham's spherical conjecture had already fallen to Palvolgyi's ChatGPT-found seven-point circle set (arXiv:2609.23327), which this manuscript cites; see graham-spherical-ramsey-conjecture."
+  },
+  {
+   "slug": "small-cohen-macaulay-module-conjecture",
+   "link": {
+    "label": "Chen, arXiv:2609.24142 (21 Sept 2026): earlier claimed counterexample, ChatGPT-assisted",
+    "url": "https://arxiv.org/abs/2609.24142",
+    "kind": "independent"
+   }
+  },
+  {
+   "slug": "small-cohen-macaulay-module-conjecture",
+   "field": "resultNote",
+   "append": "Priority: Liang Chen posted a claimed counterexample of the same kind on 21 September 2026, two days before this manuscript (arXiv:2609.24142): the completed section ring of a degree-six Hirzebruch-Kummer surface with $K_Y\\sim4H$, resting on his stated Main claim."
+  },
+  {
+   "slug": "absence-of-critical-bernoulli-bond-percolation-on-z-d-in-every-dimension-d-2",
+   "link": {
+    "label": "Site percolation on Z^d, d >= 3: extension of this proof (Bou-Rabee)",
+    "url": "https://vibemathed.com/problem/critical-site-percolation-z-d",
+    "kind": "other"
+   }
+  },
+  {
+   "slug": "benjamini-schramm-criticality-bond",
+   "link": {
+    "label": "Earlier site result on Z^d, d >= 3, cited by the manuscripts (Bou-Rabee)",
+    "url": "https://vibemathed.com/problem/critical-site-percolation-z-d",
+    "kind": "other"
+   }
+  },
+  {
+   "slug": "block-sensitivity-quadratic-in-sensitivity",
+   "link": {
+    "label": "Meiburg, Block sensitivity can exceed spectral sensitivity squared (arXiv:2608.00851), the construction this adapts",
+    "url": "https://arxiv.org/abs/2608.00851",
+    "kind": "paper"
+   },
+   "field": "resultNote",
+   "append": "Because $\\lambda(f)\\le s(f)$, it also implies a negative answer to the spectral-sensitivity question $\\mathrm{bs}=O(\\lambda^2)$, which Meiburg had already disproved (see block-sensitivity-spectral-sensitivity-squared)."
+  },
+  {
+   "slug": "mean-payoff-games-quasipolynomial-time",
+   "link": {
+    "label": "Truffet, claimed strongly polynomial tropical LP method (arXiv:2603.26423 v4), rebutted by the randomized companion",
+    "url": "https://arxiv.org/abs/2603.26423v4",
+    "kind": "other"
+   }
+  },
+  {
+   "slug": "mean-payoff-games-quasipolynomial-time",
+   "link": {
+    "label": "Truffet, Max-Atom problem in strongly polynomial time (HAL note, 2025; not addressed by the release)",
+    "url": "https://hal.science/hal-05491586v1",
+    "kind": "other"
+   }
+  },
+  {
+   "slug": "random-k-sat-threshold-existence",
+   "field": "resultNote",
+   "append": "Carenini's paper states that none of its mathematical arguments was generated by a large language model; it proves the existence via a scaling window of width $O(n^{1/2+1/k})$ and the Abbe-Montanari criterion."
+  },
+  {
+   "slug": "mean-payoff-games-quasipolynomial-time",
+   "field": "resultNote",
+   "replace": [
+    "Priority note: Truffet",
+    "Conflicting claim: Truffet"
+   ]
+  },
+  {
+   "slug": "small-cohen-macaulay-module-conjecture",
+   "field": "verificationNote",
+   "replace": [
+    "who proposes a completed-local counterexample under a proportionality hypothesis.",
+    "who proposes a completed-local counterexample whose explicit example meets his proportionality hypothesis, so it rests only on his stated Main claim."
+   ]
+  }
+ ]
+}
