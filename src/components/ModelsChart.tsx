@@ -11,11 +11,21 @@ import {
   rangeCaption,
   timeWindow,
 } from "@/lib/time-buckets";
-import { PartialWeekNote, TierNote, TierToggle, TimeAxis, TimeRangeToggle } from "@/components/TimeControls";
+import {
+  ClaimsNote,
+  PartialWeekNote,
+  StatusToggle,
+  TierNote,
+  TierToggle,
+  TimeAxis,
+  TimeRangeToggle,
+} from "@/components/TimeControls";
 import { useChartSettings } from "@/lib/chart-settings";
 
 // Cumulative solves per vendor over time - the volume race, not just its
-// final score. Same frame and hover behaviour as the other line charts. An
+// final score. Solid lines count resolved entries; with claims on, a dashed
+// line in the same colour adds the candidate solutions under review, so a
+// bulk release of unchecked claims shows up without passing for solves. Same frame and hover behaviour as the other line charts. An
 // entry counts toward every vendor named on it (see MODEL_FAMILIES), so the
 // lines can sum to more than the number of problems.
 //
@@ -65,8 +75,9 @@ export function ModelsChart({
   const [hover, setHover] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
   // The time window and hidden series survive reloads (see useChartSettings).
-  const { range: timeRange, setRange, tier, setTier, hidden, toggleSeries } =
+  const { range: timeRange, setRange, tier, setTier, hidden, toggleSeries, status, setStatus } =
     useChartSettings("systems");
+  const showClaims = status === "claims";
   // Hovering a line (or its legend chip) highlights it and fades the rest.
   const [focused, setFocused] = useState<string | null>(null);
   // Which composite row has its contents open, if any. Deliberately one at a
@@ -109,7 +120,12 @@ export function ModelsChart({
     // OpenAI's line, eleven of them, including two of the highest-scoring
     // entries in the record.
     const mine = inWindow.filter((p) => f.test.test(`${p.model} ${p.modelMaker ?? ""}`));
-    const famKeys = mine.map((p) => bucketKey(p.solveDate, CHART_GRAN));
+    // `problems` holds resolved entries and candidate claims; the solid line
+    // is the resolved part, the dashed one everything.
+    const famKeys = mine
+      .filter((p) => p.resolution === "resolved")
+      .map((p) => bucketKey(p.solveDate, CHART_GRAN));
+    const allKeys = mine.map((p) => bucketKey(p.solveDate, CHART_GRAN));
     // What a row is actually made of. Every row here is a bag: "Agent systems
     // / other" is two dozen harnesses, but so is OpenAI, whose 349 entries
     // name 174 distinct model strings. Splitting any of it into its own line
@@ -124,13 +140,16 @@ export function ModelsChart({
       label: f.label,
       color: FAMILY_COLOR[f.key] ?? "var(--ink)",
       cumulative: range.map((mk) => famKeys.filter((k) => k <= mk).length),
+      withClaims: range.map((mk) => allKeys.filter((k) => k <= mk).length),
       total: famKeys.length,
+      claims: allKeys.length - famKeys.length,
       // Only worth offering when the row covers more than one model string.
       parts: parts.length > 1 ? parts : null,
     };
   })
-    .filter((s) => s.total > 0)
-    .sort((a, b) => b.total - a.total);
+    .filter((s) => s.total > 0 || (showClaims && s.claims > 0))
+    .sort((a, b) => b.total - a.total || b.claims - a.claims);
+  const claimsInWindow = series.reduce((n, s) => n + s.claims, 0);
 
   const visible = series.filter((s) => !hidden.has(s.key));
   // Resolved after `series`, so a row that stops being composite (or vanishes)
@@ -139,7 +158,7 @@ export function ModelsChart({
   // Step scales to the window. A fixed step of 20 was right for the whole
   // record but rounded a narrow window's totals up to a single gridline,
   // flattening every line onto the axis just as the reader zoomed in.
-  const peak = Math.max(1, ...visible.map((s) => s.total));
+  const peak = Math.max(1, ...visible.map((s) => s.total + (showClaims ? s.claims : 0)));
   const yMax = niceMax(peak, peak > 60 ? 20 : peak > 20 ? 10 : 5);
 
   const x = (i: number) =>
@@ -172,6 +191,7 @@ export function ModelsChart({
         number of problems.
       </p>
       <TierNote tier={tier} shown={scoped.length} total={problems.length} />
+      <ClaimsNote status={status} claims={claimsInWindow} />
 
       {/* Legend doubles as the standings AND the visibility toggles. */}
       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
@@ -199,6 +219,14 @@ export function ModelsChart({
                   {s.label}
                 </span>
                 <span className="font-mono tabular-nums text-[var(--ink-muted)]">{s.total}</span>
+                {showClaims && s.claims > 0 && (
+                  <span
+                    className="font-mono tabular-nums text-[var(--ink-muted)] opacity-70"
+                    title={`${s.claims} candidate claims under review`}
+                  >
+                    +{s.claims}
+                  </span>
+                )}
               </button>
               {/* A second control, not a bigger one: the chip itself already
                   means "show/hide this line", and overloading it to also mean
@@ -289,6 +317,24 @@ export function ModelsChart({
                 </text>
               </g>
             ))}
+
+            {showClaims &&
+              visible
+                .filter((s) => s.claims > 0)
+                .map((s) => (
+                  <polyline
+                    key={`claims-${s.key}`}
+                    points={s.withClaims.map((v, i) => `${x(i)},${yScale(v)}`).join(" ")}
+                    fill="none"
+                    stroke={s.color}
+                    strokeWidth={2}
+                    strokeDasharray="5 4"
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                    pointerEvents="none"
+                    opacity={focused !== null && focused !== s.key ? 0.2 : 0.8}
+                  />
+                ))}
 
             {visible.map((s) => (
               <polyline
@@ -384,6 +430,11 @@ export function ModelsChart({
                     style={{ backgroundColor: s.color }}
                   />
                   {s.cumulative[active]}
+                  {showClaims && s.withClaims[active] > s.cumulative[active] && (
+                    <span className="text-[var(--ink-muted)]">
+                      +{s.withClaims[active] - s.cumulative[active]}
+                    </span>
+                  )}
                 </span>
               ))}
             </div>
@@ -398,6 +449,7 @@ export function ModelsChart({
       <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
         <TimeRangeToggle value={timeRange} onChange={setRange} />
         <TierToggle value={tier} onChange={setTier} />
+        <StatusToggle value={status} onChange={setStatus} />
       </div>
     </div>
   );

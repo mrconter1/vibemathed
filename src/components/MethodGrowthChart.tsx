@@ -11,7 +11,15 @@ import {
   rangeCaption,
   timeWindow,
 } from "@/lib/time-buckets";
-import { PartialWeekNote, TierNote, TierToggle, TimeAxis, TimeRangeToggle } from "@/components/TimeControls";
+import {
+  ClaimsNote,
+  PartialWeekNote,
+  StatusToggle,
+  TierNote,
+  TierToggle,
+  TimeAxis,
+  TimeRangeToggle,
+} from "@/components/TimeControls";
 import { useChartSettings } from "@/lib/chart-settings";
 
 // Cumulative solves over time, one line per resolution method - the "is AI
@@ -48,8 +56,9 @@ export function MethodGrowthChart({
   const [hover, setHover] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
   // The time window and hidden series survive reloads (see useChartSettings).
-  const { range: timeRange, setRange, tier, setTier, hidden, toggleSeries } =
+  const { range: timeRange, setRange, tier, setTier, hidden, toggleSeries, status, setStatus } =
     useChartSettings("method");
+  const showClaims = status === "claims";
   // Hovering a line (or its legend chip) highlights it and fades the rest.
   const [focused, setFocused] = useState<string | null>(null);
 
@@ -85,20 +94,30 @@ export function MethodGrowthChart({
     const methodKeys = inWindow
       .filter((p) => p.resolutionMethod === method)
       .map((p) => bucketKey(p.solveDate, CHART_GRAN));
+    const methodKeysResolved = inWindow
+      .filter((p) => p.resolutionMethod === method)
+      .filter((p) => p.resolution === "resolved")
+      .map((p) => bucketKey(p.solveDate, CHART_GRAN));
     return {
       method,
       label: RESOLUTION_METHOD[method].label,
       color: SERIES_COLOR[method],
-      cumulative: range.map((mk) => methodKeys.filter((k) => k <= mk).length),
-      total: methodKeys.length,
+      // `problems` holds resolved entries and candidate claims; the solid
+      // line is the resolved part, the dashed one everything.
+      cumulative: range.map((mk) => methodKeysResolved.filter((k) => k <= mk).length),
+      withClaims: range.map((mk) => methodKeys.filter((k) => k <= mk).length),
+      total: methodKeysResolved.length,
+      claims: methodKeys.length - methodKeysResolved.length,
     };
-  }).filter((s) => s.total > 0);
+  }).filter((s) => s.total > 0 || (showClaims && s.claims > 0));
+  const claimsInWindow = series.reduce((n, s) => n + s.claims, 0);
+  const resolvedInWindow = series.reduce((n, s) => n + s.total, 0);
 
   const visible = series.filter((s) => !hidden.has(s.method));
   // Step scales to the window. A fixed step of 20 was right for the whole
   // record but rounded a narrow window's totals up to a single gridline,
   // flattening every line onto the axis just as the reader zoomed in.
-  const peak = Math.max(1, ...visible.map((s) => s.total));
+  const peak = Math.max(1, ...visible.map((s) => s.total + (showClaims ? s.claims : 0)));
   const yMax = niceMax(peak, peak > 60 ? 20 : peak > 20 ? 10 : 5);
 
   const x = (i: number) =>
@@ -126,9 +145,10 @@ export function MethodGrowthChart({
       <p className="mt-1 text-xs text-[var(--ink-muted)]">
         Cumulative resolved entries by the decisive step: a conceptual
         argument, an explicit object, or a finite computation;{" "}
-        {inWindow.length} classified {rangeCaption(timeRange)}.
+        {resolvedInWindow} classified {rangeCaption(timeRange)}.
       </p>
       <TierNote tier={tier} shown={scoped.length} total={problems.length} />
+      <ClaimsNote status={status} claims={claimsInWindow} />
 
       {/* Legend doubles as the current totals AND the visibility toggles. */}
       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
@@ -155,6 +175,14 @@ export function MethodGrowthChart({
                 {s.label}
               </span>
               <span className="font-mono tabular-nums text-[var(--ink-muted)]">{s.total}</span>
+              {showClaims && s.claims > 0 && (
+                <span
+                  className="font-mono tabular-nums text-[var(--ink-muted)] opacity-70"
+                  title={`${s.claims} candidate claims under review`}
+                >
+                  +{s.claims}
+                </span>
+              )}
             </button>
           );
         })}
@@ -191,6 +219,24 @@ export function MethodGrowthChart({
                 </text>
               </g>
             ))}
+
+            {showClaims &&
+              visible
+                .filter((s) => s.claims > 0)
+                .map((s) => (
+                  <polyline
+                    key={`claims-${s.method}`}
+                    points={s.withClaims.map((v, i) => `${x(i)},${yScale(v)}`).join(" ")}
+                    fill="none"
+                    stroke={s.color}
+                    strokeWidth={2}
+                    strokeDasharray="5 4"
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                    pointerEvents="none"
+                    opacity={focused !== null && focused !== s.method ? 0.2 : 0.8}
+                  />
+                ))}
 
             {visible.map((s) => (
               <polyline
@@ -288,6 +334,11 @@ export function MethodGrowthChart({
                     style={{ backgroundColor: s.color }}
                   />
                   {s.cumulative[active]}
+                  {showClaims && s.withClaims[active] > s.cumulative[active] && (
+                    <span className="text-[var(--ink-muted)]">
+                      +{s.withClaims[active] - s.cumulative[active]}
+                    </span>
+                  )}
                 </span>
               ))}
             </div>
@@ -302,6 +353,7 @@ export function MethodGrowthChart({
       <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
         <TimeRangeToggle value={timeRange} onChange={setRange} />
         <TierToggle value={tier} onChange={setTier} />
+        <StatusToggle value={status} onChange={setStatus} />
       </div>
     </div>
   );

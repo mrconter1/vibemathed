@@ -2,7 +2,7 @@
 
 import type { ChartProblem } from "@/lib/problems";
 import { RatioPie } from "@/components/RatioPie";
-import { TierNote, TierToggle } from "@/components/TimeControls";
+import { StatusToggle, TierNote, TierToggle } from "@/components/TimeControls";
 import { useChartSettings } from "@/lib/chart-settings";
 
 // Two slices, not three, now that `independent` exists as a third result.
@@ -19,13 +19,19 @@ import { useChartSettings } from "@/lib/chart-settings";
 // the results that went one way or the other actually went, and the caption
 // carries the remainder rather than hiding it.
 export function SolveRatioChart({ problems }: { problems: ChartProblem[] }) {
-  const { tier, setTier } = useChartSettings("solve-ratio");
+  const { tier, setTier, status, setStatus } = useChartSettings("solve-ratio");
 
   // Worth filtering here even though the pie has no time axis: whether
   // AI-discovered results skew toward disproofs is a different question from
   // how the record as a whole splits, and this is the chart that answers it.
+  // `problems` holds resolved entries and candidate claims. A pie has no
+  // second line to put the claims on, so they are either counted or not, and
+  // the note under the caption says how many of the slices they make up.
+  const inStatus =
+    status === "claims" ? problems : problems.filter((p) => p.resolution === "resolved");
   const scoped =
-    tier === "all" ? problems : problems.filter((p) => p.aiContribution === tier);
+    tier === "all" ? inStatus : inStatus.filter((p) => p.aiContribution === tier);
+  const claims = scoped.filter((p) => p.resolution !== "resolved").length;
 
   const proved = scoped.filter((p) => p.solveType === "proved").length;
   const disproved = scoped.filter((p) => p.solveType === "disproved").length;
@@ -33,8 +39,23 @@ export function SolveRatioChart({ problems }: { problems: ChartProblem[] }) {
 
   return (
     <RatioPie
-      note={<TierNote tier={tier} shown={scoped.length} total={problems.length} />}
-      controls={<TierToggle value={tier} onChange={setTier} />}
+      note={
+        <>
+          <TierNote tier={tier} shown={scoped.length} total={inStatus.length} />
+          {claims > 0 && (
+            <p className="mt-1 text-xs text-[var(--ink-muted)]">
+              Includes {claims} candidate {claims === 1 ? "claim" : "claims"} under
+              review, not yet checked by anyone independent.
+            </p>
+          )}
+        </>
+      }
+      controls={
+        <>
+          <TierToggle value={tier} onChange={setTier} />
+          <StatusToggle value={status} onChange={setStatus} />
+        </>
+      }
       title="Proved vs. disproved"
       caption={
         independent === 0

@@ -11,7 +11,13 @@ import {
   rangeCaption,
   timeWindow,
 } from "@/lib/time-buckets";
-import { PartialWeekNote, TimeAxis, TimeRangeToggle } from "@/components/TimeControls";
+import {
+  ClaimsNote,
+  PartialWeekNote,
+  StatusToggle,
+  TimeAxis,
+  TimeRangeToggle,
+} from "@/components/TimeControls";
 import { useChartSettings } from "@/lib/chart-settings";
 
 // Cumulative solves over time, one line per AI-contribution tier. Same frame,
@@ -50,7 +56,9 @@ export function ContributionGrowthChart({
   const [hover, setHover] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
   // The time window and hidden series survive reloads (see useChartSettings).
-  const { range: timeRange, setRange, hidden, toggleSeries } = useChartSettings("contribution");
+  const { range: timeRange, setRange, hidden, toggleSeries, status, setStatus } =
+    useChartSettings("contribution");
+  const showClaims = status === "claims";
   // Hovering a line (or its legend chip) highlights it and fades the rest.
   const [focused, setFocused] = useState<string | null>(null);
 
@@ -78,20 +86,30 @@ export function ContributionGrowthChart({
     const tierKeys = inWindow
       .filter((p) => p.aiContribution === tier)
       .map((p) => bucketKey(p.solveDate, CHART_GRAN));
+    const tierKeysResolved = inWindow
+      .filter((p) => p.aiContribution === tier)
+      .filter((p) => p.resolution === "resolved")
+      .map((p) => bucketKey(p.solveDate, CHART_GRAN));
     return {
       tier,
       label: AI_CONTRIBUTION[tier].label,
       color: SERIES_COLOR[tier],
-      cumulative: range.map((mk) => tierKeys.filter((k) => k <= mk).length),
-      total: tierKeys.length,
+      // `problems` holds resolved entries and candidate claims; the solid
+      // line is the resolved part, the dashed one everything.
+      cumulative: range.map((mk) => tierKeysResolved.filter((k) => k <= mk).length),
+      withClaims: range.map((mk) => tierKeys.filter((k) => k <= mk).length),
+      total: tierKeysResolved.length,
+      claims: tierKeys.length - tierKeysResolved.length,
     };
-  }).filter((s) => s.total > 0);
+  }).filter((s) => s.total > 0 || (showClaims && s.claims > 0));
+  const claimsInWindow = series.reduce((n, s) => n + s.claims, 0);
+  const resolvedInWindow = series.reduce((n, s) => n + s.total, 0);
 
   const visible = series.filter((s) => !hidden.has(s.tier));
   // Step scales to the window. A fixed step of 20 was right for the whole
   // record but rounded a narrow window's totals up to a single gridline,
   // flattening every line onto the axis just as the reader zoomed in.
-  const peak = Math.max(1, ...visible.map((s) => s.total));
+  const peak = Math.max(1, ...visible.map((s) => s.total + (showClaims ? s.claims : 0)));
   const yMax = niceMax(peak, peak > 60 ? 20 : peak > 20 ? 10 : 5);
 
   const x = (i: number) =>
@@ -120,8 +138,9 @@ export function ContributionGrowthChart({
       </h2>
       <p className="mt-1 text-xs text-[var(--ink-muted)]">
         Cumulative resolved entries by how much the model contributed;{" "}
-        {inWindow.length} classified {rangeCaption(timeRange)}.
+        {resolvedInWindow} classified {rangeCaption(timeRange)}.
       </p>
+      <ClaimsNote status={status} claims={claimsInWindow} />
 
       {/* Legend doubles as the current totals AND the visibility toggles. */}
       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
@@ -148,6 +167,14 @@ export function ContributionGrowthChart({
                 {s.label}
               </span>
               <span className="font-mono tabular-nums text-[var(--ink-muted)]">{s.total}</span>
+              {showClaims && s.claims > 0 && (
+                <span
+                  className="font-mono tabular-nums text-[var(--ink-muted)] opacity-70"
+                  title={`${s.claims} candidate claims under review`}
+                >
+                  +{s.claims}
+                </span>
+              )}
             </button>
           );
         })}
@@ -184,6 +211,24 @@ export function ContributionGrowthChart({
                 </text>
               </g>
             ))}
+
+            {showClaims &&
+              visible
+                .filter((s) => s.claims > 0)
+                .map((s) => (
+                  <polyline
+                    key={`claims-${s.tier}`}
+                    points={s.withClaims.map((v, i) => `${x(i)},${yScale(v)}`).join(" ")}
+                    fill="none"
+                    stroke={s.color}
+                    strokeWidth={2}
+                    strokeDasharray="5 4"
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                    pointerEvents="none"
+                    opacity={focused !== null && focused !== s.tier ? 0.2 : 0.8}
+                  />
+                ))}
 
             {visible.map((s) => (
               <polyline
@@ -276,6 +321,11 @@ export function ContributionGrowthChart({
                     style={{ backgroundColor: s.color }}
                   />
                   {s.cumulative[active]}
+                  {showClaims && s.withClaims[active] > s.cumulative[active] && (
+                    <span className="text-[var(--ink-muted)]">
+                      +{s.withClaims[active] - s.cumulative[active]}
+                    </span>
+                  )}
                 </span>
               ))}
             </div>
@@ -289,6 +339,7 @@ export function ContributionGrowthChart({
 
       <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
         <TimeRangeToggle value={timeRange} onChange={setRange} />
+        <StatusToggle value={status} onChange={setStatus} />
       </div>
     </div>
   );

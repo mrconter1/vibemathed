@@ -1,7 +1,7 @@
 "use client";
 
 import { TIME_RANGES, bucketLabel, type Granularity, type TimeRange } from "@/lib/time-buckets";
-import type { TierFilter } from "@/lib/chart-settings";
+import type { StatusScope, TierFilter } from "@/lib/chart-settings";
 
 // The pieces every time chart shares: the tiny 1M / 3M / All segmented control
 // (rendered below each plot) and the TimeAxis tick row.
@@ -124,6 +124,80 @@ export function TierNote({
     <p className="mt-1 text-xs text-[var(--accent-orange)]">
       {label} only: {shown} of {total} entries. The rest sit in another tier or
       have none recorded.
+    </p>
+  );
+}
+
+const STATUS_OPTIONS: { value: StatusScope; label: string; title: string }[] = [
+  { value: "resolved", label: "Resolved", title: "Fully resolved entries only" },
+  {
+    value: "claims",
+    label: "+ Claims",
+    title: "Also draw candidate solutions under review, as a dashed line",
+  },
+];
+
+/// "[Resolved | + Claims]" - whether a solve chart also shows the candidate
+/// claims nobody independent has checked yet. Same segmented control as the
+/// tier picker beside it.
+export function StatusToggle({
+  value,
+  onChange,
+}: {
+  value: StatusScope;
+  onChange: (s: StatusScope) => void;
+}) {
+  return (
+    <div
+      role="group"
+      aria-label="Resolution status"
+      className="inline-flex overflow-hidden rounded border border-[var(--hairline)] bg-[var(--paper)]"
+    >
+      {STATUS_OPTIONS.map((o, i) => (
+        <button
+          key={o.value}
+          type="button"
+          onClick={() => onChange(o.value)}
+          aria-pressed={value === o.value}
+          title={o.title}
+          className={`px-2.5 py-1 text-xs transition-colors ${
+            i > 0 ? "border-l border-[var(--hairline)]" : ""
+          } ${
+            value === o.value
+              ? "bg-[color-mix(in_srgb,var(--accent-blue)_12%,transparent)] font-medium text-[var(--accent-blue)]"
+              : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
+          }`}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/// Teaches the dashed line, and only when one is drawn: solid is what has been
+/// resolved, dashed adds the candidates under review. Says how many claims
+/// that is, so a jump in the dashed line is never read as a jump in solves.
+export function ClaimsNote({ status, claims }: { status: StatusScope; claims: number }) {
+  if (status !== "claims" || claims === 0) return null;
+  return (
+    <p className="mt-1 flex items-center gap-1.5 text-xs text-[var(--ink-muted)]">
+      <svg width="22" height="6" aria-hidden className="shrink-0">
+        <line
+          x1="1"
+          x2="21"
+          y1="3"
+          y2="3"
+          stroke="var(--ink-muted)"
+          strokeWidth={2}
+          strokeDasharray="4 3"
+          strokeLinecap="round"
+        />
+      </svg>
+      <span>
+        Dashed adds {claims} candidate {claims === 1 ? "claim" : "claims"} under
+        review, not yet checked by anyone independent. Solid is resolved only.
+      </span>
     </p>
   );
 }
