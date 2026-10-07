@@ -30,14 +30,7 @@
     "publication": "preprint",
     "sourceUrl": "https://arxiv.org/abs/2609.23327",
     "sourceName": "arXiv:2609.23327, Pálvölgyi (20 September 2026)",
-    "renownLangs": 0,
-    "relations": [
-     {
-      "to": "euclidean-ramsey-sets-classification",
-      "kind": "related",
-      "note": "The OpenAI release's classification manuscript (23 September 2026) cites this paper as the disproof of Graham's conjecture, gives a twelve-point spherical example by the same method, and proves every set of at most five circle points Ramsey."
-     }
-    ]
+    "renownLangs": 0
    },
    "links": [
     {
