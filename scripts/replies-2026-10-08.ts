@@ -21,6 +21,7 @@ import { guardedPrisma } from "./lib/guarded-prisma";
 import { COMMENT_MAX_LENGTH } from "../src/lib/comments";
 
 const APPLY = process.argv.includes("--apply");
+const CONTACT_ID = "02b473d0";
 
 const REPLIES = [
   {
@@ -67,9 +68,22 @@ async function main() {
       console.log(`${r.slug}: reply under ${r.parentBy} ${parent.createdAt.toISOString()} (${r.body.length} chars)${already ? "  ALREADY REPLIED - skip" : ""}`);
       if (!already) plan.push({ problemId: p.id, parentId: parent.id, body: r.body });
     }
+    // The one open contact message (Feilian Huang, research use of the dataset)
+    // is answered by email from the curator's own address; mark it handled.
+    const msgRows = await prisma.$queryRawUnsafe<{ id: string; status: string }[]>(
+      `SELECT id::text AS id, status FROM "SiteMessage" WHERE id::text LIKE $1 || '%'`,
+      CONTACT_ID,
+    );
+    if (msgRows.length !== 1) throw new Error(`contact ${CONTACT_ID}: ${msgRows.length} rows`);
+    const msg = msgRows[0];
+    console.log(`contact ${msg.id} (${msg.status}) -> ${msg.status === "open" ? "mark handled" : "already handled"}`);
+
     if (!APPLY) {
       console.log("\nDRY RUN - pass --apply to write");
       return;
+    }
+    if (msg.status === "open") {
+      await prisma.siteMessage.update({ where: { id: msg.id }, data: { status: "handled", handledAt: new Date() } });
     }
     for (const x of plan) {
       await prisma.comment.create({
