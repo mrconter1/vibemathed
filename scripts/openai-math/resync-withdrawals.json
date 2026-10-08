@@ -1,0 +1,54 @@
+[
+ {
+  "slug": "kuga-satake-hodge-conjecture",
+  "why": "source manuscript withdrawn by OpenAI on 6 Oct",
+  "set": {
+   "resolution": "retracted",
+   "verification": "contested",
+   "claimIssueNote": "Withdrawn by the authors. OpenAI's withdrawal notice of 6 October 2026: \"The proof relies on an adaptation of the flawed stabilization-trace construction in Algebraicity of Weil classes on split abelian eightfolds. The sign error in that construction prevents the required signed-double-point cancellation. The resulting gap leaves this paper's claimed algebraicity theorem unproved.\" The notice adds that the withdrawal concerns the proof and does not assert that the statement is false. The conjecture is open again.",
+   "verificationNote": "No independent mathematician has checked this yet. The release withdrew this manuscript on 6 October 2026: the proof is not established (see the claim issue). Checked here: Theorem 1.1 of the TeX source read against the posed problem; it asserts a rational cycle on $S\\times A_S\\times A_S$ inducing exactly the prescribed full even-Clifford map $\\kappa_S$, for every projective K3 surface and fixed standard data, which is the conjecture as usually stated. The proof rests on the companion conditional reduction (2026-09-10, same release) and builds the needed nonzero correspondence through immersed Lagrangians, mirror symmetry and semiregular deformation; none of this was refereed. The October 4 manuscript re-derives the same exact correspondence. No Lean formalization is listed.",
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "OpenAI withdrawal notice (6 October 2026)",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Algebraicity-of-Kuga-Satake-Correspondences-for-K3-Surfaces-October-3-2026/README.md",
+    "kind": "announcement"
+   }
+  ]
+ },
+ {
+  "slug": "hodge-conjecture-products-of-k3-surfaces",
+  "why": "source manuscript withdrawn by OpenAI on 6 Oct",
+  "set": {
+   "resolution": "retracted",
+   "verification": "contested",
+   "claimIssueNote": "Withdrawn by the authors. OpenAI's withdrawal notice of 6 October 2026: \"The proof relies on an adaptation of the flawed stabilization-trace construction in Algebraicity of Weil classes on split abelian eightfolds. The sign error in that construction prevents the required signed-double-point cancellation. The resulting gap leaves this paper's claimed rational Hodge theorem for products of projective K3 surfaces unproved.\" The notice adds that the withdrawal concerns the proof and does not assert that the statement is false. The question is open again.",
+   "verificationNote": "No independent mathematician has checked this yet. The release withdrew this manuscript on 6 October 2026, with the Kuga-Satake paper and the split abelian eightfold paper it builds on: the proof is not established (see the claim issue). Checked here: Theorem 1.1 of the TeX source read against the posed problem; surjectivity of $CH^p(X)_\\mathbb Q\\to \\mathrm{Hdg}^p(X)$ for every product of projective K3 surfaces, repeated or distinct, every $p$. Inputs named by the paper and not checked here: the companion quadratic-locus criterion, the companion CM Hodge theorem, Buchweitz-Flenner and Pridham semiregularity, and homological mirror symmetry for the quartic and tori. The mixed-product step is new. No Lean formalization is listed.",
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "OpenAI withdrawal notice (6 October 2026)",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/The-rational-Hodge-conjecture-for-products-of-K3-surfaces-October-4-2026/README.md",
+    "kind": "announcement"
+   }
+  ]
+ },
+ {
+  "slug": "hodge-conjecture-cm-abelian-varieties",
+  "why": "linked companion withdrawn; this result not affected per release",
+  "appendResult": "The companion on split abelian eightfolds linked here was withdrawn on 6 October 2026 for a sign error; the release names only the Kuga-Satake and K3-product papers as depending on it, and this result is not withdrawn.",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  }
+ },
+ {
+  "slug": "tate-conjecture-abelian-varieties-finite-fields",
+  "why": "linked companion withdrawn; this result not affected per release",
+  "appendResult": "The companion on split abelian eightfolds linked here was withdrawn on 6 October 2026 for a sign error; the release names only the Kuga-Satake and K3-product papers as depending on it, and this result is not withdrawn.",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  }
+ }
+]

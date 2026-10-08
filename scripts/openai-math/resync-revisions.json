@@ -1,0 +1,463 @@
+[
+ {
+  "slug": "hilberts-tenth-problem-over-q",
+  "why": "source swapped to the revised edition; link added to 2 revised companions (citation/date-only updates)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "sourceUrl": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Hilberts-tenth-problem-over-the-rational-numbers-October-6-2026/main.pdf"
+  },
+  "links": [
+   {
+    "label": "Revised edition (October 7, 2026): A pointwise 2-converse for elliptic curves with rational two-torsion",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/A-pointwise-2-converse-for-elliptic-curves-with-rational-two-torsion-October-7-2026/paper.pdf",
+    "kind": "paper"
+   },
+   {
+    "label": "Revised edition (October 6, 2026): Fontaine-Mazur modularity at the prime 2",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Fontaine-Mazur-modularity-at-the-prime-2-October-6-2026/paper.pdf",
+    "kind": "paper"
+   },
+   {
+    "label": "Earlier edition (September 24, 2026)",
+    "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/Hilberts-tenth-problem-over-the-rational-numbers-September-24-2026/main.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "hodge-conjecture-cm-abelian-varieties",
+  "why": "source swapped to the revised edition; link added to 2 revised companions (citation/date-only updates)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "sourceUrl": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/The-rational-Hodge-conjecture-for-CM-abelian-varieties-October-6-2026/paper.pdf"
+  },
+  "links": [
+   {
+    "label": "Revised edition (October 6, 2026): Abelian covers, Gale correspondences, and the Hodge conjecture for powers",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Abelian-covers-Gale-correspondences-and-the-Hodge-conjecture-for-powers-October-6-2026/paper.pdf",
+    "kind": "paper"
+   },
+   {
+    "label": "Earlier edition (September 30, 2026)",
+    "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/The-rational-Hodge-conjecture-for-CM-abelian-varieties-September-30-2026/paper.pdf",
+    "kind": "paper"
+   },
+   {
+    "label": "Revised edition (October 6, 2026): Weil classes and Hodge classes on abelian powers",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Weil-classes-and-Hodge-classes-on-abelian-powers-October-6-2026/paper.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "slc-index-conjecture-finite-coefficients",
+  "why": "link added to 1 revised companion (revision clarifies hypotheses; its appendix still calls projective log abundance conditional, so the claim issue stands)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Revised edition (October 6, 2026): Conditional good minimal models for compact Kähler fourfolds",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Conditional-good-minimal-models-for-compact-Kahler-fourfolds-October-6-2026/paper.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "effective-iitaka-fibration-conjecture",
+  "why": "link added to 1 revised companion (revision clarifies hypotheses; its appendix still calls projective log abundance conditional, so the claim issue stands)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Revised edition (October 6, 2026): Conditional good minimal models for compact Kähler fourfolds",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Conditional-good-minimal-models-for-compact-Kahler-fourfolds-October-6-2026/paper.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "effective-log-iitaka-finite-coefficients",
+  "why": "link added to 1 revised companion (revision clarifies hypotheses; its appendix still calls projective log abundance conditional, so the claim issue stands)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Revised edition (October 6, 2026): Conditional good minimal models for compact Kähler fourfolds",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Conditional-good-minimal-models-for-compact-Kahler-fourfolds-October-6-2026/paper.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "birkar-stein-degree-conjecture-point",
+  "why": "link added to 1 revised companion (revision clarifies hypotheses; its appendix still calls projective log abundance conditional, so the claim issue stands)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Revised edition (October 6, 2026): Conditional good minimal models for compact Kähler fourfolds",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Conditional-good-minimal-models-for-compact-Kahler-fourfolds-October-6-2026/paper.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "campana-peternell-conjecture",
+  "why": "link added to 1 revised companion (revision clarifies hypotheses; its appendix still calls projective log abundance conditional, so the claim issue stands)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Revised edition (October 6, 2026): Conditional good minimal models for compact Kähler fourfolds",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Conditional-good-minimal-models-for-compact-Kahler-fourfolds-October-6-2026/paper.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "log-abundance-conjecture-char-zero",
+  "why": "link added to 2 revised companions (proof repair and clarified hypotheses; the revised appendix still calls projective log abundance conditional, so the claim issue stands)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Revised edition (October 6, 2026): Conditional good minimal models for compact Kähler fourfolds",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Conditional-good-minimal-models-for-compact-Kahler-fourfolds-October-6-2026/paper.pdf",
+    "kind": "paper"
+   },
+   {
+    "label": "Revised edition (October 6, 2026): Log abundance for compact Kähler spaces under logarithmic Iitaka subadditivity",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Log-abundance-for-compact-Kahler-spaces-under-logarithmic-Iitaka-subadditivity-October-6-2026/main.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "donaldson-hypersymplectic-deformation-conjecture",
+  "why": "Source revised (Oct 7): unnecessary cone-comparison dependency removed, prescribed class from the paper's own criterion; theorem unchanged",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "sourceUrl": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Deforming-hypersymplectic-four-manifolds-to-hyperkahler-triples-October-7-2026/paper.pdf",
+   "verificationNote": "No independent mathematician has checked this yet. Checked here: the introduction and Theorem 1.1 of the TeX source, read against Donaldson's Question 3 and Fine-Yao Conjecture 1.1; the theorem states the full normalized deformation with all three classes fixed and a hyperkahler endpoint, and the paper says it resolves that conjecture. The proof was not refereed. It does not go through the hypersymplectic flow; convergence or uniqueness of that flow is left open. Key inputs are Bauer's bound for symplectic four-manifolds with torsion first Chern class, Preiss's rectifiability theorem, Riviere-Tian regularity of integral cycles, and the companion release paper Taming implies compatibility on four-manifolds (itself unreviewed), whose needed proofs are reproduced in Sections 3 and 4. The October 7 edition leaves Theorem 1.1 unchanged; it drops the citation of Li-Zhang's comparison of taming and compatible cones and obtains the prescribed taming class from the paper's own class criterion (under its definite-pair and $b^+=3$ hypotheses), so it does not rely on the general cone equality that the revised Taming paper narrowed. No Lean formalization is supplied for this family."
+  },
+  "links": [
+   {
+    "label": "Earlier edition (September 23, 2026)",
+    "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/Deforming-hypersymplectic-four-manifolds-to-hyperkahler-triples-September-23-2026/paper.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "p-converse-selmer-corank-one-every-prime",
+  "why": "source swapped to the revised edition; link added to 2 revised companions (citation/date-only updates)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "sourceUrl": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/The-Selmer-converse-for-elliptic-curves-at-every-prime-October-7-2026/main.pdf"
+  },
+  "links": [
+   {
+    "label": "Revised edition (October 7, 2026): Exact Birch-Swinnerton-Dyer Formula from Low Selmer Corank",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Exact-Birch-Swinnerton-Dyer-Formula-from-Low-Selmer-Corank-October-7-2026/exact-bsd-low-selmer-corank.pdf",
+    "kind": "paper"
+   },
+   {
+    "label": "Revised edition (October 7, 2026): Goldfeld's analytic density conjecture and the 2-converse for elliptic curves",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Goldfelds-analytic-density-conjecture-and-the-2-converse-for-elliptic-curves-October-7-2026/paper.pdf",
+    "kind": "paper"
+   },
+   {
+    "label": "Earlier edition (September 24, 2026)",
+    "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/The-Selmer-converse-for-elliptic-curves-at-every-prime-September-24-2026/main.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "bsd-formula-selmer-corank-one",
+  "why": "source swapped to the revised edition; link added to 3 revised companions (source drops an obsolete dangling citation; companions citation-only)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "sourceUrl": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Exact-Birch-Swinnerton-Dyer-Formula-from-Low-Selmer-Corank-October-7-2026/exact-bsd-low-selmer-corank.pdf"
+  },
+  "links": [
+   {
+    "label": "Earlier edition (October 3, 2026)",
+    "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/Exact-Birch-Swinnerton-Dyer-Formula-from-Low-Selmer-Corank-October-3-2026/exact-bsd-low-selmer-corank.pdf",
+    "kind": "paper"
+   },
+   {
+    "label": "Revised edition (October 7, 2026): Goldfeld's analytic density conjecture and the 2-converse for elliptic curves",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Goldfelds-analytic-density-conjecture-and-the-2-converse-for-elliptic-curves-October-7-2026/paper.pdf",
+    "kind": "paper"
+   },
+   {
+    "label": "Revised edition (October 7, 2026): The Selmer converse for elliptic curves at every prime",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/The-Selmer-converse-for-elliptic-curves-at-every-prime-October-7-2026/main.pdf",
+    "kind": "paper"
+   },
+   {
+    "label": "Revised edition (October 6, 2026): The two-primary Birch-Swinnerton-Dyer formula in Selmer corank at most one",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/The-two-primary-Birch-Swinnerton-Dyer-formula-in-Selmer-corank-at-most-one-October-6-2026/paper.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "termination-flips-lc-fourfolds",
+  "why": "link added to 3 revised companions (companions: proof repair and clarified inputs, statements unchanged)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Revised edition (October 6, 2026): Finite ordinary minimal model programs on compact Kähler fourfolds",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Finite-ordinary-minimal-model-programs-on-compact-Kahler-fourfolds-October-6-2026/paper.pdf",
+    "kind": "paper"
+   },
+   {
+    "label": "Revised edition (October 6, 2026): Termination of generalized-canonical flips on compact Kähler fourfolds",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Termination-of-generalized-canonical-flips-on-compact-Kahler-fourfolds-October-6-2026/termination-generalized-terminal-flips-compact-kahler-fourfolds.pdf",
+    "kind": "paper"
+   },
+   {
+    "label": "Revised edition (October 7, 2026): Termination of generalized log canonical flips on compact Kähler fourfolds",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Termination-of-generalized-log-canonical-flips-on-compact-Kahler-fourfolds-October-7-2026/termination-generalized-lc-kahler-fourfolds.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "emerton-hecke-dimension-conjecture-p-2",
+  "why": "link added to 2 revised companions (citation/date-only updates)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Revised edition (October 6, 2026): Fontaine-Mazur modularity at the prime 2",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Fontaine-Mazur-modularity-at-the-prime-2-October-6-2026/paper.pdf",
+    "kind": "paper"
+   },
+   {
+    "label": "Revised edition (October 6, 2026): Unrestricted pro-modularity at the prime two",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Unrestricted-pro-modularity-at-the-prime-two-October-6-2026/two-adic-promodularity.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "two-adic-pro-modularity-emerton",
+  "why": "source swapped to the revised edition; link added to 1 revised companion (citation/date-only updates)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "sourceUrl": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Unrestricted-pro-modularity-at-the-prime-two-October-6-2026/two-adic-promodularity.pdf"
+  },
+  "links": [
+   {
+    "label": "Revised edition (October 6, 2026): Fontaine-Mazur modularity at the prime 2",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Fontaine-Mazur-modularity-at-the-prime-2-October-6-2026/paper.pdf",
+    "kind": "paper"
+   },
+   {
+    "label": "Earlier edition (October 4, 2026)",
+    "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/Unrestricted-pro-modularity-at-the-prime-two-October-4-2026/two-adic-promodularity.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "fontaine-mazur-two-dimensional-p-2",
+  "why": "source swapped to the revised edition; link added to 1 revised companion (citation/date-only updates)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "sourceUrl": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Fontaine-Mazur-modularity-at-the-prime-2-October-6-2026/paper.pdf"
+  },
+  "links": [
+   {
+    "label": "Earlier edition (September 23, 2026)",
+    "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/Fontaine-Mazur-modularity-at-the-prime-2-September-23-2026/paper.pdf",
+    "kind": "paper"
+   },
+   {
+    "label": "Revised edition (October 6, 2026): Unrestricted pro-modularity at the prime two",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Unrestricted-pro-modularity-at-the-prime-two-October-6-2026/two-adic-promodularity.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "schramm-problem-2-3-real-lipschitz-heights",
+  "why": "Source and both companions revised (Oct 6): proof repairs, statements unchanged; two-arc companion now depends on the weighted companion",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "sourceUrl": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Uniform-real-Lipschitz-surfaces-on-the-triangular-lattice-October-6-2026/paper.pdf",
+   "verificationNote": "No independent mathematician has checked this yet. Checked here: the abstract, Section 1 statement and history of the principal manuscript, and the introductions and main theorems of both companions, were read against Schramm's Problems 2.2 and 2.3 as the manuscripts cite them. No Lean formalization exists for this family. The SLE$_4$ statement holds at one tuned two-arc amplitude identified only implicitly (through a stationary tangent-flux coefficient), and the interface part of Problem 2.2 is explicitly left open by the companion. The October 6 editions repair the principal manuscript's boundary-attachment, landing-comparison and multiscale separation arguments and identify the whole interface by terminal-side labels and harmonic-mass nonreturn instead of the Sheffield-Sun path criterion; the stated theorems are unchanged. The two-arc companion now derives its cut and loop estimates from the weighted companion's annulus circuit theorem at $x=1$ (newly proved there), so the two companions are no longer independent. Not refereed here."
+  },
+  "links": [
+   {
+    "label": "Revised edition (October 6, 2026): Gaussian free-field limits of weighted integer Lipschitz heights",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Gaussian-free-field-limits-of-weighted-integer-Lipschitz-heights-October-6-2026/paper.pdf",
+    "kind": "paper"
+   },
+   {
+    "label": "Revised edition (October 6, 2026): The Gaussian free field limit of integer Lipschitz heights with two-arc boundary data",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/The-Gaussian-free-field-limit-of-integer-Lipschitz-heights-with-two-arc-boundary-data-October-6-2026/paper.pdf",
+    "kind": "paper"
+   },
+   {
+    "label": "Earlier edition (September 25, 2026)",
+    "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/Uniform-real-Lipschitz-surfaces-on-the-triangular-lattice-September-25-2026/paper.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "goldfeld-conjecture-quadratic-twists",
+  "why": "source swapped to the revised edition; link added to 1 revised companion (citation/date-only updates)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "sourceUrl": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Goldfelds-analytic-density-conjecture-and-the-2-converse-for-elliptic-curves-October-7-2026/paper.pdf"
+  },
+  "links": [
+   {
+    "label": "Earlier edition (September 23, 2026)",
+    "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/Goldfelds-analytic-density-conjecture-and-the-2-converse-for-elliptic-curves-September-23-2026/paper.pdf",
+    "kind": "paper"
+   },
+   {
+    "label": "Revised edition (October 6, 2026): The mean analytic rank of quadratic twists of elliptic curves",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/The-mean-analytic-rank-of-quadratic-twists-of-elliptic-curves-October-6-2026/paper.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "milne-rationality-conjecture",
+  "why": "source swapped to the revised edition (citation/date-only updates)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "sourceUrl": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Milnes-rationality-conjecture-for-abelian-varieties-October-7-2026/paper.pdf"
+  },
+  "links": [
+   {
+    "label": "Earlier edition (September 23, 2026)",
+    "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/Milnes-rationality-conjecture-for-abelian-varieties-September-23-2026/paper.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "lazic-peternell-generalised-abundance",
+  "why": "link added to 1 revised companion (companion states its inputs explicitly; statement unchanged)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Revised edition (October 6, 2026): Numerical semiampleness of nef adjoint classes on compact Kähler manifolds",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Numerical-semiampleness-of-nef-adjoint-classes-on-compact-Kahler-manifolds-October-6-2026/numerical-generalized-abundance.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "donaldson-tamed-to-compatible-conjecture",
+  "why": "Source revised (Oct 6): Theorem 1.1 unchanged; cone corollary narrowed to h_J^- = b2+ - 1 with a strict-inclusion example; resultNote corrected",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "sourceUrl": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Taming-implies-compatibility-on-four-manifolds-October-6-2026/paper.pdf",
+   "resultNote": "Theorem 1.1: if a smooth almost complex structure $J$ on a closed connected smooth four-manifold is tamed by a symplectic form, there is a smooth symplectic form compatible with the same $J$. The October 6 edition corrects the cone corollary of the first edition, which had claimed $\\mathcal K_J^t=\\mathcal K_J^c+H_J^-$ in general via Li-Zhang: it now characterizes the compatible cone by strict intersection positivity on the closure of the invariant part of the taming cone, proves that equality only when $h_J^-=b_2^+-1$ (so when $b_2^+=1$ every taming class still contains a compatible form), and gives a four-torus example where the inclusion is strict. Not shown: that an arbitrary taming class contains a compatible form, anything in dimensions above four, or Donaldson's separate a priori estimate conjecture for the prescribed-volume equation.",
+   "verificationNote": "No independent mathematician has checked this yet. Checked here: abstract, introduction and Theorem 1.1 of the TeX source, read against Donaldson's question as cited; the October 6 edition leaves Theorem 1.1 unchanged and revises only the cone corollary (see the result note), so the headline and the Candidate rating stand. Lean-checked on the release's Comparator challenge TamingCompatibility (declaration OAI.TamingCompatibility.taming_implies_compatibility, listed in lean/formalization.yaml). Its statement was read here: for a compact connected Hausdorff second-countable smooth manifold modelled on R^4 and a smooth almost complex structure $J$ with $J^2=-1$, if some symplectic two-form tames $J$ then some symplectic two-form tames $J$ and is $J$-invariant. Two-forms, smoothness and closedness are encoded by hand through pullbacks along smooth chart maps rather than Mathlib's differential forms; that encoding was read but not audited in depth. It states the headline claim, with the same $J$ and no cohomology class prescribed. Not rebuilt here. The Lean file is unchanged at the new commit; lean/formalization.yaml still lists the September 23 manuscript."
+  },
+  "links": [
+   {
+    "label": "Earlier edition (September 23, 2026)",
+    "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/Taming-implies-compatibility-on-four-manifolds-September-23-2026/paper.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "ashkin-teller-critical-current-scaling-limit",
+  "why": "Source revised (Oct 6): proof repair with new loop-soup/GMC inputs; main theorem unchanged",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "sourceUrl": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/The-joint-scaling-limit-of-critical-Ashkin-Teller-currents-October-6-2026/main.pdf",
+   "verificationNote": "No independent mathematician has checked this yet. Checked here: the introduction and the main theorem ('Joint critical-line limit', Section 2) were read against Conjecture 1.2 as the paper describes it; the conjecture's source was not opened. The family has no Lean formalization (lean/docs/233.md does not exist at the pinned commit). The result is for bounded Jordan domains with admissible polygonal approximations and wired primal / free dual boundary conditions. It uses six-vertex inputs from Duminil-Copin, Kozlowski, Lammers and Manolescu (2026) and cites another release preprint on the balanced six-vertex GFF limit only as a comparison. The October 6 edition repairs the transmission and boundary-collar arguments and replaces excursion convergence with a signed loop-soup and Gaussian multiplicative chaos argument tied to the same field, adding inputs from the Brownian loop-soup literature (Lupu; Aidekon et al.; Jego-Lupu-Qian) and Berestycki-Sheffield-Sun; the main theorem in Section 2 is unchanged."
+  },
+  "links": [
+   {
+    "label": "Earlier edition (September 25, 2026)",
+    "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/The-joint-scaling-limit-of-critical-Ashkin-Teller-currents-September-25-2026/main.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "p-adic-section-conjecture",
+  "why": "source swapped to the revised edition (citation/date-only updates)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "sourceUrl": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/The-p-adic-section-conjecture-October-6-2026/main.pdf"
+  },
+  "links": [
+   {
+    "label": "Earlier edition (September 24, 2026)",
+    "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/The-p-adic-section-conjecture-September-24-2026/main.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "section-conjecture-modular-curves",
+  "why": "source swapped to the revised edition (citation/date-only updates)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "sourceUrl": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/The-p-adic-section-conjecture-October-6-2026/main.pdf"
+  },
+  "links": [
+   {
+    "label": "Earlier edition (September 24, 2026)",
+    "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/The-p-adic-section-conjecture-September-24-2026/main.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "hodge-standard-conjecture-abelian-varieties",
+  "why": "source swapped to the revised edition (citation/date-only updates)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "sourceUrl": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/The-rational-Hodge-conjecture-for-CM-abelian-varieties-October-6-2026/paper.pdf"
+  },
+  "links": [
+   {
+    "label": "Earlier edition (September 30, 2026)",
+    "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/The-rational-Hodge-conjecture-for-CM-abelian-varieties-September-30-2026/paper.pdf",
+    "kind": "paper"
+   }
+  ]
+ },
+ {
+  "slug": "tate-conjecture-abelian-varieties-finite-fields",
+  "why": "source swapped to the revised edition (citation/date-only updates)",
+  "set": {
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "sourceUrl": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/The-rational-Hodge-conjecture-for-CM-abelian-varieties-October-6-2026/paper.pdf"
+  },
+  "links": [
+   {
+    "label": "Earlier edition (September 30, 2026)",
+    "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/The-rational-Hodge-conjecture-for-CM-abelian-varieties-September-30-2026/paper.pdf",
+    "kind": "paper"
+   }
+  ]
+ }
+]
