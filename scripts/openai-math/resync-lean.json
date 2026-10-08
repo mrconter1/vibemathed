@@ -161,13 +161,7 @@
    "verificationNote": "No independent mathematician has checked this yet. Checked here: the abstract, introduction and Theorem 1.1 of 'Mass and covering exponents for fixed-length honeycomb walks' were read against Nienhuis's prediction as the manuscript cites it. Theorem 1.1 gives, for every $\\delta,k>0$ and every large integer $n$, an event of probability at least $1-Cn^{-k}$ on which the diameter lies in $[n^{3/4-\\delta},n^{3/4+\\delta}]$ and local mass and covering numbers have exponent $4/3$. The proof imports analytic inputs proved in twelve companion manuscripts, which were skimmed, not refereed. The release's Lean formalization for this family (HoneycombBridgeFiniteness, HoneycombFreeEnergy, CriticalStripMass, and HoneycombBridgeMassSupport added on 7 October 2026: strict bridge mass of order $(1+h)^{-1/4}$ from a fixed port) covers supporting statements only. Its scope note says the mean-length and 3/4 spatial laws are outside it, so this entry is unreviewed, not Lean-checked. The paper states that it gives no lower bound on the end-to-end distance at fixed length, no scaling limit and no universality across lattices.",
    "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
   },
-  "links": [
-   {
-    "label": "Lean statement (supporting): HoneycombBridgeMassSupport",
-    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/HoneycombBridgeMassSupport.lean",
-    "kind": "lean-proof"
-   }
-  ]
+  "links": []
  },
  {
   "slug": "small-cohen-macaulay-module-conjecture",

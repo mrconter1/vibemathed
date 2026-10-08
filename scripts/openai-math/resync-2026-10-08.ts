@@ -120,7 +120,14 @@ async function main() {
         changes.push([k, row[k], v]);
       }
       const links = (a.links ?? []).filter((l, i, all) => !p.links.some((x) => x.url === l.url) && all.findIndex((y) => y.url === l.url) === i);
-      const v = checkStoredEntry({ specs: SPECS, fields: data, links, sourceUrl: data.sourceUrl ?? p.sourceUrl });
+      // Validate against the links the entry will end up with, existing plus new,
+      // so the link cap is checked here and not only by the guarded write.
+      const v = checkStoredEntry({
+        specs: SPECS,
+        fields: data,
+        links: [...p.links.map((l) => ({ label: "existing", url: l.url, kind: "other" })), ...links],
+        sourceUrl: data.sourceUrl ?? p.sourceUrl,
+      });
       for (const x of v) console.log(`  RULE ${a.slug}: ${x.field}: ${x.problem}`);
       if (v.length) bad++;
       console.log(`${a.slug}  (${a.why})`);
