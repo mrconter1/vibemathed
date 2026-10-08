@@ -1,0 +1,202 @@
+[
+ {
+  "slug": "fourier-series-ae-convergence-l-log-l",
+  "why": "New main formalization FourierLLogL states the headline; lean-checked.",
+  "set": {
+   "verification": "lean-checked",
+   "verificationNote": "No independent mathematician has checked this yet. Checked here: Theorem 1.1 of the manuscript (TeX source) was read against the question; it states almost-everywhere convergence of the ordinary symmetric partial sums along the full sequence for every complex-valued $f\\in L\\log L(\\mathbb T)$, which is the question as posed. Lean-checked on the release's Comparator challenge FourierLLogL (declaration OAI.FourierLLogL.paperMain, solution module OAI.Analysis.FourierLLogL.PaperMain), added in the 7 October 2026 update and listed in lean/formalization.yaml. Its statement was read here: for every a.e.-strongly measurable $f$ on $\\mathbb R/2\\pi\\mathbb Z$ with $\\int|f|\\log(2+|f|)<\\infty$ (Haar measure) there is a measurable null set outside which $\\sum_{|k|\\le N}\\widehat f(k)e^{ikx}\\to f(x)$ as $N\\to\\infty$. That is the headline. Not rebuilt here. Permitted axioms: propext, Quot.sound, Classical.choice. The corollary's Luxemburg-norm weak-$L^1$ maximal bound is not part of the Comparator statement. The proof (an entropy-compression argument for a dyadic model, transferred to Fourier sums) was not refereed.",
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Lean Comparator challenge FourierLLogL (OpenAI math release)",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/FourierLLogL.lean",
+    "kind": "lean-proof"
+   }
+  ]
+ },
+ {
+  "slug": "hadwiger-conjecture",
+  "why": "New main formalization HadwigerCounterexample states the negation of Hadwiger's conjecture; lean-checked.",
+  "set": {
+   "verification": "lean-checked",
+   "verificationNote": "No independent mathematician has checked this yet. Checked here: the abstract, introduction, historical section and Theorem 1.1 with Corollary 1.2, read against Hadwiger's conjecture as cited (Hadwiger 1943) and the Reed-Seymour fractional weakening. Lean-checked on the release's Comparator challenge HadwigerCounterexample (declaration OAI.HadwigerCounterexample.not_hadwiger_conjecture, solution module OAI.Combinatorics.HadwigerCounterexample.Main), added in the 7 October 2026 update and listed in lean/formalization.yaml. Its statement was read here: it is not true that every simple graph on $m$ vertices has chromatic number at most its Hadwiger number, the clique-minor order being defined by pairwise disjoint, connected, pairwise adjacent branch sets. That is the headline. The same challenge also states arbitrarily large $m$ with $\\alpha(G)\\le2$, connected-matching number below $m/100$ and $h(G)<26m/75+2/3<m/2\\le\\chi(G)$. Not rebuilt here. The fractional strengthening and the Colin de Verdiere consequence are outside the Comparator statement, as the scope note says. The counterexamples exist only for sufficiently large order; no explicit graph is given. The construction was not refereed.",
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Lean Comparator challenge HadwigerCounterexample (OpenAI math release)",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/HadwigerCounterexample.lean",
+    "kind": "lean-proof"
+   }
+  ]
+ },
+ {
+  "slug": "fgs-sharp-connected-matching-conjecture",
+  "why": "HadwigerCounterexample formalizes Theorem 1.1 (alpha<=2, cm<m/100) but not the 4t-1 deletion step; no tier change.",
+  "set": {
+   "verificationNote": "No independent mathematician has checked this yet. Checked here: the historical section of the Hadwiger counterexample paper, which derives this disproof from its Theorem 1.1 in a short remark, read against the conjecture as cited (Furedi-Gyarfas-Simonyi 2005). Not refereed. The 7 October 2026 update added the Comparator challenge HadwigerCounterexample; its exists_counterexamples statement (read here) gives arbitrarily large $m$-vertex graphs with $\\alpha(G)\\le2$ and connected-matching number below $m/100$. It does not state the conjecture's form (graphs on $4t-1$ vertices with $\\alpha=2$, matching size $t$); the short deletion step is not formalized, so the entry stays unreviewed. The disproof applies only for sufficiently large t.",
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Lean statement (supporting): HadwigerCounterexample - Theorem 1.1 only, not the 4t-1 form",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/HadwigerCounterexample.lean",
+    "kind": "lean-proof"
+   }
+  ]
+ },
+ {
+  "slug": "l-equals-rl-equals-bpl",
+  "why": "New main formalization LogspaceEquality states L = RL and RL = BPL; lean-checked.",
+  "set": {
+   "verification": "lean-checked",
+   "verificationNote": "No independent mathematician has checked this yet. Theorem 1.1 was read against the posed question and states the full equality L = RL = BPL for the standard model (polynomial worst-case running time on every random tape, logarithmic space counting all live counters). Lean-checked on the release's Comparator challenge LogspaceEquality (declaration OAI.ExactDerandomization.exact_logarithmic_space_derandomization, solution module OAI.Computability.Logspace.Equality), added in the 7 October 2026 update and listed in lean/formalization.yaml. Its statement was read here: for finite transition-table machines over binary words, with read-only input heads, binary work tapes, one coin bit per step and space at most $c\\lceil\\log_2(n+2)\\rceil$ on every coin tape, the classes L, RL (polynomial clock, $\\ge1/2$ versus $0$) and BPL ($\\ge2/3$ versus $\\le1/3$) satisfy L = RL and RL = BPL. That is the headline. Not rebuilt here. The paper's quantitative approximation ($2^{-q}$ accuracy in space $O(\\log n+q)$) and its explicit compiler are not part of the Comparator statement. The paper concerns polynomial-time randomized logspace; it does not claim that randomized logspace machines without a time bound are derandomized.",
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Lean Comparator challenge LogspaceEquality (OpenAI math release)",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/LogspaceEquality.lean",
+    "kind": "lean-proof"
+   }
+  ]
+ },
+ {
+  "slug": "williams-one-tape-time-space-simulation",
+  "why": "New main formalization OneTapeSpace states the T^(2/5) polylog simulation; lean-checked.",
+  "set": {
+   "verification": "lean-checked",
+   "verificationNote": "No independent mathematician has checked this yet. Checked here: the introduction and Theorem 1.1 were read against Williams's question as the paper reports it; Williams's full version was not opened. Lean-checked on the release's Comparator challenge OneTapeSpace (declarations OAI.Fifths.Single.capped and OAI.Fifths.Single.unknown, solution module OAI.Computability.SpaceSimulation.Main), added in the 7 October 2026 update and listed in lean/formalization.yaml. Its statements were read here: for a fixed deterministic machine with one writable tape and head plus finitely many read-only heads, whose initial symbols are computable in polylogarithmic space, a multitape machine given $x$ and a binary cap $T\\ge2$ outputs the finite-control state and halting flag at time $T$ within $cT^{2/5}(\\log(T+2))^e$ work bits; a capless version does the same at a halting time $t$ within $c(t+2)^{2/5}$ times a polylog. That gives $O(T^{1/2-\\delta})$ for every $\\delta<1/10$, the headline. Not rebuilt here. The bound carries polylogarithmic factors, the simulation is not time-efficient, and the multitape exponent is not improved.",
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Lean Comparator challenge OneTapeSpace (OpenAI math release)",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/OneTapeSpace.lean",
+    "kind": "lean-proof"
+   }
+  ]
+ },
+ {
+  "slug": "stable-coordinate-conjecture-four-variables",
+  "why": "New main formalization StableCoordinateFour states the degree-five one-stable noncoordinate; lean-checked.",
+  "set": {
+   "verification": "lean-checked",
+   "verificationNote": "No independent mathematician has checked this yet. Checked here: abstract, introduction, Theorem 1.1 and Corollary 1.2 of the TeX source, read against Shpilrain-Yu's Conjecture 3 as cited. Lean-checked on the release's Comparator challenge StableCoordinateFour (declaration OAI.StableCoordinate.principal_package, solution module OAI.AlgebraicGeometry.StableCoordinate.Principal), added in the 7 October 2026 update and listed in lean/formalization.yaml. Its statement was read here: for $Q=x_2^2-x_4^2+x_1x_3$ and $f=x_1-2Q(Q(x_2+x_4)+x_1x_4)$ (the paper's polynomial, indices shifted), $f$ has total degree 5, some automorphism of $\\mathbb C[x_1,\\dots,x_4,w]$ sends $f$ to $x_1$, no automorphism of $\\mathbb C[x_1,\\dots,x_4]$ does, and every fibre $f=t$ has coordinate ring isomorphic to $\\mathbb C[y_1,y_2,y_3]$ while no automorphism maps its ideal to $(x_1)$. That is the headline with Corollary 1.2. Not rebuilt here. Nothing is claimed about dimensions above four; the result is one explicit polynomial, not a classification.",
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Lean Comparator challenge StableCoordinateFour (OpenAI math release)",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/StableCoordinateFour.lean",
+    "kind": "lean-proof"
+   }
+  ]
+ },
+ {
+  "slug": "dft-n-log-n-lower-bound",
+  "why": "Companion every-length algorithm now formalized (UniformFourier); already lean-checked on the principal, note updated, no tier change.",
+  "set": {
+   "verificationNote": "No independent mathematician has checked this yet. Checked here: Theorem 1.1 of the principal manuscript was read against the question; it states $\\liminf L(n)/(n\\log_2 n)=0$ in the unrestricted model, refuting the lower bound. lean/formalization.yaml lists comparator ExactFourier, declaration OAI.ExactFourier.main_theorem. The statement was read here: for every $c>0$ and $N_0\\ge2$ there are $n\\ge N_0$ and a circuit (a DAG of add, subtract and scale-by-any-complex gates) computing the unnormalised $F_n$ exactly with fewer than $cn\\log_2 n$ gates. That is the headline claim. Not rebuilt here. Permitted axioms: propext, Quot.sound, Classical.choice. The model allows unbounded coefficients and conditioning; nothing is claimed for bit complexity or floating-point FFTs. The 7 October 2026 update added the companion's Comparator challenge UniformFourier (OAI.PowerSaving.transform_main and convolution_main, solution module OAI.Computability.FourierTransform.Main); read here, it states one fixed exact-complex RAM program computing the DFT (and one for convolution) at every positive length with work $O(n(\\log n)^{1-10^{-13}})=o(n\\log n)$, given a supplied root of unity.",
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Lean statement (companion every-length algorithm): UniformFourier",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/UniformFourier.lean",
+    "kind": "lean-proof"
+   }
+  ]
+ },
+ {
+  "slug": "abhyankar-sathaye-conjecture",
+  "why": "The 5 October companion polynomial is now formalized (StableCoordinateFour); stale sentence updated, no tier change.",
+  "set": {
+   "verificationNote": "No independent mathematician has checked this yet. Checked here: abstract, introduction and Theorem 1.1 of the TeX source, read against the conjecture as stated via Sathaye, Kraft and Blanc-van Santen. Lean-checked on the release's Comparator challenge AbhyankarSathaye (declaration OAI.AbhyankarSathaye.exists_noncoordinate_polynomial, listed in lean/formalization.yaml). Its statement was read here: for every $n\\ge4$ there is $F\\in\\mathbb C[x_1,\\dots,x_n]$ with a $\\mathbb C$-algebra isomorphism from the quotient by $(F)$ to a polynomial ring in $n-1$ variables, and no $\\mathbb C$-algebra automorphism sends a variable to $F$. That is the headline, for all $n\\ge4$. Not rebuilt here. The paper states the three-variable case is not addressed. The explicit degree-five polynomial of the 5 October companion (all fibres affine) was formalized in the 7 October 2026 update as Comparator challenge StableCoordinateFour; it belongs to a separate entry.",
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Lean statement (5 October companion polynomial): StableCoordinateFour",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/StableCoordinateFour.lean",
+    "kind": "lean-proof"
+   }
+  ]
+ },
+ {
+  "slug": "shokurov-bounded-klt-complements",
+  "why": "CartierChartCompactnessSupport covers only a local compactness lemma of the companion; no tier change.",
+  "set": {
+   "verificationNote": "No independent mathematician has checked this yet. Checked here: Theorem 1.1 and Corollary 1.2 of the principal manuscript were read against Chen's Conjecture 1.1 as both manuscripts quote it. Corollary 1.2 gives exactly the finite-rational-coefficient statement over $\\mathbb C$, and Theorem 1.1 gives klt complements of index $N(d,\\epsilon)$ for $\\epsilon$-lc Fano contractions over any algebraically closed field of characteristic zero. Both proofs go through Chen's theorem that bounded klt complements are equivalent to a uniform local threshold statement; the companion proves that statement (the Birkar-Shokurov Cartier-divisor conjecture) independently. The 7 October 2026 update added the supporting Comparator challenge CartierChartCompactnessSupport (scope read here): compactness of a set of chart-field retractions, a local lemma of the companion. It does not state bounded complements or uniform Cartier sections, so the entry stays unreviewed. Not addressed: the stronger requirement that the complement itself be $\\epsilon'$-lc (Chen, Remark 1.2(1); Shokurov 2004), and coefficient sets that are DCC or real rather than finite rational.",
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Lean statement (supporting result only): CartierChartCompactnessSupport",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/CartierChartCompactnessSupport.lean",
+    "kind": "lean-proof"
+   }
+  ]
+ },
+ {
+  "slug": "litt-integral-density-character-varieties-curves",
+  "why": "CharacterVarietiesAllSeamsSupport covers only a seam-compatibility lemma; no tier change.",
+  "set": {
+   "verificationNote": "No independent mathematician has checked this yet. Checked here: the introduction and Theorem 1.1 were read against Litt's question as the paper states it; Litt's sources were not opened. The 7 October 2026 update added the supporting Comparator challenge CharacterVarietiesAllSeamsSupport (read here, with lean/docs/027.md): the produced marked values of the marked-surface construction satisfy every seam equation. Potential integral density is outside it, so the entry stays unreviewed. Integrality is ambient (points of $M_r(X)$ over $\\mathcal O_L$ whose complex representation has the prescribed classes), which the paper distinguishes from integral points of a locally closed integral model. Varieties of dimension above one are outside the result, as the paper says.",
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Lean statement (supporting result only): CharacterVarietiesAllSeamsSupport",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/CharacterVarietiesAllSeamsSupport.lean",
+    "kind": "lean-proof"
+   }
+  ]
+ },
+ {
+  "slug": "honeycomb-saw-three-quarter-exponent-diameter",
+  "why": "HoneycombBridgeMassSupport (prescribed-endpoint companion) is another supporting bound; no tier change.",
+  "set": {
+   "verificationNote": "No independent mathematician has checked this yet. Checked here: the abstract, introduction and Theorem 1.1 of 'Mass and covering exponents for fixed-length honeycomb walks' were read against Nienhuis's prediction as the manuscript cites it. Theorem 1.1 gives, for every $\\delta,k>0$ and every large integer $n$, an event of probability at least $1-Cn^{-k}$ on which the diameter lies in $[n^{3/4-\\delta},n^{3/4+\\delta}]$ and local mass and covering numbers have exponent $4/3$. The proof imports analytic inputs proved in twelve companion manuscripts, which were skimmed, not refereed. The release's Lean formalization for this family (HoneycombBridgeFiniteness, HoneycombFreeEnergy, CriticalStripMass, and HoneycombBridgeMassSupport added on 7 October 2026: strict bridge mass of order $(1+h)^{-1/4}$ from a fixed port) covers supporting statements only. Its scope note says the mean-length and 3/4 spatial laws are outside it, so this entry is unreviewed, not Lean-checked. The paper states that it gives no lower bound on the end-to-end distance at fixed length, no scaling limit and no universality across lattices.",
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Lean statement (supporting): HoneycombBridgeMassSupport",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/HoneycombBridgeMassSupport.lean",
+    "kind": "lean-proof"
+   }
+  ]
+ },
+ {
+  "slug": "small-cohen-macaulay-module-conjecture",
+  "why": "SurfaceConeCandidateSupport states only that the candidate ring exists, not the absence of small MCM modules; no tier change.",
+  "set": {
+   "verificationNote": "No independent mathematician has checked this yet. Checked here: Theorem 1.1 of the manuscript was read against the conjecture; it gives a three-dimensional complete Noetherian normal local domain containing $\\mathbb C$ with residue field $\\mathbb C$ and no nonzero finitely generated module of depth three, which contradicts the domain form as posed. The obstruction (Theorem 1.2) is $K_X^2-2c_2(X)\\le6H^2$ for completed section rings of surfaces, and the example uses a Hirzebruch-Kummer surface from Anghel's 2026 preprint, with the numerical checks redone in the paper. A reader should know that the manuscript itself reports overlapping recent work: Anghel (graded case, September 14, 2026) and Chen (arXiv 2609.24142, September 21, 2026). Not refereed. The 7 October 2026 update added the supporting Comparator challenge SurfaceConeCandidateSupport (read here): some complete Noetherian integrally closed local $\\mathbb C$-domain of Krull dimension 3 has residue field $\\mathbb C$. It does not state the absence of a small Cohen-Macaulay module, so the entry stays unreviewed.",
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Lean statement (supporting result only): SurfaceConeCandidateSupport",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/SurfaceConeCandidateSupport.lean",
+    "kind": "lean-proof"
+   }
+  ]
+ },
+ {
+  "slug": "robert-trace-cone-razak-jacelon",
+  "why": "TraceIdealTransportSupport covers only the ideal-transport part; no tier change.",
+  "set": {
+   "verificationNote": "No independent mathematician has checked this yet. Checked here: Theorem 1.1 was read against Robert's question in the Schafhauser-Tikuisis-White formulation, which keeps every extended trace including the ideal weights. The theorem assumes only separability and nuclearity, allows arbitrary ideal structure and both finite and infinite subquotients, and needs no UCT. The 7 October 2026 update added the supporting Comparator challenge TraceIdealTransportSupport (read here, with lean/docs/301.md): a trace-cone equivalence induces an order isomorphism of closed ideals carrying finiteness and zero ideals, and closed ideals correspond to additive idempotent traces. The classification itself is outside it, so the entry stays unreviewed. The proof combines existence and uniqueness theorems with an approximate intertwining; it was not refereed here.",
+   "collectionVersion": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+  },
+  "links": [
+   {
+    "label": "Lean statement (supporting result only): TraceIdealTransportSupport",
+    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/TraceIdealTransportSupport.lean",
+    "kind": "lean-proof"
+   }
+  ]
+ }
+]
