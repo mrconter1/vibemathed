@@ -21,6 +21,7 @@
 // --apply writes. Production writes are the curator's to run.
 
 import { readFileSync } from "node:fs";
+import { Prisma } from "@prisma/client";
 import { join } from "node:path";
 import { guardedPrisma } from "./lib/guarded-prisma";
 import { checkStoredEntry } from "../src/lib/field-validation";
@@ -49,12 +50,24 @@ const DATA = JSON.parse(readFileSync(join(__dirname, "review-2026-10-15.json"), 
 };
 const DECISIONS = DATA.decisions;
 
+type Relation = { to: string; kind: string; note: string };
+const relationsOf = (d: Decision): Relation[] => ((d.edits?.relations as Relation[] | undefined) ?? []);
+
 function lint(): number {
   let bad = 0;
   const limit = new Map<string, number>();
   for (const s of SPECS) if (s.maxLength) limit.set(s.key, s.maxLength);
+  // Every edit key must be a Problem column (relations are handled as rows),
+  // so a stray draft field fails here and not halfway through --apply.
+  const columns = new Set<string>([...Object.values(Prisma.ProblemScalarFieldEnum), "relations"]);
   for (const d of DECISIONS) {
     console.log(`${d.action.toUpperCase().padEnd(8)} ${d.slug.slice(0, 60)}  (${d.reason})`);
+    for (const k of Object.keys(d.edits ?? {})) {
+      if (!columns.has(k)) {
+        console.log(`  UNKNOWN FIELD: ${k}`);
+        bad++;
+      }
+    }
     const n = charLength(canonical(d.message));
     console.log(`  message          : ${n}/${MESSAGE_MAX}${n > MESSAGE_MAX ? "  OVER" : ""}`);
     if (n > MESSAGE_MAX) bad++;
@@ -100,14 +113,29 @@ async function main() {
       select: { id: true, pseudonym: true },
     });
 
-    // Pre-flight: every lookup happens before any write.
+    // Pre-flight: every lookup happens before any write. A decision already
+    // applied (the first run stopped partway on 15 October) is skipped, so the
+    // script can be re-run to finish.
+    const done = new Set<string>();
     for (const d of DECISIONS) {
       const cur = await prisma.problem.findUnique({
         where: { slug: d.slug },
         select: { status: true, name: true, sourceUrl: true, links: { select: { label: true, url: true, kind: true } } },
       });
       if (!cur) throw new Error(`not found on ${db}: ${d.slug}`);
-      if (cur.status !== "pending") throw new Error(`${d.slug} is ${cur.status}, not pending`);
+      if (cur.status !== "pending") {
+        const expected = d.action === "approve" ? "published" : "rejected";
+        if (cur.status !== expected) throw new Error(`${d.slug} is ${cur.status}, expected pending or ${expected}`);
+        console.log(`DONE     ${cur.name.slice(0, 60)} (already ${cur.status})`);
+        done.add(d.slug);
+        continue;
+      }
+      for (const r of relationsOf(d)) {
+        const to = await prisma.problem.findUnique({ where: { slug: r.to }, select: { status: true } });
+        const viaThisRun = DECISIONS.some((x) => x.slug === r.to && x.action === "approve");
+        if (!to || (to.status !== "published" && !viaThisRun)) throw new Error(`${d.slug}: relation target ${r.to} not published`);
+        if (r.note.length > 200) throw new Error(`${d.slug}: relation note over 200`);
+      }
       const merged = [...cur.links, ...(d.links ?? [])];
       const v = checkStoredEntry({ specs: SPECS, fields: d.edits ?? {}, links: merged, sourceUrl: (d.edits?.sourceUrl as string | undefined) ?? cur.sourceUrl });
       console.log(`${d.action.toUpperCase().padEnd(8)} ${cur.name.slice(0, 60)} -> merged check: ${v.length ? "FAILED" : "ok"}`);
@@ -156,16 +184,18 @@ async function main() {
     }
 
     for (const d of DECISIONS) {
+      if (done.has(d.slug)) continue;
       const cur = await prisma.problem.findUnique({
         where: { slug: d.slug },
         select: { id: true, submittedById: true, _count: { select: { links: true } } },
       });
       if (!cur) throw new Error(`vanished: ${d.slug}`);
       const n = cur._count.links;
+      const { relations: _relations, ...edits } = (d.edits ?? {}) as Record<string, unknown>;
       await prisma.problem.update({
         where: { id: cur.id },
         data: {
-          ...(d.edits ?? {}),
+          ...edits,
           ...(d.links?.length ? { links: { create: d.links.map((l, i) => ({ ...l, position: n + i })) } } : {}),
           status: d.action === "approve" ? "published" : "rejected",
           reviewedAt: new Date(),
@@ -174,6 +204,18 @@ async function main() {
         } as never,
       });
       console.log(`${d.action}: ${d.slug}`);
+      // Relations are their own rows, not a Problem column.
+      const rels = relationsOf(d);
+      for (const [position, r] of rels.entries()) {
+        const to = await prisma.problem.findUnique({ where: { slug: r.to }, select: { id: true } });
+        if (!to) throw new Error(`relation target vanished: ${r.to}`);
+        await prisma.problemRelation.upsert({
+          where: { fromId_toId_kind: { fromId: cur.id, toId: to.id, kind: r.kind } },
+          create: { fromId: cur.id, toId: to.id, kind: r.kind, note: r.note, position },
+          update: {},
+        });
+      }
+      if (rels.length) console.log(`  ${rels.length} relation(s)`);
       if (cur.submittedById) {
         await prisma.directMessage.create({
           data: {
