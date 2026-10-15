@@ -1,0 +1,453 @@
+{
+ "decisions": [
+  {
+   "slug": "nonquadraticity-of-lambert-series-values-and-improved-bounds-for-erdos-problem-1",
+   "action": "approve",
+   "reason": "downgraded",
+   "edits": {
+    "statement": "Let $t>1$ be a rational number. Is $\\sum_{n\\ge1}\\frac{1}{t^n-1}=\\sum_{n\\ge1}\\frac{\\tau(n)}{t^n}$ irrational, where $\\tau(n)$ counts the divisors of $n$? A conjecture of Chowla; Erdős (1948) proved it for every integer $t\\ge2$.",
+    "posedBy": "Chowla (conjecture); Erdős, Problem 1049 (Er88c, p. 102)",
+    "ageNote": "erdosproblems.com attributes the conjecture to Chowla; Erdős's 1948 paper on Lambert series already cites Chowla, and the problem is listed from Erdős's 1988 survey. Open as of 15 October 2026 (erdosproblems.com, last edited 28 September 2025).",
+    "resolution": "partial",
+    "verification": "lean-checked",
+    "model": "Generative AI, model not named in the source (submitter: GPT-6 Astra via OpenAI Codex)",
+    "humanCollaborators": [
+     "Costa Lambrinoudis"
+    ],
+    "sourceName": "GitHub",
+    "aiRole": "The repository README says generative AI performed nearly all of the mathematical work: it developed the determinant construction and the algebraic-degree arguments, conducted the literature search, wrote the manuscript and produced the Lean formalization, with Costa Lambrinoudis directing and supervising. The manuscript's footnote says the same and names no model; the model and the use of OpenAI Codex are the submitter's account.",
+    "resultNote": "For rational bases $t=a/b>1$, $F(t)=\\sum_{n\\ge1}(t^n-1)^{-1}$ is irrational whenever $\\log b/\\log a<0.5728$, and a formalized refinement reaches $0.573290$. The previous thresholds were $1/2-1/\\pi^2\\approx0.3987$ (Bundschuh and Väänänen, 1994) and $0.405683$ (W. Cook, September 2026, self-published). Problem 1049 itself stays open: $t=3/2$, with $\\log2/\\log3\\approx0.631$, is still outside the region.\n\nAlong the way, for every integer $q\\ge2$ the numbers $1,F(q),F(q)^2$ are linearly independent over $\\mathbb Q$, so the Erdős-Borwein constant $F(2)$ is not quadratic irrational. Both follow from one degree criterion for real algebraic bases: no relation of degree at most $e$ over $\\mathbb Q(q)$ when $e\\lambda\\log M(q)<\\log q$, with $\\lambda=(42963+428220/\\pi^2)/202140\\approx0.42718$.",
+    "verificationNote": "No independent mathematician has checked this yet. Read by this site on 15 October 2026, not rebuilt. The Lean development (Lean 4.33.1, mathlib, about 200 files at commit 008e313) has no sorry, admit, axiom declarations, native_decide or implemented_by in the library; the one unsafe def is the optional kernel-replay script under verification/, outside the library. lambertValue is the series $\\sum_{n\\ge0}1/(q^{n+1}-1)$, faithful to the problem. The headline statements were read: lambertValue_irrational_of_log_ratio_lt_5728 and lambertValue_irrational_of_certified_region (any integers $0<b<a$ with $\\log b/\\log a$ below 0.5728 or 0.573290) and erdosBorwein_no_quadratic_relation; they carry no extra hypotheses. The repository's axiom audit allows only propext, Classical.choice and Quot.sound; there is no CI and the build was not reproduced here. The refinement certificate generator was re-run here: 400 cells regenerated, Lean data file matches byte for byte, 4 unit tests pass. Arithmetic redone here confirms $1-\\lambda=0.572817$, $2\\lambda=0.854$ and the refined cutoff 0.5732901. Not Lean-verified: Formal Conjectures has Erdős 1049 (open) and its integer-base variant, but no statement of either result. Self-published, unrefereed.",
+    "significance": 12,
+    "significanceNote": "Chowla's conjecture, listed as Erdős Problem 1049, open since the 1940s with a short literature trail (Erdős 1948, Bundschuh-Väänänen 1994, Zudilin 2004) and no prize. Scored for the problem: level with this author's Erdős 270 affine-case entry at 12, above the typical numbered Erdős problem such as 267 at 10, and below the Erdős-Borwein 2-density question at 25, which concerns a named constant's digits."
+   },
+   "links": [
+    {
+     "label": "Formal Conjectures: Erdős 1049 (open; integer-base variant)",
+     "url": "https://github.com/google-deepmind/formal-conjectures/blob/main/FormalConjectures/ErdosProblems/1049.lean",
+     "kind": "lean-statement"
+    },
+    {
+     "label": "erdosproblems.com forum thread for Problem 1049",
+     "url": "https://www.erdosproblems.com/forum/thread/1049",
+     "kind": "discussion"
+    },
+    {
+     "label": "W. Cook, Geometric Moments and Rational Lambert Values (earlier 0.405683 threshold)",
+     "url": "https://wcook04.github.io/plectis/maths/papers/erdos1049-rational-base-lambert-reasoning-surface.html",
+     "kind": "related"
+    }
+   ],
+   "reviewNote": "EP1049 open (site + teorth yaml). Partial, not Candidate. Lean read not rebuilt, grep clean, headline statements faithful; cert generator re-run byte-identical. FC has no variant for the region or nonquadraticity -> Lean-checked. Model unsourced. Same author as the erdos-270 affine entry.",
+   "message": "Published as Partial, Lean-checked, significance 12. Thank you for this one, and for a repository that is easy to audit.\n\nProblem 1049 was read on erdosproblems.com and in the Formal Conjectures file; it asks for irrationality at every rational base, which your work does not claim, so the entry is a Partial result rather than a Candidate. The statement field is now the problem as posed, and the nonquadraticity of $F(2)$ moves into the result note, since nobody posed it as a question.\n\nWhat was checked here on 15 October: the library has no sorry, axiom declarations or native_decide; lambertValue is the right series; the headline theorems for the 0.5728 and 0.573290 regions and erdosBorwein_no_quadratic_relation carry no extra hypotheses. Your certificate generator reproduced ProfileData.lean byte for byte and its tests pass, and the constants were recomputed independently. The Lean build itself was not reproduced here.\n\nWhy Lean-checked rather than Lean-verified: that tier needs the formal statement anchored independently, and Formal Conjectures covers only the open problem and the integer case, not your region or the quadratic result. Submitting those two statements as Formal Conjectures variants, or a CI workflow that builds the project and prints the axioms, would be the route up.\n\nOther edits: the model field now says the source names no model and records GPT-6 Astra via Codex as your account (the README and the paper say only generative AI; a line naming the model there would let us drop the qualifier); you are listed as the human collaborator; slug shortened; sourceName is GitHub; the result note credits the 0.405683 threshold to W. Cook's September note, as your paper does, and says $t=3/2$ is still open. The mathematics is unchanged. Please correct anything we got wrong.",
+   "flags": [
+    "Model: the source names no model; field records the submitter's GPT-6 Astra (Codex) with a qualifier. Curator may prefer the plain submitted value.",
+    "Slug changed from the 80-char cut to erdos-1049-lambert-nonquadraticity (pending entry, no redirect expected).",
+    "Prior-art check for nonquadraticity of F(2) not exhaustive: web search, the paper's bibliography and the 1049 forum thread found nothing earlier, but the older Lambert-series linear-independence literature (Bezivin, Bundschuh-Vaananen, Matala-aho) was not read.",
+    "The 'previous' 0.405683 threshold is W. Cook's self-published September 2026 note (forum post 11 Sep 2026), itself unrefereed; the last refereed bound is 0.3987.",
+    "Significance 12 is a judgement; 10 (typical Erdős) is defensible too.",
+    "Lean build not reproduced (no CI). A rebuild plus #print axioms here would justify Site-confirmed for the partial result."
+   ],
+   "checked": "REVIEW-SPEC, docs/reviewing.md, review-2026-10-06.ts, editable.ts caps; erdosproblems.com/1049 and forum thread (open, 4 comments incl. Cook 11 Sep 2026); teorth/erdosproblems yaml (open, unformalized there); Formal Conjectures ErdosProblems/1049.lean (open statement + integer variant only); catalog dataset-1015 (no 1049 entry, no Lambert entry in openai-math-2026-10; related: the-erdos-borwein-constant-is-2-dense, erdos-borwein-binary-blocks, erdos-267, erdos-270 affine by the same author); repo tarball at 008e313: README, paper intro and bibliography, Basic, MainTheorem, RationalBases, DegreeExclusion, Refinement/Irrationality statements, Audit.lean, check.sh; grep for sorry/admit/axiom/native_decide/unsafe/implemented_by; ran certificate/lambert_profile.py --check and unit tests (pass); mpmath sanity of constants and findpoly on F(2), F(3), F(10); two web searches for prior nonquadraticity results.",
+   "notChecked": "Lean build and kernel replay not run; the proof bodies of the ~200 files not read; the manuscript's hand proof not checked; the X announcement not opened; Chowla's 1947 article and the older Lambert-series independence literature not read."
+  },
+  {
+   "slug": "modularity-of-elliptic-curves-over-cm-number-fields",
+   "action": "decline",
+   "reason": "other",
+   "edits": {
+    "significance": 60,
+    "significanceNote": "Modularity of all elliptic curves over all CM fields, including those containing fifth roots of unity, extends the imaginary quadratic case and goes beyond Allen-Khare-Thorne and Caraiani-Newton. Placed just above the OpenAI imaginary quadratic modularity entry (58), which it contains, and level-adjacent to Kadison's similarity problem (58), below Hilbert's tenth problem over Q (70).",
+    "verificationNote": "No independent mathematician has checked this yet. Read on 15 October 2026: the repository at v1.0.1 (README, LaTeX source, releases, issue 1), Theorem 1.1 and the outline of the three-congruence chain, and the abstracts of Caraiani-Newton (arXiv 2301.10509) and Allen-Khare-Thorne (arXiv 1910.12986) for prior coverage. The proof itself was not checked. There is no Lean formalisation. The submitter's note that several AI models verified it carries no weight on the ladder. The argument depends on the OpenAI imaginary quadratic manuscript, which is itself a Candidate here.",
+    "resolution": "candidate",
+    "publication": "announcement",
+    "sourceName": "GitHub repository"
+   },
+   "links": [],
+   "reviewNote": "Declined 15 Oct 2026, other (landmark rule, step 4). Pseudonymous account CaptainSude (bio 'I post mathslop', gmail, created 2026-08-05, 17 repos in 2 months across normal numbers, percolation, Langlands); manuscript has no author line, no Lean. Not known before: AKT 1910.12986 = positive proportion over CM fields without mu5; CN 2301.10509 = IQF with rank X0(15)(F)=0, CM fields without mu5 under E[3]/E[5] hypothesis. Claim (all CM fields incl. mu5) is new and depends on the OpenAI IQF Candidate. Issue 1 by GitHub user toby-gee (no name on profile) credits Taylor/Khare-Thorne for the p=5 idea; citations only, not a correctness check. Would be 60 if listed.",
+   "message": "Thank you for this, and for sending it in so quickly after the OpenAI imaginary quadratic manuscript. It was read properly on 15 October, and this is a scope decision about how the site lists claims of this size, not a verdict on the mathematics.\n\nWhat was checked: the repository at v1.0.1 (README, the LaTeX source, the release notes and issue 1), Theorem 1.1 and the outline of the congruence chain in characteristics p, 3, p, and the prior literature. As far as I could find the claim is new: Allen-Khare-Thorne prove modularity for a positive proportion of curves over CM fields without fifth roots of unity, and Caraiani-Newton prove it over imaginary quadratic fields where $X_0(15)$ has rank zero, and over other such CM fields only under a condition on $E[3]$ or $E[5]$. All curves over all CM fields would go well beyond both. It also rests on the OpenAI covering construction, which the catalog itself lists only as a Candidate.\n\nThat makes it a landmark-tier claim, and for those the site has one rule it keeps: they are listed, as Candidates, once someone accountable stands behind them, meaning named authors, a lab publishing under its own name, or a formal proof whose statement and axioms we can read. The manuscript carries no author line, the repository belongs to a pseudonymous account, and there is no formalisation. Agreement between AI models does not count on the ladder. Your earlier entries were listed because Lean proofs stood behind them; a 15-page argument on deep external inputs cannot be checked that way here.\n\nIt was good to see the attribution revision after the comment in issue 1, and that comment is worth noting: it raised precedents, not a gap. The way back is open. If a named author (you, under your own name, or a collaborator) puts the manuscript out, ideally on arXiv, or if a specialist with no stake says in public that the argument holds, please resubmit and it will be listed as a Candidate next to the imaginary quadratic entry, linked both ways.",
+   "flags": [
+    "Same account has 7 published entries (Liouville-Goldbach, Stoneham, Copeland-Erdos etc.), all Lean-backed; a curator may know an identity behind CaptainSude that I could not see. If so, this flips to approve as Candidate, Unreviewed, 60, linked both ways with modularity-elliptic-curves-imaginary-quadratic.",
+    "Issue 1 is by GitHub user toby-gee, profile unnamed. If this is Toby Gee, his engagement (he says the p=5 step is easy given a Steinberg place) is not a correctness endorsement but is worth knowing; do not cite it as expert verification.",
+    "Volume signal (step 4): 17 AI-written repositories across unrelated fields since August, including a 31/36 exclusion percolation claim on 12 Oct that may arrive next.",
+    "Dependency: if the OpenAI imaginary quadratic entry is ever Contested, any future listing of this one must be too."
+   ],
+   "checked": "REVIEW-SPEC and docs/reviewing.md in full; house style in scripts/review-2026-10-06.ts; field caps in src/lib/editable.ts. GitHub API: repo metadata, tree, both commits, releases, issue 1 and its reply, owner profile and repository list. README and LaTeX source (header, abstract, Theorem 1.1, intro, acknowledgments, bibliography). arXiv abstracts of 2301.10509 and 1910.12986. Catalog dataset-1015.json: no duplicate; related entry modularity-elliptic-curves-imaginary-quadratic (Candidate, Unreviewed, 58, openai-math-2026-10) and seven earlier entries from the same account. A web search for any prior human proof over all CM fields found none.",
+   "notChecked": "The proof (Sections 2-6), the retained-Steinberg lifting theorem 4.2 and its use of CN Theorem 5.2, the Taylor/Khare-Thorne comparison, the chatgpt.com source page in the TeX header, and whether the site account behind submittedById is a verified named member (no DB access by design). Could not confirm the identity of GitHub user toby-gee."
+  },
+  {
+   "slug": "strict-dirichlet-polya-inequality-on-simply-connected-planar-domains",
+   "action": "approve",
+   "reason": "edited",
+   "edits": {
+    "resolution": "partial",
+    "modelMaker": "OpenAI; Harmonic",
+    "posedBy": "George Pólya, Mathematics and Plausible Reasoning (1954); he proved it for plane-tiling domains in 1961",
+    "publication": "preprint",
+    "sourceUrl": "https://arxiv.org/abs/2610.13139",
+    "sourceName": "arXiv",
+    "resultNote": "Theorem 1.1 of arXiv:2610.13139: for every bounded nonempty simply connected planar domain $\\Omega$, with no boundary regularity assumed, $|\\Omega|\\lambda_j(\\Omega)>4\\pi j$ for all $j\\ge1$, equivalently $N_D(E)<|\\Omega|E/(4\\pi)$ for $E>0$ (eigenvalues counted with multiplicity, endpoint included). This is the strict form of Pólya's Dirichlet inequality on the whole simply connected planar class. Previously it was known for tiling domains (Pólya 1961), disks and sectors (Filonov, Levitin, Polterovich and Sher 2023), annuli and a few further families. Multiply connected planar domains and higher dimensions remain open. The companion strict Neumann result for simply connected Lipschitz domains is a separate entry.",
+    "verificationNote": "No independent mathematician has checked this yet. Read by this site on 15 October 2026, not rebuilt. The Palomar record PALOMAR-2026-10-09-000003 v1 was fetched from the registry's data API: registered commit ba3690b, Comparator theorem PalomarDirichlet.main_result, checked with the Lean, nanoda and con-ron kernels, automated review neutral with no warnings, trust level high. Challenge.lean at that commit (identical on main; later commits touch only documentation) was read: Mathlib only, bounded open simply connected Omega in C, and lambda_j defined by min-max of the Rayleigh quotient over j-dimensional spaces of smooth compactly supported functions in Omega, which is the standard Dirichlet eigenvalue. The registered snapshot (about 27,000 lines) was grepped: the only sorry is the Challenge statement hole; no admit, axiom declarations, native_decide, unsafe or implemented_by. The repository's GitHub Actions build and audit passed on the registered commit; the audit asserts only propext, Classical.choice and Quot.sound. A separate check written here on disks and squares (3,000 eigenvalues each) agrees with the strict inequality; it says nothing about general domains. The informal proof was not read. Lean-checked, not Lean-verified: the statement audit is this site's alone and nothing was rebuilt here.",
+    "significance": 45,
+    "significanceNote": "Pólya's 1954 conjecture is a flagship problem of spectral geometry, open for seventy years outside tiling domains, balls, sectors and annuli. A claim for every simply connected planar domain with no regularity is much the largest known case, but a case. Above the hot spots entry for smooth simply connected domains (42) and the Neumann balls entry (35), below Schiffer's conjecture (53).",
+    "relations": [
+     {
+      "to": "polya-conjecture-neumann-balls",
+      "kind": "related",
+      "note": "Both are cases of Pólya's 1954 eigenvalue conjecture: Neumann balls in dimension three and higher there, all simply connected planar domains for Dirichlet here."
+     }
+    ]
+   },
+   "links": [
+    {
+     "label": "Lean formalization (GitHub)",
+     "url": "https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization-Palomar-version",
+     "kind": "lean-proof"
+    },
+    {
+     "label": "Registered snapshot, commit ba3690b",
+     "url": "https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization-Palomar-version/tree/ba3690bfd48618cf48da07fa4555382bd9852ff3",
+     "kind": "code"
+    }
+   ],
+   "reviewNote": "arXiv 2610.13139 Thm 1.1 + AI statement read. Palomar 000003 v1 JSON fetched (3 kernels, neutral, high trust). Challenge read, faithful min-max over C_c^inf. Grep clean, CI green on ba3690b. Not rebuilt. Resolved->Partial (special case of posed conjecture); landmark-tier, named authors.",
+   "message": "Published as Partial, Lean-checked, significance 45.\n\nThe Palomar record PALOMAR-2026-10-09-000003 v1 was fetched from the registry's data API on 15 October: registered commit ba3690b, Comparator with three kernels, review neutral with no warnings. Challenge.lean at that commit was read against the problem: bounded open simply connected $\\Omega\\subset\\mathbb C$, and $\\lambda_j$ as the min-max of the Rayleigh quotient over $j$-dimensional spaces of $C_c^\\infty(\\Omega)$ functions, which is the standard Dirichlet eigenvalue, so nothing in the definitions weakens the claim. The snapshot is grep-clean apart from the Challenge hole, and your Actions build and axiom audit passed on that commit. Nothing was rebuilt here.\n\nEdits: resolution is Partial rather than Resolved, because the statement you quote (and Pólya's conjecture) covers every bounded planar domain, and the theorem covers the simply connected ones; your own result note says so. The source is now arXiv:2610.13139, with the repository and snapshot as links, and publication is preprint. Vendor is \"OpenAI; Harmonic\". posedBy cites Plausible Reasoning, as your introduction does. The mathematics is unchanged; correct me if any of this is wrong.\n\nThe verification note opens with \"No independent mathematician has checked this yet.\" A public reading by someone outside the project, for example one of Filonov, Levitin, Polterovich or Sher, is what moves it.",
+   "flags": [
+    "Landmark-tier claim: listed because named authors stand behind it and the Comparator-checked headline was read here. Curator to choose Partial (hot-spots precedent, special case of the posed conjecture) or Candidate (landmark rule wording).",
+    "Volume signal: Quanyu Tang is on about 10 catalog entries across unrelated fields since August, plus two Pólya claims registered the same day. The rule is satisfied only because a formal proof stands behind each.",
+    "A Zuoqin Wang paper posted 14 Oct (He-Jiang-Lin-Wang, arXiv 2610.19455) proves Neumann Pólya only for special classes and does not mention the simply connected results. Not a contradiction, worth watching.",
+    "Brief said 'Freitas-Lagace-Payette 2019 for disks': the disk case is Filonov-Levitin-Polterovich-Sher (Invent. Math. 2023); Freitas-Lagace-Payette (Ark. Mat. 2021) is about unions of scaled copies. Neither, nor Filonov's convex Neumann bound (CPAM 2025, weaker constant), anticipates this. No earlier Pólya entry from this author in the catalog; no Pólya entry in openai-math-2026-10."
+   ],
+   "checked": "Read the submission, docs/reviewing.md, arXiv 2610.13139v1 source (abstract, intro, Theorem 1.1, prior-work paragraph, AI-use statement, bibliography), README, PALOMAR_STATUS, Challenge/Solution/comparator.json, verification/Audit.lean; Palomar entry JSON from data.palomar-registry.org; downloaded the registered snapshot ba3690b and grepped all .lean files; GitHub Actions runs on ba3690b (Lean verification and Palomar checks: success); compare ba3690b..main (docs only); catalog search for Pólya, Weyl, Tang, Wang, Palomar, spectral geometry, including openai-math-2026-10; arXiv search for recent Pólya papers; own eigenvalue check on disk and square.",
+   "notChecked": "No Lean rebuild or Comparator run here. The informal proof was not read. The Palomar review report itself was not opened (only its hash and outcome)."
+  },
+  {
+   "slug": "strict-neumann-polya-inequality-on-simply-connected-planar-lipschitz-domains",
+   "action": "approve",
+   "reason": "edited",
+   "edits": {
+    "modelMaker": "OpenAI; Harmonic",
+    "posedBy": "George Pólya, Mathematics and Plausible Reasoning (1954); tiling case proved by Pólya (1961) and Kellner (1966)",
+    "sourceName": "GitHub",
+    "resultNote": "Main theorem: for every bounded simply connected planar Lipschitz domain $\\Omega$, $|\\Omega|\\mu_j(\\Omega)<4\\pi j$ for all $j\\ge1$, with $0=\\mu_0<\\mu_1\\le\\cdots$ counted with multiplicity; equivalently $N_N(E)>|\\Omega|E/(4\\pi)$ for $E>0$, where $N_N$ counts $\\mu_j<E$ including $\\mu_0$. It contains the convex planar case, for which Filonov (CPAM 2025) had only a weaker constant, and the disk case of Filonov, Levitin, Polterovich and Sher (2023). Multiply connected domains, non-Lipschitz domains and higher dimensions remain open. The manuscript is not yet on arXiv; a draft is in the registered snapshot. The companion strict Dirichlet result is a separate entry.",
+    "verificationNote": "No independent mathematician has checked this yet. Read by this site on 15 October 2026, not rebuilt. The Palomar record PALOMAR-2026-10-09-000007 v1 was fetched from the registry's data API: registered commit f07f1c7, Comparator theorems strict_neumann_polya and strict_neumann_polya_count, checked with the Lean, nanoda and con-ron kernels, automated review neutral with no warnings, trust level high. Challenge.lean (Mathlib only, identical on main) was read: Lipschitz domain as open, connected and locally above a Lipschitz graph after a rigid motion; H1 by weak gradients in L2 tested against C_c^inf functions; mu_j by min-max over (j+1)-dimensional subspaces of L2 with no boundary condition, the standard Neumann eigenvalue indexed from mu_0 = 0. The registered snapshot (about 100,000 lines) was grepped: the only sorrys are the two Challenge statement holes; no admit, axiom declarations, native_decide, unsafe or implemented_by. The repository's Actions build passed on the registered commit, and its audit asserts only propext, Classical.choice and Quot.sound. A separate check written here on disks and squares (3,000 eigenvalues each) agrees with the strict inequality; it says nothing about general domains. The draft manuscript was not read. Lean-checked, not Lean-verified: the statement audit is this site's alone and nothing was rebuilt here.",
+    "significance": 42,
+    "significanceNote": "The Neumann half of Pólya's 1954 conjecture, open outside tiling domains, balls, sectors and annuli; even convex planar domains had only a weaker constant (Filonov 2025). A case, with a Lipschitz assumption. Level with the hot spots entry for smooth simply connected domains (42), just below the companion Dirichlet entry (45), above the Neumann balls entry (35).",
+    "relations": [
+     {
+      "to": "strict-dirichlet-polya-inequality-on-simply-connected-planar-domains",
+      "kind": "related",
+      "note": "Companion results by the same authors: the Dirichlet and Neumann halves of Pólya's conjecture on simply connected planar domains, by separate arguments and formalizations."
+     },
+     {
+      "to": "polya-conjecture-neumann-balls",
+      "kind": "related",
+      "note": "Both are cases of the Neumann Pólya conjecture: balls in dimension three and higher there, simply connected planar Lipschitz domains here."
+     }
+    ]
+   },
+   "links": [
+    {
+     "label": "Draft manuscript in the registered snapshot (v3)",
+     "url": "https://github.com/QuanyuTang/polya-neumann-simply-connected-formalization-Palomar-version-v2/blob/f07f1c7051862ba146429db6eda5dc4e8b020f74/paper/N_simply_connected_strict_v3.pdf",
+     "kind": "paper"
+    },
+    {
+     "label": "Registered snapshot, commit f07f1c7",
+     "url": "https://github.com/QuanyuTang/polya-neumann-simply-connected-formalization-Palomar-version-v2/tree/f07f1c7051862ba146429db6eda5dc4e8b020f74",
+     "kind": "code"
+    },
+    {
+     "label": "Companion Dirichlet paper, arXiv:2610.13139",
+     "url": "https://arxiv.org/abs/2610.13139",
+     "kind": "paper"
+    }
+   ],
+   "reviewNote": "Palomar 000007 v1 JSON fetched (3 kernels, neutral, high trust). Challenge read: Lipschitz, weak-gradient H1, min-max from mu_0; faithful. Grep clean, CI green on f07f1c7. Not rebuilt. Paper not on arXiv; draft only in snapshot (removed from main). Partial kept. Filonov convex bound weaker, no prior proof.",
+   "message": "Published as Partial, Lean-checked, significance 42.\n\nThe Palomar record PALOMAR-2026-10-09-000007 v1 was fetched from the registry's data API on 15 October: registered commit f07f1c7, both theorems through the Comparator with three kernels, review neutral with no warnings. Challenge.lean was read against the problem: the Lipschitz-domain definition, $H^1$ through weak gradients, and $\\mu_j$ as min-max over $(j+1)$-dimensional subspaces with no boundary condition are the standard objects, indexed from $\\mu_0=0$, so nothing weakens the claim. The snapshot is grep-clean apart from the two Challenge holes, and your Actions build passed on that commit. Nothing was rebuilt here.\n\nEdits: vendor \"OpenAI; Harmonic\", sourceName \"GitHub\", posedBy now cites Plausible Reasoning and the tiling cases, and the result note is shortened to fit and places the theorem against Filonov's convex bound. Links added to the draft manuscript in the registered snapshot (it is no longer on main) and to the companion arXiv paper. Partial, as you proposed. The mathematics is unchanged; correct me if any of this is wrong.\n\nWhen the manuscript reaches arXiv, send the identifier and the source will move there. A public reading by someone outside the project is what would move the tier.",
+   "flags": [
+    "Landmark-tier claim, same author pair and same day as the Dirichlet entry; same volume-signal caveat. Partial kept as submitted.",
+    "Manuscript not on arXiv; the only text is the v3 draft in the registered commit, deleted from main afterwards. The AI disclosure is in the README (ChatGPT for the mathematics); the draft has no AI statement. Acceptable under step 2 since the repository is the source, but the curator may prefer to wait for arXiv.",
+    "The relation to the Dirichlet entry needs that entry published first (or in the same run)."
+   ],
+   "checked": "Read the submission, README, Challenge.lean, Solution.lean header, comparator setup; Palomar entry JSON from data.palomar-registry.org; downloaded registered snapshot f07f1c7 and grepped all .lean files (about 102,600 lines); Actions run on f07f1c7 (Lean verification: success); compare f07f1c7..main (docs and paper removal only); draft TeX Theorem 1 and prior-work paragraph; Filonov arXiv 2309.01432 abstract; He-Jiang-Lin-Wang arXiv 2610.19455; catalog search; own eigenvalue check on disk and square.",
+   "notChecked": "No Lean rebuild or Comparator run here. The draft proof was not read. The Palomar review report itself was not opened."
+  },
+  {
+   "slug": "maximum-size-of-a-three-sunflower-free-family-of-four-element-sets",
+   "action": "approve",
+   "reason": "edited",
+   "edits": {
+    "statement": "How large can a family of distinct four-element sets be if no three of its members form a sunflower, that is, three distinct members whose pairwise intersections are all equal (an empty common intersection included)? Write $f(4,3)$ for this maximum.\n\nAbbott, Hanson and Sauer (1972) gave $f(4,3)\\le142$ and Abbott and Hanson (1974) gave $f(4,3)\\ge54$. Axante, Budala, Chitic, Dumitru and Nacu (arXiv:2609.06175v1, September 2026, Table 1 and Theorem 6.9) improved the upper bound to 83, so $54\\le f(4,3)\\le83$. The exact value is open. The forcing-threshold convention used for Erdős Problem #20 is one larger than $f(4,3)$.",
+    "posedBy": "Abbott, Hanson and Sauer (1972, upper bound 142) and Abbott and Hanson (1974, lower bound 54), as recorded in Axante et al., arXiv:2609.06175v1, Table 1",
+    "ageNote": "Bounds on f(4,3) go back to Abbott-Hanson-Sauer (1972) and Abbott-Hanson (1974); their attribution was read in Axante et al.'s Table 1 and reference list, not in the 1972 and 1974 originals, so the year posed is left blank. The upper bound stood at 142 until September 2026.",
+    "sourceUrl": "https://aixiv.online/abs/2610.01292v1",
+    "sourceName": "aiXiv 2610.01292 v1",
+    "verificationNote": "No independent mathematician has checked this yet. Checked by this site on 15 October 2026: the aiXiv v1 record and PDF open (CC BY, content-hashed, not withdrawn), the pinned GitHub commit 90c03c7 exists, and the manuscript's AI disclosure and Theorem 1.1 were read. Axante et al., arXiv:2609.06175v1 (still the only version), was read for Table 1, Proposition 6.7 (the imported bound 27) and Theorem 6.9 (54 <= f(4,3) <= 83). A separate script written here confirmed that the 54-member construction has no sunflower among its 24,804 triples, that no further four-set on its 18 points can be added, and that a graph with no three-edge sunflower has at most six edges (Lemma 3.1, on seven vertices). The companion's 42 finite suites (about 53 minutes) were not re-run here, nor was the imported exhaustive computation behind the bound 27, itself an AI-assisted preprint result from September 2026. The upper bound 68 rests on those computations and the written reductions; the author-side AI reviews are not independent.",
+    "significance": 9,
+    "significanceNote": "One finite value of the Erdos-Rado sunflower function, with bounds 54 and 142 standing since the early 1970s and a first improvement only in September 2026. Known to extremal set theorists, little beyond. Just below a typical numbered Erdos problem at 10, level with the depth-two Smith profile entry at 8 plus a little for its age, and below the four-uniform Morris conjecture case at 15, which is a named conjecture."
+   },
+   "links": [
+    {
+     "label": "Axante et al. on aiXiv (same paper as arXiv:2609.06175)",
+     "url": "https://aixiv.online/abs/2609.02045",
+     "kind": "paper"
+    }
+   ],
+   "reviewNote": "In scope as Partial: f(4,3) is a tracked quantity (54/142 since 1972-74, 83 in Axante Sep 2026). Read v1 + Axante Table 1, Prop 6.7, Thm 6.9. Own check of 54-construction + Lemma 3.1. Companion (53 min) NOT re-run; H27 is AI-assisted and unreplayed. Frontier request is the curator's.",
+   "message": "Published as Partial, Unreviewed, significance 9.\n\nThe source opens: aiXiv 2610.01292 v1 is public, versioned and content-hashed, and the pinned commit 90c03c7 matches. Theorem 1.1 and the disclosure section were read, and Axante et al. v1 was read for Table 1, Proposition 6.7 and Theorem 6.9, so the comparison with 83 and the import of the bound 27 are as you describe. A tracked quantity with a published sequence of bounds is in scope, and a new upper bound on it is Partial, as you proposed.\n\nChecked here on 15 October: a separate script confirmed the 54-member construction has no sunflower among its 24,804 triples and cannot be extended on its 18 points, and that Lemma 3.1's six-edge bound holds on seven vertices. The 42-suite companion (about 53 minutes) was not re-run here, so the tier stays Unreviewed and the verification note says so.\n\nEdits: the statement now gives the bounds with their original attributions and drops the submission's own notation; posedBy names Abbott-Hanson-Sauer and Abbott-Hanson; the year is left blank and the age note explains why (the attributions were read through Axante et al., not in the 1970s originals); the source points at v1 so it cannot drift; sourceName is \"aiXiv 2610.01292 v1\". The mathematics is unchanged. Tell us if anything is wrong.\n\nThe frontier request is noted for the curator; frontiers are curated separately and need the historical rows read in their sources.",
+   "flags": [
+    "Frontier: the submitter asks for an f(4,3) frontier (rows 142 AHS 1972, 83 Axante 2026, 68 this, lower 54 AH 1974). Curator decision; historical rows were read only through Axante's Table 1.",
+    "Axante et al. (arXiv:2609.06175, also aiXiv 2609.02045) is itself AI-assisted per its acknowledgments and improves f(4,3) 142 -> 83 plus f(3,4), f(3,5), f(3,6), f(3,7); it is not in the catalog. If listed, it is the earlier AI step on the same quantity and this entry should link to it.",
+    "The upper bound depends on H27 (Axante Prop. 6.7), a September 2026 computer search, unreplayed by anyone independent.",
+    "Companion not re-run: the review environment refused to execute downloaded code, and the full route takes about 53 minutes. A curator re-run (python -B scripts/run_checks.py --mode complete, needs long-path support on Windows) would allow Site-confirmed.",
+    "Volume signal: this account (Oleksiy Babanskyy) has 11 published catalog entries, 7 of them with solve dates since 1 September 2026 and 4 in October alone (three Sun supercongruence conjectures and Lin-Xiao-Chen Question 3.1), across combinatorics, number theory and analysis, plus these two pending; the linked GitHub account holds 56 public mathematics repositories created since April 2026, 14 of them since 12 September. Neither claim is landmark-tier, so the step-4 volume rule means stricter statement fidelity and a preference for re-runnable certificates, which is what was done here."
+   ],
+   "checked": "aiXiv abs/API/PDF for 2610.01292 v1 (opens, CC BY, hash record, not withdrawn, repo verified); GitHub commit 90c03c7 via API; manuscript read (Thm 1.1, Sections 1, 2, 9-13, disclosure); Axante et al. arXiv v1 PDF (abstract, Table 1, Prop 6.7, Thm 6.9, acknowledgments, refs) and arXiv version history (v1 only); arXiv and aiXiv searches for later f(4,3) work (none found); catalog scan for sunflower/Axante/duplicates (none; erdos-856 only related by name); own script: 54-construction sunflower-free and maximal on its support, Lemma 3.1 on 7 vertices.",
+   "notChecked": "The 42-suite companion (execution refused in this environment; 53 min); repository integrity script; H27's original search; the written reductions of Sections 3-8; Jin/Nikiforov theorem statement in its source; Abbott-Hanson-Sauer 1972 and Abbott-Hanson 1974 originals; whether the GitHub PDF is byte-identical to aiXiv v1."
+  },
+  {
+   "slug": "expected-finite-k-adic-complexity-in-general-integer-bases",
+   "action": "approve",
+   "reason": "edited",
+   "edits": {
+    "statement": "For an integer $k\\ge3$, let $E_N^{k\\text{-adic}}$ be the expected $N$th $k$-adic complexity of a uniformly random $k$-ary sequence of length $N\\ge1$. Lin, Xiao and Chen derive a lower bound of the form $N/2-O(1)$ and ask, as Question 3.2: estimate an upper bound on $E_N^{k\\text{-adic}}$.\n\nThe $N$th $k$-adic complexity of a sequence is the least $\\log_k\\max(|f|,|q|)$ over reduced rationals $f/q$ whose $k$-adic expansion begins with it (unrounded; the convention fixed in Section 1 of the manuscript, following Goresky and Klapper).",
+    "sourceUrl": "https://aixiv.online/abs/2610.01413v1",
+    "sourceName": "aiXiv 2610.01413 v1",
+    "verificationNote": "No independent mathematician has checked this yet. Checked by this site on 15 October 2026: the aiXiv v1 record and PDF open (CC BY, content-hashed, not withdrawn), the pinned GitHub commit d673c87 exists, and Question 3.2 was read on printed page 20282 of Lin-Xiao-Chen, AIMS Mathematics 11(7). The manuscript's Theorems 1.2 to 1.4 and its Section 1 comparison of the rational observable with the source's complexity were read. A separate brute force written here computed the exact mean for every base 2 to 60 and every N with base^N up to 70,000 (202 cases): no case reaches N/2 + 0.2419; prime-power bases never exceed N/2; two-prime bases stay strictly below N/2; E for base 30, N = 2 is 1.000256, above 1 as claimed. These are finite checks. The all-base bound rests on the written lattice and tail arguments, Kanold's bound and the finite certificates, none of which were checked or re-run here; the author-side AI reviews are not independent.",
+    "significance": 4,
+    "significanceNote": "A question in a July 2026 survey, three months old when answered, with a narrow audience in sequence complexity, and stated loosely (estimate an upper bound). A base-dependent bound of N/2 plus a constant follows from classical lattice reconstruction; the uniform constant and two-prime theorem are the content. Level with its sibling, Question 3.1 from the same survey, at 4, and below the Sun supercongruence conjectures at 5."
+   },
+   "links": [],
+   "reviewNote": "Q3.2 read on p.20282 (AIMS PDF p.16); distinct from Q3.1 entry (binary, mean+variance). Own brute force B=2..60, B^N<=70000 agrees with Thm 1.2/1.3 incl. E_{30,2}=1.000256. Proof and certificates not checked. Q3.2 is vague; a B-dependent N/2+O(1) bound is classical-flavoured, flagged.",
+   "message": "Published as Candidate, Unreviewed, significance 4, as you asked.\n\nThe source opens: aiXiv 2610.01413 v1 is public, versioned and content-hashed, and the pinned commit d673c87 matches. Question 3.2 was read on printed page 20282 of the AIMS Mathematics survey, and it is a different question from Question 3.1, which is already listed, so this is not a duplicate. Your Section 1 comparison of the digit string with the residue and its rational height was read and the convention is stated in the entry.\n\nChecked here on 15 October: a separate brute force computed the exact mean for every base from 2 to 60 with base^N up to 70,000, 202 cases in all. Every case is below N/2 + 0.2419, prime-power bases never exceed N/2, two-prime bases stay below N/2, and base 30 with N = 2 gives 1.000256, so your counterexample to the zero-correction bound reproduces. The verification note says these are finite checks and that the all-base argument and certificates were not checked here.\n\nEdits: the statement is now the question as posed, with the source's own framing (its lower bound and Question 3.2) and the complexity convention in one sentence; the source points at v1 so it cannot drift, and sourceName is \"aiXiv 2610.01413 v1\". The mathematics is unchanged. Tell us if anything is wrong.\n\nThe significance note mentions that the question is loosely stated and that a base-dependent N/2 plus a constant bound is close to classical lattice reconstruction, so the uniform constant is what the entry records. A reply from Lin, Xiao or Chen saying this answers their question would be the most useful next step.",
+   "flags": [
+    "Question 3.2 says only 'estimate an upper bound'. A base-dependent N/2 + O_B(1) bound follows from the lattice argument (the manuscript's own Lemma 2.1 is of this kind), so one could argue the question was nearly answered by classical tools; the uniform constant over all bases and the two-prime theorem are the new content. Candidate, as the submitter asks, seems right; Variant or Partial would also be defensible.",
+    "The source question is for k >= 3; the manuscript's theorem covers k >= 2 with the binary case imported from the author's Question 3.1 entry. Consider a relation between the two entries.",
+    "Companion not re-run (3,054 files, 173 MB repository; review environment refused to execute downloaded code). The independent brute force is the only computation behind this review.",
+    "Volume signal: this account (Oleksiy Babanskyy) has 11 published catalog entries, 7 of them with solve dates since 1 September 2026 and 4 in October alone (three Sun supercongruence conjectures and Lin-Xiao-Chen Question 3.1), across combinatorics, number theory and analysis, plus these two pending; the linked GitHub account holds 56 public mathematics repositories created since April 2026, 14 of them since 12 September. Neither claim is landmark-tier, so the step-4 volume rule means stricter statement fidelity and a preference for re-runnable certificates, which is what was done here."
+   ],
+   "checked": "aiXiv abs/API/PDF for 2610.01413 v1 (opens, CC BY, hash record, repo verified); GitHub commit d673c87 via API; Lin-Xiao-Chen AIMS PDF: Definition 3.3, Questions 3.1 and 3.2 on printed p.20282 (PDF page 16) and the lower-bound derivation before it; manuscript abstract, Section 1 (Definition 1.1, Theorems 1.2-1.4, equality of observables, antecedents) and Lemma 2.1; catalog scan (only the sibling Q3.1 entry; no OpenAI-release overlap); aiXiv search for other k-adic Q3.2 claims (none); own exact brute force B = 2..60, B^N <= 70,000.",
+   "notChecked": "The 52-page proof (lattice bound, tail estimates, two-prime certificates, Kanold import); the companion and its R56/R57 receipts; the Goresky-Klapper draft sections cited for the convention; Tian-Qi 2010 and Chen-Winterhof 2025 for whether an upper bound of this kind was already known for k >= 3; the lower constant 0.02367 (radical 510510 family, out of brute-force range)."
+  },
+  {
+   "slug": "sharp-two-bin-capacity-classification-for-random-vertex-versus-ranking",
+   "action": "decline",
+   "reason": "no-open-question",
+   "edits": {
+    "significance": 3,
+    "significanceNote": "Self-posed: the classification question arose within this project, motivated by Arnosti's model, so it scores at the self-posed floor. Below Arnosti's RANDOM-VERTEX versus RANKING conjecture at 7, which was stated in a 2022 Stochastic Systems paper; level with the self-posed Tournament Score-Quotients classification at 3.",
+    "verificationNote": "No independent mathematician has checked this yet. Checked by this site on 15 October 2026 at pinned revision fa1f8d8. Arnosti's April 2021 author PDF was read: the conjecture after Theorem 2 concerns identical capacity C > 2 and footnote 6 gives an unequal-capacity reversal example without posing a question. The Lean library at that revision was grepped (no sorry, admit, axiom declarations, native_decide or unsafe), not rebuilt; its own SCOPE.md says the full classification is not formalised there. An exact-arithmetic dynamic program written here, independent of the submission's code, compared RANDOM-VERTEX with RANKING over every degree word in {1,2} of length at most 9 for 1 <= a <= 6, a <= b <= 8: dominance held exactly when (b-a)^2 <= a+b-2. Finite checks only; the paper proof was not read in full.",
+    "resolution": "variant"
+   },
+   "links": [],
+   "reviewNote": "Self-posed (submitter says so; Arnosti fn 6 is an example, no question). Not dup/conflict with arnosti entry: a=b is 2-bin special case of it. Own DP agrees a<=6,b<=8,len<=9. Repo now claims full Lean after pin.",
+   "message": "Declined, under \"no stated open question\", and on the ground your own submission sets out. Thank you for raising it so plainly.\n\nThe inclusion test is a precisely stated open question, posed by someone else before the work, whose answer is now a proved or disproved theorem. Your posedBy, submitter note and OVERLAP_REPORT.md all say the two-bin classification question was formulated within this project. I read Arnosti's April 2021 author version to see whether he asks it anywhere. He does not: the conjecture after Theorem 2 is about identical capacity C > 2, and footnote 6 gives one asymptotic two-day example (capacities |J|/4 and 3|J|/4, RANKING leaving 1/12 unassigned against 1/8) as an observation, not a question. So there is nobody on the other side of the question, and that is the whole of the test.\n\nIt is not a duplicate of the existing entry on Arnosti's conjecture and does not conflict with it. That entry proves equal-capacity dominance for any number of bins; your a = b case, where (b-a)^2 = 0 <= 2a-2 always holds, is a two-bin special case of it, and your excluded pairs are all unequal, which that entry expressly does not cover.\n\nThis is not a judgement on the mathematics. An exact-arithmetic dynamic program written here on 15 October, independent of your code, compared RANDOM-VERTEX with RANKING over every degree word in {1,2} of length up to 9, for 1 <= a <= 6 and a <= b <= 8. Universal dominance held exactly where (b-a)^2 <= a+b-2 and failed everywhere else in that range. Those are finite checks, and the paper proof was not read in full.\n\nWhat would change the answer: if the unequal-capacity comparison is asked as an open question in someone else's work, send the citation and it will be reviewed on that basis immediately. Your later commits (10 and 11 October) claim a full Lean proof; if you resubmit, pin the revision you want read.",
+   "flags": [
+    "Decline rests on the posed-by-someone-else rule (methodology; precedent: Hjelmslev line codes declined 12 Sep). An older precedent admitted self-posed questions at significance 3 (Tournament Score-Quotients I, FFD degeneracies). If the curator prefers that line, approve as Variant/Candidate/Unreviewed, significance 3, with the edits given, and link both ways with arnosti-s-equal-capacity-greedy-matching-conjecture.",
+    "Edits are provisional and apply only if the curator overrides to approve.",
+    "Repository moved past the pinned revision: commits 9a1bbd08 (10 Oct) and 7d9e7a35 (11 Oct) and the repo description claim a full Lean proof of the classification and all four regimes; not reviewed here.",
+    "Same author as the published K5-e, K6-e, K7-e hat-guessing entries (Matthew Protti).",
+    "No action needed on the existing Arnosti entry: no conflict, and its result note already excludes unequal capacities."
+   ],
+   "checked": "Submission record; Arnosti April 2021 author PDF (conjecture after Theorem 2, footnote 6, Section 3 end, Discussion); existing catalog entry arnosti-s-equal-capacity-greedy-matching-conjecture and dataset-1015 search; repo at fa1f8d8 (README, manuscript.md, OVERLAP_REPORT, SCOPE.md, Lean grep); commit history after the pin; methodology scope wording and prior self-posed decisions; own exact DP over all {1,2} words length <= 9, 1<=a<=6, a<=b<=8 (agrees with criterion in all 33 pairs).",
+   "notChecked": "Full paper proof; random-arrival half of the theorem (DP checked fixed words only); Lean rebuild; post-pin commits claiming full Lean proof; journal version p.136 of Arnosti; citation-graph search for an external posing of the unequal-capacity question."
+  },
+  {
+   "slug": "dow-tkachuk-question-4-8-pseudocomplete-countable-closures-in-c-p-x-force-x-to-b",
+   "action": "approve",
+   "reason": "edited",
+   "edits": {
+    "statement": "Dow and Tkachuk asked (Question 4.8): assume that the closure of $A$ is pseudocomplete for every countable $A \\subset C_p(X)$. Must the Tychonoff space $X$ be a $P$-space? Here $C_p(X)$ is the space of continuous real-valued functions on $X$ with the topology of pointwise convergence, pseudocompleteness is in Oxtoby's sense (a sequence of $\\pi$-bases along which every closure-nested choice has nonempty intersection), and a $P$-space is one in which every $G_\\delta$ set is open.",
+    "sourceName": "GitHub",
+    "ageNote": "Published online 27 December 2024, in the March 2025 issue of Eur. J. Math. 11. The paper's Theorem 3.10 had settled the functionally countable case.",
+    "verification": "lean-checked",
+    "resolution": "candidate",
+    "publication": "announcement",
+    "verificationNote": "No independent mathematician has checked this yet. Checked by this site on 15 October 2026, not rebuilt. Question 4.8 was read in the open-access Dow-Tkachuk paper (Eur. J. Math. 11 (2025), Art. 5) and the statement matches; their paper assumes all spaces Tychonoff and defines pseudocompleteness by Oxtoby's sequences of pi-bases, with no extra regularity clause. The Lean headline question_4_8 in Question48.lean (commit 8b4c7d0, SHA-256 matching the repository's certificate) was read with its definitions: Cp X is the continuous functions as a subspace of the product X -> R (pointwise, not Mathlib's compact-open C(X, R)), closure is taken in Cp X, Pseudocomplete is exactly the paper's definition, and IsPSpace says countable intersections of open sets are open, equivalent to every G-delta being open. The hypothesis is CompletelyRegularSpace, weaker than Tychonoff, so the formal statement is if anything stronger. A grep of the file found no sorry, admit, axiom, native_decide, unsafe, opaque or implemented_by; the axiom list (propext, Classical.choice, Quot.sound) is the author's build output, not re-run here. The paper's short proof was also read and no gap was found; that is not an expert review. The formal statement was written in the same workflow as the proof and is not independently anchored.",
+    "significance": 8,
+    "significanceNote": "Question 4.8 in the closing list of a 2025 paper by Dow and Tkachuk, two leading names in set-theoretic topology and Cp-theory, who proved it for functionally countable X and called the general case open; asked about 22 months ago, specialist audience, no further literature. Level with HKKP Question 6.24 at 8, a numbered question removing one hypothesis; above Arnosti's RANDOM-VERTEX conjecture at 7; below the countable-ordinal Vietoris powers question at 12."
+   },
+   "links": [
+    {
+     "label": "Dow and Tkachuk, Reflecting topological properties in closed separable subspaces (Question 4.8)",
+     "url": "https://doi.org/10.1007/s40879-024-00790-w",
+     "kind": "problem-record"
+    }
+   ],
+   "reviewNote": "Q4.8 read in open-access EJM paper (online 2024-12-27); matches. Lean headline + defs (Cp pointwise subspace, Oxtoby pseudocomplete as in DT, IsPSpace) read; faithful, CompletelyRegular weaker. Hash matches cert; grep clean; not rebuilt. Proof read, sound. Citing works: Tkachuk Topol. Appl. 369 (2025) abstract only (locally convex/diamond, no sign of Q4.8), Aguilar-Velazquez-Tkachuk 2026 unrelated. No dup.",
+   "message": "Thank you, Lucas. Published as Candidate, Lean-checked, significance 8.\n\nWhat was checked on 15 October: Question 4.8 was read in the open-access Dow-Tkachuk paper and your statement matches it, including their Tychonoff convention and their (Oxtoby) definition of pseudocompleteness. The headline theorem question_4_8 was read together with the definitions at the top of Question48.lean: Cp X really carries the pointwise topology, the closure is taken in Cp X, Pseudocomplete is word for word the paper's definition, and IsPSpace is the countable-intersection form of the P-space condition. Assuming only complete regularity makes the formal statement slightly stronger, not weaker. The file's hash matches your certificate and a grep finds no sorry, axiom, native_decide or unsafe. The project was not rebuilt here, so the axiom list is your build output.\n\nThe paper's proof was also read through and no gap was found; the verification note says plainly that this is not an expert review.\n\nEdits: the statement now follows the question as posed and names Oxtoby's definition; the slug is shortened to dow-tkachuk-question-4-8; sourceName is \"GitHub\"; an age note records that the article appeared online on 27 December 2024; and the Dow-Tkachuk paper is linked. The mathematics and the labels you chose are unchanged.\n\nLean-checked is the right tier: the formal statement was written in the same workflow as the proof. A GitHub Actions build that prints the axioms would let the site confirm the build, and a word from Dow or Tkachuk (Tkachuk has already followed this paper up in Topology Appl. 369, 2025) is what would move it to Resolved.",
+   "flags": [
+    "Not rebuilt here (Mathlib project); a rebuild or CI run would allow Site-confirmed.",
+    "Tkachuk, Topology Appl. 369 (2025) 109393 cites the source and could not be read in full (paywall, 403); its abstract shows no sign of answering Q4.8, but a curator with access could confirm.",
+    "Slug change from the 80-character auto slug to dow-tkachuk-question-4-8."
+   ],
+   "checked": "REVIEW-SPEC and docs/reviewing.md; Dow-Tkachuk EJM paper PDF (open access): definitions p.3, Theorem 3.10, Section 3 remark, Questions 4.1-4.12; repo tree and both commits; README, CERTIFICATE.md, axioms_output.txt, paper .tex (statement, proof, AI disclosure); Question48.lean definitions and headline theorem, grep for sorry/axiom/native_decide/unsafe/opaque/implemented_by/admit, SHA-256 vs certificate; OpenAlex and Semantic Scholar citing works; arXiv searches (pseudocomplete, Tkachuk); live catalog and dataset-1015 including openai-math-2026-10 for duplicates.",
+   "notChecked": "Lean build and #print axioms not re-run; full text of Tkachuk, Topology Appl. 369 (2025) 109393 (paywalled); the intermediate Lean lemmas line by line."
+  },
+  {
+   "slug": "a-lower-bound-of-21-for-3-3-matrix-multiplication-over-every-field",
+   "action": "approve",
+   "reason": "edited",
+   "edits": {
+    "solveDate": "2026-10-12",
+    "ageNote": "Laderman's 23-term algorithm (1976) works over every field and Bläser proved 19 in 2003; Bläser's survey Fast Matrix Multiplication (Theory of Computing Graduate Surveys 5, 2013) gives the range as 19 to 23. Field-specific bounds over F_2 and for integer coefficients rose to 21, 22 and 23 in September and October 2026.",
+    "aiRole": "Andrey Ivanov posed the research task and directed the project. According to his account, GPT-6 Astra (gpt-6-astra) performed most of the work, contributing both to the development of the mathematical proof and to its Lean formalization. GPT-6 Sol (gpt-6-sol) was also used for part of the work to reduce costs. Ivanov supplied known results missed during the models' literature searches, redirected work when approaches reached dead ends, and organized the research workspace around a catalogue of results, Lean formalization, and SageMath for rapid testing of conjectures. Mathematical ideas were discussed throughout the process, but the extent to which those discussions influenced particular model-generated ideas cannot be reconstructed reliably. The AI co-developed classification describes this human-directed collaboration without assigning individual lemmas or a numerical share of the mathematical contribution to either party. Ivanov is the author and responsible maintainer. The repository's own disclosure at the registered commit (README and formalization.yaml) says the research and formalization had substantial assistance from OpenAI's ChatGPT/Codex, model versions not recorded; the model names above are the author's later clarification.",
+    "verificationNote": "No independent mathematician has checked this yet. Read by this site on 15 October 2026, not rebuilt. The headline theorem MMRank.Palomar.lower_bound was read in Challenge.lean, which imports only Mathlib: for any field K and finite index set I, if $AB=\\sum_i a_i(A)b_i(B)W_i$ for all $3\\times3$ matrices $A,B$, with arbitrary linear forms $a_i,b_i$ and matrices $W_i$, then $|I|\\geqslant21$. That is exactly bilinear rank (tensor rank) of the 3x3 matrix multiplication tensor: exact equality, not border rank, no restriction on the algorithm, and an arbitrary Field includes finite fields and characteristic 2. Solution.lean proves the same statement and comparator.json pairs the two. A grep of all 198 Lean files (18,829 lines) found only the deliberate sorry in Challenge.lean, which nothing imports; no axiom declarations, native_decide, unsafe, implemented_by or extern. The repository's CI run 38306224074 on commit cb1557b printed propext, Classical.choice and Quot.sound for the headline and audited 1,842 project declarations; Palomar run 38306239835 fetched the same commit and its Comparator step passed. Both logs were read here; neither build was repeated. The proof itself was not read.",
+    "significance": 30,
+    "significanceNote": "The exact rank of 3x3 matrix multiplication is a classical question of algebraic complexity: 19 (Bläser 2003) to 23 (Laderman 1976) over a general field for over twenty years. A specific small-format constant rather than the exponent, so well below the matrix multiplication exponent entries at 55 and the DFT n log n question at 45, and well above the four-term Boolean multiplicative complexity case at 12."
+   },
+   "links": [
+    {
+     "label": "Bläser 2003: the previous general lower bound of 19",
+     "url": "https://doi.org/10.1016/S0885-064X(02)00007-9",
+     "kind": "paper"
+    },
+    {
+     "label": "Bläser, Fast Matrix Multiplication (survey, 2013): the range 19 to 23",
+     "url": "https://theoryofcomputing.org/articles/gs005/",
+     "kind": "problem-record"
+    },
+    {
+     "label": "Related result over F2: lower bound 21 (Wang)",
+     "url": "https://arxiv.org/abs/2609.06725",
+     "kind": "paper"
+    },
+    {
+     "label": "Related result over the integers: lower bound 22 (Rudich and Rousseau)",
+     "url": "https://arxiv.org/abs/2610.01639",
+     "kind": "paper"
+    }
+   ],
+   "reviewNote": "Headline read: Mathlib-only, exact bilinear rank of <3,3,3>, any Field (finite, char 2), not border rank. Grep clean (198 files). CI 38306224074 + Palomar 38306239835 on cb1557b read, not rebuilt. No catalog duplicate. First all-fields bound above Bläser's 19.",
+   "message": "Published as Partial, Lean-checked, significance 30.\n\nThank you for a very clean submission. The headline statement was read on 15 October in Challenge.lean, which imports only Mathlib: arbitrary linear forms a_i, b_i and arbitrary matrices W_i over an arbitrary field, with A*B = sum a_i(A) b_i(B) W_i holding exactly for all A and B. That is precisely the bilinear rank of the 3x3 matrix multiplication tensor, with no restriction on the algorithm and not border rank, and an arbitrary Field includes finite fields and characteristic 2. A grep of all 198 Lean files found only the deliberate sorry in Challenge.lean. The CI run on cb1557b (axioms propext, Classical.choice, Quot.sound; 1,842 declarations audited) and the Palomar run on the same commit (Comparator passed) were both read. The proof was not rebuilt here and the argument itself was not read; the verification note says so, and opens with the sentence the site uses until an independent mathematician has looked at a result of this standing.\n\nEdits: the slug is shortened; the solve date is 12 October 2026, the first public release, since the September completion cannot be checked from outside (your note says as much); an age note records the 19 to 23 range from Bläser's 2013 survey and the recent field-specific bounds; and the AI role now says that the repository's disclosure names ChatGPT/Codex without versions and that the model names are your later clarification. The mathematics is unchanged. Tell us if any of this is wrong.\n\nThe step to Lean-verified is a Comparator run on our side plus our own statement audit, which this review has half done. A public comment from someone in algebraic complexity would be the other route.",
+   "flags": [
+    "Landmark-tier within algebraic complexity (first all-fields improvement on Bläser's 19 in 23 years). Listed under step 4: named author plus a formal proof whose headline was read here and whose axioms were seen in CI logs (not printed by us). Confirm Partial (bound on a stated constant; precedent matrix-multiplication-exponent-9-4) rather than Candidate.",
+    "Lean-verified is within reach: the headline is 8 lines, Mathlib-only and audited here; a local Comparator run (needs bwrap, Linux/WSL) would complete it. Good candidate for the top-of-list audit.",
+    "Model field (GPT-6 Astra / GPT-6 Sol) comes from the author's later clarification; the registered snapshot says only ChatGPT/Codex, versions not recorded. Kept, and aiRole says so.",
+    "Existing link types: Challenge.lean is typed lean-proof (should be lean-statement); the two Palomar links are typed other (should be palomar).",
+    "Over F2 the rank is now claimed exactly 23 (Tomar, arXiv 2610.11823, Lean with native_decide); not in the catalog, possible separate entry."
+   ],
+   "checked": "REVIEW-SPEC, docs/reviewing.md, review-2026-10-06.ts, editable.ts and link-kinds.ts. Repo AIV5/mmrank21 at cb1557b (tarball): Challenge.lean, Solution.lean, PublicTheorem.lean, Algorithm.lean, comparator.json, scripts/check.sh and Audit.lean, README, formalization.yaml, docs/STATEMENT.md. Grep of all 198 .lean files for sorry/admit/axiom/native_decide/unsafe/implemented_by/extern/opaque. Repo CI job log (run 38306224074): axioms printed, 1,842 declarations PASS. Palomar run 38306239835: fetched commit cb1557b, all steps success. arXiv abstracts 2609.06725, 2610.11823, 2610.01639, 2609.18722, 2603.07280 and an arXiv search for other 3x3 rank lower bounds. Bläser 2013 survey text (19 <= R(<3,3,3>) <= 23). Catalog dataset-1015 searched: no 3x3 entry; neighbours mul4, DFT, omega entries. Zenodo record dated 12 Oct 2026; DOI links resolve.",
+   "notChecked": "No Lean rebuild or local Comparator/NanoDa run (spec: no rebuilds; Palomar log output is mostly masked, outcome only). The 18,800-line proof and PROOF_OVERVIEW not read. Bläser 2003 itself not opened (paywall); all-fields scope of 19 taken from the survey. Palomar registry page is JS-only, record not read. Priority before 12 Oct and the September completion not verifiable. No independent computation feasible in minutes (hypothesis is non-vacuous: schoolbook 27 terms, Laderman 23)."
+  },
+  {
+   "slug": "erdos-problem-687-a-conditional-proof-of-y-x-o-x-2",
+   "action": "decline",
+   "reason": "other",
+   "edits": {},
+   "links": [],
+   "reviewNote": "Declined solved-elsewhere-first: OpenAI Jacobsthal paper (25 Sep 2026, family 021, catalog jacobsthal-function-quadratic-bound) Theorem 1.2 states directly that every covering of [1, z^2/log^2 z] by one class per prime p<=z fails, i.e. Y(z)<z^2/log^2 z; submission derives the same bound (weaker than Thm 1.1 at the primorial). Identity Y(x)=j(P(x))-1 brute-forced here for x<=11. No #687 entry in catalog.",
+   "message": "Thank you for this, and for a submission that is unusually candid about what it does and does not claim. Declined, and the reason is priority within the source you build on, not the mathematics.\n\nWhat was checked on 15 October 2026: the Zenodo record opens and carries a clear AI contribution statement. The problem was read on erdosproblems.com/687, which asks for good estimates of $Y(x)$ and in particular whether $Y(x)=o(x^2)$ or even $Y(x)\\ll x^{1+o(1)}$. The identity $Y(x)=j(P(x))-1$ is correct (it is the classical reformulation via the Chinese remainder theorem; it is how the erdosproblems page gets $Y(x)\\ll x^2$ from Iwaniec), and a brute-force computation here confirmed it for the primes up to 2, 3, 5, 7 and 11 ($Y=1,3,5,9,13$). The deduction is sound.\n\nThe reason for declining: the OpenAI manuscript itself already contains this statement, unconditionally as far as that paper goes, dated 25 September 2026. Its Theorem 1.2 says that for every large $z$ and every choice of classes $a_p \\pmod p$ for all primes $p\\le z$, at least $cYV_0/B^2>0$ integers in $[1,Y]$ with $Y=\\lfloor z^2/(\\log z)^2\\rfloor$ avoid every class. That is exactly $Y(z)<z^2/(\\log z)^2$, the bound your note derives, and the paper's Section 3 introduces it as 'another form of the same covering problem'. Applying its Theorem 1.1 at the primorial gives slightly more, $Y(x)\\ll x^2/(\\log x\\,\\log\\log x)^2$. So the answer to the first question of #687 belongs to that manuscript, and the catalog will credit it there rather than as a separate later entry.\n\nYour submission did the useful thing of noticing the connection to #687 explicitly, which the OpenAI paper does not do by number. That connection is now noted on the Jacobsthal entry, crediting you. If you take this further, for example toward $Y(x)\\ll x^{1+o(1)}$, the Maier-Pomerance range, or Erdos's weaker variant with $o(y/\\log y)$ exceptions, that would be a new result and very welcome here.",
+   "flags": [
+    "Curator decision: Erdos #687 has no catalog entry, but the OpenAI release answers its first question (o(x^2)) via Theorem 1.2 of the Jacobsthal paper. Either add an openai-math-2026-10 entry for #687 (Partial: answers o(x^2), not x^{1+o(1)}; Unreviewed, since the Lean challenge erdos_970_quadratic states only the k^2 Jacobsthal bound, not the covering/primorial form; suggested significance 22-25, above a typical Erdos problem 10 for the $1000 prize and prime-gap link, well below Jacobsthal 970 at 34), or add a sentence plus relation on jacobsthal-function-quadratic-bound's result note. Message tells the submitter it was passed on as a note on the Jacobsthal entry.",
+    "Conditional-results scope: not decisive here. The dependency is a lab-published, Lean-checked theorem already in the catalog, so the decline rests on priority, not on conditionality.",
+    "erdosproblems.com/687 (edited 31 Aug 2026) credits a lower bound Y(x) >> x log x/logloglog x to 'GPT 5.6 Pro'; check whether the catalog has that AI result (not searched for beyond #687/Jacobsthal).",
+    "Minor: Zenodo record date is 2026-10-15, submission solveDate 2026-10-14; author 'dr vengy' (pseudonymous)."
+   ],
+   "checked": "docs/reviewing.md in full; scripts/review-2026-10-06.ts style; erdosproblems.com/687 and /970 (fetched 15 Oct); dataset-1015.json for problemNumber 687, slug 687 and 'Jacobsthal' (only jacobsthal-function-quadratic-bound #970, candidate lean-checked 34); OpenAI paper.pdf at adc7f12 pp. 1-4 (Thm 1.1, Thm 1.2, Section 3 covering form); ComparatorChallenges/Jacobsthal.lean headline (erdos_970_quadratic, k^2 form only); Zenodo API record 23381254 metadata and AI statement; brute-force check Y(x)=j(P(x))-1 for x=2..11.",
+   "notChecked": "Zenodo PDF body not read beyond the record's abstract (the deduction is three lines and was checked independently); OpenAI proof of Thm 1.2 not refereed; Lean not rebuilt; the one comment on erdosproblems.com/687 not opened; no search for an earlier human remark deriving o(x^2) from a hypothetical quadratic Jacobsthal bound."
+  },
+  {
+   "slug": "codimension-one-holomorphic-anosov-diffeomorphisms",
+   "action": "approve",
+   "reason": "downgraded",
+   "edits": {
+    "statement": "Ghys conjectured in 1995 that every holomorphic Anosov diffeomorphism of a compact complex manifold is holomorphically conjugate to an automorphism of a complex infra-nilmanifold, and proved it for complex surfaces. Does the conjecture hold in complex codimension one, that is when $\\dim_{\\mathbb C} E^s = 1$ or $\\dim_{\\mathbb C} E^u = 1$? This case contains every compact complex threefold.",
+    "posedBy": "Étienne Ghys, Holomorphic Anosov systems, Invent. Math. 119 (1995), 585-614 (conjecture on p. 586)",
+    "yearPosed": 1995,
+    "humanCollaborators": [
+     "Jiesong Zhang"
+    ],
+    "aiRole": "The paper's Declaration of AI Use says the author used an internal version of Intern-S2 (Shanghai AI Lab) through multiple rounds of dialogue to assist in developing the mathematical ideas and arguments. It does not say which lemmas or constructions came from the model. The author states that he independently verified all arguments and takes full responsibility.\n\nSeparately, Theorem A and Theorems 1.1 to 1.3, with the parts of Ghys's 1995 paper they rely on, were formalised in Lean by the Bin Dong and Ruochuan Liu team at Peking University with their formalisation agent SHEAF; Jiedong Jiang and Bin Wu did the formalisation and the human check of the final statements (paper v3, 13 October 2026).",
+    "verification": "lean-checked",
+    "verificationNote": "No independent mathematician has checked this yet. Read by this site on 15 October 2026, not rebuilt. Repository frenzymath/HolomorphicAnosov, commit 65f2b33 (Lean 4.35.0-rc1, Mathlib, about 4,230 files and 528,000 lines). With comments stripped, the library and Comparator/Solution.lean contain no sorry, admit, axiom declarations, opaque, unsafe, implemented_by, extern or native_decide; several comments still say 'Stage 2 sorry' and are stale. The four headline statements in Comparator/Challenge.lean were read: compact connected complex manifold, biholomorphic f, a smooth metric with an invariant continuous splitting and an iterate contracting each bundle, one bundle of complex rank one; conclusion a biholomorphism to $\\mathbb C^d/\\Lambda$ conjugating f to a hyperbolic complex-linear lattice automorphism. Theorems A, 1.1 and 1.3 take as a hypothesis HomotopyTorusRigidity (closed smooth homotopy n-tori, n at least 5, are homeomorphic to the torus), a 1969 theorem of Hsiang and Wall that is not in Mathlib; the definition read here is a true statement, so the hypothesis is not vacuous. The Comparator acceptance and the axiom list are the authors' own; there is no CI and nothing was run here. No independent formalisation anchors the statement (none found in Formal Conjectures), so Lean-checked, not Lean-verified.",
+    "resultNote": "Jiesong Zhang proves that every codimension-one holomorphic Anosov diffeomorphism of a compact connected complex manifold is biholomorphically conjugate to a hyperbolic automorphism of a complex torus. This settles Ghys's conjecture in that case, and so for all compact complex threefolds, where Xu and Zhang (2024) recorded it as open.\n\nThe proof removes the topological transitivity assumption from Ghys's Theorem B to get a topological conjugacy to a hyperbolic toral automorphism, proves that both invariant distributions are holomorphic (the stable one by an $L^2$ estimate), and shows a torus with holomorphic invariant distributions carries the standard complex structure. Cantat (2004) had the codimension-one case for projective manifolds.\n\nThe paper also gives a nilmanifold example whose invariant distributions are smooth but not holomorphic, so the method stops at codimension one. The general conjecture remains open.",
+    "sourceName": "arXiv",
+    "significance": 24,
+    "significanceNote": "Ghys's 1995 conjecture is the central rigidity question for holomorphic Anosov systems and is known across smooth dynamics; this entry is its codimension-one case, recorded as open even in dimension three in 2024. Level with the Hajlasz-Onninen maximal-function question at 24, above Szabo's equivariant Jiang-Su conjecture at 22, and well below the Anosov-Katok smooth realization entry at 42, a broader and older problem."
+   },
+   "links": [
+    {
+     "label": "Lean formalisation (frenzymath/HolomorphicAnosov)",
+     "url": "https://github.com/frenzymath/HolomorphicAnosov",
+     "kind": "lean-proof"
+    },
+    {
+     "label": "Xu and Zhang, On holomorphic partially hyperbolic systems (records the conjecture as open in dimension 3)",
+     "url": "https://arxiv.org/abs/2401.04310",
+     "kind": "paper"
+    }
+   ],
+   "reviewNote": "arXiv 2609.37695 v3 read (sole author Jiesong Zhang; Intern-S2 disclosure present, ai-assisted). Ghys conj via paper + Xu-Zhang 2401.04310 p.586 quote; Ghys 1995 itself not opened (paywall). Lean Challenge read, grep-clean, conditional on Hsiang-Wall as hypothesis; not rebuilt; no anchor -> lean-checked. No duplicate.",
+   "message": "Published as Partial, Lean-checked, significance 24.\n\nThe paper was read (arXiv v3 of 13 October): its Declaration of AI Use names Intern-S2, so the AI-assisted label stands, and the conjecture as the paper quotes it matches the one Xu and Zhang (arXiv 2401.04310) cite to page 586 of Ghys 1995, where they also record it as open even in dimension three.\n\nThe Lean repository was read on 15 October, not rebuilt. With comments removed it has no sorry, axiom, opaque, unsafe or native_decide, and the four statements in Comparator/Challenge.lean match Theorem A and Theorems 1.1 to 1.3: the Anosov definition, the complex-rank-one condition and the torus model are what the paper says. Theorems A, 1.1 and 1.3 do assume HomotopyTorusRigidity as a hypothesis (Hsiang and Wall, 1969); it is a true theorem, and the verification note says so plainly.\n\nWhy not Lean-verified: that tier needs the formal statement anchored independently of the people who wrote the proof (Formal Conjectures, a tracker, or our own audit with a rebuild or Comparator run done here). The Challenge file was written by the formalising team and nothing was run here, so the entry sits at Lean-checked. A CI workflow that builds the project and runs the Comparator would let the site confirm it and is the quickest way up.\n\nOther edits: the statement now poses the codimension-one case in math markup; posedBy cites the Inventiones paper and page; year 1995; Jiesong Zhang added as the human author; the Lean team and SHEAF named in the AI role; sourceName shortened to arXiv. The mathematics was not changed. Tell us if anything is wrong.",
+   "flags": [
+    "Lean statements are conditional on HomotopyTorusRigidity (Hsiang-Wall 1969) taken as a hypothesis, not proved in Lean; accepted as Lean-checked, curator may want this called out more prominently.",
+    "Ghys 1995 (Invent. Math., paywalled) was not opened here; the conjecture wording is taken from Zhang's paper and Xu-Zhang 2401.04310 (p. 586 citation), which agree.",
+    "humanCollaborators set to Jiesong Zhang; unclear whether the submitting account is the author.",
+    "Not treated as landmark (a special case of a 1995 conjecture famous within one community, named sole author), so Partial stands."
+   ],
+   "checked": "arXiv abs + v3 TeX source (intro, Declaration of AI Use, Lean statement, acknowledgements, bib); Xu-Zhang 2401.04310 TeX for the conjecture quote and open status; shallow clone of frenzymath/HolomorphicAnosov at 65f2b33: README, Comparator config, full Challenge.lean, comment-stripped grep of all 4,232 Lean files; GitHub Actions (none); Formal Conjectures code search (no Anosov/Ghys formalisation); catalog dataset-1015 and openai/math preprint list (no duplicate or related claim); web search for prior codimension-one results.",
+   "notChecked": "No lake build, leanchecker or Comparator run (528k lines on Mathlib); Ghys 1995 original not opened; the hand proof was not refereed; Solution.lean to library proof chain not traced beyond imports."
+  },
+  {
+   "slug": "the-irrationality-exponent-of-arctangents-of-nonzero-rationals-is-2",
+   "action": "decline",
+   "reason": "no-ai-contribution",
+   "edits": {
+    "name": "The irrationality exponent of arctangents of positive rationals is 2",
+    "shortName": "Irrationality exponent of rational arctangents",
+    "statement": "The irrationality exponent of an irrational $x$ is $\\mu(x)=\\sup\\{\\nu>0:0<|x-p/q|<q^{-\\nu}$ for infinitely many coprime integers $p,q$, $q\\ge2\\}$; Dirichlet gives $\\mu(x)\\ge2$ and almost every real has $\\mu=2$. Upper bounds have been obtained for values $\\arctan(1/n)$: Tomashevskaya (2008) gave a general estimate, Salikhov and Bashmakova (2020) improved the bounds for $\\arctan(1/3)$ and $\\arctan(1/5)$, and Bai (2026) reported $\\mu(\\arctan(1/2))\\le 8.585166\\ldots$. Since $\\arctan 1=\\pi/4$, the case $r=1$ is the conjecture $\\mu(\\pi)=2$. Is $\\mu(\\arctan r)=2$ for every nonzero rational $r$?",
+    "resultNote": "Claimed: for every rational $r>0$, $\\mu(\\arctan r)=2$, and $\\mu(\\sqrt r\\,\\pi)=2$; negative $r$ follows since $\\arctan$ is odd and $\\mu(-x)=\\mu(x)$, which is not formalised. Both are corollaries of a quadratic field criterion: if $D$ is a nonsquare integer, $x\\ne0$ real, and $e^{2\\sqrt D x}\\in\\mathbb Q(\\sqrt D)$ has norm one, then $x$ is irrational and $\\mu(x)=2$, with an ineffective threshold. For $D=-1$ and $x=\\arctan r$, $e^{2ix}=(1+ir)/(1-ir)$. The case $r=1$ recovers the OpenAI release's $\\mu(\\pi)=2$, already a Candidate here; the method adapts that manuscript's determinant argument with the interpolation theorems of Liu, Jiang and Zhang (arXiv 2610.10192, $\\mu(\\log r)=2$).",
+    "publication": "announcement",
+    "sourceName": "GitHub (TPColor/irrationality-measure-constants)",
+    "verification": "lean-checked",
+    "resolution": "candidate",
+    "verificationNote": "No independent mathematician has checked this yet. Checked here on 15 October 2026 at commit 1bfa47b: the headline theorem arctanOfRationals in IrrationalityMeasureConstants.lean states, for every rational $r>0$, irrationalityMeasure (Real.arctan r) = 2, with no hypotheses; the ExponentialCriterion hypothesis of the intermediate lemmas is discharged by QuadraticField.criterion. irrationalityMeasure (StatementDefinitions.lean) is the supremum, in extended reals, of real $\\mu$ with infinitely many rationals $r$ satisfying $|x-r|<1/\\mathrm{den}(r)^{\\mu}$, which matches the posed definition for irrational $x$, and arctan is Mathlib's real arctangent. Negative $r$ is not formalised. Grepped the project and its pinned dependency jdb19937/log-irrationality-measure (09aeeb0, 865 Lean files): no sorry, admit, axiom declarations, opaque, unsafe, native_decide or implemented_by. Not rebuilt here; the shipped axiom audit prints axioms for the Liu-Jiang-Zhang theorems only, not for the headline. The statement is written by the provers and not independently anchored (no Formal Conjectures or tracker statement; OpenAI's PiExponent comparator covers $\\pi$ only), so the tier is Lean-checked. The preprint is unrefereed and calls itself preliminary.",
+    "significance": 60,
+    "significanceNote": "Contains the conjecture that the irrationality exponent of pi is 2 as the case r = 1, plus the arctangents of 1/n, where records were near 8.6. Placed level with The irrationality exponent of pi is 2 (60), which it contains and which was claimed first, and with Irrationality of Catalan's constant (60), below Kaplansky's zero-divisor conjecture (62) and the Jacobian conjecture (65).",
+    "model": "GPT-6 Astra",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+     "Lily Zhang",
+     "Evan Li"
+    ]
+   },
+   "links": [
+    {
+     "label": "Liu, Jiang and Zhang, Irrationality exponents of logarithms of positive rational numbers, arXiv:2610.10192",
+     "url": "https://arxiv.org/abs/2610.10192",
+     "kind": "paper"
+    },
+    {
+     "label": "Headline Lean statement arctanOfRationals (commit 1bfa47b)",
+     "url": "https://github.com/TPColor/irrationality-measure-constants/blob/1bfa47b/IrrationalityMeasureConstants.lean",
+     "kind": "lean-proof"
+    },
+    {
+     "label": "Quadratic field criterion statement",
+     "url": "https://github.com/TPColor/irrationality-measure-constants/blob/1bfa47b/QuadraticFieldCriterion/QuadraticCriterionStatement.lean",
+     "kind": "lean-proof"
+    }
+   ],
+   "reviewNote": "Declined 15 Oct 2026, no AI disclosure in source (README and 9-page PDF name no model; form says GPT-6 Astra). Lean headline arctanOfRationals: r>0 only, no hypotheses, clean grep incl. dependency, not rebuilt. Contains mu(pi)=2 (OpenAI entry irrationality-exponent-of-pi). Approvable as lean-checked Candidate once disclosed; edits prepared.",
+   "message": "Hi Lily and Evan, thank you for sending this. It is a striking claim, and the repository made it easy to check the part that matters most: the headline Lean statement.\n\nWhat I checked on 15 October 2026, at commit 1bfa47b: arctanOfRationals states irrationalityMeasure (Real.arctan r) = 2 for every rational r > 0 with no hypotheses left over, since QuadraticField.criterion discharges ExponentialCriterion. Your irrationalityMeasure definition matches the usual one for irrational x, and arctan is Mathlib's real arctangent. I grepped your project and the pinned log-irrationality-measure dependency for sorry, admit, axiom declarations, opaque, unsafe, native_decide and implemented_by and found none. I did not rebuild it.\n\nI have to decline it for now, for one reason only: the site lists a result when an AI model's role is disclosed in the primary source itself, and neither the README nor the preprint mentions a model. The form says GPT-6 Astra co-developed the work, and I have no reason to doubt it, but the record can only point at what the source says. This is the same rule we applied to a September arXiv paper, and it is not a judgement of the mathematics.\n\nThe way back is short: add a sentence or two to the README (and the PDF when you revise it) saying which model was used and what it did, then resubmit. When you do, this is what I would publish: Candidate, at Lean-checked rather than Lean-verified, because the formal statement was written by the provers and is not anchored in Formal Conjectures or a tracker; publication \"announcement\", since the PDF is in a repository rather than on arXiv; and the title narrowed to positive rationals, or a short Lean lemma added for negative r via the oddness of arctan. It would be linked both ways with our existing entry for OpenAI's mu(pi) = 2, which your criterion recovers as the case r = 1.\n\nIf anything above is wrong, tell me and I will correct it.",
+   "flags": [
+    "Decline rests solely on step 2 disclosure: README and preprint name no model; only the form does. Named authors with university emails in the README, so the landmark rule (step 4) would not block. If the curator accepts the form's disclosure, approve with the prepared edits (reason downgraded: lean-verified to lean-checked).",
+    "Not a duplicate but contains irrationality-exponent-of-pi (OpenAI, Candidate, 60) as r = 1. The submission's 'conditional on OpenAI's mu(pi)' is credit only: openai/math is not a Lean dependency and the headline has no hypotheses. Link both ways if published.",
+    "Lean headline covers r > 0 only; the entry title says nonzero. Prepared edits narrow the name; the statement keeps the question as posed.",
+    "Also implies mu(sqrt(r) pi) = 2 and, for D > 0, results on normalized logarithms of quadratic units. Related and not found in the catalog by search: Liu-Jiang-Zhang arXiv 2610.10192 (mu(log r) = 2) and its Lean formalisation jdb19937/log-irrationality-measure; curator may want an entry.",
+    "Volume and speed: repository created 13 Oct 2026, 'Essentially Full Formalization' commit about 4 hours later, generalised criterion on 15 Oct, commits from accounts Pink and Eval-stack; submitter account has no prior catalog entries; identities not verified beyond the README emails.",
+    "Rebuild and #print axioms for arctanOfRationals not done here; that plus our own statement audit would be the route to Lean-verified."
+   ],
+   "checked": "p12 record; REVIEW-SPEC and docs/reviewing.md; catalog search (irrationality, arctan, TPColor, submitter id, Liu-Jiang); repo tree at 1bfa47b, README, slop-print note, lakefile, lake-manifest, StatementDefinitions.lean, IrrationalityMeasureConstants.lean, QuadraticCriterionStatement.lean, ImaginaryQuadratic.lean, root and HasNormOneCoordinates, EventualStrictBound, AxiomAudit, LJZ Theorem 9; grep for sorry/admit/axiom/opaque/unsafe/native_decide/implemented_by/extern/set_option in project and pinned dependency (09aeeb0); preprint PDF text (abstract, Theorem 1, references, search for model or AI mentions); commit list and branches; GitHub profiles TPColor and jdb19937; arXiv 2610.10192 abstract page; Formal Conjectures tree listing; Mathlib v4.34.0 import paths.",
+   "notChecked": "No lake build or axiom print of the headline; the 9-page proof and the Lean proof bodies were not read for correctness; Tomashevskaya 2008, Salikhov-Bashmakova 2020 and Bai 2026 were not opened; Liu-Jiang-Zhang read at abstract level only; author identities not confirmed."
+  }
+ ],
+ "amends": [
+  {
+   "slug": "jacobsthal-function-quadratic-bound",
+   "appendResult": "Theorem 1.2 of the same paper also bounds the quantity in Erdős Problem #687: every choice of one class per prime $p\\le z$ leaves survivors below $z^2/(\\log z)^2$, so $Y(z)<z^2/(\\log z)^2$; the connection was pointed out in a VibeMathed submission on 14 October 2026."
+  }
+ ]
+}
