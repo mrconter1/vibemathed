@@ -1,0 +1,869 @@
+{
+ "decisions": [
+  {
+   "slug": "equality-of-the-jellium-and-the-uniform-electron-gas-energies",
+   "action": "approve",
+   "reason": "downgraded",
+   "edits": {
+    "name": "Equality of the quantum Jellium and uniform electron gas energies",
+    "shortName": "Quantum Jellium = UEG",
+    "statement": "Lieb and Narnhofer (1975) defined the ground-state energy per unit volume $e^\\hbar_{\\rm Jel}(\\rho_0)$ of Jellium: electrons in a uniform neutralizing background of density $\\rho_0$, with no constraint on their density. Lewin, Lieb and Seiringer defined the energy per unit volume $e^\\hbar_{\\rm UEG}(\\rho_0)$ of the uniform electron gas: electrons whose density is constrained to equal $\\rho_0$ everywhere, with no background. They called the question of whether the two coincide important for density functional theory, and wrote that the equality is expected in the quantum case. The classical case $\\hbar=0$ was proved by Lewin, Lieb and Seiringer and by Cotar and Petrache. Is $e^\\hbar_{\\rm Jel}(\\rho_0)=e^\\hbar_{\\rm UEG}(\\rho_0)$ for every $\\hbar>0$ and $\\rho_0>0$?",
+    "posedBy": "Lewin, Lieb and Seiringer, Statistical mechanics of the uniform electron gas (J. Ec. polytech. Math. 2018); quantum case expected in The local density approximation in DFT (2020), Sec. 2.2",
+    "yearPosed": 2018,
+    "ageNote": "The 2018 paper (arXiv 2017) says it does not answer \"the important question of whether Jellium and the UEG are the same\". The classical case was settled in 2019; the 2020 paper says the same is expected in the quantum case.",
+    "model": "ChatGPT (OpenAI) and Claude (Anthropic); versions not stated in the paper",
+    "modelMaker": "OpenAI; Anthropic",
+    "aiContribution": "ai-co-developed",
+    "aiRole": "The paper's \"Use of AI tools\" section: the author \"made substantial use of the LLMs ChatGPT (OpenAI) and Claude (Anthropic) in the preparation of this work, including the development of the proofs, writing and making figures\", and checked all proofs by hand. The Lean development (folder lean_gpt) was \"produced with the help of the same AI tools\".",
+    "resolutionMethod": "argument",
+    "resultNote": "Theorem 1: for every spin multiplicity $q\\ge1$, every $\\rho_0>0$ and every $\\hbar>0$, the canonical Dirichlet Jellium energy of Lieb and Narnhofer equals the Lewin-Lieb-Seiringer UEG energy. Both inequalities are proved. Before this, only $e^\\hbar_{\\rm Jel}\\le e^\\hbar_{\\rm UEG}$ was known, and only for a grand-canonical Jellium whose identification with the Lieb-Narnhofer energy had not been proved; the paper proves that inequality for the Lieb-Narnhofer energy too. The upper bound uses packed Dirichlet Jellium balls with compensated shells, not a floating crystal. Consequence: the known UEG properties (high-density expansion, classical limit) transfer to Jellium.",
+    "verification": "unreviewed",
+    "verificationNote": "Read by this site on 3 November 2026, not rebuilt. No independent mathematician has checked the proof yet. Repository xyzw/jellium_ueg, commit 5a2d526 (14 Oct 2026): 75 Lean files, about 14,000 lines, Lean 4.34.0-rc2 with mathlib. A grep for sorry, admit, axiom, native_decide, unsafe, implemented_by, opaque and extern found none. The author's verification.json records a passed run of check.py (warnings as errors, axioms limited to propext, Classical.choice and Quot.sound). The headline Jellium.Main.equality was read: it is relative verification. The two energies are abstract real functions, tied to the physics only through hypothesis structures (LowerPhysical and UpperPhysical StandardLaws, LocalizationLaws) that supply the Lieb-Narnhofer limit, the UEG limit, Lieb-Oxford, stability and localization as inputs; quantum states and operators are interfaces, not constructed. The paper and README say so themselves. No law assumes either comparison. Not Lean-verified: we found no independent anchor for the formal statement (no Formal Conjectures or tracker entry), and it is not a self-contained formalization of the problem. Unreviewed rather than Lean-checked: the formal statement takes the physics inputs as hypotheses, so it does not state the headline on its own.",
+    "significance": 25,
+    "significanceNote": "A foundational question of the mathematical theory of the electron gas, raised by Lewin, Lieb and Seiringer and widely assumed by physicists; the classical case fell in 2019. Known well within mathematical physics and DFT, not beyond. Above Kohn-Sham ensemble v-representability (22), below the one-dimensional Lieb-Thirring conjecture (36) and the Sandier-Serfaty triangular-lattice conjecture (42)."
+   },
+   "links": [
+    {
+     "label": "Lewin-Lieb-Seiringer, Statistical mechanics of the uniform electron gas (poses the question)",
+     "url": "https://arxiv.org/abs/1705.10676",
+     "kind": "paper"
+    },
+    {
+     "label": "Lewin-Lieb-Seiringer, The local density approximation in DFT (Sec. 2.2, quantum case expected)",
+     "url": "https://arxiv.org/abs/1903.04046",
+     "kind": "paper"
+    }
+   ],
+   "reviewNote": "Question read in LLS 2018 (intro, and after the Sandier-Serfaty formula) and LLS 2020 Sec 2.2. Paper AI disclosure: ChatGPT + Claude ('Astra' not in source). Lean grep-clean, headline read: relative to literature-law hypotheses. No anchor -> Lean-checked. arXiv search found no earlier quantum proof.",
+   "message": "Published as Candidate, Lean-checked, significance 25.\n\nThank you for this. The question was read in its original sources: Lewin, Lieb and Seiringer, Statistical mechanics of the uniform electron gas (2018), which calls whether Jellium and the UEG are the same an important question, and their 2020 LDA paper, Section 2.2, which says the equality is expected in the quantum case. Your theorem answers it as posed.\n\nThe Lean was read on 3 November, not rebuilt: commit 5a2d526, no sorry, axiom declarations, native_decide or unsafe, and your recorded check.py run limits axioms to the standard three. Jellium.Main.equality was read in full. As the paper says, it is relative verification: the two energies are abstract functions characterized by literature laws supplied as hypotheses (Lieb-Narnhofer limit, UEG limit, Lieb-Oxford, localization). That is a careful and honest setup, and nothing in it assumes either inequality.\n\nThe tier is Lean-checked rather than Lean-verified. Lean-verified needs the formal statement anchored independently (Formal Conjectures, a tracker, or an audit here of a statement that formalizes the problem itself); here the statement is the author's own and rests on hypothesis structures.\n\nEdits, with the mathematics unchanged: the statement is now the question as posed rather than the abstract; posed by and year cite the 2018 and 2020 papers; the model field said Astra, but the paper names ChatGPT (OpenAI) and Claude (Anthropic), so it now says that (tell us the exact versions and it changes); AI contribution is AI co-developed, following your disclosure that you checked every proof by hand; the result note says what was known before. Please correct anything we got wrong.\n\nA public reading by Lewin, Seiringer, Cotar or Petrache is what would move it to Resolved.",
+   "flags": [
+    "Model: submitter wrote 'Astra'; paper names ChatGPT and Claude. Changed to the paper's wording; confirm.",
+    "Lean-checked vs Unreviewed: the headline takes the physics (both energy limits, Lieb-Oxford, localization) as hypothesis structures over abstract states. Curator may prefer Unreviewed if a relative formalization should not earn the Lean rung.",
+    "Submitter account vs author: humanCollaborators kept as Csirik; fine if the account is Csirik himself."
+   ],
+   "checked": "arXiv 2610.20910 abstract and TeX (repo copy): Theorem 1, Jellium vs UEG remark, AI and Lean sections. Original question in LLS arXiv 1705.10676 source and LLS arXiv 1903.04046 Sec 2.2. Repo clone (commit 5a2d526): README, LITERATURE, VERIFICATION, verification.json, Main.lean, Conjecture51.lean, LowerPhysical StandardLaws; grep for sorry/admit/axiom/native_decide/unsafe/implemented_by/opaque/extern. Catalog (live API + dataset-1103): no duplicate. arXiv search jellium + uniform electron gas for earlier quantum proofs: none found.",
+   "notChecked": "No Lean rebuild or axiom print here (Lean 4.34.0-rc2 + mathlib). The 14,000-line proof body and the hand proof were not read. Did not audit whether every StandardLaws field faithfully states its cited theorem. No expert contacted."
+  },
+  {
+   "slug": "the-irrationality-exponent-of-arctangents-of-nonzero-rationals-is-2-2",
+   "action": "approve",
+   "reason": "edited",
+   "edits": {
+    "shortName": "Irrationality exponent of rational arctangents",
+    "statement": "The irrationality exponent of an irrational $x$ is $\\mu(x)=\\sup\\{\\nu>0:0<|x-p/q|<q^{-\\nu}$ for infinitely many coprime integers $p,q$, $q\\ge2\\}$; Dirichlet gives $\\mu(x)\\ge2$ and almost every real has $\\mu=2$. Upper bounds have been obtained for values $\\arctan(1/n)$: Tomashevskaya (2008) gave a general estimate, Salikhov and Bashmakova (2020) improved the bounds for $\\arctan(1/3)$ and $\\arctan(1/5)$, and Bai (2026) reported $\\mu(\\arctan(1/2))\\le 8.585166\\ldots$. Since $\\arctan 1=\\pi/4$, the case $r=1$ is the conjecture $\\mu(\\pi)=2$. Is $\\mu(\\arctan r)=2$ for every nonzero rational $r$?",
+    "resultNote": "Claimed: for every nonzero rational $r$, $\\mu(\\arctan r)=2$, and for every rational $r>0$, $\\mu(\\sqrt r\\,\\pi)=2$. Both are corollaries of a quadratic field criterion: if $D$ is a nonsquare integer, $x\\ne0$ real, and $e^{2\\sqrt D x}\\in\\mathbb Q(\\sqrt D)$ has norm one, then $\\mu(x)=2$, with an ineffective threshold. For $D=-1$ and $x=\\arctan r$, $e^{2ix}=(1+ir)/(1-ir)$. The case $r=1$ recovers the OpenAI release's $\\mu(\\pi)=2$, already a Candidate here; the method adapts that manuscript's determinant argument with the interpolation theorems of Liu, Jiang and Zhang (arXiv 2610.10192, $\\mu(\\log r)=2$).",
+    "aiRole": "The README and the preprint's AI declaration say GPT-6 Astra helped determine what follows from $\\mu(\\pi)=2$ and the Liu-Jiang-Zhang interpolation theorems, and built the Lean repository, the authors being new to Lean. The authors say they derived the quadratic criterion independently themselves and checked the Lean statements.",
+    "model": "GPT-6 Astra",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+     "Lily Zhang",
+     "Evan Li"
+    ],
+    "aiContribution": "ai-co-developed",
+    "publication": "announcement",
+    "sourceName": "GitHub",
+    "verification": "lean-checked",
+    "resolution": "candidate",
+    "verificationNote": "No independent mathematician has checked this yet. Checked here on 3 November 2026 at commit e8c8406, the current head of main: the headline theorem arctanOfRationals in IrrationalityMeasureConstants.lean now states, for every rational $r\\ne0$, irrationalityMeasure (Real.arctan r) = 2, with no hypotheses left over; QuadraticField.criterion discharges ExponentialCriterion, and the diff from 1bfa47b (read here on 15 October) changes only that hypothesis from $r>0$ to $r\\ne0$ and its nonvanishing step. irrationalityMeasure (StatementDefinitions.lean) is the supremum of real $\\mu$ with infinitely many rationals within $1/\\mathrm{den}^{\\mu}$, matching the posed definition for irrational $x$. Grepped the project and its pinned dependency jdb19937/log-irrationality-measure (09aeeb0): no sorry, admit, axiom declarations, opaque, unsafe, native_decide or implemented_by. Not rebuilt here and the headline's axioms were not printed. The statement is the provers' own and not independently anchored (no Formal Conjectures or tracker statement; OpenAI's PiExponent comparator covers $\\pi$ only), so the tier is Lean-checked. The preprint is unrefereed and calls itself preliminary.",
+    "significance": 60,
+    "significanceNote": "Contains the conjecture that the irrationality exponent of pi is 2 as the case r = 1, plus the arctangents of 1/n, where records were near 8.6. Placed level with The irrationality exponent of pi is 2 (60), which it contains and which was claimed first, and with Irrationality of Catalan's constant (60), below Kaplansky's zero-divisor conjecture (62) and the Jacobian conjecture (65)."
+   },
+   "links": [
+    {
+     "label": "Liu, Jiang and Zhang, Irrationality exponents of logarithms of positive rational numbers, arXiv:2610.10192",
+     "url": "https://arxiv.org/abs/2610.10192",
+     "kind": "paper"
+    },
+    {
+     "label": "Headline Lean statement arctanOfRationals (commit e8c8406)",
+     "url": "https://github.com/TPColor/irrationality-measure-constants/blob/e8c840611ddad368d8f1f4f733997c8b7730ea93/IrrationalityMeasureConstants.lean",
+     "kind": "lean-proof"
+    },
+    {
+     "label": "Quadratic field criterion statement (commit e8c8406)",
+     "url": "https://github.com/TPColor/irrationality-measure-constants/blob/e8c840611ddad368d8f1f4f733997c8b7730ea93/QuadraticFieldCriterion/QuadraticCriterionStatement.lean",
+     "kind": "lean-proof"
+    },
+    {
+     "label": "Related: The irrationality exponent of pi is 2 (OpenAI, the case r = 1)",
+     "url": "https://vibemathed.com/problem/irrationality-exponent-of-pi",
+     "kind": "other"
+    }
+   ],
+   "reviewNote": "Resubmission of 15 Oct decline. README (commit 495c775, 16 Oct) and preprint AI declaration now name GPT-6 Astra and its role. Headline at e8c8406 now r != 0 (diff from 1bfa47b read), grep clean incl. dependency, not rebuilt. Candidate, Lean-checked, 60, name kept (nonzero). Link pi entry both ways.",
+   "message": "Hi Lily and Evan, thank you for coming back with this, and for fixing both things so quickly. It is published.\n\nThe disclosure is now where the record can point at it: the README's Credit section and the preprint's AI declaration both say GPT-6 Astra helped work out what follows from mu(pi) = 2 and the Liu-Jiang-Zhang interpolation theorems, and built the Lean repository, while you derived the quadratic criterion yourselves. That is exactly what was missing on 15 October, and it is what the entry's AI role now says, labelled AI co-developed.\n\nWhat I checked on 3 November 2026, at commit e8c8406: arctanOfRationals now states irrationalityMeasure (Real.arctan r) = 2 for every rational r != 0, with no hypotheses left over, so the title keeps \"nonzero\" and I did not narrow it. The diff from 1bfa47b, which I read last time, changes only that hypothesis and its nonvanishing step. I grepped your project and the pinned log-irrationality-measure dependency again for sorry, admit, axiom declarations, opaque, unsafe, native_decide and implemented_by and found none. I did not rebuild it.\n\nEdits, none of which touch the mathematics: status Candidate; verification Lean-checked, because the formal statement is your own and not yet anchored in Formal Conjectures or a tracker; publication \"announcement\", since the PDF lives in a repository rather than on arXiv; the statement rewritten as the question posed, with r = 1 noted as mu(pi) = 2; the result note and AI role written from the README and preprint; significance 60, level with our entry for OpenAI's mu(pi) = 2, which your criterion recovers and which is now linked from this one.\n\nWhen the arXiv version is out, send the link and I will update the source. If anything above is wrong, tell me and I will correct it.",
+   "flags": [
+    "Slug carries a '-2' suffix from the resubmission; the declined original holds the clean slug. Curator may want to rename it to the clean slug or a shorter problem-shaped one (not set in edits per the 3 Nov rule).",
+    "Link the other direction: add this entry to irrationality-exponent-of-pi as related (the r = 1 case), and consider a line in its result note.",
+    "AI disclosure is the authors' own account: the model helped with implications and the Lean; the authors claim the criterion independently. Labelled ai-co-developed; ai-assisted is the lower tier if the curator reads it as vaguer.",
+    "Liu-Jiang-Zhang arXiv 2610.10192 (mu(log r) = 2) and its Lean formalisation are still not in the catalog; possible entry.",
+    "Not rebuilt; Real.arctan_eq_zero_iff used in the new step was not checked against Mathlib v4.34.0. A rebuild plus #print axioms on arctanOfRationals and our own statement audit is the route to Lean-verified."
+   ],
+   "checked": "p2 record; REVIEW-SPEC; docs/reviewing.md; review-2026-10-15 decision on the original; catalog search (arctan, irrationality, Astra) incl. irrationality-exponent-of-pi and catalan-constant-irrational; GitHub commit list and branches (main only, head e8c8406, 16 Oct); compare 1bfa47b...e8c8406 (Lean headline hypothesis, README Credit, lakefile -j1, PDF); README at 1bfa47b and e8c8406; IrrationalityMeasureConstants.lean, StatementDefinitions.lean, AxiomAudit.lean, lakefile, lake-manifest; tarballs of the project at e8c8406 and the dependency at 09aeeb0 grepped for sorry/admit/native_decide/unsafe/implemented_by/extern/axiom/opaque (one hit, a doc comment); preprint PDF text (abstract, references, AI declaration).",
+   "notChecked": "No lake build or axiom print of the headline; proof bodies and the 9-page argument not read for correctness; Tomashevskaya 2008, Salikhov-Bashmakova 2020, Bai 2026 not opened; Liu-Jiang-Zhang at abstract level only; author identities not confirmed beyond the README emails."
+  },
+  {
+   "slug": "vinogradov-s-least-primitive-root-conjecture",
+   "action": "decline",
+   "reason": "other",
+   "edits": {},
+   "links": [],
+   "reviewNote": "Landmark-tier claim (Vinogradov 1930) from a pseudonymous account ('dr vengy' on Zenodo, 'vengy' on MSE), no lab, no formal proof of the claim: the Lean takes ZF78 as an uninterpreted Prop and Martin's estimate as a hypothesis, and its header says it was never compiled. Step 4 -> decline. Provisional significance 45, level with vinogradov-least-quadratic-nonresidue.",
+   "message": "Thank you for this, and for the care in the note about what is and is not claimed.\n\nWe read the Zenodo note, the Lean file, Mathematics Stack Exchange question 5151787 with Greg Martin's comment, the release's quasi-Riemann manuscript and our entries for it and for the least quadratic nonresidue. The deduction looks right to us, and Martin's public comment supports it: under the claimed $7/8$ half-plane, his Proposition 3 gives $g^*(p)\\ll(\\log p)^{24}$, which implies Vinogradov's conjecture.\n\nVinogradov's least primitive root conjecture is a landmark-tier claim, and the site has one rule for those: it lists them, as Candidates, once someone accountable stands behind them: named authors, a lab publishing under its own name, or a formal proof whose statement and axioms we can read. The note is by a pseudonymous author, and the Lean file does not prove the claim: it takes the $7/8$ statement as an uninterpreted proposition and Martin's estimate as a hypothesis, so it checks only the final few lines. Its header also says it was prepared without a Lean compiler and has not been compiled, which contradicts the Zenodo description; please reconcile the two.\n\nSo it is declined for now, as a scope decision and not a verdict on the mathematics. Resubmission is welcome when a named author signs the note, or when a lab or a refereed source records the corollary. If Greg Martin, or anyone named, writes it up under their own name, that would qualify at once.",
+   "flags": [
+    "Step 4 applied strictly: pseudonymous account + landmark claim + no formal proof -> decline. If the curator counts Greg Martin's public MSE endorsement (named expert, no stake) as someone accountable standing behind the deduction, approve instead as Candidate, Unreviewed, significance 45, conditional on QRH, linked to quasi-riemann-hypothesis and vinogradov-least-quadratic-nonresidue.",
+    "Curator may want to add one sentence plus the MSE link to the result note of vinogradov-least-quadratic-nonresidue or quasi-riemann-hypothesis, recording that QRH plus Martin 1997 Prop 3 gives the least primitive root conjecture too.",
+    "Novelty is thin: Martin's Prop 3 (1997) is already a quasi-GRH-conditional bound, and Martin says the classical character-sum argument works the same way; the new step is substituting sigma = 7/8.",
+    "The submission's model field cites 'OpenAI Result 021'; doc 021 in openai/math is Jacobsthal's function, unrelated. Would need fixing on any resubmission."
+   ],
+   "checked": "Zenodo record 23423890 metadata, PDF (title page and abstract) and QRH_Martin_Vinogradov_Level1.lean (read: ZF78 is an uninterpreted Prop, MartinEstimate a hypothesis; header says not compiled; grep for sorry/admit/axiom found only the header comment). MSE 5151787 body, comments (Greg Martin, Arsenniy, Gerry Myerson) and answer. MO 515968 'Consequences of quasi-RH' answers. hexagonmath 2610.00178 (GPT-6 Astra, 9 Oct, 55 QRH consequences): searched its text for primitive root, Vinogradov, nonresidue; found Lemma 1.6 (small primes generate (Z/q)^x) and power-nonresidue uses, did not find a least primitive root statement. openai/math code search for 'least primitive root'; lean/docs/021.md read. Catalog: vinogradov-least-quadratic-nonresidue, quasi-riemann-hypothesis, artin-primitive-root-infinitude read; no duplicate.",
+   "notChecked": "Martin's Proposition 3 not re-read in his paper (arXiv math/9807104); the simplification to exponent 3/(1-sigma) not verified. The Lean file not compiled. QRH itself not checked. Absence of an earlier source stating this corollary is not established; only the sources above were searched."
+  },
+  {
+   "slug": "eden-s-conjecture",
+   "action": "approve",
+   "reason": "edited",
+   "edits": {
+    "name": "Eden's conjecture on the maximal local Lyapunov dimension",
+    "statement": "Let $\\{\\varphi^t\\}_{t\\geq 0}$ be a dynamical system on $\\mathbb R^n$ with a global attractor $K$. Eden's conjecture states that the supremum of the local Lyapunov dimensions over $K$ is attained at a stationary point or on an unstable periodic orbit embedded in $K$. Is that true?",
+    "posedBy": "Alp Eden, PhD thesis (Indiana University, 1989), p. 98, Question 1; see also Eden, M2AN 23 (1989) 405-413",
+    "ageNote": "The literature (Wikipedia, Kuznetsov's surveys) dates the conjecture to 1987; the written source Kuznetsov cites is Eden's 1989 Indiana thesis, p. 98, Question 1. It was known to hold for the Lorenz system and the complex Ginzburg-Landau equation in some parameter ranges.",
+    "aiRole": "The repository README, under Credit: \"Much of the counterexample construction was assisted by GPT-6 Astra. The authors independently searched the literature to verify the findings and discern the valid statements to use.\"",
+    "sourceName": "GitHub",
+    "resultNote": "A $C^1$ (polynomial) flow on $\\mathbb R^5$ with a global attractor containing an invariant two-torus with an irrational flow, where the local Lyapunov dimension is $9/2$, while it is at most $3$ at every stationary point and on every periodic orbit. So the supremum is not attained at a stationary point or periodic orbit, with or without the word \"unstable\". The repository also refutes a version for strange (noninteger Hausdorff dimension) local attractors and the critical-path form of Eden's Question 1.\n\nA concurrent independent counterexample, also AI-assisted and formalised in Lean, is Matthew Colbrook's \"Aperiodic maximisers of Lyapunov dimension\" (Zenodo, 21 September 2026): a polynomial system on $\\mathbb R^5$ of dimension $4+4/c$ on a torus for every $c>4$. The repository's current construction, revised on 17 October, appears to be its case $c=8$; the September commits used a different setting.",
+    "verificationNote": "Read by this site on 3 November 2026 at commit 69547cb, not rebuilt; the repository has no CI. The headline statements in EdensConjecture/EStatements.lean and their definitions were read: a C1 flow on Euclidean space solving its ODE, a compact invariant set attracting every bounded subset of the phase domain, the local Lyapunov dimension as the infimum of orders with negative upper growth rate of the singular-value function, its supremum over the attractor, and instability as failure of orbital Lyapunov stability. In the global counterexample the phase domain is all of R^5, so the attractor is genuinely global. The proof gives local dimension 9/2 on the torus and at most 3 at every stationary or periodic point, and DefinitionCheck.lean proves the Kuznetsov-Reitmann and both Kaplan-Yorke definitions agree there. The EdensConjecture library has no sorry, admit, axiom declarations, native_decide, unsafe, implemented_by or opaque; sorry appears only in separate, unimported Kuznetsov-Eden files. The formal statement was written by the provers and is not anchored in Formal Conjectures or a tracker. Eden's thesis was not available here; the statement was compared with Kuznetsov (arXiv 1602.05410) and Wikipedia.",
+    "significance": 15,
+    "significanceNote": "A named conjecture from 1987 that has organised work on Lyapunov dimension estimates for decades (Leonov, Kuznetsov and coauthors), with a Wikipedia article, but known mainly inside that community. Level with the homogeneous polynomial Lyapunov conjecture and Carrasco's OZF conjecture at 15, below the Denjoy sharpness entry at 20 and the quintic Lienard entry at 25, which reach wider audiences."
+   },
+   "links": [
+    {
+     "label": "Colbrook, Aperiodic maximisers of Lyapunov dimension (Zenodo, concurrent)",
+     "url": "https://zenodo.org/records/22883032",
+     "kind": "other"
+    },
+    {
+     "label": "Colbrook's Lean formalisation (MColbrook/Eden_conjecture)",
+     "url": "https://github.com/MColbrook/Eden_conjecture",
+     "kind": "other"
+    },
+    {
+     "label": "Eden's conjecture (Wikipedia)",
+     "url": "https://en.wikipedia.org/wiki/Eden%27s_conjecture",
+     "kind": "wikipedia"
+    }
+   ],
+   "reviewNote": "Approved Candidate, Lean-checked, 15. Headline + defs read, U=univ on R^5, grep clean outside unimported Kuznetsov files, not rebuilt. AI disclosed in README (GPT-6 Astra). Concurrent Colbrook (Zenodo 21 Sep, AI-disclosed, Lean, Palomar) not in catalog; HEAD construction matches Colbrook c=8 and dates from 17 Oct.",
+   "message": "Hi Evan and Lily, thank you for sending this, and for adding the GPT-6 Astra credit to the README. That disclosure is exactly what the arctangent submission was missing, and it is why this one can be published.\n\nPublished as Candidate, Lean-checked, significance 15.\n\nWhat I checked on 3 November 2026, at commit 69547cb: I read EdensConjecture/EStatements.lean and the definitions behind it. The system is a C1 flow solving its ODE, the global attractor attracts every bounded set of the phase domain, and in your main counterexample that domain is all of R^5, so the attractor really is global. The local dimension is the infimum of orders with negative upper singular-value growth, and \"unstable\" is the negation of orbital stability. The proof gives 9/2 on the torus and at most 3 at stationary and periodic points, and DefinitionCheck.lean shows the three definitions agree there. A grep of the library found no sorry, axioms, native_decide or unsafe code (the sorry in the Kuznetsov-Eden files is not imported). I did not rebuild it.\n\nEdits: the name says which conjecture this is, posedBy and an age note cite Eden's 1989 thesis (Question 1), the AI role quotes your README, and sourceName is \"GitHub\". The mathematics is unchanged.\n\nOne thing you should know: Matthew Colbrook posted an independent counterexample on Zenodo on 21 September, also AI-assisted and formalised in Lean, with a family on R^5 of dimension 4+4/c. Your current construction looks like its case c = 8. Your commits from 13 September use a different setting, and the result note records both as concurrent. If I have the history wrong, please tell me.\n\nCandidate rather than Resolved because nobody independent has audited the formal statement yet. A CI build that prints the axioms of EdensConjecture_False, or a reading by someone in the Lyapunov dimension community, would move it.",
+   "flags": [
+    "Accountability: same submitter account (cmsjf3rsh...) as the arctan submission declined 15 Oct for missing disclosure. This README names Evan Li and Lily Zhang and credits GPT-6 Astra, so disclosure now passes. Owner Eval-stack's public profile gives evanli3738@gmail.com; most commits are by TPColor under the names Pink and Lily Zhang. Not landmark (15), so named authors are enough; identities not verified beyond that. README tone is informal (a 'slop-prints' folder, 'lmao').",
+    "Concurrent result not in catalog: Matthew Colbrook (Cambridge), Zenodo 22883032, 21 Sep 2026, Lean repo + Palomar PALOMAR-2026-09-22-000001, paper p.9 discloses ChatGPT 6 and Codex. Curator may want a Colbrook entry or a concurrent-proof treatment (Crouzeix rule).",
+    "Priority: Eval-stack repo created 12 Sep (server time); the 13 Sep commit 3ce89ad (commit-dated only, September push events not retrievable) has a torus refutation in a Hilbert-space 'thesis setting' on R^4. The current R^5 construction with spectrum (2,2,0,0,-8), dimension 9/2, matches Colbrook's c = 8 and arrived in the 17 Oct 'improved definitions' commit, after Colbrook's release, with the same mathlib pin and Lean 4.33.1 as Colbrook's repo. solveDate 2026-09-13 kept on the commit dates; curator decides whether that is good enough, or whether to hold and ask the authors about the 17 Oct revision.",
+    "Eden's 1989 thesis (the original source) was not read; statement compared with Kuznetsov arXiv 1602.05410 and Wikipedia."
+   ],
+   "checked": "Repo metadata, commits and events (GitHub API); README; EStatements.lean and EStatementDefinitions.lean in full; the DefinitionCheck refutation chain (torus 9/2, stationary and periodic at most 3, U = univ for the R^5 system); grep of the tarball at 69547cb for sorry/admit/axiom/native_decide/unsafe/implemented_by/opaque; import chain (Root does not import KuznetsovEdenConjecture or HiddenEdenPartial); 13 Sep version of the refutation files via raw.githubusercontent; Kuznetsov arXiv 1602.05410 on Eden's Question 1; Wikipedia; Colbrook Zenodo record, README and PALOMAR.md disclosure; catalog duplicate search (no Eden entry).",
+   "notChecked": "No lake build or #print axioms; Eden's 1989 thesis not available; the strange-attractor and Question 1 variants and the 13 Sep thesis-setting statement not audited; true push dates of the September commits; whether Colbrook's work and this one influenced each other."
+  },
+  {
+   "slug": "planar-polya-szego-conjecture-for-the-first-buckling-eigenvalue",
+   "action": "approve",
+   "reason": "edited",
+   "edits": {
+    "sourceName": "GitHub repository",
+    "ageNote": "Proposed by Pólya and Szegő (1951). Szegő's symmetrization proof (1950, corrected 1958) needs a first eigenfunction of one sign, which cannot be assumed. Known before: the nonsharp Bramble-Payne bound $|\\Omega|\\Lambda_1>2\\pi j_{0,1}^2$ and existence of optimal domains (Ashbaugh-Bucur 2003, Stollenwerk 2023). Listed as open in Colbrook's AIM catalogue, Problem 007, last checked 8 September 2026.",
+    "resultNote": "The authors prove the planar Pólya-Szegő conjecture for every open set $\\Omega\\subset\\mathbb R^2$ of finite positive area, without assumptions on connectedness, boundedness, boundary regularity or the sign of an eigenfunction: $|\\Omega|\\Lambda_1(\\Omega)\\geq\\pi j_{1,1}^2$, with equality if and only if $\\Omega$ is an open disk. The route is a new sharp buckling-Dirichlet comparison $\\Lambda_1(\\Omega)\\geq (j_{1,1}^2/j_{0,1}^2)\\lambda_1^{\\mathrm D}(\\Omega)$ combined with Faber-Krahn, and the disk formula $\\Lambda_1(B_R)=j_{1,1}^2/R^2$. All five statements are formalized in Lean 4 and registered at Palomar (PALOMAR-2026-10-18-000008). The informal manuscript is a working draft (v5, 18 October 2026) in the repository, not yet on arXiv. Dimensions $N\\geq3$ remain open.",
+    "verificationNote": "No independent mathematician has checked this yet. Read by this site on 3 November 2026, not rebuilt. Palomar record PALOMAR-2026-10-18-000008 v1 fetched from the registry's data API: commit 5311f47, five Comparator theorems, kernels Lean, nanoda and con-ron, automated review neutral with no warnings, trust level high. The SHA-256 of PlanarBucklingChallenge.lean and PlanarBucklingSolution.lean at that commit match the record. The Challenge file (Mathlib only, 161 lines) was read: Lambda_1 is the infimum of the integral of (Delta v)^2 over the integral of |grad v|^2 on the H^2 closure of smooth compactly supported functions in Omega, the Dirichlet eigenvalue likewise on the H^1 closure, Bessel zeros from the power series; the headline theorem is the conjecture for every open Omega of finite positive area, with equality only for an open disk, which covers the problem as posed. The snapshot (185 Lean files, about 57,000 lines) was grepped: the only sorry are the five Challenge holes; no admit, axiom declarations, native_decide, unsafe or implemented_by. Lean verification, Palomar checks and the official preflight passed on GitHub Actions at that commit; permitted axioms are propext, Quot.sound and Classical.choice. The manuscript was not read in detail. Lean-checked, not Lean-verified: the statement audit is this site's alone and nothing was rebuilt here.",
+    "significance": 40,
+    "significanceNote": "A 1951 Pólya-Szegő conjecture, the buckling analogue of Faber-Krahn and a standard open problem of spectral geometry for 75 years, well known within that community. Scored for the problem as posed in the plane, settled in full. Below the Dirichlet Pólya entry for simply connected domains (45), a case of the more famous Pólya conjecture, and the hot spots entry (42); above the Pólya conjecture for Neumann balls (35)."
+   },
+   "links": [
+    {
+     "label": "Registered snapshot, commit 5311f47",
+     "url": "https://github.com/QuanyuTang/polya-szego-planar-unconditional-palomar/tree/5311f47821b5da92e81e75b7da5091d176c8deb9",
+     "kind": "code"
+    },
+    {
+     "label": "Lean statement: PlanarBucklingChallenge.lean",
+     "url": "https://github.com/QuanyuTang/polya-szego-planar-unconditional-palomar/blob/5311f47821b5da92e81e75b7da5091d176c8deb9/PlanarBucklingChallenge.lean",
+     "kind": "lean-proof"
+    },
+    {
+     "label": "Manuscript working draft v5 (PDF)",
+     "url": "https://github.com/QuanyuTang/polya-szego-planar-unconditional-palomar/blob/main/manuscript/PS_dim2_v5.pdf",
+     "kind": "paper"
+    },
+    {
+     "label": "AIM catalogue, Problem 007 (Colbrook)",
+     "url": "https://github.com/MColbrook/AIM/blob/main/problems/007-buckling-load-ball.md",
+     "kind": "problem-record"
+    },
+    {
+     "label": "AIM issue 174: proposed resolution of Problem 007",
+     "url": "https://github.com/MColbrook/AIM/issues/174",
+     "kind": "other"
+    },
+    {
+     "label": "Related: strict Dirichlet Pólya inequality (same author)",
+     "url": "https://vibemathed.com/problem/strict-dirichlet-polya-inequality-on-simply-connected-planar-domains",
+     "kind": "other"
+    }
+   ],
+   "reviewNote": "Approve Candidate, Lean-checked, 40. Challenge read and hash-matched to Palomar v1; grep clean; CI green; not rebuilt. Landmark-tier within spectral geometry, listed under step 4 (named authors plus a formal proof whose headline was read).",
+   "message": "Thank you for this submission, and for the careful verification note, which already chose the conservative tier. It is published as a Candidate at Lean-checked, as you proposed.\n\nWhat was checked here on 3 November: we fetched Palomar record PALOMAR-2026-10-18-000008 v1 from the registry's data API and confirmed that the SHA-256 hashes of PlanarBucklingChallenge.lean and PlanarBucklingSolution.lean at commit 5311f47 match it. We read the Challenge file line by line: the H^2_0 and H^1_0 closures, both Rayleigh infima and the Bessel zeros are the standard objects, and polya_szego_buckling states the conjecture for every open planar set of finite positive area, with exact disk equality, which covers the smooth bounded case as posed. A grep of all 185 Lean files found no sorry outside the five Challenge holes and no axiom, admit, native_decide or unsafe, and the three GitHub Actions runs on that commit are green. We did not rebuild the project, so the tier stays at Lean-checked; Lean-verified would need that plus an independent anchor of the statement.\n\nBecause this is a 75-year-old conjecture, the entry carries the landmark wording: Candidate until a named mathematician with no stake confirms it in public. If Colbrook's AIM catalogue updates Problem 007 after your issue 174, please tell us and we will link it.\n\nEdits, with the mathematics unchanged: the verification note now opens with our standard sentence and says what was run here; an age note records Szegő's 1950 and 1958 work, the Bramble-Payne bound, the existence results and the AIM listing; the result note mentions the v5 manuscript draft; the source name is shortened; and we added links to the registered snapshot, the Challenge file, the manuscript, AIM Problem 007, your AIM issue and the related Dirichlet Pólya entry. Significance is 40. Please correct anything we got wrong.",
+   "flags": [
+    "Landmark-tier call: 1951 conjecture, 75 years open. Listed under step 4 because named authors and a formal proof whose headline was read stand behind it; confirm you agree.",
+    "Volume: third Palomar-registered spectral-geometry result from Quanyu Tang in ten days (two Pólya entries of 9 Oct, this one of 18 Oct), 12 catalog entries overall. Same field, each with a Comparator statement read here, so the step-4 condition is met; worth a rebuild of this one if any of the three is chosen for Lean-verified.",
+    "Slug is long; suggest shortening to polya-szego-buckling-planar (slug not edited here per the 3 Nov rule).",
+    "Cosmetic: the Challenge file header still says 'UNCOMPILED, NOT TYPE-COMPARED' from a 17 Oct draft; the Comparator run supersedes it, but a reader may stumble.",
+    "AIM issue 174 is open (Colbrook, 21 Oct: will look into it). If AIM marks Problem 007 solved, revisit the tier."
+   ],
+   "checked": "Palomar data API record v1 (commit, kernels, review, trust, challenge and solution SHA-256, both matched locally); PlanarBucklingChallenge.lean read in full; comparator.json (5 theorems, 3 axioms); README; tarball of commit 5311f47 grepped for sorry/admit/axiom/native_decide/unsafe/implemented_by/opaque (comment hits only); GitHub Actions runs 39103658499, 39103658555, 39103658845 all success on that commit; manuscript v5 TeX introduction, AI-use section and bibliography; AIM Problem 007 page and issue 174; catalog search for buckling, Pólya, Szegő, Tang (no duplicate).",
+   "notChecked": "No lake build or Comparator run here; the 57,000-line proof and the informal argument were not read; no numerical check of the buckling-Dirichlet comparison; the 1951 Pólya-Szegő book itself not opened (posing taken from the manuscript's citation and AIM)."
+  },
+  {
+   "slug": "a-continuum-whose-hyperspace-of-regular-subcontinua-is-homeomorphic-to-the-irrat",
+   "action": "approve",
+   "reason": "edited",
+   "edits": {
+    "name": "Camargo-Ordoñez-Ramírez Question 3.26, irrational case: a continuum whose hyperspace of regular subcontinua is homeomorphic to the irrationals",
+    "sourceName": "GitHub",
+    "verificationNote": "No independent mathematician has checked this yet. Checked by this site on 3 November 2026, not rebuilt. Question 3.26 was read in the open-access Camargo-Ordoñez-Ramírez paper (Appl. Gen. Topol. 25 (2024)) and the statement matches. The Lean development (commit 0033dd1, Lean 4.35.0 with Mathlib, about 830 lines) was read: a grep found no sorry, admit, axiom declarations, native_decide, unsafe, opaque or implemented_by. Its headline theoremA is conditional. It takes two hypotheses: the Alexandrov-Urysohn characterization of Baire space (correctly stated, Kechris 7.7), and GeometricIdentification, which asserts that some continuum has its hyperspace of regular subcontinua homeomorphic to the code space. The second is the geometric heart of the paper (Theorem 4.6, Proposition 5.2), so Lean checks only the code-space half: a nonempty zero-dimensional Polish space in which every compact set has empty interior. The axiom list and the leanchecker and nanoda runs are the author's; there is no CI and nothing was re-run here. The geometric proof was not checked. The rational case remains open.",
+    "significance": 7,
+    "significanceNote": "A numbered question in a 2024 Applied General Topology paper, first asked in a 2023 thesis, about which spaces occur as the hyperspace of regular subcontinua; specialist audience, about three years old. Level with Arnosti's RANDOM-VERTEX conjecture at 7, below Dow-Tkachuk Question 4.8 at 8, above the companion finite-cardinality problem at 6, which the literature had nearly closed."
+   },
+   "links": [
+    {
+     "label": "Paper on Zenodo (DOI 10.5281/zenodo.23528477)",
+     "url": "https://doi.org/10.5281/zenodo.23528477",
+     "kind": "paper"
+    },
+    {
+     "label": "Camargo, Ordoñez and Ramírez, Appl. Gen. Topol. 25 (2024), Question 3.26",
+     "url": "https://doi.org/10.4995/agt.2024.20116",
+     "kind": "problem-record"
+    },
+    {
+     "label": "Ramírez Angarita's thesis (UIS, 2023), Pregunta 3.2.14",
+     "url": "https://noesis.uis.edu.co/entities/publication/cd4f0fe6-ec75-47d8-8e0a-617149375321",
+     "kind": "problem-record"
+    },
+    {
+     "label": "Companion entry: finite cardinalities of the hyperspace of regular subcontinua",
+     "url": "https://vibemathed.com/problem/the-finite-cardinalities-of-the-hyperspace-of-regular-subcontinua-ordonez-s-prob",
+     "kind": "other"
+    }
+   ],
+   "reviewNote": "Q3.26 quoted from AGT 2024 p.396, matches. Lean read, grep-clean, but headline conditional on GeometricIdentification (the whole geometric proof) + Alexandrov-Urysohn: Unreviewed correct. Zenodo DOI minted 21 Oct, so preprint stands; sourceName GitHub. No prior solution found.",
+   "message": "Published as Partial, Unreviewed, significance 7. Thank you, and thank you for keeping the rational case out of the claim.\n\nQuestion 3.26 was read in the open-access Camargo-Ordoñez-Ramírez paper and your statement matches it. The Lean was read on 3 November, not rebuilt: it is clean, and as your README says, theoremA takes the geometric identification (Theorem 4.6 and Proposition 5.2) and Alexandrov-Urysohn as hypotheses, so Lean checks the code-space half only. Unreviewed is the right tier, and the verification note now says this in those terms.\n\nEdits: the name now leads with the question number so it can be found by it; sourceName is \"GitHub\" by the site's convention; Preprint stands because the Zenodo DOI you added on 21 October exists, and it is linked, with the two problem sources and your companion entry on the finite cardinalities. The mathematics is unchanged. Tell us if anything reads wrong.\n\nWhat would move it up: a reply from Camargo, Ordoñez or Ramírez, or a formalization of the identification of D(X) with the code space, which is where the proof really lives.",
+   "flags": [
+    "Question 3.26 is literally 'homeomorphic to either Q or I'; read as a disjunction, the irrational example answers it yes. Kept Partial because the source paper, the submitter and the repository all treat Problem Q as the open half. Curator may prefer Candidate.",
+    "Companion link uses p12's submitted slug; if p12's slug is shortened at publish, update this link."
+   ],
+   "checked": "REVIEW-SPEC and docs/reviewing.md; CORa AGT 2024 PDF (Question 3.26 text, Theorem 3.25); repo README and AI_DISCLOSURE (disclosure is in the paper: Claude proposed the construction and wrote the proofs); paper TeX introduction; Lean TheoremA.lean, CheckAxioms.lean, grep of all .lean files for sorry/admit/axiom/native_decide/unsafe/opaque/implemented_by; commit history (3 commits, 19-21 Oct); Zenodo DOI resolves; catalog scan (no duplicate; related: Dow-Tkachuk 4.8 by the same author, Vietoris powers); web and arXiv search for prior solutions (none found).",
+   "notChecked": "The geometric proof (Sections 3-5) was not read in detail; Lean not rebuilt and axiom output not re-run; Ramírez thesis not opened (Pregunta 3.2.14 taken from CORa and the paper); no CI exists."
+  },
+  {
+   "slug": "a-lower-bound-on-the-hyperbolic-systole-probem",
+   "action": "approve",
+   "reason": "downgraded",
+   "edits": {
+    "name": "Large systoles in every genus: the constant 4/3",
+    "shortName": "Systole growth in every large genus",
+    "statement": "For $g\\geq 2$ let $\\mathrm{Sys}(g)$ be the supremum of the systoles of closed oriented hyperbolic surfaces of genus $g$. Determine the asymptotic behaviour of $\\mathrm{Sys}(g)/\\log g$; in particular, what is the best constant $c$ with $\\liminf_{g\\to\\infty}\\mathrm{Sys}(g)/\\log g\\geq c$?",
+    "ageNote": "No poser recorded: a standing asymptotic question rather than a posed conjecture. Buser-Sarnak (1994) gave limsup at least 4/3 along arithmetic surfaces, and the area bound gives at most 2 asymptotically. Every-genus constants: Katz-Sabourau 19/120, Liu-Petri 2/9, Cai 1 (Aug 2026, already in this catalog).",
+    "resolution": "partial",
+    "verification": "lean-checked",
+    "model": "ChatGPT 5.6 (construction); ChatGPT 6.1 Sol and Astra 6.0 via Codex (formalization)",
+    "humanCollaborators": [
+     "Nihar Gargava",
+     "Yifei Cai",
+     "Mingkun Liu"
+    ],
+    "aiRole": "The README says: \"The autoformalization was done with the help of Codex running various version of ChatGPT. Most of the code was written by ChaGPT 6.1 Sol with various proof outlines written by ChatGPT Astra 6.0. The proof itself was based on a candidate construction given by ChatGPT 5.6.\" formalization.yaml adds that Nihar Gargava directed the mathematical and implementation goals and Codex agents developed the Lean proofs.\n\nAs the submitter describes it, the model saw that Buser-Sarnak's arithmetic surfaces can be glued together with Katz-Sabourau's techniques, using an analytic number theory input of Cook-Magyar on prime cubes, to reach the constant 4/3 in every large genus.",
+    "resultNote": "$\\liminf_{g\\to\\infty}\\mathrm{Sys}(g)/\\log g\\geq 4/3$. This raises the every-genus constant from $1$ (Cai, August 2026, the entry linked below) to $4/3$, the value Buser-Sarnak reached only along a subsequence of genera. The optimal constant is still open: the area bound gives at most $2$.",
+    "sourceName": "GitHub",
+    "verificationNote": "Read by this site on 3 November 2026 at commit ddf43a1, not rebuilt. The headline statement in Challenge.lean was read against the problem: closed oriented hyperbolic surfaces of genus g are discrete, freely acting subgroups of SL(2,R) with compact quotient of the upper half-plane and an isomorphism to the standard genus-g surface group; the systole is the infimum of displacements by nontrivial deck transformations; Sys(g) is the supremum; the claim is that 4/3 is at most the liminf of Sys(g)/log g. Lean's junk values for an unbounded supremum or liminf would make the claim harder, not easier. comparator.json asks Comparator to match Solution.lean against it with only propext, Classical.choice and Quot.sound. A grep of the 1,088 Lean files found no sorry outside Challenge.lean and no admit, native_decide, unsafe or implemented_by; the only axiom lines are examples inside a vendored docstring. The statement was written by the author's own agents (formalization.yaml: review self-assessed), and a Palomar listing is a precondition for, not an independent audit of, statement fidelity, so the entry is Lean-checked. Comparator was not run here. There is no paper yet.",
+    "significance": 22,
+    "significanceNote": "Scored as the same problem as Cai's every-genus constant 1 entry, at 22, a deliberate tie: the maximal systole asymptotics are a classical open question with a long ladder of constants. Level with the four-variable stable coordinate and Villani MTW entries at 22, below the holomorphic Anosov entry at 24. Still a bound: the optimal constant is open."
+   },
+   "links": [
+    {
+     "label": "Palomar listing PALOMAR-2026-10-18-000028",
+     "url": "https://palomar-registry.org/entry?id=PALOMAR-2026-10-18-000028&version=1",
+     "kind": "palomar"
+    },
+    {
+     "label": "Earlier every-genus bound (constant 1, Cai)",
+     "url": "https://vibemathed.com/problem/large-systoles-in-every-sufficiently-large-genus",
+     "kind": "other"
+    }
+   ],
+   "reviewNote": "Approved Partial, Lean-checked (from lean-verified), 22. Same question as large-systoles-in-every-sufficiently-large-genus (1 -> 4/3), link both ways, old one's resultNote should say it was superseded. Challenge.lean read and faithful; grep clean; not rebuilt, Comparator not run. Form model 'ChatGPT 5.5' not in README; README names 5.6, 6.1 Sol, Astra 6.0.",
+   "message": "Hi Nihar, thank you for sending this. It is a clean step on a problem the catalog already follows, and the repository made the important part easy to check.\n\nPublished as Partial, Lean-checked, significance 22.\n\nWhat I checked on 3 November 2026, at commit ddf43a1: I read Challenge.lean against the problem. Surfaces are discrete, freely acting subgroups of SL(2,R) with compact quotient and a marking by the genus-g surface group, the systole is the infimum of nontrivial displacements, Sys(g) is the supremum, and the claim is exactly the 4/3 liminf. Lean's junk values would only make it harder. I grepped all 1,088 Lean files: no sorry outside Challenge.lean and no admit, native_decide, unsafe or implemented_by; the only axiom lines sit in a vendored docstring example. I did not rebuild it or run Comparator.\n\nWhy the labels moved: Resolved became Partial because the result is a bound and the optimal constant is still open (the area bound gives 2). Lean-verified became Lean-checked because the formal statement was written by your own agents and formalization.yaml calls the review self-assessed; a Palomar listing is a precondition for Lean-verified here, not the independent statement audit itself.\n\nOther edits: the name had a typo and now says what the result is; the statement is now the question rather than empty; the result note was garbled by copy-paste and is rewritten; the model field now follows your README (ChatGPT 5.6 for the construction, 6.1 Sol and Astra 6.0 via Codex for the formalization; the form said 5.5, which the README does not mention); you are added as a collaborator alongside Yifei Cai and Mingkun Liu. The entry is linked to Cai's earlier every-genus constant 1, which it improves. The mathematics is unchanged.\n\nA preprint, or a CI run of verify-comparator.sh, would be the quickest routes up a rung. If anything above is wrong, tell me and I will correct it.",
+   "flags": [
+    "Slug has the typo 'probem' (a-lower-bound-on-the-hyperbolic-systole-probem); edits cannot change slugs, so the curator should rename it (suggest large-systoles-every-genus-four-thirds).",
+    "Same posed question as large-systoles-in-every-sufficiently-large-genus (Cai, constant 1, Partial, 22). Treated as a stronger result on an existing entry: link both ways and update the old entry's resultNote to say it was superseded. Curator may instead prefer to fold it into that entry.",
+    "Submitted model 'ChatGPT 5.5' not sourced; README names ChatGPT 5.6, 6.1 Sol, Astra 6.0. Edited to the README.",
+    "No paper; README says 'ongoing work of Cai, Gargava and Liu'. Submitter account not verified as Gargava (repo owner nihargargava); Gargava added to collaborators on the README and formalization.yaml.",
+    "Palomar page did not render for the fetch tool, so the listing's contents were not confirmed; it would not change the tier either way."
+   ],
+   "checked": "Shallow clone at ddf43a1: README, Challenge.lean, Solution.lean, comparator.json, formalization.yaml, Code-Attribution.md, verify-comparator.sh; grep of 1,088 Lean files for sorry/admit/axiom/native_decide/unsafe/implemented_by/opaque (vendored PNT axioms confirmed to be inside a docstring example); catalog search (existing Cai entry at constant 1); web search for a prior every-genus 4/3 result (none found).",
+   "notChecked": "No lake build, Comparator run or #print axioms; the 1,088-file proof itself; the Palomar entry's contents; any human write-up (none public)."
+  },
+  {
+   "slug": "shareshian-wachs-elementary-unimodality-for-natural-unit-interval-graphs",
+   "action": "approve",
+   "reason": "edited",
+   "edits": {
+    "shortName": "Shareshian-Wachs e-unimodality",
+    "field": "Algebraic combinatorics; chromatic symmetric functions",
+    "statement": "For a weakly increasing $h:[n]\\to[n]$ with $i\\le h(i)$, the natural unit interval graph $G$ on $[n]$ has edges $\\{i,j\\}$ with $i<j\\le h(i)$. Its chromatic quasisymmetric function is $X_G(x;q)=\\sum_\\kappa q^{\\mathrm{asc}(\\kappa)}x_\\kappa$, summed over proper colorings, where $\\mathrm{asc}(\\kappa)$ counts edges $i<j$ with $\\kappa(i)<\\kappa(j)$; Shareshian and Wachs proved it symmetric and palindromic in $q$. Write $X_G=\\sum_{j=0}^{m}a_j(x)q^j$ with $m=|E(G)|$. Conjecture 1.3 asserts that each $a_j$ is $e$-positive and that $a_{j+1}-a_j$ is $e$-positive for $0\\le j<(m-1)/2$; equivalently, every coefficient $c_{G,\\lambda}(q)$ of $e_\\lambda$ is a nonnegative, palindromic, unimodal polynomial. Is this true for every natural unit interval graph?",
+    "posedBy": "John Shareshian and Michelle L. Wachs, Chromatic quasisymmetric functions, Conjecture 1.3 (arXiv:1405.4629; Adv. Math. 295 (2016), 497-551)",
+    "ageNote": "Conjecture 1.3 of arXiv:1405.4629 (2014; Adv. Math. 2016) states positivity and unimodality together. The catalog's positivity entry dates the conjecture to the 2012 CRM paper (arXiv 1106.4287); that dating was not rechecked here. Unimodality was known before only for families: Cho-Huh, abelian Hessenberg graphs, melting lollipops, K-chains.",
+    "aiContribution": "ai-assisted",
+    "resultNote": "Theorem 1.1: for every natural unit interval graph $G$ with $e$ edges and every $\\lambda\\vdash|V(G)|$, $c_{G,\\lambda}(q)=\\sum_{j=0}^{\\lfloor e/2\\rfloor}a_{G,\\lambda,j}q^j(1+q+\\cdots+q^{e-2j})$ with $a_{G,\\lambda,j}\\in\\mathbb N$, so every elementary coefficient is nonnegative, palindromic about $e/2$ and unimodal. With positivity this is the whole of Conjecture 1.3. The proof builds rigid quiver potentials with nilpotent Jacobian algebras and uses purity and hard Lefschetz for BPS sheaves. It inherits the triangular charts, rotations and section formalism of OpenAI's unrefereed September 2026 positivity manuscript (its Sections 2 and 4-5, not its positivity proof in Section 3), so it depends on that framework. Log-concavity, which is stronger, fails in general.",
+    "verificationNote": "No independent mathematician has checked this yet. Read by this site on 3 November 2026. The Zenodo record (v1, 22 October 2026, sole author Mingchang Liu, 31 pages) was opened; Theorem 1.1 was read against Conjecture 1.3 in the arXiv version of Shareshian-Wachs and states it in full, given the known palindromicity. The AI statement is in the manuscript. A separate computation written here expanded $X_G$ in the elementary basis for all 132 natural unit interval graphs on up to 6 vertices (1,836 coefficients) and found every coefficient nonnegative, palindromic and unimodal; it says nothing about larger graphs. The proof was not read, and its dependence on the unrefereed OpenAI framework was not assessed.",
+    "significance": 26,
+    "significanceNote": "The unimodality half of the Shareshian-Wachs conjecture, stated with e-positivity in the same conjecture and known within algebraic combinatorics, but secondary to positivity, which carries the Stanley-Stembridge link. Below the catalog's Shareshian-Wachs e-positivity entry (33), level with Stanley's claw-free Schur-positivity conjecture (25), above the e-log-concavity entry (15)."
+   },
+   "links": [
+    {
+     "label": "Shareshian and Wachs, Chromatic quasisymmetric functions (arXiv:1405.4629)",
+     "url": "https://arxiv.org/abs/1405.4629",
+     "kind": "problem-record"
+    },
+    {
+     "label": "OpenAI, Elementary positivity of chromatic quasisymmetric functions (framework used)",
+     "url": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/Elementary-Positivity-of-Chromatic-Quasisymmetric-Functions-September-24-2026/paper.pdf",
+     "kind": "paper"
+    },
+    {
+     "label": "Related: Shareshian-Wachs e-positivity (catalog entry)",
+     "url": "https://vibemathed.com/problem/shareshian-wachs-e-positivity",
+     "kind": "other"
+    },
+    {
+     "label": "Related: e-log-concavity of chromatic quasisymmetric functions",
+     "url": "https://vibemathed.com/problem/e-log-concavity-chromatic-quasisymmetric",
+     "kind": "other"
+    }
+   ],
+   "reviewNote": "Approve Candidate, Unreviewed, 26. Not a duplicate: completes the unimodality half that shareshian-wachs-e-positivity explicitly does not claim; builds on that release's framework. aiContribution set to ai-assisted per the manuscript. n<=6 check passes.",
+   "message": "Thank you for this submission. It is published as a Candidate at Unreviewed, with some edits.\n\nFirst, the overlap question. The catalog already has the OpenAI release entry for the positivity part of the Shareshian-Wachs conjecture, and that entry says explicitly that unimodality is not shown. Your Theorem 1.1 is the unimodality assertion, which with positivity gives the whole of Conjecture 1.3, so this is a new entry and not a duplicate. Because your proof inherits the charts and section formalism of that unrefereed manuscript, the result note says so, and the two entries will be linked.\n\nWhat was checked here on 3 November: we read Theorem 1.1 against Conjecture 1.3 in the arXiv version of Shareshian and Wachs, and it states the conjecture in full given the known palindromicity. We also wrote a small independent computation that expands the chromatic quasisymmetric function in the elementary basis for all 132 natural unit interval graphs on up to six vertices; all 1,836 coefficients are nonnegative, palindromic and unimodal. That is a sanity check of the statement, not of the proof, which we did not read.\n\nEdits, with the mathematics unchanged: the statement now gives Conjecture 1.3 in its original form with the equivalent coefficient form; the AI contribution is AI-assisted rather than AI-discovered, because the manuscript describes GPT 6 Pro and Claude Fable 5.1 assisting the author, who takes responsibility for the results; the field matches the related entry; an age note records the earlier family results; and we added the verification note, significance (26) and links to the original paper, the OpenAI manuscript and the related catalog entries. Please correct anything we got wrong.",
+   "flags": [
+    "Overlap policy: same posed conjecture as shareshian-wachs-e-positivity. Recommended: keep both (the old entry is titled and scoped as positivity), add a two-way relation, and append to the old entry's result note that the unimodality part is claimed in this entry. Curator to decide if it should instead be one entry.",
+    "Dependence: the proof relies on the unrefereed OpenAI framework (Sections 2, 4-5); if that entry becomes Contested, review this one the same day.",
+    "Volume signal: Mingchang Liu has 6 catalog entries since September across matroids, extremal combinatorics, magnitude, line configurations and numerical semigroups, and p10 (Helleseth's three-valued conjecture, coding theory, Zenodo, 23 Oct) is pending in this batch. Not landmark-tier, so listed; noted for the pattern.",
+    "yearPosed left blank: the catalog sibling uses 2012 (arXiv 1106.4287), which was not rechecked; set both consistently.",
+    "Slug is long; suggest shareshian-wachs-e-unimodality (slug not edited here)."
+   ],
+   "checked": "Zenodo API record 23573763 (v1 only, 22 Oct 2026, one PDF); manuscript text extracted and abstract, introduction, Theorem 1.1, the dependence paragraph of Section 1.1, Section 8, AI statement and references read; Shareshian-Wachs arXiv:1405.4629 Conjecture 1.3 read in the PDF; catalog entries shareshian-wachs-e-positivity and e-log-concavity-chromatic-quasisymmetric read; independent Python/sympy e-expansion for all 132 Hessenberg functions with n<=6, 1,836 coefficients, all nonnegative, palindromic, unimodal; web search for prior general unimodality claims (none found).",
+   "notChecked": "The proof (Sections 2-7: quiver potentials, BPS purity, mutation transport) was not read; validity of the inherited OpenAI framework not assessed; the 2012 CRM paper not opened; the author's companion manuscript on Lefschetz characters not located."
+  },
+  {
+   "slug": "exact-directed-l-x-diameter-of-the-symmetric-group",
+   "action": "approve",
+   "reason": "edited",
+   "edits": {
+    "shortName": "Glushkov's L/X diameter",
+    "statement": "For $n\\ge5$, let $D(n)$ be the diameter of the directed Cayley graph of $S_n$ generated by the left cyclic shift $L$ and the transposition $X=(1\\,2)$, without inverses: the least $k$ such that every permutation is a product of at most $k$ factors, each $L$ or $X$. Glushkov (1968) asked for $D(n)$. Chervov, Fedoriaka et al. (2025) conjectured $D(n)=(3n^2-8n+9)/4$ for odd $n$ and $D(n)=(3n^2-8n+12)/4$ for even $n$. Is that true?",
+    "posedBy": "V. M. Glushkov (1968, Kibernetika 4(2)) asked for the diameter; the formula was conjectured by Chervov, Fedoriaka et al., CayleyPy Growth, arXiv:2509.19162 (2025)",
+    "ageNote": "Glushkov's 1968 paper gave the first nontrivial bound, 2n^2; the leading term 3n^2/4 was known from the later literature (Glukhov-Zubov survey, 1999). The exact formula was fitted in 2025 to diameters computed for n up to 15.",
+    "model": "OpenAI Codex (Astra, per the submitter)",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [
+     "S. Uskov",
+     "A. Chervov",
+     "F. Levkovich-Maslyuk",
+     "I. Litvak",
+     "A. Smolensky"
+    ],
+    "sourceName": "GitHub",
+    "resolution": "resolved",
+    "verification": "lean-checked",
+    "verificationNote": "Read by this site on 3 November 2026, not rebuilt here. Release v1.0.0 (commit 9e04062, Lean 4.34.0, Mathlib v4.34.0, 310 modules): no sorry, admit, axiom declarations, native_decide, unsafe, opaque or implemented_by. The headline statement was read with its definitions: states are Equiv.Perm (Fin n), L is finRotate n, X is swap 0 1, a word evaluates to the product of its letters, length is the least word length reaching a permutation, and diameter is the maximum length; LX.diameter_eq_max_dist identifies it with the maximum directed distance over ordered pairs. LX.exact_diameter_all states the formula over the rationals for all n >= 5 with no extra hypothesis. The GitHub Actions run on that commit (40743009401, 28 October) built 9,235 jobs and the shipped audit printed PASS for 4,593 project theorems, axioms only propext, Classical.choice and Quot.sound. A separate breadth-first search written here gave diameters 11, 18, 25, 35, 45, 58 for n = 5 to 10, matching the formula (which fails at n = 3, 4, as the bound n >= 5 expects). No independent expert has reviewed the proof, and the statement audit is this site's alone.",
+    "significance": 12,
+    "significanceNote": "A 1968 question of Glushkov on the directed diameter of one natural two-generator Cayley graph of S_n, studied in a small Russian literature and OEIS, with the exact formula only conjectured in 2025 from computation. Level with the Davenport-Schinzel leading constant at 12, above the Coxeter code minimum distance at 7, well below Babai's minimal Cayley graph problem at 30."
+   },
+   "links": [
+    {
+     "label": "GitHub Actions build and axiom audit on the v1.0.0 commit",
+     "url": "https://github.com/snow-ghost/glushkov-lx-lean/actions/runs/40743009401",
+     "kind": "lean-proof"
+    },
+    {
+     "label": "MathWorld: Glushkov's L/X Problem",
+     "url": "https://mathworld.wolfram.com/GlushkovsLXProblem.html",
+     "kind": "other"
+    }
+   ],
+   "reviewNote": "Conj in arXiv 2509.19162 (LX case study) quoted, matches; Glushkov 1968 not read. Lean defs + headline read, grep clean, CI run 40743009401 on tag commit PASS 4593. Own BFS n=5..10 matches. Resolved on statement audit; not rebuilt here so Lean-checked.",
+   "message": "Published as Resolved, Lean-checked, significance 12. Thank you for this one.\n\nThe conjecture was read in the CayleyPy Growth paper (arXiv 2509.19162, the LX case study), and the question goes back to Glushkov's 1968 paper as that paper and OEIS A039745 say. Your statement matches it.\n\nChecked here on 3 November, without a rebuild: the v1.0.0 sources are free of sorry, axiom declarations, native_decide and unsafe code; the definitions behind LX.exact_diameter_all were read (permutations of Fin n, L as finRotate, X as swap 0 1, length as the least word length, diameter as its maximum, with diameter_eq_max_dist tying it to directed distance), and nothing in them weakens the claim. The GitHub Actions run on the tagged commit built cleanly and your VerifyLXExact audit printed PASS for 4,593 theorems with only the three standard axioms. A separate breadth-first search written here agrees with the formula for n = 5 to 10.\n\nResolved rather than Candidate because the formal statement was audited here and the build is on public CI; Lean-checked rather than Lean-verified because the statement audit is ours alone and the build was not rerun on our side.\n\nEdits: the statement now has math markup and says who posed what (Glushkov asked for the diameter, the formula is the 2025 CayleyPy conjecture); posedBy and an age note record that. The model field: the repository says only OpenAI Codex, so it now reads \"OpenAI Codex (Astra, per the submitter)\"; if a line in the source names Astra, tell us and it changes. Collaborators are ordered as in your README, and sourceName is \"GitHub\". The mathematics is unchanged; tell us if anything here is wrong.\n\nOne small thing: the release notes list A. Soibelman as an author, but README, AUTHORS.md and CITATION.cff do not. If he should be credited, say so and we add him.",
+   "flags": [
+    "Resolved vs Candidate: chosen Resolved on this site's reading of the formal statement plus the public CI run on the tag commit; the proof was not rebuilt here and no external expert has commented. Curator may prefer Candidate.",
+    "Two of the provers (Chervov, Smolensky) are authors of the 2025 paper that posed the exact formula; scope still holds because Glushkov's 1968 question predates both.",
+    "Release notes name A. Soibelman as an author; README, AUTHORS.md and CITATION.cff do not.",
+    "Model 'Astra' appears only in the submission; the repository says OpenAI Codex."
+   ],
+   "checked": "Release v1.0.0 tarball: README, AUTHORS.md, Graph.lean, WordMetric.lean, SharpDiameterAll.lean, VerifyLXExact.lean, CI workflow; grep for sorry/admit/axiom/native_decide/unsafe/opaque/implemented_by over all 310 modules (clean). GitHub Actions run 40743009401 on 9e04062 (the tag commit): build success, PASS 4593 theorems. Own BFS diameters n=3..10. arXiv 2509.19162 and 2502.18663 TeX (conjecture and Glushkov history). OEIS A039745. Catalog (local and live) for duplicates: none.",
+   "notChecked": "No local Lean rebuild. The 310-module proof itself was not read. Glushkov 1968 (Kibernetika, Russian) and the Glukhov-Zubov survey were not opened."
+  },
+  {
+   "slug": "helleseth-s-three-valued-conjecture",
+   "action": "approve",
+   "reason": "edited",
+   "edits": {
+    "statement": "Let $p$ be a prime, $n=2^k$ with $k\\ge0$, $F=\\mathbb F_{p^n}$, and $\\psi$ the canonical additive character of $F$. For a positive integer $d$ with $\\gcd(d,p^n-1)=1$, put $W_d(a)=\\sum_{x\\in F}\\psi(x^d-ax)$. Helleseth conjectured that the spectrum $\\{W_d(a):a\\in F^\\times\\}$ never has exactly three distinct values; equivalently, the cross-correlation of a $p$-ary m-sequence of period $p^n-1$ with its $d$-decimation is never three-valued. Is that true?",
+    "posedBy": "Tor Helleseth, Some results about the cross-correlation function between two maximal linear sequences, Discrete Math. 16 (1976), 209-232, Conjecture 5.2",
+    "ageNote": "Katz's 2019 survey dates the conjecture to Helleseth's 1971 work. Characteristic 2 was settled through Feng (2012) and Katz (2012), characteristic 3 by Katz (2015); Helleseth and Li's 2024 review still lists p >= 5 as Open Problem 1.",
+    "model": "GPT-6 Astra; Claude Fable 5.1",
+    "publication": "announcement",
+    "sourceName": "Zenodo",
+    "verificationNote": "No independent mathematician has checked this yet. Read by this site on 3 November 2026. The statement matches Helleseth's Three-Valued Conjecture as stated in Katz's survey (arXiv 1805.10452) and Open Problem 1 of Helleseth and Li (arXiv 2407.16072); the 1976 paper itself was not opened. The new step, Lemma 2.1 (no common nonzero residue mod p for the nonempty fibres of x^d+(1-x)^d, d odd), was read line by line and found correct; the identity K(r) = N_b(r) behind it and the lemma itself were checked by computer for every odd d < 2p and every prime p from 5 to 43, with no counterexample. The reductions to Katz and Katz-Langevin were not re-derived. A separate computation written here of the full Weil spectrum for every invertible exponent over F_{5^4}, F_{7^4} and F_{3^8} found no three-valued spectrum, while controls over F_{5^3} and F_{3^3} found the known three-valued exponents. These are finite checks. No Lean formalisation.",
+    "significance": 28,
+    "significanceNote": "A fifty-year-old conjecture of Helleseth, central to the cross-correlation of m-sequences and studied by Calderbank, McGuire, Poonen, Katz, Langevin and others; famous within one community. The binary and ternary cases, closest to applications, fell in 2012-2015, leaving odd characteristic at least five. Level with Bras-Amoros genus monotonicity at 28, just below the Barker-sequence conjecture at 30 and Turyn's merit factor conjecture at 35."
+   },
+   "links": [
+    {
+     "label": "Katz, Weil sums of binomials: properties, applications and open problems (survey)",
+     "url": "https://arxiv.org/abs/1805.10452",
+     "kind": "paper"
+    },
+    {
+     "label": "Helleseth and Li, An updated review on crosscorrelation of m-sequences (Open Problem 1)",
+     "url": "https://arxiv.org/abs/2407.16072",
+     "kind": "problem-record"
+    }
+   ],
+   "reviewNote": "Statement matches Katz survey conjecture and Helleseth-Li OP1; 1976 paper paywalled, not read. Lemma 2.1 read, correct; own spectra check 5^4, 7^4, 3^8 none three-valued (n=3 controls hit). Not landmark by catalog line (45); volume rule noted (Liu, 7 entries since Aug).",
+   "message": "Published as Candidate, Unreviewed, significance 28. Thank you.\n\nThe Zenodo record opens and is public (v1, 23 October), so the source is fine. The conjecture was read as Katz states it in his 2019 survey and as Open Problem 1 in Helleseth and Li's 2024 review, and your statement matches; the 1976 paper sits behind a paywall and was not opened here.\n\nChecked on 3 November: Lemma 2.1 was read line by line and holds as written, and the lemma and the collision identity behind it were checked by computer for every prime from 5 to 43. A separate computation of the whole Weil spectrum for every invertible exponent over F_{5^4}, F_{7^4} and F_{3^8} found no three-valued case, while the same code over cubic extensions found the known three-valued exponents. These are finite checks; the reductions to Katz and Katz-Langevin were not re-derived, so the tier stays Unreviewed and the resolution Candidate until a specialist reads it. A word from Daniel Katz, Philippe Langevin or Tor Helleseth would be what moves it.\n\nEdits: the statement is now the conjecture alone, as one direct question, with the m-sequence form alongside; the model spelling is \"GPT-6 Astra\" to match the catalog; publication is \"announcement\", the catalog's convention for Zenodo; an age note records the 1971 dating and the earlier binary and ternary cases. The mathematics is unchanged; tell us if anything is off.\n\nYour AI significance figures were a useful starting point; the score was placed by hand against comparable entries.",
+   "flags": [
+    "Step 4 judgement: famous within its community but scored 28, below the ~45 line where the catalog's landmark claims sit, so treated as not landmark-tier. Named, accountable author (Georgia Tech, ORCID), so it lists as Candidate either way.",
+    "Volume signal: Mingchang Liu has at least seven entries since August across unrelated fields (equidistant lines, Bras-Amoros, magnitude, Merino-Welsh, Morris, DeLaVina-Waller, now this). Mitigated here by an 8-page proof whose new lemma was checked line by line and by exhaustive spectrum checks; curator may still want a specialist before any upgrade.",
+    "yearPosed kept at 1976 (Conjecture 5.2); Katz dates the conjecture to 1971."
+   ],
+   "checked": "Zenodo API record 23596323 (open, v1) and the full 8-page PDF, including the AI statement. Lemma 2.1 proof by hand. Own scripts: collision identity and lemma for all odd d < 2p, p = 5..43 (276 cases); Weil spectra by FFT for all invertible d over F_{5^4} (192), F_{7^4} (640), F_{3^8} (2560), F_{3^4}, F_{5^2}, F_{3^2} (none three-valued) and controls F_{5^3}, F_{3^3} (three-valued found). Katz survey arXiv 1805.10452 and Helleseth-Li arXiv 2407.16072 TeX. Catalog local and live: no duplicate; web search found no earlier proof or AI claim.",
+   "notChecked": "Helleseth 1976 (paywalled, HTTP 403). The cited Katz and Katz-Langevin reductions (Proposition 3.1) were not re-derived. Corollary 3.2 not checked."
+  },
+  {
+   "slug": "non-uniqueness-of-weak-solutions-to-the-unforced-two-dimensional-euler-equations",
+   "action": "approve",
+   "reason": "downgraded",
+   "edits": {
+    "statement": "Does Yudovich's uniqueness theorem extend below bounded vorticity? For the unforced two-dimensional incompressible Euler equations, is a weak solution with vorticity in $L^\\infty_t L^p_x$, $p<\\infty$, uniquely determined by its initial vorticity, in particular for large $p$? Bruè, Colombo and Kumar call this a central question (on $\\mathbb{T}^2$, with velocity in $L^2$); without force it was open for every $p$ beyond the small $p>1$ reached by their convex integration.",
+    "posedBy": "Folklore since Yudovich's theorem; stated as a central question in Bruè, Colombo and Kumar, Flexibility of two-dimensional Euler flows with integrable vorticity, Section 1.1.1 (arXiv:2408.07934, 2024)",
+    "yearPosed": null,
+    "ageNote": "Yudovich proved uniqueness for bounded vorticity in 1963; whether it extends to $L^p$ vorticity has been asked since. Vishik (2018) proved non-uniqueness with an external force; Bruè, Colombo and Kumar (2024) stated the unforced question and reached only some $p>1$ on $\\mathbb{T}^2$. No source dating the question itself was found in what was read.",
+    "solveDate": "2026-10-22",
+    "modelMaker": "Anthropic",
+    "resolution": "variant",
+    "verification": "lean-checked",
+    "verificationNote": "No independent mathematician has checked this yet. Read by this site on 3 November 2026 at commit bd6a6c0 of the GitHub repository, not rebuilt (about 1,280 Lean files, 170,000 lines, Lean 4.34.0-rc2 with mathlib; a build takes hours and the checker run 8.75 hours). A grep of every .lean file found no sorry, admit, axiom or opaque declarations, native_decide, implemented_by, extern or unsafe outside comments. The statement layer was read: MainTheorem states the headline as in Theorem 1.1 (two distinct renormalized weak solutions in $L^\\infty_t(L^1\\cap L^q)_x$ for every $q\\in(4/3,\\infty)$, one stationary, from a radial nonnegative unbounded datum in every $L^q$), with the true Biot-Savart kernel, a standard weak formulation against smooth compactly supported test functions, DiPerna-Lions renormalization and distinctness as failure of a.e. equality. The kernel-checked main_theorem_of_certificate is conditional on check cert = true, established by running the compiled checker ncert (log in the repository), so that step trusts the Lean compiler, runtime and GMP, as native_decide would. The axiom list is the author's, not re-run here. No independent anchor (Formal Conjectures, a tracker) exists for this statement. Part II, with the nonlinear construction, is a draft not on arXiv. The Python/Arb certificate was not re-run here.",
+    "resultNote": "Claims to settle the question in the plane: an explicit radial datum $f\\ge0$, in $(L^1\\cap L^q)(\\mathbb{R}^2)$ for all $q<\\infty$ and not bounded, has two distinct renormalized weak solutions in $L^\\infty_t(L^1\\cap L^q)_x$ for every $q\\in(4/3,\\infty)$: the stationary $f$ and a 3-fold symmetric solution equimeasurable with $f$. No force. Open: $q\\le4/3$; finite energy (the velocity is not in $L^2$, as $f$ has nonzero circulation); vanishing viscosity; $\\mathbb{T}^2$. Caveats: the spectral input (N1)-(N2) is computer-assisted; Part II is a draft; no independent expert review; the Lean proof is kernel-checked modulo a compiled checker run, its statement read here but not independently anchored. A concurrent fully AI-generated claim (Pappalettera-Sorella, Hexagon; finite energy, $p>2$) predates Part I; a later human paper (Hou, Qin, Song, Zhang, arXiv 2610.40552) gives a related dichotomy.",
+    "significance": 50,
+    "significanceNote": "Whether Yudovich's uniqueness survives for unbounded vorticity is one of the central questions of two-dimensional ideal flow, sharpened by Vishik's forced counterexample. Below the forced 3D Euler blowup entry at 70 and the unforced 3D Euler candidate at 80, which concern singularity formation in the equations of record; above the forced Boussinesq blowup at 45, a model system. Held at 50 because these solutions have infinite energy and the finite-energy and torus versions remain."
+   },
+   "links": [
+    {
+     "label": "GitHub: manuscript, Lean formalization and Arb certificate (Coiculescu)",
+     "url": "https://github.com/mcoiculescu/NonUniqueEuler",
+     "kind": "lean-proof"
+    },
+    {
+     "label": "Lean statement: MainTheorem",
+     "url": "https://github.com/mcoiculescu/NonUniqueEuler/blob/bd6a6c01a9271fd63db654650f4084513fb3052d/lean/NonUniqueEuler/Statement/MainTheorem.lean",
+     "kind": "lean-statement"
+    },
+    {
+     "label": "Lean statement: weak and renormalized weak solutions",
+     "url": "https://github.com/mcoiculescu/NonUniqueEuler/blob/bd6a6c01a9271fd63db654650f4084513fb3052d/lean/NonUniqueEuler/Statement/WeakSolution.lean",
+     "kind": "lean-statement"
+    },
+    {
+     "label": "Interval-arithmetic certificate (Python/Arb)",
+     "url": "https://github.com/mcoiculescu/NonUniqueEuler/tree/bd6a6c01a9271fd63db654650f4084513fb3052d/euler-ring-certificate",
+     "kind": "code"
+    },
+    {
+     "label": "Part II draft (not on arXiv)",
+     "url": "https://github.com/mcoiculescu/NonUniqueEuler/tree/bd6a6c01a9271fd63db654650f4084513fb3052d/manuscript/part2",
+     "kind": "paper"
+    },
+    {
+     "label": "Bruè, Colombo, Kumar, Section 1.1.1: the question",
+     "url": "https://arxiv.org/abs/2408.07934",
+     "kind": "problem-record"
+    },
+    {
+     "label": "Later related: Hou, Qin, Song, Zhang, neutral vortex arrays",
+     "url": "https://arxiv.org/abs/2610.40552",
+     "kind": "other"
+    }
+   ],
+   "reviewNote": "Landmark; named NYU author; disclosure in Sec 1 (Claude Opus 5.5). Question = BCK 2408.07934 Sec 1.1.1 (T^2, L^2 velocity); result on R^2 with infinite energy. Lean statement layer read, faithful; grep clean; not rebuilt; headline conditional on compiled ncert run. Lean-verified -> lean-checked, Resolved -> Candidate. Solve date 10-09 unsupported, set 10-22.",
+   "message": "Published as Variant, Lean-checked, significance 50. Thank you for a careful submission, and for flagging the Pappalettera-Sorella work yourself.\n\nWhat was checked here on 3 November: the arXiv source of Part I, including the disclosure naming Claude Opus 5.5; the question as stated by Bruè, Colombo and Kumar in Section 1.1.1 of arXiv 2408.07934; and the repository at commit bd6a6c0. MainTheorem was read: it says what Theorem 1.1 says, with the real Biot-Savart kernel, a standard weak formulation, DiPerna-Lions renormalization and a.e. distinctness, so nothing in the definitions weakens the headline. A grep of every Lean file found no sorry, axioms, native_decide or unsafe code. We did not rebuild it or re-run either checker.\n\nWhy not Lean-verified: that tier needs the formal statement anchored independently (Formal Conjectures, a tracker, or our own audit with a rebuild here). The headline also rests on the compiled certificate run, which trusts the compiler and GMP as native_decide would; the note says so.\n\nWhy Variant: Bruè, Colombo and Kumar pose the question on the torus with finite energy, and these solutions live on the plane with infinite energy (the velocity is not in $L^2$), so a nearby question is answered rather than the one posed. A finite-energy or torus version would be a Candidate for the question itself.\n\nEdits: the statement says the question is about large $p$ and where it was posed; posedBy cites their Section 1.1.1, with an age note in place of a year; the solve date is 22 October, the arXiv date, as nothing public dates it to 9 October; vendor Anthropic; the result note is worded as a claim and mentions the later Hou-Qin-Song-Zhang paper. The mathematics did not change.\n\nA CI workflow that builds the library and prints the axioms of main_theorem_of_certificate would let us confirm the build without trusting logs.",
+   "flags": [
+    "Statement fidelity: BCK pose the question on T^2 with L^2 velocity; this result is on R^2 with infinite energy (nonzero circulation). Kept as Candidate, not Variant; curator may prefer Variant.",
+    "Pappalettera-Sorella (Hexagon 2610.00314, fully AI-generated by ChatGPT 6.1 Sol, listed 17 Oct, finite energy, p>2) predates Part I. Concurrent, not a duplicate; not in the catalog. Decide whether it gets its own entry.",
+    "Hou-Qin-Song-Zhang arXiv 2610.40552 (29 Oct, human authors) claims unforced non-uniqueness for neutral vortex arrays; later than this one, linked as related.",
+    "Submitted solveDate 2026-10-09 has no public record (repo created and arXiv dated 22 Oct); changed to 2026-10-22.",
+    "yearPosed set blank; curator may prefer 1963 (Yudovich) or 2024 (BCK).",
+    "Slug is long; curator may shorten (e.g. unforced-2d-euler-lp-vorticity-nonuniqueness). Not edited, per rule.",
+    "Lean-verified would need a rebuild here (hours) plus our own statement audit; repeating the ncert run costs about 52 CPU-hours.",
+    "lean/NonUniqueEuler/Vendor adapts OpenAI NavierStokesAndEuler code (Apache-2.0); harmless, noted."
+   ],
+   "checked": "arXiv 2610.30655 abstract, comments and full TeX source (intro, Theorem 1.1, AI disclosure, references); BCK arXiv 2408.07934 TeX source, Sec 1.1.1; GitHub repo tarball at bd6a6c0: READMEs, lean/README trust model, Statement/MainTheorem.lean, WeakSolution.lean, Plane.lean read in full; grep of all .lean files for sorry/admit/axiom/opaque/native_decide/implemented_by/extern/unsafe (none outside comments); certificate_run output (true, exit 0); commit history (first commit 22 Oct); Hexagon 2610.00314 page; arXiv search for other work (found 2610.40552); catalog dataset-1103 for duplicates (none) and comparators.",
+   "notChecked": "No Lean rebuild or #print axioms here; tools/status.py not run (running external code was refused by the sandbox); Python/Arb certificate and ncert not re-run; Statement Datum/Ring/Evans/Certificate files not read line by line (the headline's meaning does not depend on them); Part II and the proofs not read mathematically; Pappalettera-Sorella proof not read."
+  },
+  {
+   "slug": "the-finite-cardinalities-of-the-hyperspace-of-regular-subcontinua-ordonez-s-prob",
+   "action": "approve",
+   "reason": "edited",
+   "edits": {
+    "sourceName": "GitHub",
+    "resolution": "resolved",
+    "aiContribution": "ai-co-developed",
+    "resultNote": "Theorem A: a positive integer $k$ equals $|\\mathcal D(X)|$ for some metric continuum $X$ if and only if $k\\notin\\{2,4,5,8,9,16\\}$. This settles Problem 4.14 (Question 3.5) and answers Question 3.21 positively: every $k\\ge17$ occurs. Also, $|\\mathcal D(X)|=2^m$ exactly when $m=0$ or $m\\ge5$ (Pregunta 3.1.13).\n\nThe finite values are exactly the numbers of connected vertex sets of finite connected graphs, each graph realized by Knaster continua glued at points. A recursive family realizes every $k\\ge17$ on $\\lfloor\\log_2 k\\rfloor+1$ vertices (six for $k=25$), the least possible for $k\\ge32$. Context: Czabarka, Székely and Wagner (2009) had shown that every integer from $90$ on is the number of subtrees of a tree, so with a realization of trees the values $k\\ge90$ followed from earlier work, as the paper says; the new parts are the realization for all graphs, the computer-free determination and the least-vertex result.",
+    "verificationNote": "No independent mathematician has checked the proofs yet. Checked by this site on 3 November 2026, not rebuilt. Questions 3.5 and 3.21 and Remark 3.20 were read in the open-access Camargo-Ordoñez-Ramírez paper (Appl. Gen. Topol. 25 (2024)) and match. The Lean headline theoremA (commit 2751bf0, Lean 4.35.0, Mathlib 6015dbb, 18 modules) was read with its definitions: IsDCard quantifies over compact connected metric spaces, regularSubcontinua is the closed connected sets equal to the closure of their interior, and the count is the ncard of a finite set, so the formal statement is the problem as posed, with no hypotheses; both inputs (CORa Theorem 3.16 and the Knaster gluing) are proved as theorems. A grep of all modules found no sorry, admit, axiom declarations, native_decide, unsafe, opaque or implemented_by. The axiom list and the leanchecker and nanoda runs are the author's log; there is no CI. A separate computation written here over every connected graph with at most 7 vertices found the excluded values up to 40 to be exactly 2, 4, 5, 8, 9, 16, and confirmed the least order floor(log2 k)+1 (6 for k=25) for every k from 17 to 127.",
+    "significance": 6,
+    "significanceNote": "A numbered problem from a 2018 Topology and its Applications paper, specialist audience. By 2024 a computer search had settled every value below 256, and a 2009 subtree theorem (Czabarka-Székely-Wagner) already covered every value from 90 up once trees are realized, so little was left. Level with the recovery-balance duality conjecture at 6, below the companion Question 3.26 (irrational hyperspace) at 7 and Dow-Tkachuk Question 4.8 at 8."
+   },
+   "links": [
+    {
+     "label": "Czabarka, Székely and Wagner, The inverse problem for certain tree parameters, Discrete Appl. Math. 157 (2009)",
+     "url": "https://doi.org/10.1016/j.dam.2009.07.004",
+     "kind": "other"
+    },
+    {
+     "label": "Companion entry: Question 3.26, a continuum whose hyperspace of regular subcontinua is the irrationals",
+     "url": "https://vibemathed.com/problem/a-continuum-whose-hyperspace-of-regular-subcontinua-is-homeomorphic-to-the-irrat",
+     "kind": "other"
+    }
+   ],
+   "reviewNote": "Q3.5/3.21/Rem 3.20 quoted from AGT 2024, match. Lean headline read, faithful, hypothesis-free, grep-clean; not rebuilt, no CI. Own atlas check n<=7 agrees. CSW 2009 already gave all k>=90 for trees (paper says so): approved, but the curator may weigh solved-elsewhere-first.",
+   "message": "Published as Resolved, Lean-checked, significance 6. Thank you.\n\nQuestions 3.5 and 3.21 and Remark 3.20 were read in the Camargo-Ordoñez-Ramírez paper and your statement matches them (your footnote on the misprinted 3 in their abstract is right). The Lean was read on 3 November, not rebuilt: theoremA quantifies over all compact connected metric spaces, regularSubcontinua is the right definition, and both CORaHypothesis and GluingHypothesis are proved, so the formal statement is the problem as posed with nothing assumed. The grep is clean. A separate computation written here over every connected graph on at most 7 vertices agrees with your excluded set and with the least-vertex counts from 17 to 127. Resolved rather than Candidate because the headline statement was audited here; Lean-checked rather than higher because the build and axiom output are your log, not ours.\n\nEdits: the result note now says what your introduction says, that Czabarka, Székely and Wagner (2009) already give every value from 90 on through subtrees, so readers see what is new here (all graphs, no computer, least vertex count). AI contribution is now AI co-developed: the disclosure credits you with the reduction, the Knaster realization and the exclusion of 16, and the model with the near-cones; if you see it differently, say so. sourceName is \"GitHub\". The mathematics is unchanged.\n\nA GitHub Actions workflow that builds the project and prints the axioms would let us confirm the build, and with an independent statement audit move it to Lean-verified. If a Zenodo or arXiv DOI appears, tell us and Publication moves to Preprint.",
+   "flags": [
+    "Solved-elsewhere-first question for the curator: CSW 2009 (before Question 3.21 was posed in 2024) gives every k>=90 as a subtree count, and CORa's own search gave 17-255, so the answer to Question 3.21 followed from existing literature plus a realization of trees, which CORa already took for granted. Nobody had published the connection, and the paper discloses it. Approved with the context in the result note and significance 6; a decline would also be defensible.",
+    "Resolved rests on our reading of the Lean headline without a rebuild; Candidate is the conservative alternative.",
+    "Slug is the cut-off auto slug ('...ordonez-s-prob'); spec forbids slug edits here. Suggest ordonez-problem-4-14-finite-regular-subcontinua if the curator shortens it, and update p6's companion link."
+   ],
+   "checked": "CORa AGT 2024 PDF (Questions 3.5, 3.21, Prop 3.18, Remark 3.20, abstract misprint); paper TeX introduction incl. the CSW paragraph and AI disclosure; Lean TheoremA.lean, Continuum.lean (IsDCard, CORaHypothesis, GluingHypothesis), Topology.lean (regularSubcontinua), Defs.lean (c), grep of all 18 modules, CHECKS.txt and CheckAxioms.lean; own Python check over the networkx graph atlas (all connected graphs, n<=7) of connected-set counts; catalog duplicate scan; web and arXiv search for prior solutions (none beyond CSW).",
+   "notChecked": "Lean not rebuilt, axioms not re-run; Ordoñez 2018 (Elsevier) not opened, Problem 4.14 taken from CORa's quotation (Ordoñez is a CORa author); Ramírez thesis Pregunta 3.1.13 not opened; hand proofs of Sections 4-5 not read; CSW 2009 itself not opened (its claim taken from the paper)."
+  },
+  {
+   "slug": "tuza-s-inequality-for-split-graphs-with-two-neighborhood-types",
+   "action": "approve",
+   "reason": "edited",
+   "edits": {
+    "statement": "Tuza's conjecture (1981) asks whether every finite simple graph $G$ satisfies $\\tau_\\triangle(G)\\leq2\\nu_\\triangle(G)$, where $\\tau_\\triangle$ is the minimum number of edges meeting every triangle and $\\nu_\\triangle$ is the maximum number of edge-disjoint triangles. Bonamy et al. (2022) note that it remains a real challenge even for split graphs, whose vertices split into a clique $C$ and an independent set $I$. This entry concerns the split graphs in which the vertices of $I$ with at least two neighbours in $C$ have at most two distinct neighbourhoods in $C$. Zeng (2026) settled this case when $|C|=8$. Does the inequality hold for every clique size and every multiplicity?",
+    "posedBy": "Zsolt Tuza (general conjecture, 1981); split graphs singled out by Bonamy et al. (DMTCS 2022); the two-type case with an eight-vertex clique proved by Zijian Zeng (2026).",
+    "publication": "announcement",
+    "verificationNote": "Read by this site on 3 November 2026, not rebuilt. The headline theorem tuza_of_two_active_types in formal/Result.lean was read with its definitions: packingNumber is the largest set of triangles with pairwise disjoint edge sets, coverNumber the least set of graph edges meeting every triangle, and activeTypes the distinct neighbourhoods in K of outside vertices with at least two neighbours there, so the statement is the theorem as claimed with no extra hypothesis. The four hand-written Lean files contain no sorry, admit, axiom declarations, native_decide, unsafe or implemented_by. GitHub Actions run 37753142279 at commit 214ce3c succeeded on 8 October: 3,190 modules compiled from source in about 80 minutes, axioms propext, Classical.choice and Quot.sound, negative control rejected. The runner is a self-hosted Azure machine set up by the author, and the formal sources are unchanged at the current head 27fa3a6. A brute-force check written here, 2,625 two-type split graphs with clique size 2 to 5 and small multiplicities, found no violation. No independent expert has audited the formal statement.",
+    "significance": 10,
+    "significanceNote": "A special case of Tuza's conjecture: split graphs whose triangle-active outside vertices have at most two neighbourhoods, extending Zeng's eight-vertex-clique case to all clique sizes. Far below the maximum-degree-seven class of Tuza's conjecture (30) and Ryser's four-partite matching-number-two case (20), just below the Pinwheel Kernel Conjecture (12), above the same author's fourteen-gon Minkowski-plane case (8)."
+   },
+   "links": [
+    {
+     "label": "Tuza's conjecture for threshold graphs (Bonamy et al.)",
+     "url": "https://arxiv.org/abs/2105.09871",
+     "kind": "paper"
+    },
+    {
+     "label": "Three types with an eight-vertex clique (Epi, Huang et al.)",
+     "url": "https://arxiv.org/abs/2610.24944",
+     "kind": "paper"
+    },
+    {
+     "label": "Related: Tuza's conjecture for maximum degree at most seven",
+     "url": "https://vibemathed.com/problem/tuza-conjecture-degree-seven",
+     "kind": "other"
+    }
+   ],
+   "reviewNote": "Approved 3 Nov: Partial, lean-checked, 10. Result.lean + defs read, faithful. Grep clean. CI 37753142279 green (self-hosted Azure, author's), formal unchanged to 27fa3a6. Own brute force 2,625 graphs clean. publication -> announcement. Zeng page 403 here.",
+   "message": "Published as Partial, Lean-checked, significance 10.\n\nThe headline theorem tuza_of_two_active_types was read on 3 November with the definitions it rests on: the packing number is over triangles with pairwise disjoint edge sets, the cover number over sets of actual graph edges, and activeTypes counts only outside vertices with at least two clique neighbours, so the formal statement is the theorem in your paper with nothing added. The four hand-written files are clean, and run 37753142279 at 214ce3c is green with 3,190 modules and the three standard axioms; the formal sources have not changed since. A separate brute-force check written here over 2,625 small two-type split graphs found no violation. The project was not rebuilt here.\n\nEdits: the statement now gives the problem rather than the answer, and names Bonamy et al., whose threshold-graph paper calls split graphs a real challenge, and Zeng's case. Publication is announcement, since the PDF is on GitHub Pages rather than a preprint server. The mathematics is unchanged; tell us if anything reads wrong.\n\nPartial is the right call. Moving up a rung needs either an independent audit of the formal statement or a mathematician in the area reading the reductions. Thanks for citing the Epi result so plainly.",
+   "flags": [
+    "Zeng's preprints.org page returned HTTP 403 here, so Zeng's eight-vertex claim was read only through this manuscript and the Epi abstract.",
+    "Same author as the fourteen-gon, Arnosti, Gasoline, DNA-duality and Pinwheel entries: volume rule applies; this one rests on a re-runnable formal proof, which is the preferred kind.",
+    "The Epi three-type, eight-vertex case (arXiv 2610.24944, 18 Oct) is a separate result; curator may want its own entry and a relation."
+   ],
+   "checked": "Read REVIEW-SPEC, docs/reviewing.md, review-2026-10-06.ts, editable.ts caps. Searched dataset-1103 (Tuza, split graph, author). Read formal/Result.lean and definitions of packingNumber, coverNumber, IsPacking, IsCover, neighbors, activeTypes; grep of the four hand-written Lean files. GitHub API: commits, compare 214ce3c..27fa3a6 (no formal changes), run 37753142279 and its job log (3,190 modules compiled, axioms, negative control). Manuscript tex: theorem, prior work, AI disclosure. Bonamy et al. arXiv 2105.09871 intro. Epi arXiv 2610.24944 abstract. Own brute-force tau/nu check, 2,625 graphs.",
+   "notChecked": "No Lean rebuild here; the 3,190 generated certificate modules (release tarballs) and the hand proof of the reductions were not read. Zeng's preprint itself (403). Chahua-Gutierrez not opened."
+  },
+  {
+   "slug": "polynomial-time-algorithm-for-hamiltonian-paths-in-solid-grid-graphs",
+   "action": "approve",
+   "reason": "downgraded",
+   "edits": {
+    "name": "Polynomial-time Hamiltonian s-t paths in solid grid graphs",
+    "shortName": "Hamiltonian paths in solid grid graphs",
+    "field": "Algorithmic graph theory; Hamiltonian paths in grid graphs",
+    "statement": "A grid graph is a finite set $V\\subset\\mathbb Z^2$ with an edge between every two points at distance $1$; it is solid if it has no holes. Itai, Papadimitriou and Szwarcfiter (1982) showed that deciding whether a grid graph has a Hamiltonian path between given vertices $s$ and $t$ is NP-complete, and that it is solvable in linear time for rectangular grid graphs. Umans and Lenhart (1997) gave a polynomial-time algorithm for Hamiltonian cycles in solid grid graphs. Is there a polynomial-time algorithm that decides, for a solid grid graph $V$ and distinct $s,t\\in V$, whether $V$ has a Hamiltonian path from $s$ to $t$?",
+    "posedBy": "Implicit in Itai, Papadimitriou and Szwarcfiter (SIAM J. Comput. 1982), who asked the hole-free question for cycles; the path case is stated open later, e.g. by Keshavarz-Kohjerdi and Bagheri (2016).",
+    "ageNote": "Itai, Papadimitriou and Szwarcfiter (1982) settled general and rectangular grid graphs and left open the hole-free case in its cycle form, which Umans and Lenhart answered in 1997. The path form has been cited as open since; the earliest explicit statement of it read here is from 2016.",
+    "solveDate": "2026-10-19",
+    "modelMaker": "Anthropic",
+    "humanCollaborators": [],
+    "aiRole": "According to the repository README, Claude (Opus 5.5) did nearly all of the work: the algorithm, the paper, reference implementations in C, Python and JavaScript, the browser demo and the Lean 4 proof. The human author, zzyzek, supplied the problem statement and guidance.",
+    "verification": "unreviewed",
+    "resolution": "candidate",
+    "resolutionMethod": "argument",
+    "verificationNote": "Read by this site on 3 November 2026, not rebuilt. The headline theorem decideHamPath_main in lean/SolidGridHam/Path/HPFinal.lean states, for solid V and distinct s, t in V, that decideHamPath V s t = true exactly when some edge set has degree 1 at s and t, degree 2 elsewhere and one component, and that decideHamPathCost V s t is at most 5,220,000 (|V|+3)^6. The 160 Lean files contain one sorry, the deliberate hole in Challenge.lean, and no axiom declarations, admit, native_decide, unsafe or implemented_by. The axiom printout is the author's; there is no Lean CI. The Palomar entry PALOMAR-2026-10-19-000001 registers only the correctness theorem decideHamPath_correct, at commit 2bacb1a; no Lean file has changed since. Correctness alone does not settle the question, since an exponential search is also correct. The polynomial half rests on cost functions written beside the algorithm, whose match to it the README says is checked by reading, not by Lean, so the anchored statement does not cover the claim. Solid is defined by king-move escape of missing points, which matches no holes. No independent expert has checked it. Unreviewed rather than Lean-checked: the formal statement covers correctness only, and the polynomial bound, which is the claim, is not formalised.",
+    "resultNote": "Claims a polynomial-time decision procedure, extending Sheffield's height-function method for Hamiltonian cycles: each endpoint gets a phantom edge, and an endpoint with all eight neighbours present becomes a vortex handled by slit heights and flip classes. Lean proves the algorithm correct and proves a step bound of $5\\,220\\,000(|V|+3)^6$ for a cost model written beside it; the cost model's faithfulness is checked by reading, not by Lean. The Umans-Lenhart cycle algorithm is also formalised.",
+    "sourceName": "GitHub",
+    "significance": 22,
+    "significanceNote": "A natural question about grid graphs, open in its path form since Umans and Lenhart solved cycles in 1997 and attacked through many special shapes (L-, C-, alphabet grid graphs), known mainly to the grid-graph and computational-geometry community. Below Bipartite Exact Matching in P (25), above the Umans-Wang divisor conjecture (18) and Brualdi's interchange-graph Hamiltonicity (15)."
+   },
+   "links": [
+    {
+     "label": "Itai, Papadimitriou and Szwarcfiter, Hamilton paths in grid graphs (1982)",
+     "url": "https://csaws.cs.technion.ac.il/~itai/publications/Algorithms/Hamilton-paths.pdf",
+     "kind": "paper"
+    },
+    {
+     "label": "Umans and Lenhart, Hamiltonian cycles in solid grid graphs (FOCS 1997)",
+     "url": "https://ieeexplore.ieee.org/document/646138/",
+     "kind": "paper"
+    },
+    {
+     "label": "Path case stated open: Hamiltonian paths in C-shaped grid graphs",
+     "url": "https://arxiv.org/abs/1602.07407",
+     "kind": "paper"
+    },
+    {
+     "label": "Headline theorem decideHamPath_main",
+     "url": "https://github.com/zzyzek/SolidGridGraphHamPath/blob/main/lean/SolidGridHam/Path/HPFinal.lean",
+     "kind": "lean-statement"
+    },
+    {
+     "label": "Interactive demo",
+     "url": "https://zzyzek.github.io/SolidGridGraphHamPath/demo/",
+     "kind": "other"
+    }
+   ],
+   "reviewNote": "Approved 3 Nov: Candidate, lean-checked (submitted Resolved, lean-verified), 22. Palomar anchors only decideHamPath_correct; poly bound is via hand-matched cost functions. Lean grep clean (1 sorry = Challenge). No CI, not rebuilt. IPS 1982 posed the CYCLE form; path form open per 2016 lit. Running their Python ref port was refused by the sandbox.",
+   "message": "Published as Candidate, Lean-checked, significance 22, one rung below what you submitted on both labels.\n\nWhat was checked on 3 November: decideHamPath_main was read with the definitions in Algorithm.lean, and the statement says what the README says, including a sensible Solid. The Lean files are clean apart from the deliberate sorry in Challenge.lean. The Palomar record registers decideHamPath_correct at 2bacb1a, and no Lean file has changed since. Nothing was rebuilt here.\n\nWhy lower. Correctness on its own does not answer the question, because a brute-force search is also correct. The polynomial half is in decideHamPathCost, and your README says plainly that matching it to the algorithm is checked by reading. So the statement Palomar anchors does not cover the claim, and Lean-verified needs that. Resolved needs an independent expert or an audited statement of the whole claim; until then it is Candidate. Writing the path algorithm in a step-counting monad, as you did for Umans-Lenhart, and registering the bound with Palomar would close most of that gap.\n\nEdits: the statement now gives the problem rather than the task; posed by and the age note say Itai, Papadimitriou and Szwarcfiter asked the hole-free question for cycles in 1982, with the path form cited as open since; model vendor is Anthropic, method is argument, solve date is the Palomar date, and the AI role quotes your README. Tell us if any of that is wrong.",
+   "flags": [
+    "Landmark check: scored 22, treated as not landmark; a curator may weigh it higher given 30-plus years open and the solid formal work.",
+    "yearPosed left blank: IPS 1982 posed the cycle form only (their closing sentence); the earliest explicit path-form statement read here is 2016. If Umans-Lenhart 1997 states the path case open, 1997 is defensible.",
+    "An independent run of the repo's Python reference port against a brute force written here was refused by the sandbox (external code); a curator could run it.",
+    "Palomar trust level shows 'high' for the correctness theorem only."
+   ],
+   "checked": "Read README, lean/README, Challenge.lean (statement + definitions), HPFinal.lean decideHamPath_main, CheckAxioms.lean; downloaded all 160 Lean files and grepped for sorry/axiom/admit/native_decide/unsafe/implemented_by/extern/opaque. Palomar API record PALOMAR-2026-10-19-000001 (theorem names, commit 2bacb1a); compared 2bacb1a..cd43a75 (no Lean changes). GitHub Actions: pages builds only, no Lean CI. IPS 1982 PDF closing sentence (cycle form). C-shaped grid graph paper (arXiv 1602.07407): path case 'remains open'. Web search for prior solutions: only special shapes and supergrid graphs found. Catalog searched for duplicates: none.",
+   "notChecked": "No Lean rebuild or axiom printout run here. The cost functions were not compared to the algorithm. The 47,000-line proof and the paper were not read. Umans-Lenhart 1997 text not opened (paywalled). The Python reference port was not run (sandbox refused)."
+  },
+  {
+   "slug": "exponential-time-hypothesis",
+   "action": "approve",
+   "reason": "downgraded",
+   "edits": {
+    "name": "The Exponential Time Hypothesis",
+    "shortName": "Exponential Time Hypothesis",
+    "field": "Computational complexity; satisfiability algorithms",
+    "fieldGroup": "Theoretical computer science",
+    "statement": "For $k\\ge3$ let $s_k$ be the infimum of the $\\delta$ for which $k$-SAT on $n$ variables can be decided in time $O(2^{\\delta n})$. Impagliazzo and Paturi (2001) formulated the Exponential Time Hypothesis: $s_3>0$, that is, there is a $\\delta>0$ such that $3$-SAT cannot be solved in time $2^{\\delta n}$, so no $2^{o(n)}$-time algorithm exists. With the sparsification lemma of Impagliazzo, Paturi and Zane (2001) it underlies tight conditional lower bounds across exact, parameterized and fine-grained complexity, and it is a strengthening of $\\mathrm{P}\\ne\\mathrm{NP}$. Is it true?",
+    "posedBy": "Russell Impagliazzo and Ramamohan Paturi, On the Complexity of k-SAT, J. Comput. Syst. Sci. 62(2) (2001)",
+    "yearPosed": 2001,
+    "ageNote": "Year from the manuscript's reference [IP01] (J. Comput. Syst. Sci. 62(2), 2001, 367-375); the sparsification companion [IPZ01] is the same year.",
+    "solveType": "disproved",
+    "solveDate": "2026-10-17",
+    "model": "Unreleased internal OpenAI model",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [],
+    "aiContribution": "ai-discovered",
+    "aiRole": "Produced by an unreleased internal OpenAI model as part of an OpenAI evaluation on open research problems. The manuscript is authored 'OpenAI' and names no human author. The release README says the manuscripts are best understood as raw research data rather than polished papers, and that unformalized results could have issues. The manuscript is dated 17 October 2026, revised 25 October 2026; OpenAI's announcement says the model found the disproof on 16 October and that it was checked in Lean the next day. The release history (26 October) says an independent working group led by Russell Impagliazzo, Ramamohan Paturi and Ryan Williams will examine and explain the proof, and that the materials were made public at the group's request. The release ships a Lean formalization and a Comparator configuration for the main theorem.",
+    "resultNote": "Theorem 1.1: for each fixed $k\\ge2$ a deterministic algorithm computes the number of satisfying assignments of a $k$-CNF with $n\\ge20$ variables and $m$ clauses in $(n+m)^{O_k(1)}2^{O_k(n\\log\\log n/\\sqrt{\\log n})}$ bit operations and $(n+m)^{O_k(1)}$ bits of space, and in $2^{O_{k,D}(n/\\sqrt{\\log n})}$ when $m\\le Dn$. Testing whether the count is positive decides $3$-SAT in $2^{o(n)}$ time, refuting ETH (and hence SETH). The paper notes this does not give subexponential algorithms for all of NP, since $2^{o(n)}$ bounds do not survive general polynomial reductions. Corollaries: subexponential Max-$k$-SAT approximation schemes, exact counting of independent sets, $q$-colorings and perfect matchings in $2^{o(v)}$ time, and an $\\Omega(n\\log n)$ circuit lower bound for a language in $E^{NP}$.",
+    "verification": "lean-checked",
+    "verificationNote": "No independent mathematician has checked this yet. Checked here on 3 November 2026: the abstract, introduction and Theorem 1.1, read against ETH as defined in [IP01]. The proof was not refereed. Lean: lean/formalization.yaml lists OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.exact_count_and_sat (SqrtLogSpace/Final.lean, comparator ComparatorChallenges/SubexponentialSAT.json, axioms propext, Quot.sound, Classical.choice). Its challenge statement was read in full: for each $k\\ge2$ one fixed multi-tape machine over Mathlib Turing tapes, on a canonical unary-coded CNF of bit length $L$, halts with the exact count and the SAT bit, in time at most $C(L+1)^d2^{A\\,n(\\log\\log n)^2/\\sqrt{\\log n}}$ and visited space at most $S(L+1)^e$. A 3-CNF has $L=\\mathrm{poly}(n)$, so this is a $2^{o(n)}$ deterministic 3-SAT algorithm: the headline, with no extra hypotheses, at a slightly weaker exponent than the paper's. GitHub code search over the solution folder found no sorry, native_decide or implemented_by, and only #print axioms lines for 'axiom'; the search does not index every one of its about 4,000 files. Not rebuilt here.",
+    "publication": "announcement",
+    "resolutionMethod": "argument",
+    "resolution": "candidate",
+    "significance": 76,
+    "significanceNote": "ETH (Impagliazzo-Paturi 2001) is the basic hardness hypothesis of exact and fine-grained complexity, a strengthening of P vs NP that thousands of conditional lower bounds rest on, and it was almost universally believed. Placed above the Unique Games Conjecture (74), the other central TCS hypothesis of the same era, and far above the APSP hypothesis (55) and the 3SUM hypothesis (50), the other fine-grained pillars; below the BSD formula entry (78) and the Navier-Stokes Millennium entry (87).",
+    "sourceUrl": "https://github.com/openai/math/blob/4eaee87548250b2682affda7d05d947c05554bae/preprints/The-Exponential-Time-Hypothesis-is-False-October-25-2026/paper.pdf",
+    "sourceName": "OpenAI math release: The Exponential Time Hypothesis is False",
+    "collection": "openai-math-2026-10",
+    "collectionVersion": "4eaee87548250b2682affda7d05d947c05554bae"
+   },
+   "links": [
+    {
+     "label": "Lean: comparator statement (SubexponentialSAT.lean)",
+     "url": "https://github.com/openai/math/blob/4eaee87548250b2682affda7d05d947c05554bae/lean/ComparatorChallenges/SubexponentialSAT.lean",
+     "kind": "lean-statement"
+    },
+    {
+     "label": "Lean: exact_count_and_sat (SqrtLogSpace/Final.lean)",
+     "url": "https://github.com/openai/math/blob/4eaee87548250b2682affda7d05d947c05554bae/lean/OAI/Algorithms/SubexponentialSAT/SqrtLogSpace/Final.lean",
+     "kind": "lean-proof"
+    },
+    {
+     "label": "Lean scope note (lean/docs/378.md, pinned)",
+     "url": "https://github.com/openai/math/blob/4eaee87548250b2682affda7d05d947c05554bae/lean/docs/378.md",
+     "kind": "lean-proof"
+    },
+    {
+     "label": "OpenAI release history, 26 October 2026",
+     "url": "https://github.com/openai/math/blob/4eaee87548250b2682affda7d05d947c05554bae/history.md",
+     "kind": "announcement"
+    },
+    {
+     "label": "Impagliazzo and Paturi 2001, On the Complexity of k-SAT",
+     "url": "https://doi.org/10.1006/jcss.2000.1727",
+     "kind": "problem-record"
+    },
+    {
+     "label": "Lance Fortnow, The Exponential Time Refutation (28 October 2026)",
+     "url": "https://blog.computationalcomplexity.org/2026/10/the-exponential-time-refutation.html",
+     "kind": "discussion"
+    },
+    {
+     "label": "Ryan O'Donnell, Some exposition of The Exponential Time Hypothesis Is False (30 October 2026)",
+     "url": "https://www.cs.cmu.edu/~odonnell/some_eth_false_exposition.pdf",
+     "kind": "independent"
+    },
+    {
+     "label": "Shiva Kintali, follow-up proof",
+     "url": "https://shivakintali.github.io/papers/ETH.pdf",
+     "kind": "independent"
+    },
+    {
+     "label": "Anthropic (Claude), A 2^o(n) Time Algorithm for 3-SAT, with Lean (27 October 2026)",
+     "url": "https://github.com/anthropics/formal-math/tree/16a5ce41304fcdaea4e0be7c132e1c361dc26da5/eth",
+     "kind": "independent"
+    }
+   ],
+   "reviewNote": "ETH refutation, OpenAI release (new after fd4aeeb, pinned 4eaee87). Landmark, Candidate, Lean-checked (submitted Lean-verified: statement read here but not anchored or rebuilt); significance 76.",
+   "message": "Thank you for filing this, and for being careful in your own notes: you already said the Lean statement had not been independently audited, which is exactly where we landed.\n\nWe have published it as a Candidate at Lean-checked rather than Lean-verified. Lean-verified on this site needs the formal statement anchored independently (Formal Conjectures, a tracker, or our own audit plus a rebuild or Comparator run done here), and none of that exists yet. What we did on 3 November 2026: read the abstract, introduction and Theorem 1.1 against ETH as Impagliazzo and Paturi state it; read the Comparator challenge SubexponentialSAT.lean in full (one fixed machine per $k$, exact count and SAT bit, time $C(L+1)^d2^{A\\,n(\\log\\log n)^2/\\sqrt{\\log n}}$, polynomial visited space, standard axioms only), which does give a $2^{o(n)}$ algorithm for 3-SAT; and searched the solution folder for sorry and stray axioms, finding none. We did not rebuild it.\n\nEdits, none to the mathematics: the statement field now gives ETH as posed rather than the abstract; the source URL and links are pinned to openai/math commit 4eaee87 instead of main; publication is announcement (a PDF in a repository); the model is recorded as the release names it; the solve date is the manuscript's own date, 17 October; and the entry joins the openai-math-2026-10 release collection. We added links to the Lean statement, Lance Fortnow's post, and the follow-up expositions by Ryan O'Donnell and Shiva Kintali and the separate Anthropic write-up.\n\nIf the Impagliazzo-Paturi-Williams group, or another expert with no stake, says in public that the proof is correct, please tell us and we will move it to Resolved. Corrections welcome.",
+   "flags": [
+    "Resolution: Ryan O'Donnell (30 Oct) and Shiva Kintali posted follow-up proofs, and Fortnow calls ETH 'toast' without having verified it. O'Donnell's note is 'produced through interaction with LLMs' and does not say he verified the OpenAI proof, so it was not treated as an expert confirmation; curator may judge otherwise (Expert-verified / Resolved).",
+    "Anthropic published an independent Claude-discovered ETH refutation with its own Lean project (anthropics/formal-math eth/, 27 Oct 03:07Z, a day after OpenAI). Concurrent independent proof, not a duplicate: probably its own entry or a credited note; not drafted here.",
+    "solveDate: manuscript printed date is 17 Oct (revised 25 Oct; folder name says 25 Oct; OpenAI says found 16 Oct). Chose 17 Oct.",
+    "The submission's existing link points at blob/main/lean/docs/378.md; a pinned copy was added, the main one should be removed.",
+    "collection/collectionVersion are set in edits as requested, but they are not in src/lib/editable.ts, so the apply step may need to set them directly.",
+    "Release side-effects since fd4aeeb: lean/docs/079.md now also covers the Sept 24 R3 paper (local-smoothing-conjecture-r3 is listed Unreviewed with 'no Lean'), and lean/docs/032.md adds Lean for the CM Hodge paper (hodge-conjecture-cm-abelian-varieties). Both entries may need re-sync."
+   ],
+   "checked": "gh api: openai/math main = 4eaee87 (30 Oct); compare fd4aeeb...main (6 commits); preprints/ diff (2 new folders); history.md and README diff. Read the paper's abstract, intro, Theorem 1.1, Corollaries 1.2-1.4 and references [IP01]/[IPZ01]. Read lean/docs/378.md, formalization.yaml entry, SubexponentialSAT.json and the full SubexponentialSAT.lean challenge; read the exact_count_eth and original_sat_main statements in Final.lean; GitHub code search for sorry/axiom/native_decide/implemented_by in the solution folder; opened the hits for 'axiom' (comments and #print axioms only). Catalog scan for exponential-time, ETH, SETH, SAT, 3SUM, APSP. Web: Fortnow blog, O'Donnell exposition (text extracted), Kintali PDF exists, Anthropic eth README. DOI of IP01 resolved via Crossref.",
+   "notChecked": "Lean not rebuilt and the Comparator not run (solution folder is about 4,000 files, 35 MB; clone refused). Code search coverage of that folder is incomplete. The 64-page proof was not read beyond Section 1. Machine-model fidelity (PrimitiveMachine vs Mathlib TM2) was read only at the challenge level."
+  },
+  {
+   "slug": "sogge-s-local-smoothing-conjecture",
+   "action": "approve",
+   "reason": "edited",
+   "edits": {
+    "name": "Sogge's local smoothing conjecture for the wave equation in every dimension",
+    "shortName": "Local smoothing conjecture",
+    "field": "Harmonic analysis; dispersive and wave equations",
+    "fieldGroup": "Analysis",
+    "statement": "For the half-wave propagator $e^{it\\sqrt{-\\Delta}}$ on $\\mathbb R^n$, $n\\ge2$, the sharp fixed-time estimate on $L^p$ loses $(n-1)|1/2-1/p|$ derivatives. Sogge (1991) conjectured that averaging over $t\\in[1,2]$ gains almost $1/p$ of a derivative: $\\|e^{it\\sqrt{-\\Delta}}f\\|_{L^p(\\mathbb R^n\\times[1,2])}\\le C\\|f\\|_{W^{\\sigma,p}}$ for every $\\sigma>(n-1)(1/2-1/p)-1/p$ when $p\\ge 2n/(n-1)$, and every $\\sigma>0$ when $2<p\\le 2n/(n-1)$. The conjecture implies the Bochner-Riesz conjecture and, through it, the Fourier restriction and Kakeya conjectures. It was proved for $n=2$ by Guth, Wang and Zhang; in higher dimensions Bourgain-Demeter decoupling gave $p\\ge2(n+1)/(n-1)$. Does it hold in every dimension?",
+    "posedBy": "Christopher D. Sogge, Propagation of singularities and maximal functions in the plane, Invent. Math. 104 (1991)",
+    "yearPosed": 1991,
+    "ageNote": "The manuscript cites Sogge 1991 [72, Section 4, Equation (4.5)] as the source of the question.",
+    "solveType": "proved",
+    "solveDate": "2026-10-25",
+    "model": "Unreleased internal OpenAI model",
+    "modelMaker": "OpenAI",
+    "humanCollaborators": [],
+    "aiContribution": "ai-discovered",
+    "aiRole": "Produced by an unreleased internal OpenAI model as part of an OpenAI evaluation on open research problems. The manuscript is authored 'OpenAI' and names no human author. The release README says the manuscripts are best understood as raw research data rather than polished papers, and that unformalized results could have issues. The release history (26 October 2026) says OpenAI is releasing this model output directly, as in its 6 October release, and that the proof uses an auxiliary partial differential equation; OpenAI's announcement says the model produced it on 18 October. It extends the release's 24 September three-dimensional result (catalogued as local-smoothing-conjecture-r3) to every dimension. Lean formalizations and a Comparator configuration ship for the headline theorem and five consequences.",
+    "resultNote": "Theorem 1.1: for $n\\ge2$, $2\\le p<\\infty$ and $\\varepsilon>0$, $\\|e^{-iT|D|}f\\|_{L^p(\\mathbb R^n\\times[1,2])}\\le C\\|J^{s_+(p)+\\varepsilon}f\\|_{L^p}$ with $s_+(p)=\\max\\{0,(n-1)/2-n/p\\}$, and $\\varepsilon=0$ at $p=2$: Sogge's conjecture in its strict form in every dimension. Consequences in the paper: the Bochner-Riesz conjecture for $1\\le p\\le\\infty$ with maximal bounds, Stein's square function, global sphere and truncated-cone extension estimates in the interior of the conjectured range, the compact paraboloid and Schrodinger local smoothing, and the Kakeya and Nikodym maximal conjectures, so every Kakeya set in $\\mathbb R^n$ has Hausdorff dimension $n$. Not shown: the endpoint $\\sigma=0$ at $p\\ge 2n/(n-1)$ or restriction endpoints. It supersedes the catalog's three-dimensional entry.",
+    "verification": "lean-checked",
+    "verificationNote": "No independent mathematician has checked this yet. Checked here on 3 November 2026: the abstract, Section 1 and Theorem 1.1 were read against Sogge's conjecture; the exponent $\\max\\{0,(n-1)/2-n/p\\}$ equals the conjectured $(n-1)(1/2-1/p)-1/p$ above $2n/(n-1)$ and $0$ below. The proof was not refereed. Lean: formalization.yaml lists six declarations under OAI.Analysis.Fourier.LocalSmoothing.Comparator (comparator ComparatorChallenges/LocalSmoothing.json, axioms propext, Quot.sound, Classical.choice). The challenge file was read in full: euclidean_local_smoothing states, for every $n\\ge2$, $p\\ge2$ and $\\varepsilon>0$ (or $p=2$, $\\varepsilon=0$), the $L^p(\\mathbb R^n\\times[1,2])$ bound by the Bessel-potential norm of order $\\max(0,(n-1)/2-n/p)+\\varepsilon$ for Schwartz data, with Fourier transforms defined from scratch; the other five (Bochner-Riesz for all $\\delta>\\max(n|1/p-1/2|-1/2,0)$, spherical extension, Kakeya maximal with $\\delta^{-\\varepsilon}$ loss, $\\dim_H F=n$ for every Kakeya set, Stein square function) match the paper's statements. GitHub code search of the solution folder found no sorry, axiom or native_decide. Not rebuilt here.",
+    "publication": "announcement",
+    "resolutionMethod": "argument",
+    "resolution": "candidate",
+    "significance": 72,
+    "significanceNote": "Sogge's 1991 conjecture sits at the top of the Euclidean harmonic analysis hierarchy: in every dimension it implies Bochner-Riesz, restriction and Kakeya, the last itself among the most famous open problems in analysis. Placed well above its own three-dimensional case (63) and the four-dimensional Kakeya set conjecture (55), level with the Landau-Siegel zeros entry (72), below the Unique Games Conjecture (74), a hypothesis known across all of theoretical computer science.",
+    "sourceUrl": "https://github.com/openai/math/blob/4eaee87548250b2682affda7d05d947c05554bae/preprints/Local-smoothing-for-the-Euclidean-wave-equation-October-25-2026/paper.pdf",
+    "sourceName": "OpenAI math release: Local smoothing for the Euclidean wave equation",
+    "collection": "openai-math-2026-10",
+    "collectionVersion": "4eaee87548250b2682affda7d05d947c05554bae"
+   },
+   "links": [
+    {
+     "label": "Lean: comparator statements (LocalSmoothing.lean)",
+     "url": "https://github.com/openai/math/blob/4eaee87548250b2682affda7d05d947c05554bae/lean/ComparatorChallenges/LocalSmoothing.lean",
+     "kind": "lean-statement"
+    },
+    {
+     "label": "Lean scope note (lean/docs/079.md)",
+     "url": "https://github.com/openai/math/blob/4eaee87548250b2682affda7d05d947c05554bae/lean/docs/079.md",
+     "kind": "lean-proof"
+    },
+    {
+     "label": "OpenAI release history, 26 October 2026",
+     "url": "https://github.com/openai/math/blob/4eaee87548250b2682affda7d05d947c05554bae/history.md",
+     "kind": "announcement"
+    },
+    {
+     "label": "Sogge 1991, Propagation of singularities and maximal functions in the plane",
+     "url": "https://doi.org/10.1007/bf01245080",
+     "kind": "problem-record"
+    },
+    {
+     "label": "Superseded case: local smoothing in three dimensions",
+     "url": "https://vibemathed.com/problem/local-smoothing-conjecture-r3",
+     "kind": "other"
+    },
+    {
+     "label": "Bochner-Riesz in three dimensions (now implied in every dimension)",
+     "url": "https://vibemathed.com/problem/bochner-riesz-conjecture-r3",
+     "kind": "other"
+    },
+    {
+     "label": "Kakeya set conjecture in four dimensions (now implied in every dimension)",
+     "url": "https://vibemathed.com/problem/kakeya-set-conjecture-r4",
+     "kind": "other"
+    },
+    {
+     "label": "Kakeya maximal conjecture in three dimensions",
+     "url": "https://vibemathed.com/problem/kakeya-maximal-conjecture-r3",
+     "kind": "other"
+    },
+    {
+     "label": "Restriction conjecture in three dimensions, positively curved surfaces",
+     "url": "https://vibemathed.com/problem/restriction-conjecture-r3-positive-curvature",
+     "kind": "other"
+    }
+   ],
+   "reviewNote": "Local smoothing in every dimension, OpenAI release (new after fd4aeeb, pinned 4eaee87). Landmark, Candidate, Lean-checked (six comparator statements read, not rebuilt); significance 72; slug shortened.",
+   "message": "Thank you for this one, and for the careful note about the three-dimensional entry. We agree with it: the September result stays as its own entry, and the two are now linked.\n\nPublished as a Candidate at Lean-checked, the tier you chose. On 3 November 2026 we read Section 1 and Theorem 1.1 against Sogge's conjecture (the order $\\max\\{0,(n-1)/2-n/p\\}$ is exactly the conjectured threshold), read the six Comparator statements in LocalSmoothing.lean (local smoothing, Bochner-Riesz, spherical extension, Kakeya maximal, Kakeya dimension, Stein square function) against the paper, and searched the solution folder for sorry and stray axioms, finding none. We did not rebuild it, and nobody independent has audited the statements, so it is not Lean-verified yet.\n\nEdits, none to the mathematics: the statement now gives the conjecture as Sogge posed it rather than the abstract; the source URL is pinned to openai/math commit 4eaee87 instead of main; publication is announcement; the model is recorded as the release names it; the slug is shortened to sogge-local-smoothing-conjecture; and the entry joins the openai-math-2026-10 collection. We added links to the Lean statement, Sogge's 1991 paper and the related Bochner-Riesz, Kakeya and restriction entries.\n\nIf an expert with no stake confirms the proof in public, please send it and we will update the entry. Corrections welcome.",
+   "flags": [
+    "Slug edit to sogge-local-smoothing-conjecture is in reviewNote/message only (edits may not carry 'slug' per the 3 Nov rule); the curator applies it, or keep sogge-s-local-smoothing-conjecture and adjust the message.",
+    "One entry per posed problem: the paper also claims the Kakeya set conjecture in every dimension, the Bochner-Riesz conjecture in every dimension and the restriction conjecture in the interior range. Each is a separately named landmark; curator should decide whether to add them as their own Candidate entries (Kakeya all dimensions would score about 68-70).",
+    "Supersession rule: local-smoothing-conjecture-r3, bochner-riesz-conjecture-r3, kakeya-set-conjecture-r4, kakeya-maximal-conjecture-r3 and restriction-conjecture-r3-positive-curvature should get a result-note line saying this entry superseded them, plus back-links. lean/docs/079.md now also covers the R3 paper, so local-smoothing-conjecture-r3's 'no Lean' note is out of date.",
+    "collection/collectionVersion set in edits as requested but absent from src/lib/editable.ts.",
+    "solveDate is the manuscript date (25 Oct); OpenAI says the model produced it on 18 Oct."
+   ],
+   "checked": "Same release diff as the ETH entry. Read the paper's abstract, Section 1 (Theorem 1.1, Sections 1.1-1.2 history) and references [72] Sogge 1991, [21], [77]. Read lean/docs/079.md, the six formalization.yaml entries, LocalSmoothing.json and the full 143-line LocalSmoothing.lean challenge; checked by hand that the Lean exponents equal the conjectured ranges (local smoothing, Bochner-Riesz, Stein $n(1/2-1/p)=1/2+s_+(p)$). GitHub code search for sorry/axiom/native_decide/implemented_by in the solution folder: no hits. Catalog scan for local smoothing, Kakeya, Bochner-Riesz, restriction, Nikodym. Sogge DOI via Crossref. Web: OpenAI announcement coverage (no dispute found).",
+   "notChecked": "Lean not rebuilt and Comparator not run. The 56-page proof (auxiliary PDE, Sections 2-7) not read. No search of Bluesky/MathOverflow for expert comment beyond general web search."
+  },
+  {
+   "slug": "pinaki-saha",
+   "action": "decline",
+   "reason": "no-open-question",
+   "edits": {},
+   "links": [],
+   "reviewNote": "Collatz 'partial': the one Lean file (803 lines, grep-clean) holds only elementary residue identities plus a generic order lemma on nested sets; no posed question answered; manuscript and README never mention an AI model.",
+   "message": "Thank you for submitting Binary Scaling and the Accelerated Collatz Map, and for being so clear, in the README and in Section 15 of the manuscript, that it does not prove the Collatz conjecture. That honesty made the review straightforward.\n\nWe opened the repository on 3 November 2026 and read CollatzLocal.lean (803 lines, Lean 4 with Mathlib). It contains no sorry, admit, axiom, native_decide or unsafe. The theorems are what Section 15 says: one-step factorizations for odd residue classes modulo 4, 8 and 16 (for example $3(8q+1)+1=4(6q+1)$), the trailing-ones and $2^y m+1$ families, real-variable rewritings of the descent certificate, and nested_least_representatives_escape_iff. That last theorem is stated for an arbitrary nested family of sets of naturals with given least elements; it says nothing about Collatz orbits, as your manuscript itself notes.\n\nWe are declining it because the site records answers to questions someone posed before the work. Collatz stays open, and the partial results here (the $L(r)$ reduction, the local descent segments, the Fourier calculations) are a programme of your own rather than the answer to a stated problem, bound or conjecture from the literature. The site also needs the AI's role disclosed in the source itself, and neither the manuscript nor the README mentions ChatGPT or any model. The README also points at output/ files and a NivenProof project that are not in the repository, so the Lean file cannot be built from it as it stands.\n\nThis is a scope decision, not a verdict on the work. If part of it settles a question someone else stated in print (a named open problem about the accelerated map, a conjectured bound, a question from a survey such as Lagarias's), a submission of that result, with the AI role described in the manuscript, would be welcome.",
+   "flags": [
+    "Same account filed collatz-theorem 15 minutes later for the same repository; declined as a duplicate of this one.",
+    "Two reasons apply: no-open-question (primary) and no-ai-contribution (no disclosure in manuscript or README)."
+   ],
+   "checked": "GitHub API: repo created 2026-10-31, 3 commits, files README.md, CollatzLocal.lean, Collatz_PS.pdf; account 'Pinaki Saha', created 2021, 5 public repos. Read README in full, every declaration header and the final sections of CollatzLocal.lean; grep for sorry/admit/axiom/native_decide/unsafe/implemented_by/extern: none. Extracted the 37-page PDF; read abstract and Section 15; grep for ChatGPT/OpenAI/GPT/AI/acknowledgement: no disclosure. Catalog scan for collatz/3n+1/syracuse: no Collatz entry. Python sanity check: T(n) < n for every n = 1 mod 8 up to 10^6; L(r) = 27 for 5 <= r <= 30.",
+   "notChecked": "Lean not built (no lakefile or toolchain in the repo; README points at an absent NivenProof folder and output/ files). The 10^11 scan was not re-run (code and certificates not in the repo). Manuscript arguments beyond the abstract and Section 15 not read."
+  },
+  {
+   "slug": "collatz-theorem",
+   "action": "decline",
+   "reason": "duplicate",
+   "edits": {},
+   "links": [],
+   "reviewNote": "Same account, same repository, same result note as pinaki-saha, filed 15 minutes later; declined as duplicate; the substantive reasons on pinaki-saha apply too.",
+   "message": "Thank you for this submission. It points at the same repository, Binary Scaling and the Accelerated Collatz Map, and carries the same result note as the one you filed 15 minutes earlier (pinaki-saha), so we reviewed the two together and are closing this one as a duplicate.\n\nThe full review is in the message on the other submission. In short: we read CollatzLocal.lean on 3 November 2026; it is free of sorry and axioms, and it checks elementary one-step identities for residue classes modulo powers of two plus a general lemma about nested sets of naturals, as Section 15 of your manuscript says. Neither submission answers a question that someone else posed, and the manuscript and README do not mention the AI model, which the site needs to see in the source.\n\nIf a later version settles a stated open question and describes the AI's part in the manuscript, one submission of it would be very welcome.",
+   "flags": [
+    "Duplicate of a pending submission (pinaki-saha), not of a published entry; the curator may prefer no-open-question here instead."
+   ],
+   "checked": "Compared field by field with pinaki-saha: identical sourceUrl, submitter id, submitterNote and resultNote (first letter missing here); the statement field is the repository description, not a posed problem. Repository reviewed as for pinaki-saha.",
+   "notChecked": "Same as pinaki-saha: no Lean build, no rerun of the finite scan."
+  }
+ ],
+ "amends": []
+}
